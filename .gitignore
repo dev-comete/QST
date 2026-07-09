@@ -12,6 +12,8 @@ media/
 staticfiles/
 
 # Virtual Environments
+backdev/.env
+.env
 venv/
 env/
 .venv/
