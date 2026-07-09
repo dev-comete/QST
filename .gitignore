@@ -24,6 +24,13 @@ Pipfile.lock
 .env
 .env.local
 
+# React
+npm-debug.log*
+node_modules
+dist
+dist-ssr
+*.local
+
 # IDE / Editor
 .vscode/
 .idea/
