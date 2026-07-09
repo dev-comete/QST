@@ -39,7 +39,7 @@ def submit_student_answer(user: User, quiz_id: int, question_id: int, submitted_
         corrigee=corrigee,
         vrai_ou_faux=is_correct,
         pts=points_awarded,
-        utilisateur=user  # Assuming you added this ForeignKey as discussed!
+        utilisateur=user  
     )
 
     return valiny
