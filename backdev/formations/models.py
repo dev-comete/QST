@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 
 class Formation(models.Model):
@@ -16,7 +17,7 @@ class Vague(models.Model):
 
 class UtilisateurVague(models.Model):
     vague = models.ForeignKey(Vague, on_delete=models.CASCADE)
-    utilisateur = models.ForeignKey(accounts.Utilisateur, on_delete=models.CASCADE)
+    utilisateur = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     class Meta:
         unique_together = ('vague', 'utilisateur')

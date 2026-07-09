@@ -1,8 +1,9 @@
+from django.conf import settings
 from django.db import models
 
 class Quiz(models.Model):
     # Represents Sous dossier/Quiz
-    formation = models.ForeignKey(formations.Formation, on_delete=models.CASCADE)
+    formation = models.ForeignKey('formations.Formation', on_delete=models.CASCADE)
     date_creation_quiz = models.DateTimeField(auto_now_add=True)
     duree = models.DurationField(help_text="Durée allouée pour le quiz")
     status = models.CharField(max_length=50)
@@ -36,7 +37,7 @@ class Bareme(models.Model):
 
 class UtilisateurQuiz(models.Model):
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
-    utilisateur = models.ForeignKey(accounts.Utilisateur, on_delete=models.CASCADE)
+    utilisateur = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     class Meta:
         unique_together = ('quiz', 'utilisateur')
@@ -73,7 +74,7 @@ class Valiny(models.Model):
     # Stores the actual answer the user chose or typed
     user_valiny = models.TextField(help_text="La réponse choisie ou saisie par l'apprenant")
     corrigee = models.ForeignKey(Corrigee, on_delete=models.CASCADE)
-    utilisateur = models.ForeignKey(accounts.Utilisateur, on_delete=models.CASCADE)
+    utilisateur = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     pts = models.FloatField(default=0.0)
     vrai_ou_faux = models.BooleanField()
 
