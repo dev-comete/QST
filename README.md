@@ -12,7 +12,7 @@ L'interface utilisateur et la logique côté client se trouvent dans le réperto
 
 ```text
 repo/
-├── backdev/               # Application Python / Django
+├── backdev/               # Application Python / Projet Django
 │   ├── requirements.txt
     ├── env-example        # un modèle du fichier env pour créer le véritable fichier
 │   └── README.md          # <-- Guide d'installation du Backend
