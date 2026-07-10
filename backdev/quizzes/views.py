@@ -4,6 +4,8 @@ from rest_framework import status , viewsets
 from rest_framework.permissions import IsAuthenticated , IsAdminUser
 from django.core.exceptions import ValidationError
 
+from .permissions import IsFormateurOrAdminOrReadOnly, IsApprenant
+
 from .serializers import QuizSubmissionSerializer , QuizSerializer, QuestionSerializer, ReponseSerializer
 
 from .services import submit_entire_quiz
@@ -12,18 +14,21 @@ from .models import Quiz, Question, Reponse
 class QuizViewSet(viewsets.ModelViewSet):
     queryset = Quiz.objects.all()
     serializer_class = QuizSerializer
+    permission_classes = [IsFormateurOrAdminOrReadOnly]
 
 class QuestionViewSet(viewsets.ModelViewSet):
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
+    permission_classes = [IsFormateurOrAdminOrReadOnly]
 
 class ReponseViewSet(viewsets.ModelViewSet):
     queryset = Reponse.objects.all()
     serializer_class = ReponseSerializer
+    permission_classes = [IsFormateurOrAdminOrReadOnly]
 
 class SubmitQuizAPIView(APIView):
     # This guarantees that only logged-in users can hit this endpoint
-    permission_classes = [IsAuthenticated] 
+    permission_classes = [IsApprenant]
 
     def post(self, request):
         # 1. Validate the incoming JSON payload
