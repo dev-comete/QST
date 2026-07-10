@@ -5,7 +5,7 @@ from .views import (
     QuizViewSet, 
     QuestionViewSet, 
     ReponseViewSet, 
-    SubmitQuizAPIView , AssignStudentAPIView, MyTodoQuizzesAPIView
+    SubmitQuizAPIView , AssignStudentAPIView, MyTodoQuizzesAPIView , AssignQuestionsAPIView
 )
 from formations.views import FormationViewSet
 
@@ -22,7 +22,9 @@ urlpatterns = [
 
     path('my-quiz-student/', MyTodoQuizzesAPIView.as_view(), name='api-my-todo-quizzes'),
 
-    path('quizzes/assign/', AssignStudentAPIView.as_view(), name='api-assign-quiz'),
+    path('assign-questions/', AssignQuestionsAPIView.as_view(), name='api-assign-questions'),
 
-    path('quizzes/submit/', SubmitQuizAPIView.as_view(), name='api-submit-quiz'),
+    path('assign-student/', AssignStudentAPIView.as_view(), name='api-assign-quiz'),
+
+    path('student-submit/', SubmitQuizAPIView.as_view(), name='api-submit-quiz'),
 ]

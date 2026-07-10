@@ -20,6 +20,15 @@ class ReponseSerializer(serializers.ModelSerializer):
         model = Reponse
         fields = '__all__'
 
+class AssignQuestionsSerializer(serializers.Serializer):
+    quiz_id = serializers.IntegerField(required=True)
+    question_ids = serializers.ListField(
+        child=serializers.IntegerField(),
+        required=True,
+        allow_empty=False,
+        help_text="Liste des IDs des questions à lier à ce quiz."
+    )
+
 class StudentTodoQuizSerializer(serializers.ModelSerializer):
     # We use 'source' to easily reach into the related Quiz and Formation models
     formation_nom = serializers.CharField(source='quiz.formation.nom_formation', read_only=True)

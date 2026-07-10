@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404
 
 from .permissions import IsFormateurOrAdminOrReadOnly, IsApprenant
 
-from .serializers import QuizSubmissionSerializer , QuizSerializer, QuestionSerializer, ReponseSerializer , AssignStudentSerializer , StudentTodoQuizSerializer
+from .serializers import QuizSubmissionSerializer , QuizSerializer, QuestionSerializer, ReponseSerializer , AssignStudentSerializer , StudentTodoQuizSerializer , AssignQuestionsSerializer
 
 from .services import submit_entire_quiz
 from .models import Quiz, Question, Reponse , UtilisateurQuiz
@@ -26,6 +26,46 @@ class ReponseViewSet(viewsets.ModelViewSet):
     queryset = Reponse.objects.all()
     serializer_class = ReponseSerializer
     permission_classes = [IsFormateurOrAdminOrReadOnly]
+
+class AssignQuestionsAPIView(APIView):
+    # Only Formateurs and Admins can access this
+    permission_classes = [IsFormateurOrAdminOrReadOnly]
+
+    def post(self, request):
+        serializer = AssignQuestionsSerializer(data=request.data)
+        
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+        quiz_id = serializer.validated_data['quiz_id']
+        question_ids = serializer.validated_data['question_ids']
+        
+        # 1. Fetch the Quiz
+        quiz = get_object_or_404(Quiz, id=quiz_id)
+        
+        # 2. SECURITY CHECK: Does this Formateur own the Formation?
+        is_admin = request.user.is_staff or request.user.is_superuser
+        if not is_admin and quiz.formation.createur != request.user:
+            return Response(
+                {"error": "Vous ne pouvez modifier que les quiz de vos propres formations."}, 
+                status=status.HTTP_403_FORBIDDEN
+            )
+            
+        # 3. Fetch the Questions and verify they exist
+        questions = Question.objects.filter(id__in=question_ids)
+        if len(questions) != len(question_ids):
+            return Response(
+                {"error": "Une ou plusieurs questions n'ont pas pu être trouvées."}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+            
+        # 4. Assign the Questions to the Quiz
+        # Note: If your model uses a ManyToManyField instead, this would be: quiz.questions.add(*questions)
+        questions.update(quiz=quiz)
+        
+        return Response({
+            "message": f"{len(questions)} question(s) assignée(s) avec succès au Quiz {quiz.id}."
+        }, status=status.HTTP_200_OK)
 
 class MyTodoQuizzesAPIView(generics.ListAPIView):
     serializer_class = StudentTodoQuizSerializer
