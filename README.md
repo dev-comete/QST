@@ -4,7 +4,7 @@ Toute la logique backend, les configurations de la base de données et les point
 
 ### 🔹 Frontend ( à completer)
 L'interface utilisateur et la logique côté client se trouvent dans le répertoire frontend.
-(à venir)
+**[Aller au guide d'installation du Frontend](./frontend/README.md)**
 
 ---
 
