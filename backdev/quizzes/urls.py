@@ -20,7 +20,7 @@ router.register(r'reponses', ReponseViewSet, basename='reponse')
 urlpatterns = [
     path('crud/', include(router.urls)),
 
-    path('my-quiz/', MyTodoQuizzesAPIView.as_view(), name='api-my-todo-quizzes'),
+    path('my-quiz-student/', MyTodoQuizzesAPIView.as_view(), name='api-my-todo-quizzes'),
 
     path('quizzes/assign/', AssignStudentAPIView.as_view(), name='api-assign-quiz'),
 
