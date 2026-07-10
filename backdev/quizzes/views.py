@@ -1,15 +1,16 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status , viewsets
+from rest_framework import status , viewsets , generics
 from rest_framework.permissions import IsAuthenticated , IsAdminUser
 from django.core.exceptions import ValidationError
+from django.shortcuts import get_object_or_404
 
 from .permissions import IsFormateurOrAdminOrReadOnly, IsApprenant
 
-from .serializers import QuizSubmissionSerializer , QuizSerializer, QuestionSerializer, ReponseSerializer
+from .serializers import QuizSubmissionSerializer , QuizSerializer, QuestionSerializer, ReponseSerializer , AssignStudentSerializer , StudentTodoQuizSerializer
 
 from .services import submit_entire_quiz
-from .models import Quiz, Question, Reponse
+from .models import Quiz, Question, Reponse , UtilisateurQuiz
 
 class QuizViewSet(viewsets.ModelViewSet):
     queryset = Quiz.objects.all()
@@ -25,6 +26,21 @@ class ReponseViewSet(viewsets.ModelViewSet):
     queryset = Reponse.objects.all()
     serializer_class = ReponseSerializer
     permission_classes = [IsFormateurOrAdminOrReadOnly]
+
+class MyTodoQuizzesAPIView(generics.ListAPIView):
+    serializer_class = StudentTodoQuizSerializer
+    # Strict security: Only students can access this endpoint
+    permission_classes = [IsApprenant]
+
+    def get_queryset(self):
+        """
+        This is the magic part. Instead of returning all quizzes in the database,
+        we strictly filter it to ONLY show unfinished quizzes assigned to the user making the request.
+        """
+        return UtilisateurQuiz.objects.filter(
+            utilisateur=self.request.user,
+            termine=False
+        ).select_related('quiz', 'quiz__formation') # select_related makes the database query much faster!
 
 class SubmitQuizAPIView(APIView):
     # This guarantees that only logged-in users can hit this endpoint
@@ -65,4 +81,49 @@ class SubmitQuizAPIView(APIView):
             "quiz_id": quiz_attempt.quiz.id,
             "score_obtenu": quiz_attempt.score_obtenu,
             "termine": quiz_attempt.termine
+        }, status=status.HTTP_201_CREATED)
+
+class AssignStudentAPIView(APIView):
+    # Only Formateurs and Admins can access this endpoint
+    permission_classes = [IsFormateurOrAdminOrReadOnly]
+
+    def post(self, request):
+        serializer = AssignStudentSerializer(data=request.data)
+        
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+        etudiant_id = serializer.validated_data['etudiant_id']
+        quiz_id = serializer.validated_data['quiz_id']
+        
+        # 1. Fetch the Quiz
+        quiz = get_object_or_404(Quiz, id=quiz_id)
+        
+        # 2. SECURITY CHECK: Does this Formateur own the Formation this Quiz belongs to?
+        # (Admins bypass this check)
+        is_admin = request.user.is_staff or request.user.is_superuser
+        if not is_admin and quiz.formation.createur != request.user:
+            return Response(
+                {"error": "Vous ne pouvez assigner des étudiants qu'à vos propres quiz."}, 
+                status=status.HTTP_403_FORBIDDEN
+            )
+            
+        # 3. Fetch the Student
+        student = User.objects.get(id=etudiant_id)
+        
+        # 4. Create the assignment (using get_or_create so we don't crash if assigned twice)
+        assignment, created = UtilisateurQuiz.objects.get_or_create(
+            utilisateur=student,
+            quiz=quiz,
+            defaults={
+                'score_obtenu': 0.0,
+                'termine': False
+            }
+        )
+        
+        if not created:
+            return Response({"message": "L'étudiant est déjà assigné à ce quiz."}, status=status.HTTP_200_OK)
+            
+        return Response({
+            "message": f"Étudiant {student.username} assigné avec succès au quiz {quiz.id}."
         }, status=status.HTTP_201_CREATED)

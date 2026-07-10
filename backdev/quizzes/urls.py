@@ -5,7 +5,7 @@ from .views import (
     QuizViewSet, 
     QuestionViewSet, 
     ReponseViewSet, 
-    SubmitQuizAPIView
+    SubmitQuizAPIView , AssignStudentAPIView, MyTodoQuizzesAPIView
 )
 from formations.views import FormationViewSet
 
@@ -18,7 +18,11 @@ router.register(r'questions', QuestionViewSet, basename='question')
 router.register(r'reponses', ReponseViewSet, basename='reponse')
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('crud/', include(router.urls)),
 
-    path('api/quizzes/submit/', SubmitQuizAPIView.as_view(), name='api-submit-quiz'),
+    path('my-quiz/', MyTodoQuizzesAPIView.as_view(), name='api-my-todo-quizzes'),
+
+    path('quizzes/assign/', AssignStudentAPIView.as_view(), name='api-assign-quiz'),
+
+    path('quizzes/submit/', SubmitQuizAPIView.as_view(), name='api-submit-quiz'),
 ]
