@@ -22,5 +22,20 @@ class Utilisateur(AbstractUser):
         blank=True
     )
 
+    def save(self, *args, **kwargs):
+            # 1. Check if this user has a type_utilisateur assigned
+            if self.type_utilisateur is not None:
+                # 2. If the role is "admin", automatically grant Django staff status
+                if self.type_utilisateur.type_utilisateur == 'admin':
+                    self.is_staff = True
+                    self.is_superuser = True # Optional: gives them access to absolutely everything
+                else:
+                    # 3. If they are changed to a student or teacher, strip their admin rights
+                    self.is_staff = False
+                    self.is_superuser = False
+                    
+            # 4. Proceed with the normal save process
+            super().save(*args, **kwargs)
+
     def __str__(self):
         return self.username

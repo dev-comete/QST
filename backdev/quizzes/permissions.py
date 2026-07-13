@@ -33,7 +33,10 @@ class IsFormateurOrAdminOrReadOnly(permissions.BasePermission):
             return True
 
         # 3. For POST, PUT, DELETE, check if the user is a formateur or admin
-        is_formateur = getattr(request.user, 'type_utilisateur', '') == 'formateur'
+        is_formateur = (
+            request.user.type_utilisateur is not None and 
+            request.user.type_utilisateur.type_utilisateur == 'formateur'
+        )
         is_admin = request.user.is_staff or request.user.is_superuser
         
         return is_formateur or is_admin
@@ -46,4 +49,7 @@ class IsApprenant(permissions.BasePermission):
         if not request.user or not request.user.is_authenticated:
             return False
             
-        return getattr(request.user, 'type_utilisateur', '') == 'apprenant'
+        return (
+            request.user.type_utilisateur is not None and 
+            request.user.type_utilisateur.type_utilisateur == 'apprenant'
+        )
