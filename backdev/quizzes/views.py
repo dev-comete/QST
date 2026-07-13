@@ -7,10 +7,11 @@ from django.shortcuts import get_object_or_404
 
 from .permissions import IsFormateurOrAdminOrReadOnly, IsApprenant
 
-from .serializers import QuizSubmissionSerializer , QuizSerializer, QuestionSerializer, ReponseSerializer , AssignStudentSerializer , StudentTodoQuizSerializer , AssignQuestionsSerializer
+from .serializers import QuizSubmissionSerializer , QuizSerializer, QuestionSerializer, ReponseSerializer , AssignStudentSerializer , StudentTodoQuizSerializer , AssignQuestionsSerializer , TypeQuestionSerializer , BaremeSerializer , QuestionTypeQuestionSerializer , QuestionBaremeSerializer, CreateFullQuestionSerializer
 
-from .services import submit_entire_quiz
-from .models import Quiz, Question, Reponse , UtilisateurQuiz, QuizQuestion
+from .services import submit_entire_quiz, assign_questions_to_quiz , create_question_with_answers
+
+from .models import Quiz, Question, Reponse , UtilisateurQuiz, QuizQuestion , TypeQuestion, Bareme, QuestionTypeQuestion, QuestionBareme
 
 class QuizViewSet(viewsets.ModelViewSet):
     queryset = Quiz.objects.all()
@@ -27,51 +28,100 @@ class ReponseViewSet(viewsets.ModelViewSet):
     serializer_class = ReponseSerializer
     permission_classes = [IsFormateurOrAdminOrReadOnly]
 
+class TypeQuestionViewSet(viewsets.ModelViewSet):
+    queryset = TypeQuestion.objects.all()
+    serializer_class = TypeQuestionSerializer
+    permission_classes = [IsFormateurOrAdminOrReadOnly]
+
+class BaremeViewSet(viewsets.ModelViewSet):
+    queryset = Bareme.objects.all()
+    serializer_class = BaremeSerializer
+    permission_classes = [IsFormateurOrAdminOrReadOnly]
+
+class QuestionTypeQuestionViewSet(viewsets.ModelViewSet):
+    """ViewSet to link a Question to a specific Type."""
+    queryset = QuestionTypeQuestion.objects.all()
+    serializer_class = QuestionTypeQuestionSerializer
+    permission_classes = [IsFormateurOrAdminOrReadOnly]
+
+class QuestionBaremeViewSet(viewsets.ModelViewSet):
+    """ViewSet to link a Question to a specific point value."""
+    queryset = QuestionBareme.objects.all()
+    serializer_class = QuestionBaremeSerializer
+    permission_classes = [IsFormateurOrAdminOrReadOnly]
+
 class AssignQuestionsAPIView(APIView):
-    # Only Formateurs and Admins can access this
     permission_classes = [IsFormateurOrAdminOrReadOnly]
 
     def post(self, request):
+        # 1. Parse and validate the incoming JSON
         serializer = AssignQuestionsSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+        quiz = get_object_or_404(Quiz, id=serializer.validated_data['quiz_id'])
+        
+        # 2. View-Level Security Check
+        is_admin = request.user.is_staff or request.user.is_superuser
+        if not is_admin and quiz.formation.createur != request.user:
+            return Response({"error": "Accès refusé."}, status=status.HTTP_403_FORBIDDEN)
+            
+        # 3. Delegate to the Service Layer
+        try:
+            created_count = assign_questions_to_quiz(
+                quiz=quiz, 
+                questions_choisies=serializer.validated_data['questions_choisies']
+            )
+            return Response(
+                {"message": f"{created_count} question(s) assignée(s) !"}, 
+                status=status.HTTP_200_OK
+            )
+        except ValidationError as e:
+                    # Bulletproof error extraction that handles both Django and DRF ValidationErrors
+                    if hasattr(e, 'detail'):
+                        # It's a DRF ValidationError
+                        error_message = e.detail[0] if isinstance(e.detail, list) else e.detail
+                    elif hasattr(e, 'messages'):
+                        # It's a Django ValidationError
+                        error_message = e.messages[0]
+                    else:
+                        # Fallback for any other type of error
+                        error_message = str(e)
+                        
+                    return Response({"error": error_message}, status=status.HTTP_400_BAD_REQUEST)
+
+class CreateFullQuestionAPIView(APIView):
+    permission_classes = [IsFormateurOrAdminOrReadOnly]
+
+    def post(self, request):
+        serializer = CreateFullQuestionSerializer(data=request.data)
         
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             
-        quiz_id = serializer.validated_data['quiz_id']
-        question_ids = serializer.validated_data['question_ids']
+        data = serializer.validated_data
         
-        # 1. Fetch the Quiz
-        quiz = get_object_or_404(Quiz, id=quiz_id)
-        
-        # 2. SECURITY CHECK: Does this Formateur own the Formation?
-        is_admin = request.user.is_staff or request.user.is_superuser
-        if not is_admin and quiz.formation.createur != request.user:
-            return Response(
-                {"error": "Vous ne pouvez modifier que les quiz de vos propres formations."}, 
-                status=status.HTTP_403_FORBIDDEN
+        try:
+            # Pass the validated data directly to the service layer
+            question = create_question_with_answers(
+                enonce=data['enonce_question'],
+                type_id=data['type_id'],
+                bareme_id=data['bareme_id'],
+                options=data.get('options', [])
             )
             
-        # 3. Fetch the Questions and verify they exist
-        questions = Question.objects.filter(id__in=question_ids)
-        if len(questions) != len(question_ids):
             return Response(
-                {"error": "Une ou plusieurs questions n'ont pas pu être trouvées."}, 
-                status=status.HTTP_404_NOT_FOUND
+                {
+                    "message": "Question ajoutée avec succès à la banque !", 
+                    "question_id": question.id
+                }, 
+                status=status.HTTP_201_CREATED
             )
             
-        links_to_create = []
-        for question in questions:
-            # We check if the link already exists so we don't violate your unique_together constraint
-            if not QuizQuestion.objects.filter(quiz=quiz, question=question).exists():
-                links_to_create.append(QuizQuestion(quiz=quiz, question=question))
-        
-        # bulk_create saves all the new links to the database in a single query (very fast!)
-        if links_to_create:
-            QuizQuestion.objects.bulk_create(links_to_create)
-        
-        return Response({
-            "message": f"{len(links_to_create)} nouvelle(s) question(s) liée(s) avec succès au Quiz {quiz.id}."
-        }, status=status.HTTP_200_OK)
+        except ValidationError as e:
+            # Handle business logic exceptions gracefully
+            error_message = e.detail[0] if isinstance(e.detail, list) else e.detail
+            return Response({"error": error_message}, status=status.HTTP_400_BAD_REQUEST)
 
 class MyTodoQuizzesAPIView(generics.ListAPIView):
     serializer_class = StudentTodoQuizSerializer
