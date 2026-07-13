@@ -10,7 +10,7 @@ from .permissions import IsFormateurOrAdminOrReadOnly, IsApprenant
 from .serializers import QuizSubmissionSerializer , QuizSerializer, QuestionSerializer, ReponseSerializer , AssignStudentSerializer , StudentTodoQuizSerializer , AssignQuestionsSerializer
 
 from .services import submit_entire_quiz
-from .models import Quiz, Question, Reponse , UtilisateurQuiz
+from .models import Quiz, Question, Reponse , UtilisateurQuiz, QuizQuestion
 
 class QuizViewSet(viewsets.ModelViewSet):
     queryset = Quiz.objects.all()
@@ -59,12 +59,18 @@ class AssignQuestionsAPIView(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
             
-        # 4. Assign the Questions to the Quiz
-        # Note: If your model uses a ManyToManyField instead, this would be: quiz.questions.add(*questions)
-        questions.update(quiz=quiz)
+        links_to_create = []
+        for question in questions:
+            # We check if the link already exists so we don't violate your unique_together constraint
+            if not QuizQuestion.objects.filter(quiz=quiz, question=question).exists():
+                links_to_create.append(QuizQuestion(quiz=quiz, question=question))
+        
+        # bulk_create saves all the new links to the database in a single query (very fast!)
+        if links_to_create:
+            QuizQuestion.objects.bulk_create(links_to_create)
         
         return Response({
-            "message": f"{len(questions)} question(s) assignée(s) avec succès au Quiz {quiz.id}."
+            "message": f"{len(links_to_create)} nouvelle(s) question(s) liée(s) avec succès au Quiz {quiz.id}."
         }, status=status.HTTP_200_OK)
 
 class MyTodoQuizzesAPIView(generics.ListAPIView):
