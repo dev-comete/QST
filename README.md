@@ -1,7 +1,7 @@
 ### 🔹 Backend (Django)
 Toute la logique backend, les configurations de la base de données et les points d'accès de l'API (endpoints) se trouvent dans le répertoire backend. 
 
-**[Installation](./backend/backdev/DOCS/installation.md)**
+**[Installation](./backdev/DOCS/installation.md)**
 
 **[Documentation des APIs](./backend/backdev/DOCS/question-create&assign.md)**
 
