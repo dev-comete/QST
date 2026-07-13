@@ -8,11 +8,14 @@ from .views import (
     SubmitQuizAPIView , AssignStudentAPIView, MyTodoQuizzesAPIView , AssignQuestionsAPIView
 )
 from formations.views import FormationViewSet
+from accounts.views import UtilisateurViewSet, TypeUtilisateurViewSet
 
 router = DefaultRouter()
 
 # 2. Register the CRUD endpoints
 router.register(r'formations', FormationViewSet, basename='formation')
+router.register(r'types-utilisateurs', TypeUtilisateurViewSet, basename='type-utilisateur')
+router.register(r'utilisateurs',UtilisateurViewSet, basename='utilisateur')
 router.register(r'quizzes', QuizViewSet, basename='quiz')
 router.register(r'questions', QuestionViewSet, basename='question')
 router.register(r'reponses', ReponseViewSet, basename='reponse')
