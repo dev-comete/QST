@@ -1,1 +1,66 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
 @import "tailwindcss";
+
+@theme {
+	
+	  /* Fonts */
+	--font-sans: 'Poppins', system-ui, sans-serif;
+	--font-mono: 'JetBrains Mono', monospace;
+
+	/* Text Colors + shades */
+
+	--color-text: #101114;
+
+	--color-text-50: #0b0c0e;
+	--color-text-100: #17181c;
+	--color-text-200: #2d3039;
+	--color-text-500: #71788e;
+	--color-text-900: #e3e4e8;
+
+	/*	Background Colors + shades */
+
+	--color-background: #f1f0f0;
+
+	--color-background-50: #0d0c0c;
+	--color-background-100: #1a1919;
+	--color-background-200: #353131;
+	--color-background-500: #837c7c;
+	--color-background-900: #e6e5e5;
+
+	/*	Primary Colors + shades */
+
+	--color-primary: #1b3259;
+
+	--color-primary-50: #060b14;
+	--color-primary-100: #0c1627;
+	--color-primary-200: #182c4e;
+	--color-primary-500: #3c6dc3;
+	--color-primary-900: #d8e2f3;
+
+	/*	Secondary Colors + shades */
+
+	--color-secondary: #1666e9;
+
+	--color-secondary-50: #020a17;
+	--color-secondary-100: #04152f;
+	--color-secondary-200: #09295d;
+	--color-secondary-500: #1667e9;
+	--color-secondary-900: #d0e1fb;
+
+	/*	Accent Colors + shades */
+
+	--color-accent: #0058e7;
+
+	--color-accent-50: #000a1a;
+	--color-accent-100: #001433;
+	--color-accent-200: #002766;
+	--color-accent-500: #0062ff;
+	--color-accent-900: #cce0ff;
+
+	/* States colors */
+	--color-success: #28A745;
+	--color-error: #dc3545;
+	--color-warning: #ffc107;
+	--color-disabled: #d6dfe1;
+}

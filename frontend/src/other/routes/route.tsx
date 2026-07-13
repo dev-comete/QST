@@ -1,9 +1,12 @@
 import { createBrowserRouter } from "react-router";
+import Text from "../../system/atoms/Text";
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <div className="font-bold text-blue-500">Hello World</div>,
+    element: <div>
+		<Text type="h1" color="disabled">Testing</Text>
+	</div>,
   },
 ]);
 
