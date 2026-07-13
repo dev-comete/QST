@@ -21,6 +21,9 @@ router.register(r'questions', QuestionViewSet, basename='question')
 router.register(r'reponses', ReponseViewSet, basename='reponse')
 
 urlpatterns = [
+
+    path('api-auth/', include('rest_framework.urls')),
+
     path('crud/', include(router.urls)),
 
     path('my-quiz-student/', MyTodoQuizzesAPIView.as_view(), name='api-my-todo-quizzes'),
