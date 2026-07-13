@@ -1,8 +1,9 @@
+from django.conf import settings
 from django.db import models
 
 class Quiz(models.Model):
     # Represents Sous dossier/Quiz
-    formation = models.ForeignKey(formations.Formation, on_delete=models.CASCADE)
+    formation = models.ForeignKey('formations.Formation', on_delete=models.CASCADE)
     date_creation_quiz = models.DateTimeField(auto_now_add=True)
     duree = models.DurationField(help_text="Durée allouée pour le quiz")
     status = models.CharField(max_length=50)
@@ -35,11 +36,19 @@ class Bareme(models.Model):
         return f"{self.pts} pts"
 
 class UtilisateurQuiz(models.Model):
-    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
-    utilisateur = models.ForeignKey(accounts.Utilisateur, on_delete=models.CASCADE)
+    utilisateur = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    quiz = models.ForeignKey('Quiz', on_delete=models.CASCADE)
+    
+    # We add these fields to track the final result
+    score_obtenu = models.FloatField(default=0.0)
+    termine = models.BooleanField(default=False)
+    date_tentative = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ('quiz', 'utilisateur')
+
+    def __str__(self):
+        return f"{self.utilisateur.username} - {self.quiz.id} - Score: {self.score_obtenu}"
 
 class QuizQuestion(models.Model):
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
@@ -70,13 +79,21 @@ class QuestionBareme(models.Model):
         unique_together = ('question', 'bareme')
 
 class Valiny(models.Model):
-    # Stores the actual answer the user chose or typed
-    user_valiny = models.TextField(help_text="La réponse choisie ou saisie par l'apprenant")
-    corrigee = models.ForeignKey(Corrigee, on_delete=models.CASCADE)
-    utilisateur = models.ForeignKey(accounts.Utilisateur, on_delete=models.CASCADE)
-    pts = models.FloatField(default=0.0)
-    vrai_ou_faux = models.BooleanField()
+    utilisateur = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    question = models.ForeignKey('Question', on_delete=models.CASCADE)
+    
+    # M2M links the user's attempt to the predefined Reponse objects
+    reponses_choisies = models.ManyToManyField(
+        'Reponse', 
+        blank=True,
+        help_text="Les options sélectionnées par l'apprenant pour les QCM/QCU"
+    )
+    
+    # We keep a text field for open-ended questions (if needed later)
+    reponse_ouverte = models.TextField(blank=True, null=True)
 
+    pts = models.FloatField(default=0.0)
+    vrai_ou_faux = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"Réponse donnée : {self.user_valiny[:50]} - ({self.vrai_ou_faux})"
+        return f"Valiny: {self.utilisateur.username} - Q: {self.question.id}"

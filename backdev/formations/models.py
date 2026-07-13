@@ -1,9 +1,14 @@
+from django.conf import settings
 from django.db import models
 
 class Formation(models.Model):
     # Represents Formation/Dossier
     nom_formation = models.CharField(max_length=200)
-
+    createur = models.ForeignKey(
+            settings.AUTH_USER_MODEL, 
+            on_delete=models.CASCADE,
+            limit_choices_to={'type_utilisateur': 'formateur'} # Optional: restricts dropdowns in Django Admin
+        )
     def __str__(self):
         return self.nom_formation
 
@@ -16,7 +21,7 @@ class Vague(models.Model):
 
 class UtilisateurVague(models.Model):
     vague = models.ForeignKey(Vague, on_delete=models.CASCADE)
-    utilisateur = models.ForeignKey(accounts.Utilisateur, on_delete=models.CASCADE)
+    utilisateur = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     class Meta:
         unique_together = ('vague', 'utilisateur')

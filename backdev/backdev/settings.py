@@ -36,7 +36,36 @@ SECRET_KEY = env('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '8000-cs-053069f0-3449-4470-96df-35d3150becaf.cs-asia-southeast1-fork.cloudshell.dev',
+    '127.0.0.1',
+    'localhost'
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+    'https://8000-cs-053069f0-3449-4470-96df-35d3150becaf.cs-asia-southeast1-fork.cloudshell.dev'
+  
+]
+
+CSRF_ALLOWED_ORIGINS = [
+    'localhost:8000',
+    '127.0.0.1:8000',
+    '8000-cs-053069f0-3449-4470-96df-35d3150becaf.cs-asia-southeast1-fork.cloudshell.dev'
+]
+
+CORS_ALLOWED_ORIGINS = [
+    'localhost:8000',
+    '127.0.0.1:8000',
+    '8000-cs-053069f0-3449-4470-96df-35d3150becaf.cs-asia-southeast1-fork.cloudshell.dev'
+]
+
+CORS_TRUSTED_ORIGINS = [
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+    'https://8000-cs-053069f0-3449-4470-96df-35d3150becaf.cs-asia-southeast1-fork.cloudshell.dev'
+]
 
 
 # Application definition
@@ -48,12 +77,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'accounts',
     'formations',
     'quizzes'
 ]
 
 MIDDLEWARE = [
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -144,3 +175,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+# settings.py
+
+# Tells Django to use the 'Utilisateur' model in the 'accounts' app for authentication
+AUTH_USER_MODEL = 'accounts.Utilisateur'

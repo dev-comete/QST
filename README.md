@@ -2,9 +2,9 @@
 Toute la logique backend, les configurations de la base de données et les points d'accès de l'API (endpoints) se trouvent dans le répertoire backend. 
 **[Aller au guide d'installation du Backend](./backdev/README.md)**
 
-### 🔹 Frontend ( à completer)
+### 🔹 Frontend (React)
 L'interface utilisateur et la logique côté client se trouvent dans le répertoire frontend.
-(à venir)
+**[Aller au guide d'installation du Frontend](./frontend/README.md)**
 
 ---
 
