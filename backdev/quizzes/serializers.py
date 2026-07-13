@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 
-from .models import Quiz, Question, Reponse, Corrigee , UtilisateurQuiz
+from .models import Quiz, Question, Reponse, Corrigee , UtilisateurQuiz , TypeQuestion , Bareme, QuestionTypeQuestion , QuestionBareme
 
 User = get_user_model()
 
@@ -20,14 +20,61 @@ class ReponseSerializer(serializers.ModelSerializer):
         model = Reponse
         fields = '__all__'
 
+class TypeQuestionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TypeQuestion
+        fields = '__all__'
+
+class BaremeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Bareme
+        fields = '__all__'
+
+class QuestionTypeQuestionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QuestionTypeQuestion
+        fields = '__all__'
+
+class QuestionBaremeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QuestionBareme
+        fields = '__all__'
+
+class QuestionChoiceSerializer(serializers.Serializer):
+    """
+    Sub-serializer to define the exact configuration of the chosen question.
+    """
+    question_id = serializers.IntegerField(required=True)
+    type_id = serializers.IntegerField(required=True)
+    bareme_id = serializers.IntegerField(required=True)
+
 class AssignQuestionsSerializer(serializers.Serializer):
+    """
+    Main serializer for assigning questions to a quiz.
+    """
     quiz_id = serializers.IntegerField(required=True)
-    question_ids = serializers.ListField(
-        child=serializers.IntegerField(),
-        required=True,
+    
+    # We completely replace 'question_ids' with this new field
+    questions_choisies = QuestionChoiceSerializer(
+        many=True, 
         allow_empty=False,
-        help_text="Liste des IDs des questions à lier à ce quiz."
+        help_text="Liste détaillée des questions avec le type et le barème spécifiques choisis."
     )
+
+class ReponseOptionSerializer(serializers.Serializer):
+    reponse = serializers.CharField(max_length=500)
+    est_correct = serializers.BooleanField(
+        default=False, 
+        help_text="Cochez si cette réponse est la bonne (pour le corrigé)"
+    )
+
+class CreateFullQuestionSerializer(serializers.Serializer):
+    enonce_question = serializers.CharField()
+    type_id = serializers.IntegerField(required=True)
+    bareme_id = serializers.IntegerField(required=True)
+    
+    # Nested list of all options (right and wrong) the formateur provided
+    options = ReponseOptionSerializer(many=True, allow_empty=True, required=False)
 
 class StudentTodoQuizSerializer(serializers.ModelSerializer):
     # We use 'source' to easily reach into the related Quiz and Formation models

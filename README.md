@@ -1,6 +1,9 @@
 ### 🔹 Backend (Django)
 Toute la logique backend, les configurations de la base de données et les points d'accès de l'API (endpoints) se trouvent dans le répertoire backend. 
-**[Aller au guide d'installation du Backend](./backdev/README.md)**
+
+**[Installation](./backdev/DOCS/installation.md)**
+
+**[Documentation des APIs](./backdev/DOCS/quizzes.md)**
 
 ### 🔹 Frontend (React)
 L'interface utilisateur et la logique côté client se trouvent dans le répertoire frontend.

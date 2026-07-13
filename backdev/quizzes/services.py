@@ -1,6 +1,6 @@
 from django.db import transaction
 from django.core.exceptions import ValidationError
-from .models import Question, Corrigee, Valiny, Reponse , UtilisateurQuiz , Quiz
+from .models import Question, Corrigee, Valiny, Reponse , UtilisateurQuiz , Quiz , QuestionTypeQuestion, QuestionBareme,TypeQuestion, Bareme
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -93,3 +93,97 @@ def submit_entire_quiz(user: User, quiz_id: int, quiz_payload: dict) -> Utilisat
     )
 
     return quiz_attempt
+
+def assign_questions_to_quiz(quiz, questions_choisies):
+    """
+    Validates and assigns a list of existing question configurations to a quiz.
+    Raises a DRF ValidationError if business rules are violated.
+    """
+    links_to_create = []
+
+    for item in questions_choisies:
+        q_id = item['question_id']
+        t_id = item['type_id']
+        b_id = item['bareme_id']
+        
+        # 1. Verify this combo actually exists in the Question Bank
+        valid_type = QuestionTypeQuestion.objects.filter(question_id=q_id, type_question_id=t_id).exists()
+        valid_bareme = QuestionBareme.objects.filter(question_id=q_id, bareme_id=b_id).exists()
+        
+        if not valid_type or not valid_bareme:
+            raise ValidationError(f"La question {q_id} ne possède pas le type {t_id} ou le barème {b_id}.")
+
+        # 2. UPDATED: Verify that the question has at least one CORRECT answer
+        type_obj = TypeQuestion.objects.get(id=t_id)
+        is_open_question = 'ouverte' in type_obj.type_question.lower()
+        
+        # We now explicitly look for rows where est_correct=True
+        has_correct_answer = Corrigee.objects.filter(question_id=q_id, est_correct=True).exists()
+        
+        if not is_open_question and not has_correct_answer:
+            raise ValidationError(
+                f"La question {q_id} (Type: {type_obj.type_question}) n'a aucune "
+                f"réponse marquée comme correcte dans la banque. Veuillez la modifier d'abord."
+            )
+            
+        # 3. Queue the specific combo to be saved
+        if not QuizQuestion.objects.filter(quiz=quiz, question_id=q_id, type_question_id=t_id, bareme_id=b_id).exists():
+            links_to_create.append(
+                QuizQuestion(quiz=quiz, question_id=q_id, type_question_id=t_id, bareme_id=b_id)
+            )
+
+    # 4. Database execution
+    if links_to_create:
+        QuizQuestion.objects.bulk_create(links_to_create)
+
+    return len(links_to_create)
+
+@transaction.atomic
+def create_question_with_answers(enonce, type_id, bareme_id, options):
+    """
+    Creates a question, links its configurations, and generates its answers and corrigé.
+    Wrapped in @transaction.atomic to guarantee database integrity.
+    """
+    
+    # 1. Fetch relations to ensure they exist
+    try:
+        type_obj = TypeQuestion.objects.get(id=type_id)
+        bareme_obj = Bareme.objects.get(id=bareme_id)
+    except (TypeQuestion.DoesNotExist, Bareme.DoesNotExist):
+        raise ValidationError("Le Type ou le Barème spécifié n'existe pas.")
+
+    # 2. Strict Business Logic Check (QCU vs QCM vs Ouverte)
+    type_name = type_obj.type_question.lower()
+    correct_count = sum(1 for opt in options if opt.get('est_correct', False))
+
+    if 'qcu' in type_name and correct_count != 1:
+        raise ValidationError("Un QCU (Choix Unique) doit avoir exactement UNE réponse correcte.")
+    elif 'qcm' in type_name and correct_count < 1:
+        raise ValidationError("Un QCM (Choix Multiple) doit avoir au moins UNE réponse correcte.")
+    elif 'ouverte' in type_name and len(options) > 0:
+        raise ValidationError("Une question ouverte ne doit pas avoir d'options prédéfinies.")
+
+    # 3. Create the Question Object
+    question = Question.objects.create(enonce_question=enonce)
+
+    # 4. Link the Type and Bareme
+    QuestionTypeQuestion.objects.create(question=question, type_question=type_obj)
+    QuestionBareme.objects.create(question=question, bareme=bareme_obj)
+
+    # 5. Create the Answers and link them via the upgraded Corrigee table
+    for opt in options:
+        reponse_text = opt.get('reponse', '').strip()
+        if not reponse_text:
+            continue
+            
+        # get_or_create reuses identical text (e.g., "Vrai", "Faux") to save DB space
+        reponse_obj, created = Reponse.objects.get_or_create(reponse=reponse_text)
+        
+        # Link EVERY option (right and wrong) to the question
+        Corrigee.objects.create(
+            question=question, 
+            reponse=reponse_obj,
+            est_correct=opt.get('est_correct', False) # We save the boolean here!
+        )
+
+    return question

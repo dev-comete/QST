@@ -53,9 +53,15 @@ class UtilisateurQuiz(models.Model):
 class QuizQuestion(models.Model):
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    type_question = models.ForeignKey(TypeQuestion, on_delete=models.CASCADE)
+    bareme = models.ForeignKey(Bareme, on_delete=models.CASCADE)
 
     class Meta:
-        unique_together = ('quiz', 'question')
+            # A quiz can't have the exact same question/type/bareme combo twice
+        unique_together = ('quiz', 'question', 'type_question', 'bareme')
+            
+    def __str__(self):
+        return f"{self.quiz.id} | {self.question.id} ({self.type_question} - {self.bareme})"
 
 class QuestionTypeQuestion(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
@@ -68,8 +74,16 @@ class Corrigee(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     reponse = models.ForeignKey(Reponse, on_delete=models.CASCADE)
 
+    est_correct = models.BooleanField(
+        default=False,
+        help_text="Cochez si cette réponse est la bonne."
+    )
     class Meta:
         unique_together = ('question', 'reponse')
+
+    def __str__(self):
+        status = "Correct" if self.est_correct else "Faux"
+        return f"Q{self.question.id} - {self.reponse.reponse[:20]} ({status})"
 
 class QuestionBareme(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)

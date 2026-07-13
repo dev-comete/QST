@@ -7,7 +7,7 @@ class Formation(models.Model):
     createur = models.ForeignKey(
             settings.AUTH_USER_MODEL, 
             on_delete=models.CASCADE,
-            limit_choices_to={'type_utilisateur': 'formateur'} # Optional: restricts dropdowns in Django Admin
+            limit_choices_to={'type_utilisateur__type_utilisateur': 'formateur'} # Optional: restricts dropdowns in Django Admin
         )
     def __str__(self):
         return self.nom_formation
