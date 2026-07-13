@@ -47,7 +47,7 @@ const CustomText = ({
 	children,
 	type : Tag = "p",
 	color,
-	weight,
+	weight = "normal",
 	isItalic
 }: TextProps) => {
 

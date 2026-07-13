@@ -1,0 +1,7 @@
+@layer base {
+
+	html {
+		@apply bg-background;
+	}
+}
+

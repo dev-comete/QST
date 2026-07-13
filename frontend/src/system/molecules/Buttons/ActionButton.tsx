@@ -5,6 +5,7 @@ import CustomText from "../../atoms/Text/CustomText";
 interface ActionButtonProps {
 	children: React.ReactNode;
 	btnColor: string;
+	btnStyling?: string;
 	textColor?: string;
 	action : () => void;
 }
@@ -12,12 +13,14 @@ interface ActionButtonProps {
 const ActionButton = ({
 	children,
 	btnColor,
+	btnStyling,
 	textColor = "white",
 	action
 } : ActionButtonProps) => {
 	return (
 		<Button
 			color={btnColor}
+			customStyling={btnStyling}
 			action={action}
 		>
 			<CustomText color={textColor} weight="bold">{children}</CustomText>

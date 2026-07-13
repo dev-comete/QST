@@ -1,5 +1,5 @@
 import type React from "react";
-import type { ColorTheme } from "../../../other/types/common";
+import { backgroundColor } from "../../../other/types/constant";
 
 interface ButtonProps {
 	children?: React.ReactNode;
@@ -8,23 +8,10 @@ interface ButtonProps {
 	action : () => void;
 }
 
-const btnColor : Record<ColorTheme, string> = {
-	'background': 'bg-background',
-	'primary': 'bg-primary',
-	'secondary': 'bg-secondary',
-	'accent': 'bg-accent',
-	'success': 'bg-success',
-	'error': 'bg-error',
-	'warning': 'bg-warning',
-	'text': 'bg-text',
-	'white': 'bg-white',
-	'disabled' : 'bg-disabled'
-}
-
 const Button = ({ children, color, customStyling, action }: ButtonProps) => {
 	return (
 		<button 
-			className={`${btnColor[color]} ${customStyling} px-5 py-4 rounded-sm`}
+			className={`${backgroundColor[color]} ${customStyling} px-5 py-4 rounded-sm`}
 			onClick={action}
 		>
 			{children}

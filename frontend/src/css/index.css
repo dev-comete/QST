@@ -2,6 +2,14 @@
 
 @import "tailwindcss";
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import './base.css';
+@import './components.css';
+@import './utilities.css';
+
 @theme {
 	
 	  /* Fonts */
