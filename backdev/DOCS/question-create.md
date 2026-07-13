@@ -12,7 +12,7 @@ This endpoint allows Formateurs and Admins to create a complete question configu
 * **Authentication:** Required (JWT or Session Token)
 
 ### Description
-This endpoint serves as the central data entry point for the **Question Bank**. It processes multi-table relational inserts across `Question`, `QuestionTypeQuestion`, `QuestionBareme`, `Reponse`, and `Corrigee` atomically. 
+This endpoint serves as the central data entry point for the **Question Bank**. It processes multi-table relational inserts across `Question`, `QuestionTypeQuestion`, `QuestionBareme`, `Reponse`, and `Corrigee` atomically.
 
 To save database overhead, answer strings are deduplicated automatically via a `get_or_create` workflow, allowing identical choices (e.g., "Vrai", "Faux") to share rows globally while preserving isolated correct/incorrect statuses per question context.
 
@@ -41,7 +41,7 @@ Authorization: Bearer <your_token_here>
 ```json
 {
   "enonce_question": "Quel est le plus grand océan du monde ?",
-  "type_id": 1, 
+  "type_id": 1,
   "bareme_id": 2,
   "options": [
     {
