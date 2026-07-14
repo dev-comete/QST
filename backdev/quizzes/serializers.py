@@ -30,6 +30,16 @@ class BaremeSerializer(serializers.ModelSerializer):
         model = Bareme
         fields = '__all__'
 
+class FormateurOptionSerializer(serializers.ModelSerializer):
+    reponse_id = serializers.IntegerField(source='reponse.id', read_only=True)
+    texte = serializers.CharField(source='reponse.reponse', read_only=True)
+    # Include 'est_correct' since this view seems to be for the Formateur/Admin
+    est_correct = serializers.BooleanField(read_only=True) 
+
+    class Meta:
+        model = Corrigee
+        fields = ['reponse_id', 'texte', 'est_correct']
+
 class QuizQuestionSerializer(serializers.ModelSerializer):
 # 1. Keep the IDs (Frontend might still need them for state management)
     quiz_id = serializers.IntegerField(source='quiz.id', read_only=True)
@@ -45,6 +55,9 @@ class QuizQuestionSerializer(serializers.ModelSerializer):
     
     # Note: Replace 'valeur' with whatever your Bareme model uses (e.g., 'points', 'score')
     points = serializers.FloatField(source='bareme.pts', read_only=True)
+
+    options = serializers.SerializerMethodField()
+
     class Meta:
         model = QuizQuestion
         fields = [
@@ -55,8 +68,20 @@ class QuizQuestionSerializer(serializers.ModelSerializer):
             'type_id',
             'type_nom',
             'bareme_id',
-            'points'
+            'points', 
+            'options'
         ]
+    def get_options(self, obj):
+        # 1. If it is an open question, return an empty array
+        # Adjust 'ouverte' to match exactly how it is spelled in your database
+        if 'ouverte' in obj.type_question.type_question.lower():
+            return []
+            
+        # 2. Otherwise, fetch the Corrigee rows linked to this specific Question
+        corrigees = Corrigee.objects.filter(question=obj.question)
+        
+        # 3. Pass them through our mini-serializer
+        return FormateurOptionSerializer(corrigees, many=True).data
 
 class QuestionTypeQuestionSerializer(serializers.ModelSerializer):
     class Meta:
