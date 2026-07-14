@@ -5,13 +5,21 @@ interface ButtonProps {
 	children?: React.ReactNode;
 	color?: string;
 	customStyling?: string;
+	paddingX?: number;
+	paddingY?: number;
 	action : () => void;
 }
 
-const Button = ({ children, color, customStyling, action }: ButtonProps) => {
+const Button = ({
+	children,
+	color,
+	customStyling,
+	action 
+}: ButtonProps) => {
+
 	return (
 		<button 
-			className={`${backgroundColor[color]} ${customStyling} px-5 py-4 rounded-sm`}
+			className={`${backgroundColor[color]} ${customStyling} px-3 py-2 rounded-sm`}
 			onClick={action}
 		>
 			{children}

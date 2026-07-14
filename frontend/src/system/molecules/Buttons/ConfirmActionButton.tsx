@@ -20,12 +20,13 @@ const ConfirmActionButton = ({
 	return (
 		<>
 			{	isOpen && 
-				<ConfirmModal
-					content="Voulez-vous envoyer la réponse ?"
-					action={action}
-					closeModal={() => setIsOpen(false)}
-					bgColor="white"
-				/>
+					<ConfirmModal
+						content="Voulez-vous envoyer la réponse ?"
+						action={action}
+						closeModal={() => setIsOpen(false)}
+						bgColor="white"
+						isOpen={isOpen}
+					/>
 			}
 			<ActionButton
 				btnColor={btnColor}

@@ -18,7 +18,7 @@ const Test = () => {
 			>Test action button</ActionButton>
 			<ConfirmActionButton
 				action={() => console.log("Test confirm modal")}
-				btnColor="secondary"
+				btnColor="success"
 			>
 				Click here to send the response !!!!
 			</ConfirmActionButton>
