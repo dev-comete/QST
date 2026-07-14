@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 
-from .models import Quiz, Question, Reponse, Corrigee , UtilisateurQuiz , TypeQuestion , Bareme, QuestionTypeQuestion , QuestionBareme
+from .models import Quiz, Question, Reponse, Corrigee , UtilisateurQuiz , TypeQuestion , Bareme, QuestionTypeQuestion , QuestionBareme , QuizQuestion
 
 User = get_user_model()
 
@@ -29,6 +29,34 @@ class BaremeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bareme
         fields = '__all__'
+
+class QuizQuestionSerializer(serializers.ModelSerializer):
+# 1. Keep the IDs (Frontend might still need them for state management)
+    quiz_id = serializers.IntegerField(source='quiz.id', read_only=True)
+    question_id = serializers.IntegerField(source='question.id', read_only=True)
+    type_id = serializers.IntegerField(source='type_question.id', read_only=True)
+    bareme_id = serializers.IntegerField(source='bareme.id', read_only=True)
+
+    # 2. Reach into the foreign keys to grab the human-readable text
+    enonce_question = serializers.CharField(source='question.enonce_question', read_only=True)
+    
+    # Note: Replace 'nom_type' with whatever your TypeQuestion model uses (e.g., 'nom', 'libelle')
+    type_nom = serializers.CharField(source='type_question.type_question', read_only=True) 
+    
+    # Note: Replace 'valeur' with whatever your Bareme model uses (e.g., 'points', 'score')
+    points = serializers.FloatField(source='bareme.pts', read_only=True)
+    class Meta:
+        model = QuizQuestion
+        fields = [
+            'id',
+            'quiz_id',
+            'question_id',
+            'enonce_question',
+            'type_id',
+            'type_nom',
+            'bareme_id',
+            'points'
+        ]
 
 class QuestionTypeQuestionSerializer(serializers.ModelSerializer):
     class Meta:
