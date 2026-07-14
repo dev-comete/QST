@@ -9,20 +9,25 @@ const Test = () => {
 
 	return (
 		<div className="flex flex-col p-5 gap-5">
-			<CustomText type="h1" color="primary">Testing</CustomText>
-			<NavButton link="/about">This is a navigation button</NavButton>
-			<ActionButton
-				btnColor="secondary"
-				btnStyling="hover:bg-secondary-200"
-				action={() => console.log("This is a test")}
-			>Test action button</ActionButton>
-			<ConfirmActionButton
-				action={() => console.log("Test confirm modal")}
-				btnColor="success"
-			>
-				Click here to send the response !!!!
-			</ConfirmActionButton>
-	</div>
+			<div className="flex flex-col gap-5">
+				<CustomText type="h1" color="primary">Button</CustomText>
+				<NavButton link="/about">This is a navigation button</NavButton>
+				<ActionButton
+					btnColor="secondary"
+					btnStyling="hover:bg-secondary-200"
+					action={() => console.log("This is a test")}
+				>Test action button</ActionButton>
+				<ConfirmActionButton
+					action={() => console.log("Test confirm modal")}
+					btnColor="success"
+				>
+					Click here to send the response !!!!
+				</ConfirmActionButton>
+			</div>
+			<div>
+				<CustomText type="h1" color="primary">Form components</CustomText>
+			</div>
+		</div>
 	)
 }
 

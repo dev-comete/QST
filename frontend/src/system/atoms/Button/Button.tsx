@@ -19,7 +19,7 @@ const Button = ({
 
 	return (
 		<button 
-			className={`${backgroundColor[color]} ${customStyling} px-3 py-2 rounded-sm`}
+			className={`${backgroundColor[color]} ${customStyling} px-3 py-2 rounded-sm w-fit`}
 			onClick={action}
 		>
 			{children}
