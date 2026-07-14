@@ -11,7 +11,9 @@ from .serializers import QuizSubmissionSerializer , QuizSerializer, QuestionSeri
 
 from .services import submit_entire_quiz, assign_questions_to_quiz , create_question_with_answers
 
-from .models import Quiz, Question, Reponse , UtilisateurQuiz, QuizQuestion , TypeQuestion, Bareme, QuestionTypeQuestion, QuestionBareme
+from .models import Quiz, Question, Reponse , UtilisateurQuiz, QuizQuestion , TypeQuestion, Bareme, QuestionTypeQuestion, QuestionBareme 
+
+from formations.models import UtilisateurVague
 
 class QuizViewSet(viewsets.ModelViewSet):
     queryset = Quiz.objects.all()
@@ -206,6 +208,17 @@ class AssignStudentAPIView(APIView):
             
         # 3. Fetch the Student
         student = User.objects.get(id=etudiant_id)
+
+        is_enrolled = UtilisateurVague.objects.filter(
+            utilisateur=student,
+            vague__formation=quiz.formation
+        ).exists()
+
+        if not is_enrolled:
+            return Response(
+                {"error": "Cet étudiant n'est pas inscrit à cette formation."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         
         # 4. Create the assignment (using get_or_create so we don't crash if assigned twice)
         assignment, created = UtilisateurQuiz.objects.get_or_create(
