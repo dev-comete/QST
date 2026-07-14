@@ -7,11 +7,11 @@ from django.shortcuts import get_object_or_404
 
 from .permissions import IsFormateurOrAdminOrReadOnly, IsApprenant
 
-from .serializers import QuizSubmissionSerializer , QuizSerializer, QuestionSerializer, ReponseSerializer , AssignStudentSerializer , StudentTodoQuizSerializer , AssignQuestionsSerializer , TypeQuestionSerializer , BaremeSerializer , QuestionTypeQuestionSerializer , QuestionBaremeSerializer, CreateFullQuestionSerializer
+from .serializers import QuizSubmissionSerializer , QuizSerializer, QuestionSerializer, ReponseSerializer , AssignStudentSerializer , StudentTodoQuizSerializer , AssignQuestionsSerializer , TypeQuestionSerializer , BaremeSerializer , QuestionTypeQuestionSerializer , QuestionBaremeSerializer, CreateFullQuestionSerializer , QuizQuestionSerializer
 
 from .services import submit_entire_quiz, assign_questions_to_quiz , create_question_with_answers
 
-from .models import Quiz, Question, Reponse , UtilisateurQuiz, QuizQuestion , TypeQuestion, Bareme, QuestionTypeQuestion, QuestionBareme 
+from .models import Quiz, Question, Reponse , UtilisateurQuiz, QuizQuestion , TypeQuestion, Bareme, QuestionTypeQuestion, QuestionBareme
 
 from formations.models import UtilisateurVague
 
@@ -38,6 +38,11 @@ class TypeQuestionViewSet(viewsets.ModelViewSet):
 class BaremeViewSet(viewsets.ModelViewSet):
     queryset = Bareme.objects.all()
     serializer_class = BaremeSerializer
+    permission_classes = [IsFormateurOrAdminOrReadOnly]
+
+class QuizQuestionViewSet(viewsets.ModelViewSet):
+    queryset = QuizQuestion.objects.all()
+    serializer_class = QuizQuestionSerializer
     permission_classes = [IsFormateurOrAdminOrReadOnly]
 
 class QuestionTypeQuestionViewSet(viewsets.ModelViewSet):

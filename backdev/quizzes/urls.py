@@ -8,7 +8,7 @@ from .views import (
     SubmitQuizAPIView , AssignStudentAPIView, MyTodoQuizzesAPIView , AssignQuestionsAPIView , TypeQuestionViewSet, 
     BaremeViewSet, 
     QuestionTypeQuestionViewSet, 
-    QuestionBaremeViewSet , CreateFullQuestionAPIView
+    QuestionBaremeViewSet , CreateFullQuestionAPIView , QuizQuestionViewSet
 )
 from formations.views import FormationViewSet
 from accounts.views import UtilisateurViewSet, TypeUtilisateurViewSet
@@ -25,6 +25,8 @@ router.register(r'reponses', ReponseViewSet, basename='reponse')
 router.register(r'baremes', BaremeViewSet, basename='bareme')
 
 router.register(r'types-questions', TypeQuestionViewSet, basename='typequestion')
+router.register(r'quiz-questions', QuizQuestionViewSet, basename='quizquestion')
+
 router.register(r'assigner-types', QuestionTypeQuestionViewSet, basename='assigner-types')
 router.register(r'assigner-baremes', QuestionBaremeViewSet, basename='assigner-baremes')
 
