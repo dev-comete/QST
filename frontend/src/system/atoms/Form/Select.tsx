@@ -16,11 +16,11 @@ const Select = ({
     size = 1
 }: SelectProps) => {
 
-    const styling = "bg-white focus:outline-none";
+    const styling = "bg-white focus:outline-none outline-none";
 			
 	return (
 		<div className="flex flex-col">
-			{label && <label className="text-text">{label}</label>}
+			{label && <label className="text-text" htmlFor={name}>{label}</label>}
 			<select
 				id={id}
 				name={name}

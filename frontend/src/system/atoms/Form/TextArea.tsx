@@ -28,7 +28,7 @@ const TextArea = ({
 			
 	return (
 		<div className="flex flex-col">
-			{label && <label className="text-text">{label}</label>}
+			{label && <label className="text-text" htmlFor={name}>{label}</label>}
 			<textarea
                 placeholder={placeholder}
 				id={id}
