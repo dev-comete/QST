@@ -1,5 +1,8 @@
 /* This is just a test page for the component */
 
+import Input from "../../system/atoms/Form/Input";
+import Select from "../../system/atoms/Form/Select";
+import TextArea from "../../system/atoms/Form/TextArea";
 import CustomText from "../../system/atoms/Text/CustomText";
 import ActionButton from "../../system/molecules/Buttons/ActionButton";
 import ConfirmActionButton from "../../system/molecules/Buttons/ConfirmActionButton";
@@ -7,10 +10,16 @@ import NavButton from "../../system/molecules/Buttons/NavButton";
 
 const Test = () => {
 
+	const selectValues = [
+		{ id: '1', value: '1' },
+		{ id: '2', value: '2' },
+		{ id: '3', value: '3' },
+	]
+
 	return (
-		<div className="flex flex-col p-5 gap-5">
+		<div className="flex flex-col p-5 gap-15">
 			<div className="flex flex-col gap-5">
-				<CustomText type="h1" color="primary">Button</CustomText>
+				<CustomText type="h1" color="primary" weight="bold">Button</CustomText>
 				<NavButton link="/about">This is a navigation button</NavButton>
 				<ActionButton
 					btnColor="secondary"
@@ -24,8 +33,28 @@ const Test = () => {
 					Click here to send the response !!!!
 				</ConfirmActionButton>
 			</div>
-			<div>
-				<CustomText type="h1" color="primary">Form components</CustomText>
+			<div className="flex flex-col gap-5">
+				<CustomText type="h1" color="primary" weight="bold">Form components</CustomText>
+				<form>
+					<Input
+						label="Input"
+						id="test"
+						name="test"
+						type="text"
+					/>
+					<TextArea
+						label="TextArea"
+						id="textArea"
+						name="text-area"
+					/>
+					<Select 
+						label="Select"
+						values={selectValues}
+						name="select"
+						id="select"
+					/>
+
+				</form>
 			</div>
 		</div>
 	)
