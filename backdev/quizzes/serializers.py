@@ -3,6 +3,8 @@ from django.contrib.auth import get_user_model
 
 from .models import Quiz, Question, Reponse, Corrigee , UtilisateurQuiz , TypeQuestion , Bareme, QuestionTypeQuestion , QuestionBareme , QuizQuestion
 
+from accounts.models import Utilisateur
+
 User = get_user_model()
 
 class QuizSerializer(serializers.ModelSerializer):
@@ -166,15 +168,36 @@ class QuizSubmissionSerializer(serializers.Serializer):
     )
 
 class AssignStudentSerializer(serializers.Serializer):
-    etudiant_id = serializers.IntegerField(required=True)
-    quiz_id = serializers.IntegerField(required=True)
+    quiz_id = serializers.PrimaryKeyRelatedField(
+        queryset=Quiz.objects.all()
+    )
+    # This creates a dropdown of all Students in the UI
+    etudiant_id = serializers.PrimaryKeyRelatedField(
+        queryset=Utilisateur.objects.all()
+    )
 
     def validate_etudiant_id(self, value):
-        """Ensure the ID belongs to a real user who is actually a student."""
-        try:
-            user = User.objects.get(id=value)
-            if getattr(user, 'type_utilisateur', '') != 'apprenant':
+            """Ensure the user is actually a student."""
+            # 'value' is ALREADY the full Utilisateur object! 
+            # No need for User.objects.get() or try/except blocks.
+            
+            if not value.type_utilisateur or value.type_utilisateur.type_utilisateur != 'apprenant':
                 raise serializers.ValidationError("Cet utilisateur n'est pas un apprenant.")
+                
             return value
-        except User.DoesNotExist:
-            raise serializers.ValidationError("Étudiant introuvable.")
+
+class ApprenantQuizListSerializer(serializers.ModelSerializer):
+    # Fetch details from the related Quiz
+    quiz_id = serializers.IntegerField(source='quiz.id', read_only=True)
+    quiz_titre = serializers.CharField(source='quiz.titre', read_only=True)
+    formation_nom = serializers.CharField(source='quiz.formation.nom_formation', read_only=True)
+
+    class Meta:
+        model = UtilisateurQuiz
+        fields = [
+            'quiz_id', 
+            'quiz_titre', 
+            'formation_nom', 
+            'termine', 
+            'score_obtenu'
+        ]

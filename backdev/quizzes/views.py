@@ -2,12 +2,13 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status , viewsets , generics
 from rest_framework.permissions import IsAuthenticated , IsAdminUser
+from rest_framework.generics import ListAPIView , GenericAPIView
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 
 from .permissions import IsFormateurOrAdminOrReadOnly, IsApprenant
 
-from .serializers import QuizSubmissionSerializer , QuizSerializer, QuestionSerializer, ReponseSerializer , AssignStudentSerializer , StudentTodoQuizSerializer , AssignQuestionsSerializer , TypeQuestionSerializer , BaremeSerializer , QuestionTypeQuestionSerializer , QuestionBaremeSerializer, CreateFullQuestionSerializer , QuizQuestionSerializer
+from .serializers import QuizSubmissionSerializer , QuizSerializer, QuestionSerializer, ReponseSerializer , AssignStudentSerializer , StudentTodoQuizSerializer , AssignQuestionsSerializer , TypeQuestionSerializer , BaremeSerializer , QuestionTypeQuestionSerializer , QuestionBaremeSerializer, CreateFullQuestionSerializer , QuizQuestionSerializer , ApprenantQuizListSerializer
 
 from .services import submit_entire_quiz, assign_questions_to_quiz , create_question_with_answers
 
@@ -186,24 +187,24 @@ class SubmitQuizAPIView(APIView):
             "termine": quiz_attempt.termine
         }, status=status.HTTP_201_CREATED)
 
-class AssignStudentAPIView(APIView):
-    # Only Formateurs and Admins can access this endpoint
+class AssignStudentAPIView(GenericAPIView):
+    """
+    Allows a Formateur (or Admin) to assign a specific Quiz to a Student.
+    """
     permission_classes = [IsFormateurOrAdminOrReadOnly]
+    serializer_class = AssignStudentSerializer # ⬅️ Enables the DRF UI form!
 
     def post(self, request):
-        serializer = AssignStudentSerializer(data=request.data)
+        serializer = self.get_serializer(data=request.data)
         
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             
-        etudiant_id = serializer.validated_data['etudiant_id']
-        quiz_id = serializer.validated_data['quiz_id']
+        # ✨ Because of PrimaryKeyRelatedField, these are already the actual instances!
+        quiz = serializer.validated_data['quiz_id']
+        student = serializer.validated_data['etudiant_id']
         
-        # 1. Fetch the Quiz
-        quiz = get_object_or_404(Quiz, id=quiz_id)
-        
-        # 2. SECURITY CHECK: Does this Formateur own the Formation this Quiz belongs to?
-        # (Admins bypass this check)
+        # 1. SECURITY CHECK: Does this Formateur own the Formation this Quiz belongs to?
         is_admin = request.user.is_staff or request.user.is_superuser
         if not is_admin and quiz.formation.createur != request.user:
             return Response(
@@ -211,9 +212,8 @@ class AssignStudentAPIView(APIView):
                 status=status.HTTP_403_FORBIDDEN
             )
             
-        # 3. Fetch the Student
-        student = User.objects.get(id=etudiant_id)
 
+        # 3. ENROLLMENT CHECK: Is the student registered in a Vague for this Formation?
         is_enrolled = UtilisateurVague.objects.filter(
             utilisateur=student,
             vague__formation=quiz.formation
@@ -221,11 +221,11 @@ class AssignStudentAPIView(APIView):
 
         if not is_enrolled:
             return Response(
-                {"error": "Cet étudiant n'est pas inscrit à cette formation."},
+                {"error": "Cet étudiant n'est pas inscrit à la formation liée à ce quiz."},
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-        # 4. Create the assignment (using get_or_create so we don't crash if assigned twice)
+        # 4. CREATE ASSIGNMENT: Give them the Quiz
         assignment, created = UtilisateurQuiz.objects.get_or_create(
             utilisateur=student,
             quiz=quiz,
@@ -236,8 +236,30 @@ class AssignStudentAPIView(APIView):
         )
         
         if not created:
-            return Response({"message": "L'étudiant est déjà assigné à ce quiz."}, status=status.HTTP_200_OK)
+            return Response(
+                {"message": "L'étudiant est déjà assigné à ce quiz."}, 
+                status=status.HTTP_200_OK
+            )
             
         return Response({
-            "message": f"Étudiant {student.username} assigné avec succès au quiz {quiz.id}."
+            "message": f"Étudiant {student.username} assigné avec succès au quiz '{quiz.titre}'."
         }, status=status.HTTP_201_CREATED)
+
+class ApprenantQuizListAPIView(ListAPIView):
+    """
+    Returns a list of all quizzes assigned to the logged-in student,
+    along with their completion status and score.
+    """
+    # 1. Lock it down: Must be logged in AND must be an apprenant
+    permission_classes = [IsAuthenticated, IsApprenant]
+    
+    # 2. Tell DRF how to format the data
+    serializer_class = ApprenantQuizListSerializer
+
+    # 3. Tell DRF which data to fetch
+    def get_queryset(self):
+        # We only return the assignments that belong to the exact user making the request.
+        # select_related makes the database query extremely fast by joining the tables!
+        return UtilisateurQuiz.objects.filter(
+            utilisateur=self.request.user
+        ).select_related('quiz', 'quiz__formation')
