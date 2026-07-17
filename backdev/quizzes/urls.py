@@ -8,7 +8,7 @@ from .views import (
     SubmitQuizAPIView , AssignStudentAPIView, MyTodoQuizzesAPIView , AssignQuestionsAPIView , TypeQuestionViewSet, 
     BaremeViewSet, 
     QuestionTypeQuestionViewSet, 
-    QuestionBaremeViewSet , CreateFullQuestionAPIView , QuizQuestionViewSet
+    QuestionBaremeViewSet , CreateFullQuestionAPIView , QuizQuestionViewSet , ApprenantQuizListAPIView
 )
 from formations.views import FormationViewSet
 from accounts.views import UtilisateurViewSet, TypeUtilisateurViewSet
@@ -38,7 +38,7 @@ urlpatterns = [
 
     path('questions/create-full/', CreateFullQuestionAPIView.as_view(), name='create-full-question'),
 
-    path('my-quiz-student/', MyTodoQuizzesAPIView.as_view(), name='api-my-todo-quizzes'),
+    path('mes-quiz/', ApprenantQuizListAPIView.as_view(), name='mes-quiz'),
 
     path('assign-questions/', AssignQuestionsAPIView.as_view(), name='api-assign-questions'),
 
