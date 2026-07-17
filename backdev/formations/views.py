@@ -27,9 +27,6 @@ class FormationViewSet(viewsets.ModelViewSet):
 
 
 class CreateVagueAPIView(GenericAPIView):
-    """
-    Allows a Formateur (or Admin) to create a new Vague for their Formation.
-    """
     permission_classes = [IsFormateurOrAdminOrReadOnly]
     serializer_class = CreateVagueSerializer
 
@@ -39,12 +36,11 @@ class CreateVagueAPIView(GenericAPIView):
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             
-        formation_id = serializer.validated_data['formation_id']
-        date_vague = serializer.validated_data['date_vague']
+        formation = serializer.validated_data['formation_id'] 
+        debut = serializer.validated_data['debut']
+        fin = serializer.validated_data['fin']
         
-
-        
-        # 2. SECURITY CHECK: Does this Formateur own the Formation?
+        # SECURITY CHECK: Does this Formateur own the Formation?
         is_admin = request.user.is_staff or request.user.is_superuser
         if not is_admin and formation.createur != request.user:
             return Response(
@@ -52,26 +48,27 @@ class CreateVagueAPIView(GenericAPIView):
                 status=status.HTTP_403_FORBIDDEN
             )
             
-        # 3. Create the Vague
+        # Create the Vague with the new date range
         vague = Vague.objects.create(
-            formation=formation,
-            date_vague=date_vague
+            formation=formation, 
+            debut=debut,
+            fin=fin
         )
         
         return Response({
             "message": "Vague créée avec succès.",
             "vague_id": vague.id,
-            "formation": formation.nom_formation,
-            "date_vague": vague.date_vague
+            "debut": vague.debut,
+            "fin": vague.fin
         }, status=status.HTTP_201_CREATED)
 
 
-class AssignStudentToVagueAPIView(APIView):
+class AssignStudentToVagueAPIView(GenericAPIView):
     """
     Allows a Formateur (or Admin) to enroll a student into a specific Vague.
     """
     permission_classes = [IsFormateurOrAdminOrReadOnly]
-    erializer_class = AssignStudentToVagueSerializer
+    serializer_class = AssignStudentToVagueSerializer
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
@@ -79,13 +76,12 @@ class AssignStudentToVagueAPIView(APIView):
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             
-        vague_id = serializer.validated_data['vague_id']
-        etudiant_id = serializer.validated_data['etudiant_id']
+        # ✨ DRF MAGIC: Because of PrimaryKeyRelatedField, these are already the actual objects!
+        # Even though the key is named '_id', the value inside is the full Model instance.
+        vague = serializer.validated_data['vague_id']
+        student = serializer.validated_data['etudiant_id']
         
-        # 1. Fetch the Vague
-        vague = get_object_or_404(Vague, id=vague_id)
-        
-        # 2. SECURITY CHECK: Does this Formateur own the Formation linked to this Vague?
+        # 1. SECURITY CHECK: Does this Formateur own the Formation linked to this Vague?
         is_admin = request.user.is_staff or request.user.is_superuser
         if not is_admin and vague.formation.createur != request.user:
             return Response(
@@ -93,12 +89,14 @@ class AssignStudentToVagueAPIView(APIView):
                 status=status.HTTP_403_FORBIDDEN
             )
             
-        # 3. Fetch the Student
-        student = get_object_or_404(User, id=etudiant_id)
+        # 2. ROLE CHECK: Ensure the user is actually an 'apprenant'
+        if not student.type_utilisateur or student.type_utilisateur.type_utilisateur != 'apprenant':
+            return Response(
+                {"error": f"L'utilisateur {student.username} n'a pas le rôle 'apprenant'."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         
-        # Optional: You could add a check here to ensure the student actually has the role 'apprenant'
-        
-        # 4. Create the assignment using get_or_create to prevent duplicates
+        # 3. Create the assignment
         assignment, created = UtilisateurVague.objects.get_or_create(
             vague=vague,
             utilisateur=student

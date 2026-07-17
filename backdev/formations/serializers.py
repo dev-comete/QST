@@ -10,11 +10,21 @@ class FormationSerializer(serializers.ModelSerializer):
         read_only_fields = ['createur']
 
 class CreateVagueSerializer(serializers.Serializer):
-    # This creates a dropdown menu of all Formations in the DRF UI!
     formation_id = serializers.PrimaryKeyRelatedField(
         queryset=Formation.objects.all()
     )
-    date_vague = serializers.DateTimeField()
+    debut = serializers.DateTimeField()
+    fin = serializers.DateTimeField()
+
+    def validate(self, data):
+        """
+        Custom validation to ensure the timeline makes logical sense.
+        """
+        if data['fin'] <= data['debut']:
+            raise serializers.ValidationError(
+                {"fin": "La date de fin doit être strictement postérieure à la date de début."}
+            )
+        return data
     
 class AssignStudentToVagueSerializer(serializers.Serializer):
     # This creates a dropdown of all Vagues
