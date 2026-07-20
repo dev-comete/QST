@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework.generics import GenericAPIView
+from rest_framework.generics import GenericAPIView , ListAPIView
 from rest_framework import status , viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -8,7 +8,7 @@ from django.contrib.auth import get_user_model
 
 from quizzes.permissions import IsFormateurOrAdminOrReadOnly, IsOwnerOrAdminOrReadOnly
 
-from .serializers import FormationSerializer , CreateVagueSerializer , AssignStudentToVagueSerializer , AssignQuizToVagueSerializer
+from .serializers import FormationSerializer , CreateVagueSerializer , AssignStudentToVagueSerializer , AssignQuizToVagueSerializer , VagueListWithStudentsSerializer
 
 from .models import Formation , Vague , UtilisateurVague
 from quizzes.models import Quiz, UtilisateurQuiz
@@ -166,3 +166,24 @@ class AssignQuizToVagueAPIView(GenericAPIView):
         return Response({
             "message": f"Succès ! Le quiz '{quiz.titre}' a été assigné à {assigned_count} étudiant(s) de la vague {vague.id}."
         }, status=status.HTTP_201_CREATED)
+    
+class VagueListAPIView(ListAPIView):
+    """
+    Returns a list of all Vagues, including the details of the Formation 
+    and a nested list of all enrolled students.
+    """
+    permission_classes = [IsFormateurOrAdminOrReadOnly]
+    serializer_class = VagueListWithStudentsSerializer
+
+    def get_queryset(self):
+        queryset = Vague.objects.select_related('formation').prefetch_related(
+            'utilisateurvague_set__utilisateur'
+        )
+        
+        # OPTIONAL SECURITY LAYER: 
+        # If you only want Formateurs to see the Vagues for their OWN Formations:
+        is_admin = self.request.user.is_staff or self.request.user.is_superuser
+        if not is_admin:
+            queryset = queryset.filter(formation__createur=self.request.user)
+            
+        return queryset
