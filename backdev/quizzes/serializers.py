@@ -201,3 +201,30 @@ class ApprenantQuizListSerializer(serializers.ModelSerializer):
             'termine', 
             'score_obtenu'
         ]
+
+class StudentOptionSerializer(serializers.ModelSerializer):
+    """
+    Pulls data from the Corrigee link, but exposes the underlying Reponse ID 
+    so the student can submit it later. We STILL hide 'est_correct'!
+    """
+    # Fetch the ID and text from the linked Reponse model
+    id = serializers.IntegerField(source='reponse.id', read_only=True)
+    reponse = serializers.CharField(source='reponse.reponse', read_only=True)
+
+    class Meta:
+        model = Corrigee
+        fields = ['id', 'reponse'] 
+
+class StudentQuizQuestionSerializer(serializers.ModelSerializer):
+    question_id = serializers.IntegerField(source='question.id', read_only=True)
+    enonce = serializers.CharField(source='question.enonce_question', read_only=True)
+    options = serializers.SerializerMethodField()
+
+    class Meta:
+        model = QuizQuestion
+        fields = ['question_id', 'enonce', 'type_question', 'bareme_id', 'options']
+
+    def get_options(self, obj):
+        # We query Corrigee instead of ReponseOption
+        options = Corrigee.objects.filter(question=obj.question)
+        return StudentOptionSerializer(options, many=True).data
