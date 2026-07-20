@@ -146,23 +146,20 @@ class MyTodoQuizzesAPIView(generics.ListAPIView):
             termine=False
         ).select_related('quiz', 'quiz__formation') # select_related makes the database query much faster!
 
+
 class SubmitQuizAPIView(APIView):
-    # This guarantees that only logged-in users can hit this endpoint
     permission_classes = [IsApprenant]
 
     def post(self, request):
-        # 1. Validate the incoming JSON payload
         serializer = QuizSubmissionSerializer(data=request.data)
         
         if not serializer.is_valid():
-            # If the frontend sent bad data (e.g., text instead of IDs), reject it immediately
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        # 2. Extract the clean, validated data
         data = serializer.validated_data
 
         try:
-            # 3. Call the Service Layer (Business Logic)
+            # Calls your newly secured service layer
             quiz_attempt = submit_entire_quiz(
                 user=request.user,
                 quiz_id=data['quiz_id'],
@@ -170,14 +167,14 @@ class SubmitQuizAPIView(APIView):
             )
             
         except ValidationError as e:
-            # Catch errors raised by the service layer (e.g., Quiz ID doesn't exist)
-            return Response({"error": str(e)}, status=status.HTTP_404_NOT_FOUND)
+            # This perfectly catches the "already submitted" or "not assigned" errors!
+            return Response({"error": str(e.detail[0] if hasattr(e, 'detail') else e)}, status=status.HTTP_403_FORBIDDEN)
+            
         except Exception as e:
-            # Catch unexpected server errors securely
             return Response({"error": "Une erreur interne est survenue."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         formation_liee = quiz_attempt.quiz.formation
-        # 4. Return the HTTP Response
+        
         return Response({
             "message": "Quiz soumis avec succès.",
             "formation_id": formation_liee.id,
@@ -186,6 +183,7 @@ class SubmitQuizAPIView(APIView):
             "score_obtenu": quiz_attempt.score_obtenu,
             "termine": quiz_attempt.termine
         }, status=status.HTTP_201_CREATED)
+
 
 class AssignStudentAPIView(GenericAPIView):
     """
