@@ -1,5 +1,9 @@
 from django.db import transaction
 from django.core.exceptions import ValidationError
+
+from django.utils.timezone import now
+from datetime import timedelta
+
 from .models import Question, Corrigee, Valiny, Reponse , UtilisateurQuiz , Quiz , QuestionTypeQuestion, QuestionBareme,TypeQuestion, Bareme , QuizQuestion
 from django.contrib.auth import get_user_model
 
@@ -49,48 +53,52 @@ def submit_qcm_answer(user: User, question_id: int, submitted_reponse_ids: list[
     return valiny
 
 @transaction.atomic
-def submit_entire_quiz(user: User, quiz_id: int, quiz_payload: dict) -> UtilisateurQuiz:
-    """
-    Evaluates an entire quiz.
-    
-    Expected quiz_payload format (Dict mapping Question IDs to a List of Response IDs):
-    {
-        "1": [3, 4],  # Question ID 1 -> User chose Responses 3 and 4
-        "2": [8],     # Question ID 2 -> User chose Response 8
-        "3": []       # Question ID 3 -> User left it blank
-    }
-    """
+def submit_entire_quiz(user, quiz_id: int, quiz_payload: dict) -> UtilisateurQuiz:
     try:
         quiz = Quiz.objects.get(id=quiz_id)
+        quiz_attempt = UtilisateurQuiz.objects.get(quiz_id=quiz_id, utilisateur=user)
     except Quiz.DoesNotExist:
         raise ValidationError("Invalid Quiz ID.")
+    except UtilisateurQuiz.DoesNotExist:
+        raise ValidationError("Vous n'êtes pas autorisé à passer ce quiz. Il ne vous a pas été assigné.")
 
+    if quiz_attempt.termine:
+        raise ValidationError("Vous avez déjà soumis ce quiz. Les tentatives multiples ne sont pas autorisées.")
+
+    # 🆕 TIME VALIDATION LOGIC
+    if not quiz_attempt.heure_debut:
+        # They somehow hit submit without ever fetching the questions properly
+        raise ValidationError("Vous n'avez pas démarré ce quiz correctement.")
+
+    # Calculate time taken
+    time_elapsed = now() - quiz_attempt.heure_debut
+    # Add a 30-second grace period for network latency/loading times
+    max_allowed_time = quiz.duree + timedelta(seconds=30)
+
+    if time_elapsed > max_allowed_time:
+        # Lock the test and reject the score
+        quiz_attempt.termine = True
+        quiz_attempt.save(update_fields=['termine'])
+        raise ValidationError(f"Le temps imparti est écoulé. Votre soumission a été rejetée. Temps dépassé de {time_elapsed - quiz.duree}.")
+
+    # --- IF TIME IS VALID, PROCEED WITH GRADING ---
     total_score = 0.0
 
-    # 1. Loop through every question the user answered
     for str_question_id, submitted_reponse_ids in quiz_payload.items():
         question_id = int(str_question_id)
         
-        # 2. Reuse our bulletproof single-question logic!
+        # Your QCM grading logic goes here...
         valiny = submit_qcm_answer(
             user=user,
             question_id=question_id,
             submitted_reponse_ids=submitted_reponse_ids
         )
-        
-        # 3. Add to the running total
         total_score += valiny.pts
 
-    # 4. Save the final score in the UtilisateurQuiz table
-    # update_or_create ensures that if they retake the quiz, we update their score
-    quiz_attempt, created = UtilisateurQuiz.objects.update_or_create(
-        utilisateur=user,
-        quiz=quiz,
-        defaults={
-            'score_obtenu': total_score,
-            'termine': True
-        }
-    )
+    # Finalize the assignment
+    quiz_attempt.score_obtenu = total_score
+    quiz_attempt.termine = True
+    quiz_attempt.save(update_fields=['score_obtenu', 'termine'])
 
     return quiz_attempt
 
