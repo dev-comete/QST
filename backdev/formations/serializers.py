@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Formation, Vague, UtilisateurVague
+from quizzes.models import Quiz
 from accounts.models import Utilisateur 
 
 class FormationSerializer(serializers.ModelSerializer):
@@ -35,3 +36,29 @@ class AssignStudentToVagueSerializer(serializers.Serializer):
     etudiant_id = serializers.PrimaryKeyRelatedField(
         queryset=Utilisateur.objects.all() 
     )
+
+class AssignQuizToVagueSerializer(serializers.Serializer):
+    # These activate the dropdowns in the DRF Browsable API
+    quiz_id = serializers.PrimaryKeyRelatedField(
+        queryset=Quiz.objects.all()
+    )
+    vague_id = serializers.PrimaryKeyRelatedField(
+        queryset=Vague.objects.all()
+    )
+
+    def validate(self, data):
+        """
+        Ensure the Quiz and the Vague are actually for the exact same Formation.
+        Because of PrimaryKeyRelatedField, data['quiz_id'] is already the Quiz object!
+        """
+        quiz = data['quiz_id']
+        vague = data['vague_id']
+        
+        if quiz.formation != vague.formation:
+            raise serializers.ValidationError(
+                "Incohérence : Le quiz et la vague doivent appartenir à la même formation."
+            )
+            
+        return data
+
+    
