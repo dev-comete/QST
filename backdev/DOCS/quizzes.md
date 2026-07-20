@@ -27,6 +27,7 @@ All endpoints require authentication unless noted otherwise. Permission classes 
 | [Assign Student API](./student-assign.md) | `POST` | Assign an individual student to a quiz. |
 | [My To-Do Quizzes API](./student-todo.md) | `GET` | List a student's unfinished assigned quizzes. |
 | [Submit Quiz API](./quiz-submit.md) | `POST` | Submit a student's answers for scoring. |
+| [Quiz Review API](./quiz-review.md) | `GET` | Review a submitted quiz and inspect its evaluation details. |
 
 ---
 
