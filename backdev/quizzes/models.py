@@ -44,6 +44,8 @@ class UtilisateurQuiz(models.Model):
     termine = models.BooleanField(default=False)
     date_tentative = models.DateTimeField(auto_now_add=True)
 
+    heure_debut = models.DateTimeField(null=True, blank=True, help_text="Heure à laquelle l'étudiant a commencé le quiz")
+
     class Meta:
         unique_together = ('quiz', 'utilisateur')
 

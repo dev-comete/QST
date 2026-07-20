@@ -1,15 +1,17 @@
 from django.db import transaction
 from django.core.exceptions import ValidationError
+
+from django.utils.timezone import now
+from datetime import timedelta
+
 from .models import Question, Corrigee, Valiny, Reponse , UtilisateurQuiz , Quiz , QuestionTypeQuestion, QuestionBareme,TypeQuestion, Bareme , QuizQuestion
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-@transaction.atomic
+"""@transaction.atomic
 def submit_qcm_answer(user: User, question_id: int, submitted_reponse_ids: list[int]) -> Valiny:
-    """
-    Evaluates a QCM/QCU answer by comparing sets of Response IDs.
-    """
+
     try:
         question = Question.objects.get(id=question_id)
     except Question.DoesNotExist:
@@ -46,53 +48,84 @@ def submit_qcm_answer(user: User, question_id: int, submitted_reponse_ids: list[
         chosen_reponses = Reponse.objects.filter(id__in=submitted_reponse_ids)
         valiny.reponses_choisies.set(chosen_reponses)
 
-    return valiny
+    return valiny"""
+
 
 @transaction.atomic
-def submit_entire_quiz(user: User, quiz_id: int, quiz_payload: dict) -> UtilisateurQuiz:
+def submit_entire_quiz(user, quiz_id: int, quiz_payload: dict):
     """
-    Evaluates an entire quiz.
-    
-    Expected quiz_payload format (Dict mapping Question IDs to a List of Response IDs):
-    {
-        "1": [3, 4],  # Question ID 1 -> User chose Responses 3 and 4
-        "2": [8],     # Question ID 2 -> User chose Response 8
-        "3": []       # Question ID 3 -> User left it blank
-    }
+    Évalue un quiz complet en vérifiant les assignations, le chronomètre, et en corrigeant les réponses.
     """
     try:
         quiz = Quiz.objects.get(id=quiz_id)
+        quiz_attempt = UtilisateurQuiz.objects.get(quiz_id=quiz_id, utilisateur=user)
     except Quiz.DoesNotExist:
-        raise ValidationError("Invalid Quiz ID.")
+        raise ValidationError("L'ID du Quiz est invalide.")
+    except UtilisateurQuiz.DoesNotExist:
+        raise ValidationError("Vous n'êtes pas autorisé à passer ce quiz. Il ne vous a pas été assigné.")
+
+    # 1. VÉRIFICATION DES TENTATIVES
+    if quiz_attempt.termine:
+        raise ValidationError("Vous avez déjà soumis ce quiz. Les tentatives multiples ne sont pas autorisées.")
+
+    # 2. VÉRIFICATION DU CHRONOMÈTRE
+    if not quiz_attempt.heure_debut:
+        raise ValidationError("Vous n'avez pas démarré ce quiz correctement.")
+
+    time_elapsed = now() - quiz_attempt.heure_debut
+    max_allowed_time = quiz.duree + timedelta(seconds=30) # 30 sec de tolérance réseau
+
+    if time_elapsed > max_allowed_time:
+        quiz_attempt.termine = True
+        quiz_attempt.save(update_fields=['termine'])
+        raise ValidationError("Le temps imparti est écoulé. Votre soumission a été rejetée.")
 
     total_score = 0.0
 
-    # 1. Loop through every question the user answered
+    # 3. CORRECTION DES QUESTIONS
     for str_question_id, submitted_reponse_ids in quiz_payload.items():
         question_id = int(str_question_id)
         
-        # 2. Reuse our bulletproof single-question logic!
-        valiny = submit_qcm_answer(
-            user=user,
+        # A. Trouver le barème pour cette question dans CE quiz
+        try:
+            quiz_question = QuizQuestion.objects.select_related('bareme').get(
+                quiz_id=quiz_id, 
+                question_id=question_id
+            )
+            max_pts = quiz_question.bareme.pts
+        except QuizQuestion.DoesNotExist:
+            continue # Question invalide pour ce quiz, on l'ignore
+
+        # B. Récupérer les ID des vraies bonnes réponses
+        correct_corriges = Corrigee.objects.filter(question_id=question_id, est_correct=True)
+        correct_rep_ids = set(correct_corriges.values_list('reponse_id', flat=True))
+        submitted_set = set(submitted_reponse_ids)
+
+        # C. Calcul des points (L'étudiant doit avoir tout bon, sans aucune erreur additionnelle)
+        is_correct = (submitted_set == correct_rep_ids) and len(correct_rep_ids) > 0
+        points_earned = max_pts if is_correct else 0.0
+        
+        total_score += points_earned
+
+        # D. Enregistrement de la trace de l'apprenant (Valiny)
+        valiny = Valiny.objects.create(
+            utilisateur=user,
             question_id=question_id,
-            submitted_reponse_ids=submitted_reponse_ids
+            pts=points_earned,
+            vrai_ou_faux=is_correct
         )
         
-        # 3. Add to the running total
-        total_score += valiny.pts
+        # Associer les réponses sélectionnées par l'étudiant
+        if submitted_reponse_ids:
+            valiny.reponses_choisies.set(submitted_reponse_ids)
 
-    # 4. Save the final score in the UtilisateurQuiz table
-    # update_or_create ensures that if they retake the quiz, we update their score
-    quiz_attempt, created = UtilisateurQuiz.objects.update_or_create(
-        utilisateur=user,
-        quiz=quiz,
-        defaults={
-            'score_obtenu': total_score,
-            'termine': True
-        }
-    )
+    # 4. FINALISATION
+    quiz_attempt.score_obtenu = total_score
+    quiz_attempt.termine = True
+    quiz_attempt.save(update_fields=['score_obtenu', 'termine'])
 
     return quiz_attempt
+
 
 def assign_questions_to_quiz(quiz, questions_choisies):
     """

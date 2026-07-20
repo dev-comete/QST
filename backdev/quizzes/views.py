@@ -3,8 +3,10 @@ from rest_framework.response import Response
 from rest_framework import status , viewsets , generics
 from rest_framework.permissions import IsAuthenticated , IsAdminUser
 from rest_framework.generics import ListAPIView , GenericAPIView
+
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
+from django.utils.timezone import now
 
 from .permissions import IsFormateurOrAdminOrReadOnly, IsApprenant
 
@@ -285,6 +287,10 @@ class TakeQuizAPIView(APIView):
                 status=status.HTTP_403_FORBIDDEN
             )
 
+        if not assignment.heure_debut:
+            assignment.heure_debut = now()
+            assignment.save(update_fields=['heure_debut'])
+
         # Fetch all questions configured for this quiz
         # .select_related() optimizes the database lookup for the linked questions
         quiz_questions = QuizQuestion.objects.filter(quiz_id=quiz_id).select_related('question')
@@ -296,5 +302,6 @@ class TakeQuizAPIView(APIView):
         return Response({
             "quiz_id": assignment.quiz.id,
             "quiz_duree": assignment.quiz.duree,
+            "heure_debut": assignment.heure_debut,
             "questions": serializer.data
         }, status=status.HTTP_200_OK)
