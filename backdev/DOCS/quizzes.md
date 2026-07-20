@@ -28,6 +28,7 @@ All endpoints require authentication unless noted otherwise. Permission classes 
 | [My To-Do Quizzes API](./student-todo.md) | `GET` | List a student's unfinished assigned quizzes. |
 | [Submit Quiz API](./quiz-submit.md) | `POST` | Submit a student's answers for scoring. |
 | [Quiz Review API](./quiz-review.md) | `GET` | Review a submitted quiz and inspect its evaluation details. |
+| [Quiz Submission Security API](./quiz-submission-security.md) | `POST` | Enforce submission security checks before accepting a quiz submission. |
 
 ---
 

@@ -50,76 +50,113 @@ def submit_qcm_answer(user: User, question_id: int, submitted_reponse_ids: list[
 
     return valiny"""
 
+def _lock_and_validate_attempt(user, quiz_id: int):
+    """
+    Locks the UtilisateurQuiz row and validates timing.
+    Runs in its OWN transaction so that if we mark the attempt as
+    expired, that write survives even if we raise afterwards.
+    """
+    with transaction.atomic():
+        try:
+            quiz = Quiz.objects.get(id=quiz_id)
+        except Quiz.DoesNotExist:
+            raise ValidationError("L'ID du Quiz est invalide.")
+
+        try:
+            # select_for_update() serializes concurrent submissions
+            # for this exact (user, quiz) row — no double-grading.
+            quiz_attempt = (
+                UtilisateurQuiz.objects
+                .select_for_update()
+                .get(quiz_id=quiz_id, utilisateur=user)
+            )
+        except UtilisateurQuiz.DoesNotExist:
+            raise ValidationError(
+                "Vous n'êtes pas autorisé à passer ce quiz. Il ne vous a pas été assigné."
+            )
+
+        if quiz_attempt.termine:
+            raise ValidationError("Vous avez déjà soumis ce quiz.")
+
+        if not quiz_attempt.heure_debut:
+            raise ValidationError("Vous n'avez pas démarré ce quiz correctement.")
+
+        current_time = now()
+
+        # Defensive: reject impossible/clock-skewed start times.
+        if quiz_attempt.heure_debut > current_time:
+            raise ValidationError("Horodatage de démarrage invalide.")
+
+        max_allowed_time = quiz.duree + timedelta(seconds=30)
+        time_elapsed = current_time - quiz_attempt.heure_debut
+
+        if time_elapsed > max_allowed_time:
+            # This save COMMITS here, because we're not raising
+            # inside this atomic block — we return normally.
+            quiz_attempt.termine = True
+            quiz_attempt.save(update_fields=['termine'])
+            return quiz, quiz_attempt, False  # False = expired
+
+        return quiz, quiz_attempt, True  # True = still valid
 
 @transaction.atomic
 def submit_entire_quiz(user, quiz_id: int, quiz_payload: dict):
     """
-    Évalue un quiz complet en vérifiant les assignations, le chronomètre, et en corrigeant les réponses.
+    Évalue un quiz complet en vérifiant les assignations, le chronomètre,
+    et en corrigeant les réponses.
     """
-    try:
-        quiz = Quiz.objects.get(id=quiz_id)
-        quiz_attempt = UtilisateurQuiz.objects.get(quiz_id=quiz_id, utilisateur=user)
-    except Quiz.DoesNotExist:
-        raise ValidationError("L'ID du Quiz est invalide.")
-    except UtilisateurQuiz.DoesNotExist:
-        raise ValidationError("Vous n'êtes pas autorisé à passer ce quiz. Il ne vous a pas été assigné.")
+    quiz, quiz_attempt, is_valid = _lock_and_validate_attempt(user, quiz_id)
 
-    # 1. VÉRIFICATION DES TENTATIVES
-    if quiz_attempt.termine:
-        raise ValidationError("Vous avez déjà soumis ce quiz. Les tentatives multiples ne sont pas autorisées.")
-
-    # 2. VÉRIFICATION DU CHRONOMÈTRE
-    if not quiz_attempt.heure_debut:
-        raise ValidationError("Vous n'avez pas démarré ce quiz correctement.")
-
-    time_elapsed = now() - quiz_attempt.heure_debut
-    max_allowed_time = quiz.duree + timedelta(seconds=30) # 30 sec de tolérance réseau
-
-    if time_elapsed > max_allowed_time:
-        quiz_attempt.termine = True
-        quiz_attempt.save(update_fields=['termine'])
+    if not is_valid:
+        # Expiry was already persisted in _lock_and_validate_attempt.
         raise ValidationError("Le temps imparti est écoulé. Votre soumission a été rejetée.")
+
+    # Re-lock inside this transaction too, in case anything else
+    # touched the row between the two calls (defense in depth).
+    quiz_attempt = (
+        UtilisateurQuiz.objects
+        .select_for_update()
+        .get(pk=quiz_attempt.pk)
+    )
+    if quiz_attempt.termine:
+        raise ValidationError("Vous avez déjà soumis ce quiz.")
 
     total_score = 0.0
 
-    # 3. CORRECTION DES QUESTIONS
     for str_question_id, submitted_reponse_ids in quiz_payload.items():
-        question_id = int(str_question_id)
-        
-        # A. Trouver le barème pour cette question dans CE quiz
+        try:
+            question_id = int(str_question_id)
+            submitted_set = {int(r) for r in submitted_reponse_ids}
+        except (TypeError, ValueError):
+            continue  # malformed payload entry — ignore, don't crash the whole submission
+
         try:
             quiz_question = QuizQuestion.objects.select_related('bareme').get(
-                quiz_id=quiz_id, 
+                quiz_id=quiz_id,
                 question_id=question_id
             )
             max_pts = quiz_question.bareme.pts
         except QuizQuestion.DoesNotExist:
-            continue # Question invalide pour ce quiz, on l'ignore
+            continue
 
-        # B. Récupérer les ID des vraies bonnes réponses
-        correct_corriges = Corrigee.objects.filter(question_id=question_id, est_correct=True)
-        correct_rep_ids = set(correct_corriges.values_list('reponse_id', flat=True))
-        submitted_set = set(submitted_reponse_ids)
+        correct_rep_ids = set(
+            Corrigee.objects.filter(question_id=question_id, est_correct=True)
+            .values_list('reponse_id', flat=True)
+        )
 
-        # C. Calcul des points (L'étudiant doit avoir tout bon, sans aucune erreur additionnelle)
         is_correct = (submitted_set == correct_rep_ids) and len(correct_rep_ids) > 0
         points_earned = max_pts if is_correct else 0.0
-        
         total_score += points_earned
 
-        # D. Enregistrement de la trace de l'apprenant (Valiny)
         valiny = Valiny.objects.create(
             utilisateur=user,
             question_id=question_id,
             pts=points_earned,
             vrai_ou_faux=is_correct
         )
-        
-        # Associer les réponses sélectionnées par l'étudiant
-        if submitted_reponse_ids:
-            valiny.reponses_choisies.set(submitted_reponse_ids)
+        if submitted_set:
+            valiny.reponses_choisies.set(submitted_set)
 
-    # 4. FINALISATION
     quiz_attempt.score_obtenu = total_score
     quiz_attempt.termine = True
     quiz_attempt.save(update_fields=['score_obtenu', 'termine'])
