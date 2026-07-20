@@ -61,4 +61,26 @@ class AssignQuizToVagueSerializer(serializers.Serializer):
             
         return data
 
+class VagueStudentSerializer(serializers.ModelSerializer):
+    """Formats the nested student data for a specific Vague."""
+    # We pull the actual user details from the 'utilisateur' foreign key
+    etudiant_id = serializers.IntegerField(source='utilisateur.id', read_only=True)
+    username = serializers.CharField(source='utilisateur.username', read_only=True)
+    email = serializers.EmailField(source='utilisateur.email', read_only=True)
+
+    class Meta:
+        model = UtilisateurVague
+        fields = ['etudiant_id', 'username', 'email']
+
+class VagueListWithStudentsSerializer(serializers.ModelSerializer):
+    """Main serializer that returns the Vague and embeds its students."""
+    formation_nom = serializers.CharField(source='formation.nom_formation', read_only=True)
+    
+    # We use '_set' because it is the default reverse relation name in Django 
+    # if you didn't set a related_name on the UtilisateurVague model.
+    etudiants = VagueStudentSerializer(source='utilisateurvague_set', many=True, read_only=True)
+
+    class Meta:
+        model = Vague
+        fields = ['id', 'formation_nom', 'debut', 'fin', 'etudiants']
     
