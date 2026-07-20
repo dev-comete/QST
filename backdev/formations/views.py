@@ -8,8 +8,11 @@ from django.contrib.auth import get_user_model
 
 from quizzes.permissions import IsFormateurOrAdminOrReadOnly, IsOwnerOrAdminOrReadOnly
 
-from formations.serializers import FormationSerializer , CreateVagueSerializer , AssignStudentToVagueSerializer
+from .serializers import FormationSerializer , CreateVagueSerializer , AssignStudentToVagueSerializer , AssignQuizToVagueSerializer
+
 from .models import Formation , Vague , UtilisateurVague
+from quizzes.models import Quiz, UtilisateurQuiz
+
 
 User = get_user_model()
 
@@ -110,4 +113,56 @@ class AssignStudentToVagueAPIView(GenericAPIView):
             
         return Response({
             "message": f"Étudiant {student.username} assigné avec succès à la vague {vague.id} ({vague.formation.nom_formation})."
+        }, status=status.HTTP_201_CREATED)
+
+class AssignQuizToVagueAPIView(GenericAPIView):
+    """
+    Allows a Formateur to assign a Quiz to an entire Vague (all enrolled students) at once.
+    """
+    permission_classes = [IsFormateurOrAdminOrReadOnly]
+    serializer_class = AssignQuizToVagueSerializer # Activates the UI!
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+        quiz = serializer.validated_data['quiz_id']
+        vague = serializer.validated_data['vague_id']
+        
+        # 1. SECURITY CHECK: Does this Formateur own the Formation?
+        is_admin = request.user.is_staff or request.user.is_superuser
+        if not is_admin and quiz.formation.createur != request.user:
+            return Response(
+                {"error": "Vous ne pouvez assigner des quiz qu'à vos propres vagues."}, 
+                status=status.HTTP_403_FORBIDDEN
+            )
+            
+        # 2. Fetch all students currently enrolled in this Vague
+        # Using select_related speeds up the database query!
+        enrollments = UtilisateurVague.objects.filter(vague=vague).select_related('utilisateur')
+        
+        if not enrollments.exists():
+            return Response(
+                {"message": "Cette vague ne contient encore aucun étudiant. Aucun quiz assigné."},
+                status=status.HTTP_200_OK
+            )
+
+        # 3. Bulk Assign the Quiz to everyone in the classroom
+        assigned_count = 0
+        for enrollment in enrollments:
+            assignment, created = UtilisateurQuiz.objects.get_or_create(
+                utilisateur=enrollment.utilisateur,
+                quiz=quiz,
+                defaults={
+                    'score_obtenu': 0.0,
+                    'termine': False
+                }
+            )
+            if created:
+                assigned_count += 1
+                
+        return Response({
+            "message": f"Succès ! Le quiz '{quiz.titre}' a été assigné à {assigned_count} étudiant(s) de la vague {vague.id}."
         }, status=status.HTTP_201_CREATED)

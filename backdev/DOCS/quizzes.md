@@ -18,6 +18,7 @@ All endpoints require authentication unless noted otherwise. Permission classes 
 | API | Method | Description |
 | :--- | :---: | :--- |
 | [Assign Questions API](./question-assign.md) | `POST` | Attach existing bank questions to a quiz, each with its own type/barème configuration. |
+| [Assign Quiz to Vague API](./quiz-to-vague.md) | `POST` | Assign an existing quiz to an entire classroom (`Vague`) in bulk. |
 
 ## 👩‍🎓 Student Assignment & Progress
 
