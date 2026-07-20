@@ -9,11 +9,9 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-@transaction.atomic
+"""@transaction.atomic
 def submit_qcm_answer(user: User, question_id: int, submitted_reponse_ids: list[int]) -> Valiny:
-    """
-    Evaluates a QCM/QCU answer by comparing sets of Response IDs.
-    """
+
     try:
         question = Question.objects.get(id=question_id)
     except Question.DoesNotExist:
@@ -50,7 +48,7 @@ def submit_qcm_answer(user: User, question_id: int, submitted_reponse_ids: list[
         chosen_reponses = Reponse.objects.filter(id__in=submitted_reponse_ids)
         valiny.reponses_choisies.set(chosen_reponses)
 
-    return valiny
+    return valiny"""
 
 
 @transaction.atomic
