@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404
 
 from .permissions import IsFormateurOrAdminOrReadOnly, IsApprenant
 
-from .serializers import QuizSubmissionSerializer , QuizSerializer, QuestionSerializer, ReponseSerializer , AssignStudentSerializer , StudentTodoQuizSerializer , AssignQuestionsSerializer , TypeQuestionSerializer , BaremeSerializer , QuestionTypeQuestionSerializer , QuestionBaremeSerializer, CreateFullQuestionSerializer , QuizQuestionSerializer , ApprenantQuizListSerializer
+from .serializers import QuizSubmissionSerializer , QuizSerializer, QuestionSerializer, ReponseSerializer , AssignStudentSerializer , StudentTodoQuizSerializer , AssignQuestionsSerializer , TypeQuestionSerializer , BaremeSerializer , QuestionTypeQuestionSerializer , QuestionBaremeSerializer, CreateFullQuestionSerializer , QuizQuestionSerializer , ApprenantQuizListSerializer, StudentQuizQuestionSerializer
 
 from .services import submit_entire_quiz, assign_questions_to_quiz , create_question_with_answers
 
@@ -263,3 +263,40 @@ class ApprenantQuizListAPIView(ListAPIView):
         return UtilisateurQuiz.objects.filter(
             utilisateur=self.request.user
         ).select_related('quiz', 'quiz__formation')
+    
+class TakeQuizAPIView(APIView):
+    """
+    Fetches the quiz details and questions for a student.
+    Strictly verifies assignment and prevents retakes of completed quizzes.
+    """
+    permission_classes = [IsAuthenticated, IsApprenant]
+
+    def get(self, request, quiz_id):
+        # GATE 1 & 2: Get the assignment for THIS exact student and THIS exact quiz
+        # If it doesn't exist, get_object_or_404 will automatically return a 404 Not Found.
+        assignment = get_object_or_404(
+            UtilisateurQuiz, 
+            quiz_id=quiz_id, 
+            utilisateur=request.user
+        )
+
+        # GATE 3: Check if the student already submitted this test
+        if assignment.termine:
+            return Response(
+                {"error": "Vous avez déjà terminé ce quiz. Vous ne pouvez pas le refaire."}, 
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        # Fetch all questions configured for this quiz
+        # .select_related() optimizes the database lookup for the linked questions
+        quiz_questions = QuizQuestion.objects.filter(quiz_id=quiz_id).select_related('question')
+        
+        # Serialize the questions using our safe serializer
+        serializer = StudentQuizQuestionSerializer(quiz_questions, many=True)
+
+        # Return a nice, clean payload for the frontend
+        return Response({
+            "quiz_id": assignment.quiz.id,
+            "quiz_duree": assignment.quiz.duree,
+            "questions": serializer.data
+        }, status=status.HTTP_200_OK)
