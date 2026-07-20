@@ -216,7 +216,8 @@ def create_question_with_answers(enonce, type_id, bareme_id, options):
         Corrigee.objects.create(
             question=question, 
             reponse=reponse_obj,
-            est_correct=opt.get('est_correct', False) # We save the boolean here!
+            est_correct=opt.get('est_correct', False), # We save the boolean here!
+            explication=opt.get('explication', '')
         )
 
     return question
