@@ -38,9 +38,11 @@ class FormateurOptionSerializer(serializers.ModelSerializer):
     # Include 'est_correct' since this view seems to be for the Formateur/Admin
     est_correct = serializers.BooleanField(read_only=True) 
 
+    explication = serializers.CharField(read_only=True)
+
     class Meta:
         model = Corrigee
-        fields = ['reponse_id', 'texte', 'est_correct']
+        fields = ['reponse_id', 'texte', 'est_correct', 'explication']
 
 class QuizQuestionSerializer(serializers.ModelSerializer):
 # 1. Keep the IDs (Frontend might still need them for state management)
@@ -121,6 +123,12 @@ class ReponseOptionSerializer(serializers.Serializer):
     est_correct = serializers.BooleanField(
         default=False, 
         help_text="Cochez si cette réponse est la bonne (pour le corrigé)"
+    )
+
+    explication = serializers.CharField(
+        allow_blank=True, 
+        required=False,
+        help_text="Explication affichée pour ce choix spécifique lors de la correction."
     )
 
 class CreateFullQuestionSerializer(serializers.Serializer):

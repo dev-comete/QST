@@ -80,6 +80,13 @@ class Corrigee(models.Model):
         default=False,
         help_text="Cochez si cette réponse est la bonne."
     )
+
+    explication = models.TextField(
+        blank=True, 
+        null=True,
+        help_text="Explication affichée pour ce choix spécifique lors de la correction."
+    )
+
     class Meta:
         unique_together = ('question', 'reponse')
 

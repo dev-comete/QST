@@ -14,7 +14,7 @@ from .serializers import QuizSubmissionSerializer , QuizSerializer, QuestionSeri
 
 from .services import submit_entire_quiz, assign_questions_to_quiz , create_question_with_answers
 
-from .models import Quiz, Question, Reponse , UtilisateurQuiz, QuizQuestion , TypeQuestion, Bareme, QuestionTypeQuestion, QuestionBareme
+from .models import Quiz, Question, Reponse , UtilisateurQuiz, QuizQuestion , TypeQuestion, Bareme, QuestionTypeQuestion, QuestionBareme , Valiny , Corrigee
 
 from formations.models import UtilisateurVague
 
@@ -185,6 +185,55 @@ class SubmitQuizAPIView(APIView):
             "score_obtenu": quiz_attempt.score_obtenu,
             "termine": quiz_attempt.termine
         }, status=status.HTTP_201_CREATED)
+    
+class QuizReviewAPIView(APIView):
+    permission_classes = [IsAuthenticated] # Add IsApprenant if applicable
+
+    def get(self, request, quiz_id):
+        assignment = get_object_or_404(UtilisateurQuiz, quiz_id=quiz_id, utilisateur=request.user)
+        
+        if not assignment.termine:
+            return Response(
+                {"error": "Vous ne pouvez pas voir la correction d'un quiz non terminé."}, 
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        valinys = Valiny.objects.filter(
+            utilisateur=request.user, 
+            question__quizquestion__quiz_id=quiz_id
+        ).select_related('question').prefetch_related('reponses_choisies')
+
+        corrections = []
+        for v in valinys:
+            # Get IDs of what the student clicked
+            choisis_ids = set(v.reponses_choisies.values_list('id', flat=True))
+            
+            # 🆕 Fetch all Corrigee (options) for this question
+            corriges = Corrigee.objects.filter(question=v.question).select_related('reponse')
+            
+            options_details = []
+            for c in corriges:
+                options_details.append({
+                    "reponse_id": c.reponse.id,
+                    "texte": c.reponse.reponse,
+                    "est_correct": c.est_correct,
+                    "choisi_par_apprenant": c.reponse.id in choisis_ids,
+                    "explication": c.explication # The specific explanation!
+                })
+            
+            corrections.append({
+                "question_id": v.question.id,
+                "enonce": v.question.enonce_question,
+                "points_obtenus": v.pts,
+                "vrai_ou_faux": v.vrai_ou_faux,
+                "options": options_details # 🆕 Replaces the simple ID lists
+            })
+
+        return Response({
+            "quiz_id": quiz_id,
+            "score_final": assignment.score_obtenu,
+            "corrections": corrections
+        }, status=status.HTTP_200_OK)
 
 
 class AssignStudentAPIView(GenericAPIView):
