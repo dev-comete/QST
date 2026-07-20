@@ -164,7 +164,7 @@ class AssignQuizToVagueAPIView(GenericAPIView):
                 assigned_count += 1
                 
         return Response({
-            "message": f"Succès ! Le quiz '{quiz.titre}' a été assigné à {assigned_count} étudiant(s) de la vague {vague.id}."
+            "message": f"Succès ! Le quiz '{quiz.id}' a été assigné à {assigned_count} étudiant(s) de la vague {vague.id}."
         }, status=status.HTTP_201_CREATED)
     
 class VagueListAPIView(ListAPIView):
