@@ -69,6 +69,7 @@ class CreateVagueAPIView(GenericAPIView):
 class AssignStudentToVagueAPIView(GenericAPIView):
     """
     Allows a Formateur (or Admin) to enroll a student into a specific Vague.
+    Automatically assigns all existing quizzes for that Formation to the new student.
     """
     permission_classes = [IsFormateurOrAdminOrReadOnly]
     serializer_class = AssignStudentToVagueSerializer
@@ -79,12 +80,10 @@ class AssignStudentToVagueAPIView(GenericAPIView):
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             
-        # ✨ DRF MAGIC: Because of PrimaryKeyRelatedField, these are already the actual objects!
-        # Even though the key is named '_id', the value inside is the full Model instance.
         vague = serializer.validated_data['vague_id']
         student = serializer.validated_data['etudiant_id']
         
-        # 1. SECURITY CHECK: Does this Formateur own the Formation linked to this Vague?
+        # 1. SECURITY CHECK: Does this Formateur own the Formation?
         is_admin = request.user.is_staff or request.user.is_superuser
         if not is_admin and vague.formation.createur != request.user:
             return Response(
@@ -92,14 +91,14 @@ class AssignStudentToVagueAPIView(GenericAPIView):
                 status=status.HTTP_403_FORBIDDEN
             )
             
-        # 2. ROLE CHECK: Ensure the user is actually an 'apprenant'
+        # 2. ROLE CHECK (if not handled in the serializer)
         if not student.type_utilisateur or student.type_utilisateur.type_utilisateur != 'apprenant':
             return Response(
                 {"error": f"L'utilisateur {student.username} n'a pas le rôle 'apprenant'."},
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-        # 3. Create the assignment
+        # 3. ENROLL THE STUDENT
         assignment, created = UtilisateurVague.objects.get_or_create(
             vague=vague,
             utilisateur=student
@@ -110,9 +109,27 @@ class AssignStudentToVagueAPIView(GenericAPIView):
                 {"message": "L'étudiant est déjà inscrit à cette vague."}, 
                 status=status.HTTP_200_OK
             )
+
+        # 🚀 4. THE AUTO-SYNC MAGIC: Give them the quizzes!
+        # Find all quizzes linked to this Vague's Formation
+        quizzes = Quiz.objects.filter(formation=vague.formation)
+        
+        quizzes_assigned = 0
+        for quiz in quizzes:
+            # We use get_or_create just in case they were manually assigned a quiz earlier
+            _, quiz_created = UtilisateurQuiz.objects.get_or_create(
+                utilisateur=student,
+                quiz=quiz,
+                defaults={
+                    'score_obtenu': 0.0,
+                    'termine': False
+                }
+            )
+            if quiz_created:
+                quizzes_assigned += 1
             
         return Response({
-            "message": f"Étudiant {student.username} assigné avec succès à la vague {vague.id} ({vague.formation.nom_formation})."
+            "message": f"Étudiant {student.username} assigné à la vague {vague.id}. {quizzes_assigned} quiz lui ont été automatiquement assignés."
         }, status=status.HTTP_201_CREATED)
 
 class AssignQuizToVagueAPIView(GenericAPIView):
