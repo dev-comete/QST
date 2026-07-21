@@ -118,3 +118,90 @@ def get_vague_analytics_service(vague_id: int, requesting_user) -> dict:
         },
         "statistiques_par_quiz": quizzes_data
     }
+
+def get_apprenant_bulletin_service(vague_id: int, apprenant) -> dict:
+    """
+    Génère le bulletin de notes détaillé d'un apprenant pour une vague spécifique.
+    """
+    # 1. Vérification : L'étudiant est-il bien inscrit à cette vague ?
+    vague = get_object_or_404(Vague.objects.select_related('formation'), id=vague_id)
+    
+    est_inscrit = UtilisateurVague.objects.filter(vague=vague, utilisateur=apprenant).exists()
+    if not est_inscrit:
+        raise PermissionDenied("Vous n'êtes pas inscrit à cette vague.")
+
+    # 2. Récupérer tous les quiz liés à la formation de cette vague
+    # (Vous pouvez ajouter un filtre `status='publie'` si vous gérez des brouillons)
+    quizzes = Quiz.objects.filter(formation=vague.formation)
+    total_quizzes = quizzes.count()
+
+    # 3. Optimisation : Calculer les points maximums de chaque quiz en UNE seule requête
+    quiz_max_pts = dict(
+        QuizQuestion.objects.filter(quiz__in=quizzes)
+        .values('quiz_id')
+        .annotate(total=Sum('bareme__pts'))
+        .values_list('quiz_id', 'total')
+    )
+
+    # 4. Optimisation : Récupérer toutes les tentatives de cet étudiant en UNE requête
+    tentatives = {
+        t.quiz_id: t 
+        for t in UtilisateurQuiz.objects.filter(utilisateur=apprenant, quiz__in=quizzes)
+    }
+
+    bulletin_details = []
+    total_obtenu_vague = 0.0
+    total_possible_vague = 0.0
+    quizzes_termines = 0
+
+    # 5. Construction du bulletin ligne par ligne
+    for quiz in quizzes:
+        max_pts = float(quiz_max_pts.get(quiz.id, 0.0))
+        tentative = tentatives.get(quiz.id)
+        
+        total_possible_vague += max_pts
+        
+        score = 0.0
+        statut = "Non commencé"
+        
+        if tentative:
+            if tentative.termine:
+                statut = "Terminé"
+                score = float(tentative.score_obtenu)
+                total_obtenu_vague += score
+                quizzes_termines += 1
+            else:
+                statut = "En cours"
+
+        pourcentage = round((score / max_pts * 100), 1) if max_pts > 0 else 0.0
+
+        bulletin_details.append({
+            "quiz_id": quiz.id,
+            "statut": statut,
+            "score_obtenu": round(score, 2),
+            "score_maximum": max_pts,
+            "pourcentage": pourcentage
+        })
+
+    # 6. Calcul de la moyenne globale
+    moyenne_generale_pct = round((total_obtenu_vague / total_possible_vague * 100), 1) if total_possible_vague > 0 else 0.0
+
+    return {
+        "apprenant": {
+            "id": apprenant.id,
+            "nom": apprenant.last_name,
+            "prenom": apprenant.first_name,
+            "username": apprenant.username
+        },
+        "vague": {
+            "id": vague.id,
+            "formation": vague.formation.nom_formation
+        },
+        "resume_global": {
+            "total_score_obtenu": round(total_obtenu_vague, 2),
+            "total_score_possible": round(total_possible_vague, 2),
+            "moyenne_generale_pct": moyenne_generale_pct,
+            "progression": f"{quizzes_termines}/{total_quizzes} quiz terminés"
+        },
+        "details_quizzes": bulletin_details
+    }
