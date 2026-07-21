@@ -11,6 +11,7 @@ All endpoints require authentication unless noted otherwise. Permission classes 
 | API | Method | Description |
 | :--- | :---: | :--- |
 | [Create Full Question API](./question-create.md) | `POST` | Create a question with type, barème, and all answer options in one call. |
+| [Question Bank Search API](./question-bank-search.md) | `GET` | Search and paginate the question bank by text and/or type before assigning questions to a quiz. |
 | [Core Resource CRUD APIs](./crud.md) | `GET`/`POST`/`PUT`/`PATCH`/`DELETE` | Standard CRUD over `Quiz`, `Question`, `Reponse`, `TypeQuestion`, `Bareme`, and the question link tables. |
 
 ## 🧩 Quiz Assembly
