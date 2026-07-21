@@ -146,7 +146,7 @@ class StudentTodoQuizSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = UtilisateurQuiz
-        fields = ['id', 'quiz', 'formation_nom', 'duree', 'date_tentative', 'termine']
+        fields = ['id', 'quiz', 'formation_nom', 'duree', 'date_assignation', 'termine']
 
 class SubmitAnswerSerializer(serializers.Serializer):
     question_id = serializers.IntegerField()

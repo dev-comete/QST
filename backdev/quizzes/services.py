@@ -99,7 +99,7 @@ def _lock_and_validate_attempt(user, quiz_id: int):
 
         return quiz, quiz_attempt, True  # True = still valid
 
-@transaction.atomic
+
 def submit_entire_quiz(user, quiz_id: int, quiz_payload: dict):
     """
     Évalue un quiz complet en vérifiant les assignations, le chronomètre,
@@ -108,58 +108,60 @@ def submit_entire_quiz(user, quiz_id: int, quiz_payload: dict):
     quiz, quiz_attempt, is_valid = _lock_and_validate_attempt(user, quiz_id)
 
     if not is_valid:
-        # Expiry was already persisted in _lock_and_validate_attempt.
+        # Puisque nous ne sommes plus dans le @transaction.atomic global, 
+        # cette erreur n'annulera pas la sauvegarde effectuée dans _lock_and_validate_attempt !
         raise ValidationError("Le temps imparti est écoulé. Votre soumission a été rejetée.")
 
-    # Re-lock inside this transaction too, in case anything else
-    # touched the row between the two calls (defense in depth).
-    quiz_attempt = (
-        UtilisateurQuiz.objects
-        .select_for_update()
-        .get(pk=quiz_attempt.pk)
-    )
-    if quiz_attempt.termine:
-        raise ValidationError("Vous avez déjà soumis ce quiz.")
+    # On sécurise uniquement le processus de correction et de calcul des points
+    with transaction.atomic():
+        quiz_attempt = (
+            UtilisateurQuiz.objects
+            .select_for_update()
+            .get(pk=quiz_attempt.pk)
+        )
+        
+        if quiz_attempt.termine:
+            raise ValidationError("Vous avez déjà soumis ce quiz.")
 
-    total_score = 0.0
+        total_score = 0.0
 
-    for str_question_id, submitted_reponse_ids in quiz_payload.items():
-        try:
-            question_id = int(str_question_id)
-            submitted_set = {int(r) for r in submitted_reponse_ids}
-        except (TypeError, ValueError):
-            continue  # malformed payload entry — ignore, don't crash the whole submission
+        for str_question_id, submitted_reponse_ids in quiz_payload.items():
+            try:
+                question_id = int(str_question_id)
+                submitted_set = {int(r) for r in submitted_reponse_ids}
+            except (TypeError, ValueError):
+                continue  
 
-        try:
-            quiz_question = QuizQuestion.objects.select_related('bareme').get(
-                quiz_id=quiz_id,
-                question_id=question_id
+            try:
+                quiz_question = QuizQuestion.objects.select_related('bareme').get(
+                    quiz_id=quiz_id,
+                    question_id=question_id
+                )
+                max_pts = quiz_question.bareme.pts
+            except QuizQuestion.DoesNotExist:
+                continue
+
+            correct_rep_ids = set(
+                Corrigee.objects.filter(question_id=question_id, est_correct=True)
+                .values_list('reponse_id', flat=True)
             )
-            max_pts = quiz_question.bareme.pts
-        except QuizQuestion.DoesNotExist:
-            continue
 
-        correct_rep_ids = set(
-            Corrigee.objects.filter(question_id=question_id, est_correct=True)
-            .values_list('reponse_id', flat=True)
-        )
+            is_correct = (submitted_set == correct_rep_ids) and len(correct_rep_ids) > 0
+            points_earned = max_pts if is_correct else 0.0
+            total_score += points_earned
 
-        is_correct = (submitted_set == correct_rep_ids) and len(correct_rep_ids) > 0
-        points_earned = max_pts if is_correct else 0.0
-        total_score += points_earned
+            valiny = Valiny.objects.create(
+                utilisateur=user,
+                question_id=question_id,
+                pts=points_earned,
+                vrai_ou_faux=is_correct
+            )
+            if submitted_set:
+                valiny.reponses_choisies.set(submitted_set)
 
-        valiny = Valiny.objects.create(
-            utilisateur=user,
-            question_id=question_id,
-            pts=points_earned,
-            vrai_ou_faux=is_correct
-        )
-        if submitted_set:
-            valiny.reponses_choisies.set(submitted_set)
-
-    quiz_attempt.score_obtenu = total_score
-    quiz_attempt.termine = True
-    quiz_attempt.save(update_fields=['score_obtenu', 'termine'])
+        quiz_attempt.score_obtenu = total_score
+        quiz_attempt.termine = True
+        quiz_attempt.save(update_fields=['score_obtenu', 'termine'])
 
     return quiz_attempt
 
@@ -223,14 +225,14 @@ def create_question_with_answers(enonce, type_id, bareme_id, options):
         raise ValidationError("Le Type ou le Barème spécifié n'existe pas.")
 
     # 2. Strict Business Logic Check (QCU vs QCM vs Ouverte)
-    type_name = type_obj.type_question.lower()
+    system_code = type_obj.code.upper() if type_obj.code else "UNKNOWN"
     correct_count = sum(1 for opt in options if opt.get('est_correct', False))
 
-    if 'qcu' in type_name and correct_count != 1:
+    if system_code == 'QCU' and correct_count != 1:
         raise ValidationError("Un QCU (Choix Unique) doit avoir exactement UNE réponse correcte.")
-    elif 'qcm' in type_name and correct_count < 1:
+    elif system_code == 'QCM' and correct_count < 1:
         raise ValidationError("Un QCM (Choix Multiple) doit avoir au moins UNE réponse correcte.")
-    elif 'ouverte' in type_name and len(options) > 0:
+    elif system_code == 'OUV' and len(options) > 0:
         raise ValidationError("Une question ouverte ne doit pas avoir d'options prédéfinies.")
 
     # 3. Create the Question Object
