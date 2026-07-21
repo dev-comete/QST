@@ -10,6 +10,8 @@ from .views import (
     QuestionTypeQuestionViewSet, 
     QuestionBaremeViewSet , CreateFullQuestionAPIView , QuizQuestionViewSet , ApprenantQuizListAPIView , TakeQuizAPIView , QuizReviewAPIView
 )
+from .views_analytics import FormateurVagueAnalyticsAPIView
+
 from formations.views import FormationViewSet
 from accounts.views import UtilisateurViewSet, TypeUtilisateurViewSet
 
@@ -49,4 +51,6 @@ urlpatterns = [
     path('student-submit/', SubmitQuizAPIView.as_view(), name='api-submit-quiz'),
 
     path('<int:quiz_id>/review/', QuizReviewAPIView.as_view(), name='quiz-review'),
+
+    path('analytics/vague/<int:vague_id>/', FormateurVagueAnalyticsAPIView.as_view(), name='vague-analytics'),
 ]
