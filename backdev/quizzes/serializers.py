@@ -103,7 +103,11 @@ class QuestionChoiceSerializer(serializers.Serializer):
     """
     question_id = serializers.IntegerField(required=True)
     type_id = serializers.IntegerField(required=True)
-    bareme_id = serializers.IntegerField(required=True)
+    bareme_pts = serializers.FloatField(
+        required=True, 
+        min_value=0.1,
+        help_text="Les points attribués à cette question (ex: 2.5). Le barème sera créé dynamiquement s'il n'existe pas."
+    )
 
 class AssignQuestionsSerializer(serializers.Serializer):
     """
