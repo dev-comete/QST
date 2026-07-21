@@ -8,7 +8,7 @@ from .views import (
     SubmitQuizAPIView , AssignStudentAPIView, MyTodoQuizzesAPIView , AssignQuestionsAPIView , TypeQuestionViewSet, 
     BaremeViewSet, 
     QuestionTypeQuestionViewSet, 
-    QuestionBaremeViewSet , CreateFullQuestionAPIView , QuizQuestionViewSet , ApprenantQuizListAPIView , TakeQuizAPIView , QuizReviewAPIView
+    QuestionBaremeViewSet , CreateFullQuestionAPIView , QuizQuestionViewSet , ApprenantQuizListAPIView , TakeQuizAPIView , QuizReviewAPIView , QuestionBankSearchAPIView
 )
 from .views_analytics import FormateurVagueAnalyticsAPIView
 
@@ -53,4 +53,6 @@ urlpatterns = [
     path('<int:quiz_id>/review/', QuizReviewAPIView.as_view(), name='quiz-review'),
 
     path('analytics/vague/<int:vague_id>/', FormateurVagueAnalyticsAPIView.as_view(), name='vague-analytics'),
+
+    path('banque-questions/', QuestionBankSearchAPIView.as_view(), name='banque-questions-search'),
 ]

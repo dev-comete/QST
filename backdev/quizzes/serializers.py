@@ -97,6 +97,20 @@ class QuestionBaremeSerializer(serializers.ModelSerializer):
         model = QuestionBareme
         fields = '__all__'
 
+class CorrigeeApercuSerializer(serializers.ModelSerializer):
+    texte = serializers.CharField(source='reponse.reponse', read_only=True)
+
+    class Meta:
+        model = Corrigee
+        fields = ['id', 'texte', 'est_correct', 'explication']
+
+class QuestionBankSerializer(serializers.ModelSerializer):
+    reponses = CorrigeeApercuSerializer(source='corrigee_set', many=True, read_only=True)
+
+    class Meta:
+        model = Question
+        fields = ['id', 'enonce_question', 'reponses']
+
 class QuestionChoiceSerializer(serializers.Serializer):
     """
     Sub-serializer to define the exact configuration of the chosen question.

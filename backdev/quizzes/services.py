@@ -288,3 +288,17 @@ def create_question_with_answers(enonce, type_id, bareme_id, options):
         )
 
     return question
+
+def search_questions_in_bank_service(search_term: str = None, type_code: str = None):
+    # Requête de base optimisée
+    queryset = Question.objects.prefetch_related('corrigee_set__reponse').all().order_by('-id')
+
+    # Filtre par texte
+    if search_term:
+        queryset = queryset.filter(enonce_question__icontains=search_term)
+
+    # Filtre par type (QCM, QCU...)
+    if type_code:
+        queryset = queryset.filter(questiontypequestion__type_question__code__iexact=type_code)
+
+    return queryset.distinct()
