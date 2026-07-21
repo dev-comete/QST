@@ -171,6 +171,19 @@ def assign_questions_to_quiz(quiz, questions_choisies):
     Validates and assigns a list of existing question configurations to a quiz.
     Raises a DRF ValidationError if business rules are violated.
     """
+
+    quiz_deja_commence = UtilisateurQuiz.objects.filter(
+        quiz=quiz, 
+        heure_debut__isnull=False  # Au moins un étudiant a cliqué sur "Démarrer"
+    ).exists()
+
+    if quiz_deja_commence:
+        raise ValidationError(
+            "Impossible de modifier ce quiz. Au moins un apprenant a déjà commencé "
+            "ou terminé son évaluation. Pour garantir l'équité des notes, la structure "
+            "du quiz est verrouillée."
+        )
+
     links_to_create = []
 
     for item in questions_choisies:
