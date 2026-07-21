@@ -31,6 +31,13 @@ All endpoints require authentication unless noted otherwise. Permission classes 
 | [Quiz Review API](./quiz-review.md) | `GET` | Review a submitted quiz and inspect its evaluation details. |
 | [Quiz Submission Security API](./quiz-submission-security.md) | `POST` | Enforce submission security checks before accepting a quiz submission. |
 
+## 📊 Analytics & Reporting
+
+| API | Method | Description |
+| :--- | :---: | :--- |
+| [Formateur Vague Analytics API](./formateur-vague-analytics.md) | `GET` | Retrieve aggregate analytics for a vague as a formateur or admin. |
+| [Apprenant Bulletin API](./apprenant-bulletin.md) | `GET` | View a student's detailed bulletin for a specific vague. |
+
 ---
 
 ## Role Summary

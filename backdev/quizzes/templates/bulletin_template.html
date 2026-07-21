@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Bulletin de notes</title>
+    <style>
+        body { font-family: Helvetica, sans-serif; font-size: 14px; color: #333; }
+        .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #0056b3; padding-bottom: 10px;}
+        h1 { color: #0056b3; }
+        .info-box { background-color: #f8f9fa; padding: 15px; margin-bottom: 20px; border-radius: 5px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #0056b3; color: white; }
+        .score-row { font-weight: bold; background-color: #e9ecef; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Bulletin de l'Apprenant</h1>
+        <h2>{{ data.vague.formation }}</h2>
+    </div>
+
+    <div class="info-box">
+        <p><strong>Apprenant :</strong> {{ data.apprenant.nom }} {{ data.apprenant.prenom }} (@{{ data.apprenant.username }})</p>
+        <p><strong>Progression :</strong> {{ data.resume_global.progression }}</p>
+        <p><strong>Moyenne Générale :</strong> {{ data.resume_global.moyenne_generale_pct }}%</p>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Évaluation (ID)</th>
+                <th>Statut</th>
+                <th>Score Obtenu</th>
+                <th>Score Maximum</th>
+                <th>Pourcentage</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for quiz in data.details_quizzes %}
+            <tr>
+                <td>Quiz #{{ quiz.quiz_id }}</td>
+                <td>{{ quiz.statut }}</td>
+                <td>{{ quiz.score_obtenu }}</td>
+                <td>{{ quiz.score_maximum }}</td>
+                <td>{{ quiz.pourcentage }}%</td>
+            </tr>
+            {% endfor %}
+            <tr class="score-row">
+                <td colspan="2">TOTAL</td>
+                <td>{{ data.resume_global.total_score_obtenu }}</td>
+                <td>{{ data.resume_global.total_score_possible }}</td>
+                <td>{{ data.resume_global.moyenne_generale_pct }}%</td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+</html>
