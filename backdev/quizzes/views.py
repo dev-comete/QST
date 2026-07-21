@@ -10,9 +10,11 @@ from django.utils.timezone import now
 
 from .permissions import IsFormateurOrAdminOrReadOnly, IsApprenant
 
-from .serializers import QuizSubmissionSerializer , QuizSerializer, QuestionSerializer, ReponseSerializer , AssignStudentSerializer , StudentTodoQuizSerializer , AssignQuestionsSerializer , TypeQuestionSerializer , BaremeSerializer , QuestionTypeQuestionSerializer , QuestionBaremeSerializer, CreateFullQuestionSerializer , QuizQuestionSerializer , ApprenantQuizListSerializer, StudentQuizQuestionSerializer
+from .serializers import QuizSubmissionSerializer , QuizSerializer, QuestionSerializer, ReponseSerializer , AssignStudentSerializer , StudentTodoQuizSerializer , AssignQuestionsSerializer , TypeQuestionSerializer , BaremeSerializer , QuestionTypeQuestionSerializer , QuestionBaremeSerializer, CreateFullQuestionSerializer , QuizQuestionSerializer , ApprenantQuizListSerializer, StudentQuizQuestionSerializer , QuestionBankSerializer 
 
-from .services import submit_entire_quiz, assign_questions_to_quiz , create_question_with_answers
+from .pagination import QuestionBankPagination
+
+from .services import submit_entire_quiz, assign_questions_to_quiz , create_question_with_answers , search_questions_in_bank_service
 
 from .models import Quiz, Question, Reponse , UtilisateurQuiz, QuizQuestion , TypeQuestion, Bareme, QuestionTypeQuestion, QuestionBareme , Valiny , Corrigee
 
@@ -354,3 +356,18 @@ class TakeQuizAPIView(APIView):
             "heure_debut": assignment.heure_debut,
             "questions": serializer.data
         }, status=status.HTTP_200_OK)
+
+class QuestionBankSearchAPIView(APIView):
+    permission_classes = [IsAuthenticated] 
+
+    def get(self, request):
+        search_term = request.query_params.get('search', '').strip()
+        type_code = request.query_params.get('type', '').strip()
+
+        queryset = search_questions_in_bank_service(search_term, type_code)
+
+        paginator = QuestionBankPagination()
+        paginated_queryset = paginator.paginate_queryset(queryset, request)
+
+        serializer = QuestionBankSerializer(paginated_queryset, many=True)
+        return paginator.get_paginated_response(serializer.data)
