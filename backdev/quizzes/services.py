@@ -168,10 +168,12 @@ def submit_entire_quiz(user, quiz_id: int, quiz_payload: dict):
 
 def assign_questions_to_quiz(quiz, questions_choisies):
     """
-    Validates and assigns a list of existing question configurations to a quiz.
-    Raises a DRF ValidationError if business rules are violated.
+    Assigne des questions existantes à un quiz. 
+    Permet d'appliquer dynamiquement de nouveaux barèmes ou types à une question existante,
+    tout en vérifiant l'intégrité métier des réponses (Corrigee).
     """
 
+# 🚨 BARRIÈRE DE SÉCURITÉ : Vérifier si le quiz a déjà commencé
     quiz_deja_commence = UtilisateurQuiz.objects.filter(
         quiz=quiz, 
         heure_debut__isnull=False  # Au moins un étudiant a cliqué sur "Démarrer"
@@ -189,35 +191,48 @@ def assign_questions_to_quiz(quiz, questions_choisies):
     for item in questions_choisies:
         q_id = item['question_id']
         t_id = item['type_id']
-        b_id = item['bareme_id']
-        
-        # 1. Verify this combo actually exists in the Question Bank
-        valid_type = QuestionTypeQuestion.objects.filter(question_id=q_id, type_question_id=t_id).exists()
-        valid_bareme = QuestionBareme.objects.filter(question_id=q_id, bareme_id=b_id).exists()
-        
-        if not valid_type or not valid_bareme:
-            raise ValidationError(f"La question {q_id} ne possède pas le type {t_id} ou le barème {b_id}.")
+        bareme_pts = item['bareme_pts']  # 🆕 On reçoit les points, pas l'ID !
 
-        # 2. UPDATED: Verify that the question has at least one CORRECT answer
-        type_obj = TypeQuestion.objects.get(id=t_id)
-        is_open_question = 'ouverte' in type_obj.type_question.lower()
+        # 1. Vérifier que la question existe bien dans la banque
+        if not Question.objects.filter(id=q_id).exists():
+            raise ValidationError(f"La question avec l'ID {q_id} n'existe pas.")
+
+        # 2. Gestion Dynamique du Barème
+        # On récupère ou on crée le Barème global, puis on le lie à la question si ce n'est pas fait
+        bareme_obj, _ = Bareme.objects.get_or_create(pts=float(bareme_pts))
+        QuestionBareme.objects.get_or_create(question_id=q_id, bareme=bareme_obj)
+
+        # 3. Gestion Dynamique du Type
+        try:
+            type_obj = TypeQuestion.objects.get(id=t_id)
+        except TypeQuestion.DoesNotExist:
+            raise ValidationError(f"Le type de question spécifié ({t_id}) n'existe pas.")
         
-        # We now explicitly look for rows where est_correct=True
-        has_correct_answer = Corrigee.objects.filter(question_id=q_id, est_correct=True).exists()
-        
-        if not is_open_question and not has_correct_answer:
+        QuestionTypeQuestion.objects.get_or_create(question_id=q_id, type_question=type_obj)
+
+        # 4. 🚨 VÉRIFICATION DE SÉCURITÉ MÉTIER 🚨
+        # Si le formateur change le type d'une question existante, on vérifie que le Corrigé reste valide
+        system_code = type_obj.code.upper() if type_obj.code else "UNKNOWN"
+        correct_count = Corrigee.objects.filter(question_id=q_id, est_correct=True).count()
+
+        if system_code == 'QCU' and correct_count != 1:
             raise ValidationError(
-                f"La question {q_id} (Type: {type_obj.type_question}) n'a aucune "
-                f"réponse marquée comme correcte dans la banque. Veuillez la modifier d'abord."
+                f"Impossible d'assigner la question {q_id} en tant que QCU. "
+                f"Elle possède actuellement {correct_count} réponses correctes dans la banque, alors qu'un QCU en exige exactement UNE."
             )
-            
-        # 3. Queue the specific combo to be saved
-        if not QuizQuestion.objects.filter(quiz=quiz, question_id=q_id, type_question_id=t_id, bareme_id=b_id).exists():
-            links_to_create.append(
-                QuizQuestion(quiz=quiz, question_id=q_id, type_question_id=t_id, bareme_id=b_id)
+        elif system_code == 'QCM' and correct_count < 1:
+            raise ValidationError(
+                f"Impossible d'assigner la question {q_id} en tant que QCM. "
+                f"Elle ne possède aucune réponse correcte."
             )
 
-    # 4. Database execution
+        # 5. Préparer la liaison avec le Quiz (si elle n'existe pas déjà pour CE quiz précis)
+        if not QuizQuestion.objects.filter(quiz=quiz, question_id=q_id, type_question=type_obj, bareme=bareme_obj).exists():
+            links_to_create.append(
+                QuizQuestion(quiz=quiz, question_id=q_id, type_question=type_obj, bareme=bareme_obj)
+            )
+
+    # 6. Exécution en base de données
     if links_to_create:
         QuizQuestion.objects.bulk_create(links_to_create)
 
