@@ -1,8 +1,12 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from datetime import timedelta
+
 from quizzes.models import Question, Reponse, Corrigee, Bareme, QuestionBareme, Quiz, UtilisateurQuiz
 from quizzes.services import submit_entire_quiz
+
+from accounts.models import TypeUtilisateur
+
 
 from formations.models import Formation 
 
@@ -13,14 +17,26 @@ class SubmitEntireQuizServiceTests(TestCase):
     def setUp(self):
         """Set up a complete quiz environment with 2 questions."""
         # 1. Create User
-        self.user = User.objects.create_user(username="alice", password="pwd")
+        self.type_formateur = TypeUtilisateur.objects.create(type_utilisateur="formateur")
+        self.type_apprenant = TypeUtilisateur.objects.create(type_utilisateur="apprenant")
+
+        self.formateur = User.objects.create_user(
+            username="prof1", password="password123", email="prof@test.com", type_utilisateur=self.type_formateur
+        )
+        self.user = User.objects.create_user(
+            username="student1", password="password123", email="student@test.com", type_utilisateur=self.type_apprenant
+        )
         
         # 2. Create Formation and Quiz
-        self.formation = Formation.objects.create(nom_formation="Développement Web")
+        self.formation = Formation.objects.create(
+            nom_formation="Formation Test", 
+            createur=self.formateur
+        )
+
         self.quiz = Quiz.objects.create(
-            formation=self.formation,
-            duree=timedelta(minutes=30),
-            status="actif"
+            formation=self.formation, 
+            duree=timedelta(minutes=15),
+            status="Actif" # Ajoutez le statut que vous utilisez normalement
         )
         
         # 3. Create Question 1 (QCM - 5 points)

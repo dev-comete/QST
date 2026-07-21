@@ -20,8 +20,15 @@ class Question(models.Model):
 class TypeQuestion(models.Model):
     type_question = models.CharField(max_length=100)
 
+    code = models.CharField(
+        max_length=10, 
+        unique=True, 
+        null=True,
+        help_text="Code système immuable (ex: QCU, QCM, OUV)"
+    )
+
     def __str__(self):
-        return self.type_question
+        return f"{self.type_question} ({self.code})"
 
 class Reponse(models.Model):
     reponse = models.TextField()
@@ -42,7 +49,7 @@ class UtilisateurQuiz(models.Model):
     # We add these fields to track the final result
     score_obtenu = models.FloatField(default=0.0)
     termine = models.BooleanField(default=False)
-    date_tentative = models.DateTimeField(auto_now_add=True)
+    date_assignation = models.DateTimeField(auto_now_add=True)
 
     heure_debut = models.DateTimeField(null=True, blank=True, help_text="Heure à laquelle l'étudiant a commencé le quiz")
 

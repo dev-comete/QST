@@ -36,7 +36,7 @@ Each item is serialized via `StudentTodoQuizSerializer`:
 | `quiz` | `integer` | ID of the related `Quiz`. |
 | `formation_nom` | `string` | Name of the formation the quiz belongs to. |
 | `duree` | `duration` | Time allotted for the quiz. |
-| `date_tentative` | `datetime` | Timestamp the assignment was created. |
+| `date_assignation` | `datetime` | Timestamp the assignment was created. |
 | `termine` | `boolean` | Always `false` for items returned by this endpoint. |
 
 ---
@@ -51,7 +51,7 @@ Each item is serialized via `StudentTodoQuizSerializer`:
     "quiz": 1,
     "formation_nom": "Développement Web Full Stack",
     "duree": "00:45:00",
-    "date_tentative": "2026-07-10T09:15:00Z",
+    "date_assignation": "2026-07-10T09:15:00Z",
     "termine": false
   },
   {
@@ -59,7 +59,7 @@ Each item is serialized via `StudentTodoQuizSerializer`:
     "quiz": 4,
     "formation_nom": "Data Science pour Débutants",
     "duree": "01:00:00",
-    "date_tentative": "2026-07-11T14:02:00Z",
+    "date_assignation": "2026-07-11T14:02:00Z",
     "termine": false
   }
 ]
