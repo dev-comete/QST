@@ -10,7 +10,8 @@ from .views import (
     QuestionTypeQuestionViewSet, 
     QuestionBaremeViewSet , CreateFullQuestionAPIView , QuizQuestionViewSet , ApprenantQuizListAPIView , TakeQuizAPIView , QuizReviewAPIView , QuestionBankSearchAPIView
 )
-from .views_analytics import FormateurVagueAnalyticsAPIView
+from .views_analytics import FormateurVagueAnalyticsAPIView , ApprenantBulletinAPIView
+from .views_pdf import ApprenantBulletinPDFAPIView
 
 from formations.views import FormationViewSet
 from accounts.views import UtilisateurViewSet, TypeUtilisateurViewSet
@@ -55,4 +56,8 @@ urlpatterns = [
     path('analytics/vague/<int:vague_id>/', FormateurVagueAnalyticsAPIView.as_view(), name='vague-analytics'),
 
     path('banque-questions/', QuestionBankSearchAPIView.as_view(), name='banque-questions-search'),
+
+    path('bulletin/vague/<int:vague_id>/', ApprenantBulletinAPIView.as_view(), name='apprenant-bulletin'),
+
+    path('bulletin/vague/<int:vague_id>/pdf/', ApprenantBulletinPDFAPIView.as_view(), name='apprenant-bulletin-pdf')
 ]
