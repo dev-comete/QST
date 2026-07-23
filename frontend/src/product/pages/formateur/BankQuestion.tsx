@@ -1,6 +1,6 @@
 const BankQuestion = () => {
     return (
-        <></>
+        <>Bank question page</>
     )
 }
 

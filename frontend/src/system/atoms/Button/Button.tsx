@@ -1,9 +1,10 @@
 import type React from "react";
 import { backgroundColor } from "../../../other/types/constant";
+import type { ColorTheme } from "../../../other/types/common";
 
 interface ButtonProps {
 	children?: React.ReactNode;
-	color?: string;
+	color?: ColorTheme;
 	customStyling?: string;
 	paddingX?: number;
 	paddingY?: number;
@@ -12,7 +13,7 @@ interface ButtonProps {
 
 const Button = ({
 	children,
-	color,
+	color = 'white',
 	customStyling,
 	action 
 }: ButtonProps) => {

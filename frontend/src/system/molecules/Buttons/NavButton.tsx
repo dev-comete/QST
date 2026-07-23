@@ -6,9 +6,10 @@ import type React from "react";
 interface NavButtonProps {
 	link: string;
 	children: React.ReactNode;
+	customStyling?: string
 }
 
-const NavButton = ({ link, children }: NavButtonProps) => {
+const NavButton = ({ link, children, customStyling }: NavButtonProps) => {
 
 	const navigate = useNavigate();
 	const { pathname } = useLocation();
@@ -20,7 +21,7 @@ const NavButton = ({ link, children }: NavButtonProps) => {
 
 	return (
 		<Button
-			customStyling={btnStyling}
+			customStyling={btnStyling + " " + customStyling}
 			color={btnColor}
 			action = { () => navigate(link) }
 		>

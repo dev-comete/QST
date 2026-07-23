@@ -1,6 +1,6 @@
 const Planning = () => {
     return (
-        <></>
+        <>Planning page</>
     )
 }
 
