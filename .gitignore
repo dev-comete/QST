@@ -40,3 +40,6 @@ dist-ssr
 # OS specific
 .DS_Store
 Thumbs.db
+
+react_lms_frontend 
+react_lms_frontend/

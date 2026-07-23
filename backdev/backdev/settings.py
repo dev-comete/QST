@@ -40,31 +40,24 @@ DEBUG = True
 ALLOWED_HOSTS = [
     '8000-cs-053069f0-3449-4470-96df-35d3150becaf.cs-asia-southeast1-fork.cloudshell.dev',
     '127.0.0.1',
-    'localhost'
+    'localhost',
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000',
+    'http://localhost:3001',
     'http://127.0.0.1:8000',
+    'http://127.0.0.1:3001',
     'https://8000-cs-053069f0-3449-4470-96df-35d3150becaf.cs-asia-southeast1-fork.cloudshell.dev'
   
 ]
 
-CSRF_ALLOWED_ORIGINS = [
-    'localhost:8000',
-    '127.0.0.1:8000',
-    '8000-cs-053069f0-3449-4470-96df-35d3150becaf.cs-asia-southeast1-fork.cloudshell.dev'
-]
-
-CORS_ALLOWED_ORIGINS = [
-    'localhost:8000',
-    '127.0.0.1:8000',
-    '8000-cs-053069f0-3449-4470-96df-35d3150becaf.cs-asia-southeast1-fork.cloudshell.dev'
-]
+CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_TRUSTED_ORIGINS = [
     'http://localhost:8000',
     'http://127.0.0.1:8000',
+    'http://127.0.0.1:3001',
     'https://8000-cs-053069f0-3449-4470-96df-35d3150becaf.cs-asia-southeast1-fork.cloudshell.dev'
 ]
 
@@ -78,6 +71,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'rest_framework',
     'accounts',
     'formations',
@@ -87,9 +81,9 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
