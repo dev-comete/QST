@@ -35,7 +35,7 @@ router.register(r'assigner-baremes', QuestionBaremeViewSet, basename='assigner-b
 
 urlpatterns = [
 
-    path('api-auth/', include('rest_framework.urls')),
+    path('api-auth/', include('rest_framework.urls')), # just for browsable API login/logout
 
     path('crud/', include(router.urls)),
 
