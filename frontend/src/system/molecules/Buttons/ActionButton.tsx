@@ -4,11 +4,12 @@ import CustomText from "../../atoms/Text/CustomText";
 import type { ColorTheme } from "../../../other/types/common";
 
 interface ActionButtonProps {
-	children: React.ReactNode;
-	btnColor?: ColorTheme;
-	btnStyling?: string;
-	textColor?: ColorTheme;
-	action : () => void;
+	children: React.ReactNode,
+	btnColor?: ColorTheme,
+	btnStyling?: string,
+	textColor?: ColorTheme,
+	action : () => void,
+	disabled? : boolean
 }
 
 const ActionButton = ({
@@ -16,6 +17,7 @@ const ActionButton = ({
 	btnColor = "white",
 	btnStyling,
 	textColor = "text",
+	disabled = false,
 	action
 } : ActionButtonProps) => {
 	return (
@@ -23,6 +25,7 @@ const ActionButton = ({
 			color={btnColor}
 			customStyling={btnStyling}
 			action={action}
+			disabled={disabled}
 		>
 			<CustomText color={textColor} weight="bold">{children}</CustomText>
 		</Button>

@@ -1,5 +1,5 @@
-import type { NavItem } from "../../other/types/common";
-import Header from "../../system/molecules/LayoutElement/Header";
+import type { NavItem } from "../../../other/types/common";
+import Header from "../../../system/molecules/LayoutElement/Header";
 import SideBar from "./SideBar";
 import { Outlet } from "react-router";
 

@@ -10,7 +10,8 @@ const backgroundColor : Record<ColorTheme, string> = {
 	'warning': 'bg-warning',
 	'text': 'bg-text',
 	'white': 'bg-white',
-	'disabled' : 'bg-disabled'
+	'disabled' : 'bg-disabled',
+	'transparent' : 'bg-transparent'
 }
 
 export {

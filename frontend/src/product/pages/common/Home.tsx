@@ -13,6 +13,7 @@ const Home = () => {
 			<ActionButton action={() => navigate("/admin") }>{"Admin"}</ActionButton>
 			<ActionButton action={() => navigate("/formateur") }>{"Formateur"}</ActionButton>
 			<ActionButton action={() => navigate("/apprenant") }>{"Apprenant"}</ActionButton>
+			<ActionButton action={() => navigate("/test") }>{"Test"}</ActionButton>
 		</div>
     )
 }

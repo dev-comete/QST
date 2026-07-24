@@ -1,5 +1,5 @@
-import type { NavItem } from "../../other/types/common";
-import NavButton from "../../system/molecules/Buttons/NavButton";
+import type { NavItem } from "../../../other/types/common";
+import NavButton from "../../../system/molecules/Buttons/NavButton";
 
 interface SideBarProps {
 	navList : NavItem[],

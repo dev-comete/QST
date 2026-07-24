@@ -16,7 +16,7 @@ const Box = ({
 
 	return (
 		<div
-			className={`flex ${flexDirection} gap-5 ${customStyling}`}
+			className={`flex ${flexDirection} gap-3 ${customStyling}`}
 		>{children}</div>		
 	)
 }

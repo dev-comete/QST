@@ -1,5 +1,5 @@
-import type { NavItem } from "../../other/types/common";
-import Layout from "./Layout";
+import type { NavItem } from "../../../other/types/common";
+import Layout from "../common/Layout";
 
 const AdminTemplate = () => {
 

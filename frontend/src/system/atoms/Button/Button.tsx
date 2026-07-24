@@ -9,6 +9,7 @@ interface ButtonProps {
 	paddingX?: number;
 	paddingY?: number;
 	isRounded?: boolean;
+	disabled?: boolean;
 	action : () => void;
 }
 
@@ -17,14 +18,17 @@ const Button = ({
 	color = 'white',
 	isRounded = true,
 	customStyling,
+	disabled = false,
 	action 
 }: ButtonProps) => {
 
 	const roundParam = isRounded ? "rounded-sm" : ""
+	const isDisable = disabled ? "disabled:pointer-events-none" : ""
 
 	return (
 		<button 
-			className={`${backgroundColor[color]} ${customStyling} px-3 py-2 ${roundParam} w-fit`}
+			className={`${backgroundColor[color]} ${customStyling} px-3 py-2 ${roundParam} w-fit ${isDisable}`}
+			disabled={disabled}
 			onClick={action}
 		>
 			{children}

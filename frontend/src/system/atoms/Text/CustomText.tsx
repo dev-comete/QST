@@ -7,7 +7,7 @@ type TextWeight = 'light' | 'normal' | 'bold';
 
 interface TextProps {
 	children: React.ReactNode;
-	type?: TextType;
+	textTag?: TextType;
 	weight?: TextWeight;
 	color?: ColorTheme;
 	isItalic?: boolean;
@@ -40,13 +40,14 @@ const textColor : Record<ColorTheme, string> = {
 	'warning': 'text-warning',
 	'text': 'text-text',
 	'white': 'text-white',
-	'disabled' : 'text-disabled'
+	'disabled' : 'text-disabled',
+	'transparent' : 'text-transparent'
 }
 
 const CustomText = ({
 	children,
-	type : Tag = "p",
-	color = 'white',
+	textTag : Tag = "p",
+	color = 'text',
 	weight = "normal",
 	isItalic
 }: TextProps) => {

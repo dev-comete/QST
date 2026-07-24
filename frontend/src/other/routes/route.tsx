@@ -1,21 +1,28 @@
 import { createBrowserRouter } from "react-router";
-import FormateurTemplate from "../../product/layout/FormateurTemplate";
-import QuestionManagement from "../../product/pages/formateur/BankQuestion";
+import FormateurTemplate from "../../product/layout/role/FormateurTemplate";
+import QuestionManagement from "../../product/pages/formateur/QuestionManagement";
 import Planning from "../../product/pages/formateur/Planning";
 import QuizManagement from "../../product/pages/formateur/QuizManagement";
 import Dashboard from "../../product/pages/formateur/Dashboard";
-import AdminTemplate from "../../product/layout/AdminTemplate";
-import ApprenantTemplate from "../../product/layout/ApprenantTemplate";
+import AdminTemplate from "../../product/layout/role/AdminTemplate";
+import ApprenantTemplate from "../../product/layout/role/ApprenantTemplate";
 import UserManagement from "../../product/pages/admin/UserManagement";
 import Calendar from "../../product/pages/apprenant/Calendar";
 import Bulletin from "../../product/pages/apprenant/Bulletin";
 import Evaluation from "../../product/pages/apprenant/Evaluation";
 import Home from "../../product/pages/common/Home";
 
+/* FOR TESTING ONLY */
+import Test from "../../product/pages/Test";
+
 export const router = createBrowserRouter([
 	{
 		path: "/",
 		element: <Home />,
+	},
+	{
+		path: "/test",
+		element: <Test />
 	},
 	{
 		path: "/admin",
@@ -61,7 +68,7 @@ export const router = createBrowserRouter([
 		children: [
 			{
 				index: true,
-				path: "calendrier_quizz",
+				path: "calendrier_quiz",
 				element: <Calendar />
 			},
 			{
