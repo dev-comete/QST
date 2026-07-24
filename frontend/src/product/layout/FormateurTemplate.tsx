@@ -1,15 +1,13 @@
+import type { NavItem } from "../../other/types/common";
 import Layout from "./Layout";
-
-type NavItem = {
-    label: string;
-    link: string;
-};
 
 const FormateurTemplate = () => {
 
 	const navList : NavItem[] = [
 		{ label: 'Plannification', link: '/formateur/planning' },
-		{ label: 'Banque de question', link: '/formateur/bank-question' }
+		{ label: 'Gestion de question', link: '/formateur/gestion_question' },
+		{ label: 'Gestion de quizz', link: '/formateur/gestion_quizz' },
+		{ label: 'Tableau de bord', link: '/formateur/tableau_de_bord' }
 	]
 
 	return (

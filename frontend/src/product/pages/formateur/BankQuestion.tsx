@@ -1,7 +1,7 @@
-const BankQuestion = () => {
+const QuestionManagement = () => {
     return (
         <>Bank question page</>
     )
 }
 
-export default BankQuestion;
+export default QuestionManagement;

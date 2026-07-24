@@ -1,20 +1,21 @@
 import type React from "react";
 import Button from "../../atoms/Button/Button"
 import CustomText from "../../atoms/Text/CustomText";
+import type { ColorTheme } from "../../../other/types/common";
 
 interface ActionButtonProps {
 	children: React.ReactNode;
-	btnColor: string;
+	btnColor?: ColorTheme;
 	btnStyling?: string;
-	textColor?: string;
+	textColor?: ColorTheme;
 	action : () => void;
 }
 
 const ActionButton = ({
 	children,
-	btnColor,
+	btnColor = "white",
 	btnStyling,
-	textColor = "white",
+	textColor = "text",
 	action
 } : ActionButtonProps) => {
 	return (

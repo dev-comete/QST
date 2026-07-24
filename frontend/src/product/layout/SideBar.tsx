@@ -9,7 +9,7 @@ const SideBar = ({ navList } : SideBarProps ) => {
 
 	return (
 		<div className="flex flex-col bg-primary min-h-screen items-end flex-1 pt-5">
-			<div className="w-80">
+			<nav className="w-[90%]">
 			{
 				navList.map((navItem, index) => {
 					const { label, link } = navItem
@@ -24,7 +24,7 @@ const SideBar = ({ navList } : SideBarProps ) => {
 					)
 				})
 			}
-			</div>
+			</nav>
 		</div>
 	)
 }

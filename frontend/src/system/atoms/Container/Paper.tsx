@@ -1,9 +1,10 @@
 import type React from "react"
 import { backgroundColor } from "../../../other/types/constant"
+import type { ColorTheme } from "../../../other/types/common";
 
 interface PaperProps {
 	children : React.ReactNode,
-	color?: string,
+	color?: ColorTheme,
 	hasShadow?: boolean,
 	position?: 'absolute' | 'sticky' |'relative' | 'fixed',
 	customStyling?: string

@@ -1,7 +1,7 @@
 @layer base {
 
 	html {
-		@apply bg-background text-text;
+		@apply bg-background text-text text-[14px];
 	}
 }
 

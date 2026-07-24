@@ -24,6 +24,7 @@ const NavButton = ({ link, children, customStyling }: NavButtonProps) => {
 			customStyling={btnStyling + " " + customStyling}
 			color={btnColor}
 			action = { () => navigate(link) }
+			isRounded={false}
 		>
 			<CustomText weight="bold" color={textColor}>
 				{children}
