@@ -2,10 +2,16 @@ import Title from "../../../system/molecules/LayoutElement/Title";
 import Box from "../../../system/atoms/Container/Box";
 import type { ReactNode } from "react";
 
-const BodyLayout = ({ title, children } : { title: string, children: ReactNode}) => {
+interface BodyLayoutProps {
+	title: string,
+	titleButton?: ReactNode,
+	children: ReactNode
+}
+
+const BodyLayout = ({ title, titleButton, children } : BodyLayoutProps) => {
 	return (
-		<Box>
-			<Title title={title}/>
+		<Box customStyling="p-10">
+			<Title title={title} sideButton={titleButton}/>
 			{children}
 		</Box>
 	)

@@ -10,10 +10,10 @@ const Home = () => {
 
     return (
         <div className="flex gap-3 items-center justify-center h-screen">
-			<ActionButton action={() => navigate("/admin") }>{"Admin"}</ActionButton>
-			<ActionButton action={() => navigate("/formateur") }>{"Formateur"}</ActionButton>
-			<ActionButton action={() => navigate("/apprenant") }>{"Apprenant"}</ActionButton>
-			<ActionButton action={() => navigate("/test") }>{"Test"}</ActionButton>
+			<ActionButton btnColor="primary" textColor="white" action={() => navigate("/admin") }>{"Admin"}</ActionButton>
+			<ActionButton btnColor="primary" textColor="white" action={() => navigate("/formateur") }>{"Formateur"}</ActionButton>
+			<ActionButton btnColor="primary" textColor="white" action={() => navigate("/apprenant") }>{"Apprenant"}</ActionButton>
+			<ActionButton btnColor="primary" textColor="white" action={() => navigate("/test") }>{"Test"}</ActionButton>
 		</div>
     )
 }

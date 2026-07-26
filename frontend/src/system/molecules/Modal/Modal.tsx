@@ -6,6 +6,7 @@ import Button from "../../atoms/Button/Button";
 import ActionButton from "../Buttons/ActionButton";
 import type { ColorTheme } from "../../../other/types/common";
 import { Children, useState } from "react";
+import Title from "../LayoutElement/Title";
 
 interface ModalProps {
 	bgColor?: ColorTheme,
@@ -39,7 +40,7 @@ interface ModalSubtitleProps {
 	subtitle: string[]
 }
 
-const ModalSubtitle = ({ subIdx, increaseIdx, decreaseIdx, subtitle } : ModalSubtitleProps) => {
+const ModalNav = ({ subIdx, increaseIdx, decreaseIdx, subtitle } : ModalSubtitleProps) => {
 
 	return (
 		<Box customStyling="justify-between w-full">
@@ -92,16 +93,16 @@ const Modal = ({
 				<Box direction="column" customStyling="justify-center items-center">
 					{ closeModal && 
 						<ActionButton
-							action={closeModal}
+							action={() => { closeModal() ; setSubIdx(0)}}
 							btnColor="transparent"
 							btnStyling="self-end"
 						>{"x"}</ActionButton>
 					}
-					{ title && <CustomText textTag="h3">{title}</CustomText> }
-					{ subtitle && <CustomText textTag="h2">{subtitle[subIdx]}</CustomText>}
+					{ title && <Title title={title} /> }
+					{ subtitle && <CustomText textTag="h3">{subtitle[subIdx]}</CustomText>}
 					{subPage[subIdx]}
 					{ subtitle &&
-						<ModalSubtitle 
+						<ModalNav 
 							subIdx={subIdx}
 							decreaseIdx={() => setSubIdx(prev => prev - 1)}
 							increaseIdx={() => setSubIdx(prev => prev + 1)}
