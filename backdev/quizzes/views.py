@@ -14,7 +14,7 @@ from .serializers import QuizSubmissionSerializer , QuizSerializer, QuestionSeri
 
 from .pagination import QuestionBankPagination
 
-from .services import submit_entire_quiz, assign_questions_to_quiz , create_question_with_answers , search_questions_in_bank_service
+from .services import submit_entire_quiz, assign_questions_to_quiz , create_question_with_answers , search_questions_in_bank_service , remove_question_from_quiz
 
 from .models import Quiz, Question, Reponse , UtilisateurQuiz, QuizQuestion , TypeQuestion, Bareme, QuestionTypeQuestion, QuestionBareme , Valiny , Corrigee
 
@@ -371,3 +371,15 @@ class QuestionBankSearchAPIView(APIView):
 
         serializer = QuestionBankSerializer(paginated_queryset, many=True)
         return paginator.get_paginated_response(serializer.data)
+
+class RemoveQuestionFromQuizAPIView(APIView):
+    permission_classes = [IsFormateurOrAdminOrReadOnly] 
+
+    def delete(self, request, quiz_id, question_id):     
+        remove_question_from_quiz(
+            quiz_id=quiz_id, 
+            question_id=question_id, 
+            user=request.user
+        )
+
+        return Response(status=status.HTTP_204_NO_CONTENT)

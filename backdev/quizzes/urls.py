@@ -8,7 +8,7 @@ from .views import (
     SubmitQuizAPIView , AssignStudentAPIView, MyTodoQuizzesAPIView , AssignQuestionsAPIView , TypeQuestionViewSet, 
     BaremeViewSet, 
     QuestionTypeQuestionViewSet, 
-    QuestionBaremeViewSet , CreateFullQuestionAPIView , QuizQuestionViewSet , ApprenantQuizListAPIView , TakeQuizAPIView , QuizReviewAPIView , QuestionBankSearchAPIView
+    QuestionBaremeViewSet , CreateFullQuestionAPIView , QuizQuestionViewSet , ApprenantQuizListAPIView , TakeQuizAPIView , QuizReviewAPIView , QuestionBankSearchAPIView, RemoveQuestionFromQuizAPIView
 )
 from .views_analytics import FormateurVagueAnalyticsAPIView , ApprenantBulletinAPIView
 from .views_pdf import ApprenantBulletinPDFAPIView
@@ -59,5 +59,7 @@ urlpatterns = [
 
     path('bulletin/vague/<int:vague_id>/', ApprenantBulletinAPIView.as_view(), name='apprenant-bulletin'),
 
-    path('bulletin/vague/<int:vague_id>/pdf/', ApprenantBulletinPDFAPIView.as_view(), name='apprenant-bulletin-pdf')
+    path('bulletin/vague/<int:vague_id>/pdf/', ApprenantBulletinPDFAPIView.as_view(), name='apprenant-bulletin-pdf'),
+
+    path('quizzes/remove-question/<int:quiz_id>/<int:question_id>/', RemoveQuestionFromQuizAPIView.as_view(), name='remove_quiz_question'),
 ]
