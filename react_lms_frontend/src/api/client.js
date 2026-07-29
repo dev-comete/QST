@@ -3,7 +3,7 @@ import { TokenStorage } from '../utils/storage';
 
 // Centralized Axios instance configuration
 const apiClient = axios.create({
-  baseURL: 'http://localhost:8000/', // Adjust to match your Django server URL
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/' || 'https://8000-cs-629375525277-default.cs-asia-southeast1-palm.cloudshell.dev/',
   headers: {
     'Content-Type': 'application/json',
   },

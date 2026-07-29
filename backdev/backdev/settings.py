@@ -39,8 +39,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     '8000-cs-053069f0-3449-4470-96df-35d3150becaf.cs-asia-southeast1-fork.cloudshell.dev',
+    '8000-cs-629375525277-default.cs-asia-southeast1-palm.cloudshell.dev'
     '127.0.0.1',
     'localhost',
+    '127.0.0.1:8000',
+    '*'
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -48,7 +51,8 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3001',
     'http://127.0.0.1:8000',
     'http://127.0.0.1:3001',
-    'https://8000-cs-053069f0-3449-4470-96df-35d3150becaf.cs-asia-southeast1-fork.cloudshell.dev'
+    'https://8000-cs-053069f0-3449-4470-96df-35d3150becaf.cs-asia-southeast1-fork.cloudshell.dev',
+    'https://8000-cs-629375525277-default.cs-asia-southeast1-palm.cloudshell.dev'
   
 ]
 
@@ -58,7 +62,8 @@ CORS_TRUSTED_ORIGINS = [
     'http://localhost:8000',
     'http://127.0.0.1:8000',
     'http://127.0.0.1:3001',
-    'https://8000-cs-053069f0-3449-4470-96df-35d3150becaf.cs-asia-southeast1-fork.cloudshell.dev'
+    'https://8000-cs-053069f0-3449-4470-96df-35d3150becaf.cs-asia-southeast1-fork.cloudshell.dev',
+    'https://8000-cs-629375525277-default.cs-asia-southeast1-palm.cloudshell.dev'
 ]
 
 
@@ -79,9 +84,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.middleware.security.SecurityMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.security.SecurityMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -130,6 +135,7 @@ WSGI_APPLICATION = 'backdev.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+"""
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -144,12 +150,13 @@ DATABASES = {
     }
 }
 
-"""DATABASES = {
+"""
+DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
-}"""
+}
 
 
 

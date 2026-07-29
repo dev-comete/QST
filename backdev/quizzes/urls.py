@@ -8,10 +8,12 @@ from .views import (
     SubmitQuizAPIView , AssignStudentAPIView, MyTodoQuizzesAPIView , AssignQuestionsAPIView , TypeQuestionViewSet, 
     BaremeViewSet, 
     QuestionTypeQuestionViewSet, 
-    QuestionBaremeViewSet , CreateFullQuestionAPIView , QuizQuestionViewSet , ApprenantQuizListAPIView , TakeQuizAPIView , QuizReviewAPIView , QuestionBankSearchAPIView
+    QuestionBaremeViewSet , CreateFullQuestionAPIView , QuizQuestionViewSet , ApprenantQuizListAPIView , TakeQuizAPIView , QuizReviewAPIView , QuestionBankSearchAPIView, RemoveQuestionFromQuizAPIView 
 )
+
 from .views_analytics import FormateurVagueAnalyticsAPIView , ApprenantBulletinAPIView
 from .views_pdf import ApprenantBulletinPDFAPIView
+from .views_corbeille import CorbeilleQuizAPIView, CorbeilleQuestionAPIView
 
 from formations.views import FormationViewSet
 from accounts.views import UtilisateurViewSet, TypeUtilisateurViewSet
@@ -59,5 +61,15 @@ urlpatterns = [
 
     path('bulletin/vague/<int:vague_id>/', ApprenantBulletinAPIView.as_view(), name='apprenant-bulletin'),
 
-    path('bulletin/vague/<int:vague_id>/pdf/', ApprenantBulletinPDFAPIView.as_view(), name='apprenant-bulletin-pdf')
+    path('bulletin/vague/<int:vague_id>/pdf/', ApprenantBulletinPDFAPIView.as_view(), name='apprenant-bulletin-pdf'),
+
+    path('quizzes/remove-question/<int:quiz_id>/<int:question_id>/', RemoveQuestionFromQuizAPIView.as_view(), name='remove_quiz_question'),
+
+    # Routes pour lister la corbeille
+    path('corbeille/quizzes/', CorbeilleQuizAPIView.as_view(), name='corbeille-quizzes'),
+    path('corbeille/questions/', CorbeilleQuestionAPIView.as_view(), name='corbeille-questions'),
+
+    # Routes pour la restauration (POST avec l'ID pour restaurer)
+    path('corbeille/quizzes/<int:quiz_id>/restaurer/', CorbeilleQuizAPIView.as_view(), name='restaurer-quiz'),
+    path('corbeille/questions/<int:question_id>/restaurer/', CorbeilleQuestionAPIView.as_view(), name='restaurer-question'),
 ]
