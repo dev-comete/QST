@@ -399,3 +399,7 @@ class RemoveQuestionFromQuizAPIView(APIView):
         )
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class QuestionsSupprimeesAPIView(APIView):
+    def get(self, request):
+        questions = Question.all_objects.filter(is_active=False)
