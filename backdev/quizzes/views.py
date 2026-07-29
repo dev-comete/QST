@@ -331,6 +331,22 @@ class TakeQuizAPIView(APIView):
             utilisateur=request.user
         )
 
+        quiz = assignment.quiz
+        current_time = now()
+
+        # NOUVEAU - GATE 2.5 : Vérification de la fenêtre de planification
+        if quiz.date_ouverture and current_time < quiz.date_ouverture:
+            return Response(
+                {"error": f"Ce quiz ne sera accessible qu'à partir du {quiz.date_ouverture.strftime('%d/%m/%Y %H:%M')}."}, 
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        if quiz.date_fermeture and current_time > quiz.date_fermeture:
+            return Response(
+                {"error": "La période d'accès à ce quiz est terminée."}, 
+                status=status.HTTP_403_FORBIDDEN
+            )
+
         # GATE 3: Check if the student already submitted this test
         if assignment.termine:
             return Response(

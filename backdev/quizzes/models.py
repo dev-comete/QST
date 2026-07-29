@@ -8,6 +8,17 @@ class Quiz(models.Model):
     duree = models.DurationField(help_text="Durée allouée pour le quiz")
     status = models.CharField(max_length=50)
 
+    date_ouverture = models.DateTimeField(
+        null=True, 
+        blank=True, 
+        help_text="Date et heure à partir desquelles le quiz est accessible"
+    )
+    date_fermeture = models.DateTimeField(
+        null=True, 
+        blank=True, 
+        help_text="Date et heure limites pour démarrer le quiz"
+    )
+
     def __str__(self):
         return f"Quiz {self.id} - {self.formation.nom_formation}"
 
