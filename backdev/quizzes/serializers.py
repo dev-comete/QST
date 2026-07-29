@@ -11,6 +11,23 @@ class QuizSerializer(serializers.ModelSerializer):
     class Meta:
         model = Quiz
         fields = '__all__'
+        read_only_fields = ['id', 'date_creation_quiz']
+
+    def validate(self, data):
+        """
+        Validation métier globale pour le Quiz.
+        """
+        date_ouverture = data.get('date_ouverture')
+        date_fermeture = data.get('date_fermeture')
+
+        # Si les deux dates sont fournies, on vérifie la cohérence spatio-temporelle 
+        if date_ouverture and date_fermeture:
+            if date_fermeture <= date_ouverture:
+                raise serializers.ValidationError({
+                    "date_fermeture": "La date de fermeture doit être strictement ultérieure à la date d'ouverture."
+                })
+
+        return data
 
 class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
@@ -161,10 +178,13 @@ class StudentTodoQuizSerializer(serializers.ModelSerializer):
     # We use 'source' to easily reach into the related Quiz and Formation models
     formation_nom = serializers.CharField(source='quiz.formation.nom_formation', read_only=True)
     duree = serializers.DurationField(source='quiz.duree', read_only=True)
+
+    date_ouverture = serializers.DateTimeField(source='quiz.date_ouverture', read_only=True)
+    date_fermeture = serializers.DateTimeField(source='quiz.date_fermeture', read_only=True)
     
     class Meta:
         model = UtilisateurQuiz
-        fields = ['id', 'quiz', 'formation_nom', 'duree', 'date_assignation', 'termine']
+        fields = ['id', 'quiz', 'formation_nom', 'duree', 'date_assignation', 'date_ouverture', 'date_fermeture','termine']
 
 class SubmitAnswerSerializer(serializers.Serializer):
     question_id = serializers.IntegerField()
