@@ -111,7 +111,7 @@ class AssignStudentToVagueAPIView(GenericAPIView):
             utilisateur=student
         )
 
-        student.organisations.add(vague.formation.organisation)
+        student.organisation.add(vague.formation.organisation)
         
         if not created:
             return Response(
