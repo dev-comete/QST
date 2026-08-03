@@ -14,7 +14,7 @@ from .serializers import QuizSubmissionSerializer , QuizSerializer, QuestionSeri
 
 from .pagination import QuestionBankPagination
 
-from .services import submit_entire_quiz, assign_questions_to_quiz , create_question_with_answers , search_questions_in_bank_service
+from .services import submit_entire_quiz, assign_questions_to_quiz , create_question_with_answers , search_questions_in_bank_service , remove_question_from_quiz
 
 from .models import Quiz, Question, Reponse , UtilisateurQuiz, QuizQuestion , TypeQuestion, Bareme, QuestionTypeQuestion, QuestionBareme , Valiny , Corrigee
 
@@ -331,6 +331,22 @@ class TakeQuizAPIView(APIView):
             utilisateur=request.user
         )
 
+        quiz = assignment.quiz
+        current_time = now()
+
+        # NOUVEAU - GATE 2.5 : Vérification de la fenêtre de planification
+        if quiz.date_ouverture and current_time < quiz.date_ouverture:
+            return Response(
+                {"error": f"Ce quiz ne sera accessible qu'à partir du {quiz.date_ouverture.strftime('%d/%m/%Y %H:%M')}."}, 
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        if quiz.date_fermeture and current_time > quiz.date_fermeture:
+            return Response(
+                {"error": "La période d'accès à ce quiz est terminée."}, 
+                status=status.HTTP_403_FORBIDDEN
+            )
+
         # GATE 3: Check if the student already submitted this test
         if assignment.termine:
             return Response(
@@ -371,3 +387,19 @@ class QuestionBankSearchAPIView(APIView):
 
         serializer = QuestionBankSerializer(paginated_queryset, many=True)
         return paginator.get_paginated_response(serializer.data)
+
+class RemoveQuestionFromQuizAPIView(APIView):
+    permission_classes = [IsFormateurOrAdminOrReadOnly] 
+
+    def delete(self, request, quiz_id, question_id):     
+        remove_question_from_quiz(
+            quiz_id=quiz_id, 
+            question_id=question_id, 
+            user=request.user
+        )
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class QuestionsSupprimeesAPIView(APIView):
+    def get(self, request):
+        questions = Question.all_objects.filter(is_active=False)

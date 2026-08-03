@@ -1,6 +1,10 @@
 from django.conf import settings
 from django.db import models
 
+class ActiveManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(is_active=True)
+
 class Quiz(models.Model):
     # Represents Sous dossier/Quiz
     formation = models.ForeignKey('formations.Formation', on_delete=models.CASCADE)
@@ -8,11 +12,45 @@ class Quiz(models.Model):
     duree = models.DurationField(help_text="Durée allouée pour le quiz")
     status = models.CharField(max_length=50)
 
+    date_ouverture = models.DateTimeField(
+        null=True, 
+        blank=True, 
+        help_text="Date et heure à partir desquelles le quiz est accessible"
+    )
+    date_fermeture = models.DateTimeField(
+        null=True, 
+        blank=True, 
+        help_text="Date et heure limites pour démarrer le quiz"
+    )
+
+    is_active = models.BooleanField(default=True)
+
+    # NOUVEAU : On assigne les Managers
+    objects = ActiveManager()      # Le manager par défaut filtre les actifs
+    all_objects = models.Manager() # Pour garder un accès à tout (archives)
+
+    def delete(self, *args, **kwargs):
+        self.is_active = False
+        self.status = 'deleted'
+        self.save()
+
     def __str__(self):
         return f"Quiz {self.id} - {self.formation.nom_formation}"
 
 class Question(models.Model):
     enonce_question = models.TextField()
+
+    # NOUVEAU : Le champ pour le Soft Delete
+    is_active = models.BooleanField(default=True)
+
+    # NOUVEAU : On assigne les Managers
+    objects = ActiveManager()
+    all_objects = models.Manager()
+
+    # NOUVEAU : On surcharge la suppression
+    def delete(self, *args, **kwargs):
+        self.is_active = False
+        self.save()
 
     def __str__(self):
         return self.enonce_question[:50]

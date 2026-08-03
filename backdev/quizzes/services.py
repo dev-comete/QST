@@ -1,6 +1,6 @@
 from django.db import transaction
 from django.core.exceptions import ValidationError
-
+from rest_framework.exceptions import PermissionDenied, NotFound
 from django.utils.timezone import now
 from datetime import timedelta
 
@@ -302,3 +302,41 @@ def search_questions_in_bank_service(search_term: str = None, type_code: str = N
         queryset = queryset.filter(questiontypequestion__type_question__code__iexact=type_code)
 
     return queryset.distinct()
+
+def remove_question_from_quiz(quiz_id: int, question_id: int, user):
+    """
+    Retire une question d'un quiz après avoir vérifié les permissions.
+    Lève des exceptions DRF qui seront transformées automatiquement en erreurs HTTP.
+    """
+    # 1. Vérification de l'existence du Quiz
+    try:
+        quiz = Quiz.objects.get(id=quiz_id)
+    except Quiz.DoesNotExist:
+        raise NotFound(detail="Quiz introuvable.")
+
+    # 2. Vérification de propriété
+    if not user.is_staff and quiz.formation.createur != user:
+        raise PermissionDenied(detail="Accès refusé. Vous n'êtes pas propriétaire de cette formation.")
+
+# 3. VERROUILLAGE : Le quiz a-t-il déjà été commencé ?
+    quiz_deja_commence = UtilisateurQuiz.objects.filter(
+        quiz=quiz, 
+        heure_debut__isnull=False  # Au moins un étudiant a cliqué sur "Démarrer"
+    ).exists()
+
+    if quiz_deja_commence:
+        raise ValidationError(
+            detail=(
+                "Impossible de modifier ce quiz. Au moins un apprenant a déjà commencé "
+                "ou terminé son évaluation. Pour garantir l'équité des notes, la structure "
+                "du quiz est verrouillée."
+            )
+        )
+
+    # 4. Suppression dans la table de jointure
+    deleted, _ = QuizQuestion.objects.filter(quiz=quiz, question_id=question_id).delete()
+
+    if not deleted:
+        raise NotFound(detail="Cette question n'est pas liée à ce quiz.")
+
+    return True
