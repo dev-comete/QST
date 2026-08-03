@@ -1,6 +1,14 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+class Organisation(models.Model):
+    nom = models.CharField(max_length=200, unique=True)
+    date_creation = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.nom
+
 class TypeUtilisateur(models.Model):
     type_utilisateur = models.CharField(max_length=100)
 
@@ -21,6 +29,22 @@ class Utilisateur(AbstractUser):
         null=True, 
         blank=True
     )
+
+    organisation = models.ManyToManyField(
+        Organisation, 
+        #on_delete=models.CASCADE, 
+        null=True,  # null=True car un SuperAdmin n'a pas forcément d'organisation
+        blank=True,
+        related_name='utilisateurs'
+    )
+
+    @property
+    def orga_principale(self):
+        """
+        Raccourci très pratique !
+        Renvoie l'organisation unique du formateur pour simplifier vos requêtes.
+        """
+        return self.organisations.first()
 
     def save(self, *args, **kwargs):
             # 1. Check if this user has a type_utilisateur assigned

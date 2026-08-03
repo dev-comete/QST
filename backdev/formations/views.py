@@ -26,9 +26,16 @@ class FormationViewSet(viewsets.ModelViewSet):
             When a Formateur creates a new Formation via POST, 
             automatically assign them as the creator so they don't have to send their own ID.
             """
-            serializer.save(createur=self.request.user)
+            serializer.save(createur=self.request.user , organisation=self.request.user.orga_principale)
 
-
+    def get_queryset(self):
+            user = self.request.user
+            if user.is_staff or user.is_superuser:
+                return Formation.objects.all() # L'admin voit tout
+                
+            # Le formateur ne voit QUE les formations de son organisation
+            return Formation.objects.filter(organisation=user.orga_principale)
+    
 class CreateVagueAPIView(GenericAPIView):
     permission_classes = [IsFormateurOrAdminOrReadOnly]
     serializer_class = CreateVagueSerializer
@@ -103,6 +110,8 @@ class AssignStudentToVagueAPIView(GenericAPIView):
             vague=vague,
             utilisateur=student
         )
+
+        student.organisations.add(vague.formation.organisation)
         
         if not created:
             return Response(

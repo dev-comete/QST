@@ -15,7 +15,7 @@ class UtilisateurSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         # Include your custom field 'type_utilisateur' here!
-        fields = ['id', 'username', 'email', 'password', 'type_utilisateur'] 
+        fields = ['id', 'username', 'email', 'password', 'type_utilisateur', 'organisation'] 
         
         # This guarantees the API will NEVER return the password in a response
         extra_kwargs = {
