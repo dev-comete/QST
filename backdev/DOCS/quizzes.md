@@ -37,6 +37,7 @@ All endpoints require authentication unless noted otherwise. Permission classes 
 | :--- | :---: | :--- |
 | [Formateur Vague Analytics API](./formateur-vague-analytics.md) | `GET` | Retrieve aggregate analytics for a vague as a formateur or admin. |
 | [Apprenant Bulletin API](./apprenant-bulletin.md) | `GET` | View a student's detailed bulletin for a specific vague. |
+| [ Analytics maths](./analytics.md) | `DOCS` | Explains how calculs are made. |
 
 ---
 
