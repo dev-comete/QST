@@ -6,9 +6,19 @@ class Formation(models.Model):
     nom_formation = models.CharField(max_length=200)
     createur = models.ForeignKey(
             settings.AUTH_USER_MODEL, 
-            on_delete=models.CASCADE,
+            on_delete=models.SET_NULL,
+            null=True,
             limit_choices_to={'type_utilisateur__type_utilisateur': 'formateur'} # Optional: restricts dropdowns in Django Admin
         )
+
+    organisation = models.ForeignKey(
+        'accounts.Organisation', 
+        on_delete=models.CASCADE,
+        null=True,   # ⬅️ AJOUTEZ CECI
+        blank=True,
+        related_name='formations'
+    )
+    
     def __str__(self):
         return self.nom_formation
 
