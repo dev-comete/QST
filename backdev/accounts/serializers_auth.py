@@ -10,6 +10,7 @@ class CustomLoginSerializer(TokenObtainPairSerializer):
         user = self.user
 
         role = user.type_utilisateur.type_utilisateur if user.type_utilisateur else None
+        organisation = user.organisation.nom if user.organisation else None
 
         # Add custom data to the response payload
         data.update({
@@ -23,6 +24,7 @@ class CustomLoginSerializer(TokenObtainPairSerializer):
                 # Example of determining role based on Django's built-in flags
                 'is_staff': user.is_staff, 
                 'is_superuser': user.is_superuser,
+                'organisation': organisation
             }
         })
 
