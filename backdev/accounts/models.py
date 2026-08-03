@@ -44,7 +44,7 @@ class Utilisateur(AbstractUser):
         Raccourci très pratique !
         Renvoie l'organisation unique du formateur pour simplifier vos requêtes.
         """
-        return self.organisations.first()
+        return self.organisation.first()
 
     def save(self, *args, **kwargs):
             # 1. Check if this user has a type_utilisateur assigned
