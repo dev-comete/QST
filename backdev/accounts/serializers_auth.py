@@ -10,7 +10,15 @@ class CustomLoginSerializer(TokenObtainPairSerializer):
         user = self.user
 
         role = user.type_utilisateur.type_utilisateur if user.type_utilisateur else None
-        organisation = user.organisation.nom if user.organisation else None
+        # 1. On récupère la liste complète (pratique pour les apprenants)
+
+        organisations_list = [
+            {'id': org.id, 'nom': org.nom} 
+            for org in user.organisation.all()
+        ]
+
+        # 2. On utilise la propriété (@property) qu'on a créée pour choper l'orga principale
+        orga_principale_nom = user.orga_principale.nom if user.orga_principale else None
 
         # Add custom data to the response payload
         data.update({
@@ -24,7 +32,8 @@ class CustomLoginSerializer(TokenObtainPairSerializer):
                 # Example of determining role based on Django's built-in flags
                 'is_staff': user.is_staff, 
                 'is_superuser': user.is_superuser,
-                'organisation': organisation
+                'orga_principale': orga_principale_nom, # String (ex: "Apple")
+                'organisations': organisations_list     # Array (ex: [{id: 1, nom: "Apple"}])
             }
         })
 
