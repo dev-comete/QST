@@ -1,4 +1,5 @@
 import type { ColorTheme } from "./common";
+import type { questionType } from "./questionType";
 
 const backgroundColor : Record<ColorTheme, string> = {
 	'background': 'bg-background',
@@ -14,6 +15,14 @@ const backgroundColor : Record<ColorTheme, string> = {
 	'transparent' : 'bg-transparent'
 }
 
+const initialQuestion : questionType = {
+	enonce_question: "",
+	type_id: 0,
+	bareme_id: 0,
+	options: []
+}
+
 export {
-	backgroundColor
+	backgroundColor,
+	initialQuestion
 }

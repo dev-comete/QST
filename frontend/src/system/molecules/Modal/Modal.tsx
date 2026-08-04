@@ -86,21 +86,36 @@ const Modal = ({
 				color={bgColor}
 				position="fixed"
 				customStyling="
-					p-5 min-w-[30%] max-w-[80%]
+					w-[50%] max-h-[85vh] h-[85vh]
 					top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
-					z-101"
+					z-101
+					p-5
+					flex flex-col
+					"
 			>
-				<Box direction="column" customStyling="justify-center items-center">
-					{ closeModal && 
-						<ActionButton
-							action={() => { closeModal() ; setSubIdx(0)}}
-							btnColor="transparent"
-							btnStyling="self-end"
-						>{"x"}</ActionButton>
-					}
-					{ title && <Title title={title} /> }
-					{ subtitle && <CustomText textTag="h3">{subtitle[subIdx]}</CustomText>}
-					{subPage[subIdx]}
+				<Box direction="column" customStyling="justify-between h-full w-full min-h-0">
+					<Box direction="column" customStyling="justify-between grow min-h-0">
+						<div className="flex justify-end px-2 flex-none">
+							{ closeModal && 
+								<ActionButton
+									action={() => { closeModal() ; setSubIdx(0)}}
+									btnColor="transparent"
+								>{"x"}</ActionButton>
+							}
+						</div>
+
+						<Box direction="column" customStyling="justify-between items-center p-3 grow min-h-0">
+							<Box direction="column" customStyling="flex-none w-full mb-3">
+								{ title && <Title title={title} /> }
+								{ subtitle && <CustomText textTag="h3">{subtitle[subIdx]}</CustomText>}
+							</Box>
+
+							<Box customStyling="grow w-full overflow-y-auto min-h-0">
+								{subPage[subIdx]}
+							</Box>
+						</Box>
+					</Box>
+
 					{ subtitle &&
 						<ModalNav 
 							subIdx={subIdx}
@@ -111,8 +126,8 @@ const Modal = ({
 					}
 				</Box>
 			</Paper>
-		</>
-	)
+	</>
+)
 }
 
 const ConfirmModal = ({

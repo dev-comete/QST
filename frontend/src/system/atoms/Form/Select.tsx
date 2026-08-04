@@ -5,6 +5,7 @@ interface SelectProps {
     required?: boolean;
     values: { id: string, value: string }[];
     size?: number;
+	handleChange: () => void
 }
 
 const Select = ({
@@ -13,7 +14,8 @@ const Select = ({
 	name,
     required = false,
     values,
-    size = 1
+    size = 1,
+	handleChange
 }: SelectProps) => {
 
     const styling = "bg-white focus:outline-none outline-none";
@@ -27,6 +29,7 @@ const Select = ({
                 required={required}
                 size={size}
 				className={styling}
+				onChange={handleChange}
             >
                 {
                     values.map(({id, value}) => (

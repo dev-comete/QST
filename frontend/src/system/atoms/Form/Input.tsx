@@ -1,5 +1,5 @@
 interface InputProps {
-	label: string;
+	label?: string;
 	type: 'text' | 'password' | 'email' | 'search' | 'time' | 'checkbox';
 	id: string;
 	name: string;
