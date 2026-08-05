@@ -1,10 +1,10 @@
-import type { responseType } from "../../../other/types/questionType"
+import type { respType } from "../../../other/types/questionType"
 import Box from "../../atoms/Container/Box"
 import { Table, type Column } from "../../atoms/Table/Table"
 import ActionButton from "../Buttons/ActionButton"
 
 interface ResponseMakingProps {
-	responses: responseType[]
+	responses: respType[]
 }
 
 type responseTable = {
@@ -13,7 +13,7 @@ type responseTable = {
 	action: string
 }
 
-const responseMakingColumns: Column<responseTable>[] = [
+const responseMakingColumns: Column<respType>[] = [
 	{
 		header: 'Sélection',
 		key: "est_correcte"
@@ -33,7 +33,7 @@ const responseMakingColumns: Column<responseTable>[] = [
 	}
 ]
 
-const transformToResponseTable = ( options: responseType[], action: string = 'delete'): responseTable[] => {
+const transformToResponseTable = ( options: respType[], action: string = 'delete'): responseTable[] => {
 	return options.map((item) => ({ ...item, action,}));
 };
 

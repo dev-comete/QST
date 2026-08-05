@@ -17,7 +17,7 @@ const Header = () => {
 			<Box customStyling="justify-between items-center">
 				<Logo />
 				<ActionButton
-					action={() => navigate("/")}
+					action={() => navigate("/login")}
 				>{"Déconnexion"}</ActionButton>
 			</Box>
 		</Paper>

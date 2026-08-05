@@ -3,10 +3,13 @@ type ColorTheme = 'background' | 'primary' | 'secondary' | 'accent' | 'success' 
 type NavItem = {
     label: string;
     link: string;
-	title: string
+	title?: string
 };
+
+type Role = 'admin' | 'formateur' | 'apprenant' | 'rfq'
 
 export type {
 	ColorTheme,
-	NavItem
+	NavItem,
+	Role
 }

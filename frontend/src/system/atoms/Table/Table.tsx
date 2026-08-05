@@ -2,8 +2,8 @@ import type { ReactNode } from "react"
 
 export interface Column<T> {
 	header: string;
-	key: keyof T; 
-	render?: (value: T[keyof T], record: T) => ReactNode; 
+	key: keyof T | (string & {}); 
+	render?: (value?: T[keyof T], record?: T) => ReactNode; 
 }
 
 interface TableProps<T> {
@@ -30,7 +30,10 @@ export const Table = <T,>({ columns, data, rowKey }: TableProps<T>) => {
 						<tr key={String(row[rowKey])} className="bg-white hover:bg-secondary/10">
 						{
 							columns.map((col, colIndex) => {
-								const rawValue = row[col.key];
+
+								const rawValue = col.key in (row as object) 
+								? row[col.key as keyof T] 
+								: undefined;
 
 								return (
 									<td key={colIndex} className="border-b border-secondary p-2">

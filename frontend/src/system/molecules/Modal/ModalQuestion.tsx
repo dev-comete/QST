@@ -1,5 +1,5 @@
 import { useState, type ChangeEvent, type Dispatch, type SetStateAction } from "react";
-import type { questionType, responseType } from "../../../other/types/questionType";
+import type { questionType, respType } from "../../../other/types/questionType";
 import Box from "../../atoms/Container/Box";
 import Select from "../../atoms/Form/Select";
 import TextArea from "../../atoms/Form/TextArea";
@@ -79,7 +79,7 @@ const OptionForm = ({ question, setQuestion } : QuestionMakingProps) => {
 
 	const addNewResponse = () => {
 
-		const newOption: responseType = {
+		const newOption: respType = {
 			reponse: input,
 			est_correcte: false,
 		};
