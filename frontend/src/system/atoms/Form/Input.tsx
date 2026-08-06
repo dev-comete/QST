@@ -1,19 +1,23 @@
+import type { ColorTheme } from "../../../other/types/common";
+
 interface InputProps {
 	label?: string;
-	type: 'text' | 'password' | 'email' | 'search' | 'time' | 'checkbox';
+	type?: 'text' | 'password' | 'email' | 'search' | 'time' | 'checkbox';
 	id: string;
 	name: string;
+	textColor?: ColorTheme;
 }
 
 const Input = ({
 	label,
-	type,
+	type = 'text',
 	id,
-	name
+	name,
+	textColor='text'
 }: InputProps) => {
 	return (
 		<div className="flex flex-col">
-			<label htmlFor={name} className="text-text">{label}</label>
+			<label htmlFor={name} className={`text-${textColor}`}>{label}</label>
 			<input
 				type={type}
 				id={id}

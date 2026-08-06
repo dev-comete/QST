@@ -34,9 +34,7 @@ export const router = createBrowserRouter([
 			{	
 				element: <AdminTemplate />,
 				children: [
-
 					{ index: true, element: <Navigate to="gestion_compte" replace /> },
-
 					{ path: 'gestion_compte', element: <UserManagement /> },
 					{ path: 'tableau_de_bord', element: <AdminDashboard /> },
 				]
@@ -52,9 +50,7 @@ export const router = createBrowserRouter([
 			{ 
 				element: <FormateurTemplate />,
 				children: [
-
 					{ index: true, element: <Navigate to="planning" replace /> },
-
 					{ path: "planning", element: <Planning /> },
 					{ path: "gestion_question", element: <QuestionManagement /> },
 					{ path: "gestion_quizz", element: <QuizManagement /> },
@@ -71,9 +67,7 @@ export const router = createBrowserRouter([
 			{ 
 				element: <ApprenantTemplate />,
 				children: [
-
 					{ index: true, element: <Navigate to="planning" replace /> },
-
 					{ path: "calendrier_quiz", element: <Calendar /> },
 					{ path: "bulletin", element: <Bulletin /> },
 					{ path: "evaluation", element: <Evaluation /> }

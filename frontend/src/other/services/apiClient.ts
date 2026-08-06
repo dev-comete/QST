@@ -3,9 +3,9 @@ import axios from 'axios';
 import { TokenStorage } from './storage';
 
 const apiClient = axios.create({
-	baseURL: import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/' || 'https://8000-cs-629375525277-default.cs-asia-southeast1-palm.cloudshell.dev/',
+	baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/',
 	headers: {
-	'Content-Type': 'application/json',
+		'Content-Type': 'application/json',
 	},
 });
 
