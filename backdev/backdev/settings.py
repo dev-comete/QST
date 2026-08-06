@@ -89,11 +89,11 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.CorsMiddleware', # Toujours en premier, c'est parfait
     'django.middleware.security.SecurityMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware', 
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware', # ⬅️ Déplacé ici (DOIT être avant CSRF)
+    'django.middleware.common.CommonMiddleware',            # ⬅️ Déplacé ici
+    'django.middleware.csrf.CsrfViewMiddleware',            # ⬅️ Déplacé ici (Sécurise la session)
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
