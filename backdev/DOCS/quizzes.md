@@ -6,7 +6,13 @@ All endpoints require authentication unless noted otherwise. Permission classes 
 
 ---
 
-## 📚 Question Bank
+## � Authentication
+
+| API | Method | Description |
+| :--- | :---: | :--- |
+| [Auth Login API](./auth-login.md) | `POST` | Authenticate a user and receive JWT tokens plus profile and organization details. |
+
+## �📚 Question Bank
 
 | API | Method | Description |
 | :--- | :---: | :--- |
