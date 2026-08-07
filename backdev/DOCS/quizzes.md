@@ -11,6 +11,7 @@ All endpoints require authentication unless noted otherwise. Permission classes 
 | API | Method | Description |
 | :--- | :---: | :--- |
 | [Auth Login API](./auth-login.md) | `POST` | Authenticate a user and receive JWT tokens plus profile and organization details. |
+| [Django Built-In Accounts Endpoints](./auth-urls.md) | `GET`/`POST` | Browser-based login/logout/password reset/change views included from Django. |
 
 ## �📚 Question Bank
 
