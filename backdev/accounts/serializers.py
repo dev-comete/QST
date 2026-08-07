@@ -1,9 +1,17 @@
+import secrets
+import string
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 
-from .models import TypeUtilisateur
+from .models import TypeUtilisateur, Organisation
 
 User = get_user_model()
+
+class OrganisationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Organisation
+        fields = ['id', 'nom', 'date_creation', 'is_active']
+        read_only_fields = ['id', 'date_creation']
 
 class TypeUtilisateurSerializer(serializers.ModelSerializer):
     class Meta:
@@ -15,25 +23,27 @@ class UtilisateurSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         # Include your custom field 'type_utilisateur' here!
-        fields = ['id', 'username', 'email', 'password', 'type_utilisateur', 'organisation'] 
+        fields = ['id', 'username', 'email', 'type_utilisateur', 'organisation'] 
         
         # This guarantees the API will NEVER return the password in a response
-        extra_kwargs = {
-            'password': {'write_only': True, 'required': False} 
-        }
+        #extra_kwargs = {
+        #    'password': {'write_only': True, 'required': False} 
+        #}
 
     def create(self, validated_data):
-        """Override create to hash the password securely."""
+        #"""Override create to hash the password securely."""
         # We extract the password from the dictionary
-        password = validated_data.pop('password', None)
+        #password = validated_data.pop('password', None)
         
         # Create the user without the password first
         user = super().create(validated_data)
+
+        alphabet = string.ascii_letters + string.digits + string.punctuation
+        random_password = ''.join(secrets.choice(alphabet) for i in range(16))
         
-        # Hash and set the password if one was provided
-        if password:
-            user.set_password(password)
-            user.save()
+        # 3. On le hashe et on le sauvegarde
+        user.set_password(random_password)
+        user.save()
             
         return user
 

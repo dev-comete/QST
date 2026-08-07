@@ -16,11 +16,12 @@ from .views_pdf import ApprenantBulletinPDFAPIView
 from .views_corbeille import CorbeilleQuizAPIView, CorbeilleQuestionAPIView
 
 from formations.views import FormationViewSet
-from accounts.views import UtilisateurViewSet, TypeUtilisateurViewSet
+from accounts.views import UtilisateurViewSet, TypeUtilisateurViewSet, OrganisationViewSet
 
 router = DefaultRouter()
 
 # 2. Register the CRUD endpoints
+router.register(r'organisations', OrganisationViewSet, basename='organisation')
 router.register(r'formations', FormationViewSet, basename='formation')
 router.register(r'types-utilisateurs', TypeUtilisateurViewSet, basename='type-utilisateur')
 router.register(r'utilisateurs',UtilisateurViewSet, basename='utilisateur')
