@@ -39,11 +39,24 @@ const Navbar = () => {
         {/* On affiche ce lien uniquement si l'utilisateur est formateur ou admin */}
         {(user?.role === 'formateur' || user?.role === 'admin') && (
             <>
+                <Link to="/formations" style={linkStyle}>
+                    Formations
+                </Link>
+
                 <Link to="/quizzes" style={linkStyle}>
                 Mes Quiz
                 </Link>
+
                 <Link to="/banque-questions" style={linkStyle}>
                 Banque de Questions
+                </Link>
+
+                <Link to="/baremes" style={linkStyle}>
+                  Barèmes
+                </Link>
+
+                <Link to="/vagues" style={linkStyle}>
+                  Vagues
                 </Link>
             </>
         )}
