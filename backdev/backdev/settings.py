@@ -122,10 +122,11 @@ ROOT_URLCONF = 'backdev.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -204,3 +205,8 @@ STATIC_URL = 'static/'
 
 # Tells Django to use the 'Utilisateur' model in the 'accounts' app for authentication
 AUTH_USER_MODEL = 'accounts.Utilisateur'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Adresse mail par défaut qui apparaîtra comme expéditeur
+DEFAULT_FROM_EMAIL = 'noreply@comete.ai'

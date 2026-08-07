@@ -33,7 +33,6 @@ class Utilisateur(AbstractUser):
     organisation = models.ManyToManyField(
         Organisation, 
         #on_delete=models.CASCADE, 
-        null=True,  # null=True car un SuperAdmin n'a pas forcément d'organisation
         blank=True,
         related_name='utilisateurs'
     )
