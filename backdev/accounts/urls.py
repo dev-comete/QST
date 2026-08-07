@@ -1,7 +1,7 @@
 # urls.py
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
-from .views_auth import CustomLoginAPIView
+from .views_auth import CustomLoginAPIView, LogoutAPIView
 
 urlpatterns = [
     # Login endpoint
@@ -9,4 +9,6 @@ urlpatterns = [
     
     # Endpoint to get a new access token when the 60-minute one expires
     path('auth/refresh/', TokenRefreshView.as_view(), name='api-token-refresh'),
+
+    path('auth/logout/', LogoutAPIView.as_view(), name='api-logout'),
 ]
