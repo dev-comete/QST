@@ -58,6 +58,10 @@ const Navbar = () => {
                 <Link to="/vagues" style={linkStyle}>
                   Vagues
                 </Link>
+
+                <Link to="/users" style={linkStyle}>
+                  Utilisateurs
+                </Link>
             </>
         )}
       </div>

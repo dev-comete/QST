@@ -24,6 +24,10 @@ import VagueFormPage from './pages/VagueFormPage';
 import VagueListPage from './pages/VagueListPage';
 import VagueDetailPage from './pages/VagueDetailPage';
 
+import UserListPage from './pages/UserListPage';
+import UserFormPage from './pages/UserFormPage';
+import AdminRoute from './components/AdminRoute';
+
 function App() {
   return (
     <AuthProvider>
@@ -163,6 +167,30 @@ function App() {
                   <VagueDetailPage />
                 </FormateurRoute>
               } 
+            />
+            <Route 
+              path="/users" 
+              element={
+                <AdminRoute>
+                  <UserListPage />
+                </AdminRoute>
+              }
+            />
+            <Route 
+              path="/users/create" 
+              element={
+                <AdminRoute>
+                  <UserFormPage />
+                </AdminRoute>
+              }
+            />
+            <Route 
+              path="/users/:id/edit" 
+              element={
+                <AdminRoute>
+                  <UserFormPage />
+                </AdminRoute>
+              }
             />
 
           </Route>
