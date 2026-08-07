@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { TokenStorage } from '../utils/storage';
+import { AuthService } from '../api/auth.service';
 
 const AuthContext = createContext(null);
 
@@ -21,8 +22,12 @@ export const AuthProvider = ({ children }) => {
     setUser(userData);
   };
 
-  const logoutContext = () => {
+  const logoutContext = async () => {
+    // 1. On invalide le token côté backend
+    await AuthService.logout();
+    // 2. On vide le navigateur
     TokenStorage.clear();
+    // 3. On déconnecte l'interface React
     setUser(null);
   };
 

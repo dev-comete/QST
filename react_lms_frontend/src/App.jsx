@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 
+import PublicRoute from './components/PublicRoute';
 import ProtectedRoute from './components/ProtectedRoute';
 import FormateurRoute from './components/FormateurRoute'; 
 import MainLayout from './components/MainLayout';
@@ -19,7 +20,11 @@ function App() {
       <Router>
         <Routes>
           {/* Routes Publiques */}
-          <Route path="/login" element={<LoginPage />} />
+          <Route path="/login" element={
+            <PublicRoute>
+              <LoginPage />
+            </PublicRoute>
+          } />
           
             {/* Routes Protégées (Nécessite juste d'être connecté) */}
             <Route 
