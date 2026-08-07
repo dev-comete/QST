@@ -1,0 +1,148 @@
+/* ==========================================================================
+   Forms
+   ========================================================================== */
+
+.lms-field {
+  margin-bottom: var(--space-5);
+}
+
+.lms-field:last-child {
+  margin-bottom: 0;
+}
+
+.lms-label {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-ink-soft);
+  margin-bottom: var(--space-2);
+}
+
+.lms-label__hint {
+  font-weight: 400;
+  color: var(--color-slate);
+  margin-left: var(--space-2);
+}
+
+.lms-input,
+.lms-select,
+.lms-textarea {
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  color: var(--color-ink);
+  background: var(--color-paper);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 0.85rem;
+  transition: border-color var(--duration-fast) var(--ease-standard),
+              box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+.lms-input:hover,
+.lms-select:hover,
+.lms-textarea:hover {
+  border-color: var(--color-slate-light);
+}
+
+.lms-input:focus,
+.lms-select:focus,
+.lms-textarea:focus {
+  outline: none;
+  border-color: var(--color-harbor);
+  box-shadow: var(--shadow-focus);
+}
+
+.lms-input:disabled,
+.lms-select:disabled {
+  background: var(--color-mist-strong);
+  color: var(--color-slate);
+  cursor: not-allowed;
+}
+
+.lms-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%235b6b7c' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2.25rem;
+}
+
+.lms-form-row {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.lms-form-row > .lms-field {
+  flex: 1;
+}
+
+.lms-form-actions {
+  display: flex;
+  gap: var(--space-3);
+  padding-top: var(--space-2);
+}
+
+.lms-form-note {
+  font-size: var(--text-xs);
+  color: var(--color-info);
+  margin-top: var(--space-2);
+}
+
+.lms-search {
+  position: relative;
+}
+
+.lms-search .lms-input {
+  padding-left: 2.5rem;
+}
+
+.lms-search__icon {
+  position: absolute;
+  left: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-slate-light);
+  pointer-events: none;
+}
+
+/* React-datepicker theming, scoped to this app's palette */
+.lms-scope .react-datepicker-wrapper {
+  width: 100%;
+  display: block;
+}
+
+.lms-scope .react-datepicker__input-container input {
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  color: var(--color-ink);
+  background: var(--color-paper);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 0.85rem;
+}
+
+.lms-scope .react-datepicker__input-container input:focus {
+  outline: none;
+  border-color: var(--color-harbor);
+  box-shadow: var(--shadow-focus);
+}
+
+.lms-scope .react-datepicker {
+  font-family: var(--font-body);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+}
+
+.lms-scope .react-datepicker__header {
+  background: var(--color-harbor-light);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.lms-scope .react-datepicker__day--selected,
+.lms-scope .react-datepicker__day--keyboard-selected,
+.lms-scope .react-datepicker__time-list-item--selected {
+  background-color: var(--color-harbor) !important;
+}

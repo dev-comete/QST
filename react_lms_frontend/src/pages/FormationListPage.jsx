@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FormationService } from '../api/formation.service';
+import '../styles/index.css';
 
 export default function FormationListPage() {
   const [formations, setFormations] = useState([]);
@@ -32,35 +33,52 @@ export default function FormationListPage() {
     }
   };
 
-  if (loading) return <div>Chargement...</div>;
+  if (loading) {
+    return (
+      <div className="lms-scope lms-page">
+        <div className="lms-container lms-loading">
+          <span className="lms-spinner" />
+          Chargement…
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Mes Formations</h1>
-        <Link to="/formations/create" className="bg-blue-600 text-white px-4 py-2 rounded">
-          + Nouvelle Formation
-        </Link>
-      </div>
+    <div className="lms-scope lms-page">
+      <div className="lms-container">
+        <div className="lms-pageheader">
+          <div>
+            <h1 className="lms-pageheader__title">Mes formations</h1>
+            <p className="lms-pageheader__subtitle">Le catalogue que vous proposez à vos apprenants.</p>
+          </div>
+          <Link to="/formations/create" className="lms-btn lms-btn--primary">
+            + Nouvelle formation
+          </Link>
+        </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {formations.length === 0 ? (
-          <p>Aucune formation trouvée.</p>
+          <div className="lms-empty">
+            <p className="lms-empty__title">Aucune formation trouvée</p>
+            <p>Créez votre première formation pour commencer.</p>
+          </div>
         ) : (
-          formations.map((formation) => (
-            <div key={formation.id} className="border p-4 rounded shadow-sm bg-white">
-              <p className="text-xl font-bold mb-2">{formation.nom_formation}</p>
-              
-              <div className="flex justify-between text-sm">
-                <Link to={`/formations/${formation.id}/edit`} className="text-blue-600 hover:underline">
-                  Modifier
-                </Link>
-                <button onClick={() => handleDelete(formation.id)} className="text-red-600 hover:underline">
-                  Supprimer
-                </button>
+          <div className="lms-grid lms-grid--3">
+            {formations.map((formation) => (
+              <div key={formation.id} className="lms-tile">
+                <div className="lms-tile__title">{formation.nom_formation}</div>
+
+                <div className="lms-tile__footer">
+                  <Link to={`/formations/${formation.id}/edit`} className="lms-btn lms-btn--outline" style={{ flex: 1 }}>
+                    Modifier
+                  </Link>
+                  <button onClick={() => handleDelete(formation.id)} className="lms-btn lms-btn--danger-text" style={{ flex: 1, border: '1px solid var(--color-border-strong)' }}>
+                    Supprimer
+                  </button>
+                </div>
               </div>
-            </div>
-          ))
+            ))}
+          </div>
         )}
       </div>
     </div>

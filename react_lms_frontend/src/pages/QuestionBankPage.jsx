@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { QuestionService } from '../api/question.service';
 import useDebounce from '../hooks/useDebounce';
+import '../styles/index.css';
 
 const QuestionBankPage = () => {
   // États pour les filtres
@@ -42,28 +43,38 @@ const QuestionBankPage = () => {
   };
 
   return (
-    <div className="container" style={{ marginTop: '30px' }}>
-      <h2>Banque de Questions</h2>
-      <p style={{ color: '#666', marginBottom: '20px' }}>
-        Total : {data.count} question(s) trouvée(s)
-      </p>
+    <div className="lms-scope lms-page">
+      <div className="lms-container">
+        <div className="lms-pageheader">
+          <div>
+            <h1 className="lms-pageheader__title">Banque de questions</h1>
+            <p className="lms-pageheader__subtitle">
+              <span className="lms-num">{data.count}</span> question(s) trouvée(s)
+            </p>
+          </div>
+        </div>
 
-      {/* ZONE DE FILTRES */}
-      <div className="card" style={{ marginBottom: '20px', padding: '15px' }}>
-        <div style={{ display: 'flex', gap: '15px' }}>
-          <div className="form-group" style={{ flex: 2, marginBottom: 0 }}>
+        {/* ZONE DE FILTRES */}
+        <div className="lms-filterbar">
+          <div className="lms-search">
+            <span className="lms-search__icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="7" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </span>
             <input
               type="text"
-              className="form-control"
-              placeholder="Rechercher un mot-clé dans l'énoncé..."
+              className="lms-input"
+              placeholder="Rechercher un mot-clé dans l'énoncé…"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <div className="form-group" style={{ flex: 1, marginBottom: 0 }}>
-            <select 
-              className="form-control" 
-              value={typeCode} 
+          <div className="lms-filterbar__select">
+            <select
+              className="lms-select"
+              value={typeCode}
               onChange={(e) => setTypeCode(e.target.value)}
             >
               <option value="">Tous les types</option>
@@ -73,70 +84,68 @@ const QuestionBankPage = () => {
             </select>
           </div>
         </div>
-      </div>
 
-      {/* GESTION D'ERREUR */}
-      {error && <div className="text-danger card" style={{ padding: '15px', marginBottom: '20px' }}>{error}</div>}
+        {/* GESTION D'ERREUR */}
+        {error && <div className="lms-alert lms-alert--danger" style={{ marginBottom: 'var(--space-5)' }}>{error}</div>}
 
-      {/* AFFICHAGE DES RÉSULTATS */}
-      {loading ? (
-        <p>Chargement en cours...</p>
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-          {data.results.length === 0 && !error ? (
-            <p style={{ textAlign: 'center', color: '#999', marginTop: '20px' }}>Aucune question ne correspond à votre recherche.</p>
-          ) : (
-            data.results.map((question) => (
-              <div key={question.id} className="card" style={{ padding: '20px' }}>
-                <h4 style={{ marginBottom: '15px' }}>{question.enonce_question}</h4>
-                <ul style={{ listStyleType: 'none', padding: 0 }}>
-                  {question.reponses.map((rep) => (
-                    <li 
-                      key={rep.id} 
-                      style={{ 
-                        padding: '8px', 
-                        marginBottom: '5px', 
-                        borderRadius: '4px',
-                        backgroundColor: rep.est_correct ? '#d4edda' : '#f8d7da',
-                        color: rep.est_correct ? '#155724' : '#721c24',
-                        border: `1px solid ${rep.est_correct ? '#c3e6cb' : '#f5c6cb'}`
-                      }}
-                    >
-                      {rep.texte} <strong>{rep.est_correct ? '(Vrai)' : '(Faux)'}</strong>
-                      {rep.explication && <div style={{ fontSize: '0.85em', marginTop: '4px', fontStyle: 'italic' }}>Explication: {rep.explication}</div>}
-                    </li>
-                  ))}
-                </ul>
+        {/* AFFICHAGE DES RÉSULTATS */}
+        {loading ? (
+          <div className="lms-loading"><span className="lms-spinner" />Chargement en cours…</div>
+        ) : (
+          <div className="lms-stack">
+            {data.results.length === 0 && !error ? (
+              <div className="lms-empty">
+                <p className="lms-empty__title">Aucun résultat</p>
+                <p>Aucune question ne correspond à votre recherche.</p>
               </div>
-            ))
-          )}
-        </div>
-      )}
+            ) : (
+              data.results.map((question) => (
+                <div key={question.id} className="lms-card">
+                  <h4 style={{ marginBottom: 'var(--space-4)', fontFamily: 'var(--font-display)', fontSize: 'var(--text-md)' }}>
+                    {question.enonce_question}
+                  </h4>
+                  <div>
+                    {question.reponses.map((rep) => (
+                      <div
+                        key={rep.id}
+                        className={`lms-answer ${rep.est_correct ? 'lms-answer--correct' : 'lms-answer--incorrect'}`}
+                      >
+                        {rep.texte} <strong>{rep.est_correct ? '(Vrai)' : '(Faux)'}</strong>
+                        {rep.explication && (
+                          <div className="lms-answer__explain">Explication : {rep.explication}</div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        )}
 
-      {/* PAGINATION */}
-      {data.count > 0 && (
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px', padding: '20px 0' }}>
-          <button 
-            className="btn" 
-            style={{ backgroundColor: data.previous ? '#0056b3' : '#ccc', cursor: data.previous ? 'pointer' : 'not-allowed' }}
-            disabled={!data.previous} 
-            onClick={() => setPage(page - 1)}
-          >
-            &laquo; Précédent
-          </button>
-          
-          <span style={{ padding: '10px' }}>Page {page}</span>
-          
-          <button 
-            className="btn" 
-            style={{ backgroundColor: data.next ? '#0056b3' : '#ccc', cursor: data.next ? 'pointer' : 'not-allowed' }}
-            disabled={!data.next} 
-            onClick={() => setPage(page + 1)}
-          >
-            Suivant &raquo;
-          </button>
-        </div>
-      )}
+        {/* PAGINATION */}
+        {data.count > 0 && (
+          <div className="lms-pagination">
+            <button
+              className="lms-btn lms-btn--outline"
+              disabled={!data.previous}
+              onClick={() => setPage(page - 1)}
+            >
+              &laquo; Précédent
+            </button>
+
+            <span className="lms-pagination__label">Page {page}</span>
+
+            <button
+              className="lms-btn lms-btn--outline"
+              disabled={!data.next}
+              onClick={() => setPage(page + 1)}
+            >
+              Suivant &raquo;
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

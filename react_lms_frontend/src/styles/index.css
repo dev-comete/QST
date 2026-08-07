@@ -1,0 +1,16 @@
+/* ==========================================================================
+   LMS Formateur Console — design system entry point
+   Import this single file once per page: `import '../styles/index.css'`
+   Wrap the page root in a `.lms-scope` div so styles never leak globally.
+   ========================================================================== */
+
+@import './tokens.css';
+@import './base.css';
+@import './layout.css';
+@import './cards.css';
+@import './buttons.css';
+@import './forms.css';
+@import './table.css';
+@import './badges.css';
+@import './lists.css';
+@import './misc.css';

@@ -1,0 +1,115 @@
+/* ==========================================================================
+   Cards — the ledger surface. Flat, hairline-bordered, quiet shadow.
+   A colored left "tab" communicates category without extra chrome.
+   ========================================================================== */
+
+.lms-card {
+  background: var(--color-paper);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xs);
+  padding: var(--space-5);
+}
+
+.lms-card--pad-lg {
+  padding: var(--space-6);
+}
+
+.lms-card--flush {
+  padding: 0;
+  overflow: hidden;
+}
+
+.lms-card--tab {
+  border-left: 3px solid var(--color-harbor);
+}
+
+.lms-card--tab-success {
+  border-left: 3px solid var(--color-success);
+}
+
+.lms-card--tab-info {
+  border-left: 3px solid var(--color-info);
+}
+
+.lms-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-4);
+}
+
+.lms-card__title {
+  font-size: var(--text-md);
+  font-weight: 600;
+  font-family: var(--font-body);
+  color: var(--color-ink);
+}
+
+.lms-card__hint {
+  font-size: var(--text-xs);
+  color: var(--color-slate);
+  margin-top: var(--space-1);
+  margin-bottom: var(--space-4);
+  line-height: 1.5;
+}
+
+/* Tile card used in grid listings (formations, quizzes) */
+.lms-tile {
+  background: var(--color-paper);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: border-color var(--duration-base) var(--ease-standard),
+              box-shadow var(--duration-base) var(--ease-standard),
+              transform var(--duration-base) var(--ease-standard);
+}
+
+.lms-tile:hover {
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+
+.lms-tile__title {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  margin-bottom: var(--space-3);
+}
+
+.lms-tile__meta {
+  font-size: var(--text-sm);
+  color: var(--color-slate);
+  margin-bottom: var(--space-1);
+}
+
+.lms-tile__meta strong {
+  color: var(--color-ink-soft);
+  font-weight: 600;
+}
+
+.lms-tile__footer {
+  margin-top: var(--space-4);
+  display: flex;
+  gap: var(--space-2);
+}
+
+.lms-tile__timestamp {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-slate-light);
+  margin-top: var(--space-3);
+}
+
+.lms-authcard {
+  width: 100%;
+  background: var(--color-paper);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-7) var(--space-6);
+}

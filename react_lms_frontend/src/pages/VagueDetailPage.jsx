@@ -2,19 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { VagueService } from '../api/vague.service';
 import { UserService } from '../api/user.service';
-import { QuizService } from '../api/quiz.service'; 
+import { QuizService } from '../api/quiz.service';
+import '../styles/index.css';
 
 export default function VagueDetailPage() {
   const { id } = useParams();
-  
+
   const [vague, setVague] = useState(null);
   const [apprenantsDisponibles, setApprenantsDisponibles] = useState([]);
   const [selectedApprenantId, setSelectedApprenantId] = useState('');
-  
+
   // 🌟 Nouveaux états pour les Quiz
   const [quizzesDisponibles, setQuizzesDisponibles] = useState([]);
   const [selectedQuizId, setSelectedQuizId] = useState('');
-  
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -37,7 +38,7 @@ export default function VagueDetailPage() {
       const quizzes = await QuizService.getQuizzes(); // Adaptez le nom de la méthode si besoin
       const listeQuizzes = quizzes.results || quizzes;
       setQuizzesDisponibles(listeQuizzes);
-      
+
     } catch (error) {
       console.error("Erreur de chargement", error);
     } finally {
@@ -53,9 +54,9 @@ export default function VagueDetailPage() {
 
     try {
       const response = await VagueService.assignStudent(id, selectedApprenantId);
-      alert(response.message); 
-      fetchData(); 
-      setSelectedApprenantId(''); 
+      alert(response.message);
+      fetchData();
+      setSelectedApprenantId('');
     } catch (error) {
       console.error("Erreur lors de l'inscription", error);
       alert(error.response?.data?.error || "Erreur lors de l'assignation");
@@ -79,110 +80,136 @@ export default function VagueDetailPage() {
     }
   };
 
-  if (loading) return <div className="p-6">Chargement des détails de la vague...</div>;
-  if (!vague) return <div className="p-6">Vague introuvable.</div>;
-
-  return (
-    <div className="p-6 max-w-6xl mx-auto">
-      {/* En-tête */}
-      <div className="bg-white p-6 rounded shadow-sm border mb-6 flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold mb-2">Formation : {vague.formation_nom}</h1>
-          <p className="text-gray-600 font-medium">
-            Du {new Date(vague.debut).toLocaleDateString()} au {new Date(vague.fin).toLocaleDateString()}
-          </p>
-        </div>
-        <div className="bg-blue-50 text-blue-800 px-4 py-2 rounded-lg font-bold">
-          {vague.etudiants.length} inscrit(s)
+  if (loading) {
+    return (
+      <div className="lms-scope lms-page">
+        <div className="lms-container lms-loading">
+          <span className="lms-spinner" />
+          Chargement des détails de la vague…
         </div>
       </div>
+    );
+  }
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        
-        {/* Colonne de gauche : Formulaires d'actions */}
-        <div className="col-span-1 flex flex-col gap-6">
-          
-          {/* Action 1 : Inscrire un étudiant */}
-          <div className="bg-white p-6 rounded shadow-sm border">
-            <h2 className="text-lg font-bold mb-4">Inscrire un étudiant</h2>
-            <form onSubmit={handleAssignStudent} className="flex flex-col gap-4">
-              <select 
-                className="border p-2 rounded"
-                value={selectedApprenantId}
-                onChange={(e) => setSelectedApprenantId(e.target.value)}
-                required
-              >
-                <option value="">-- Choisir un apprenant --</option>
-                {apprenantsDisponibles.map(apprenant => (
-                  <option key={apprenant.id} value={apprenant.id}>
-                    {apprenant.username} ({apprenant.email})
-                  </option>
-                ))}
-              </select>
-              <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
-                Ajouter à la vague
-              </button>
-            </form>
+  if (!vague) {
+    return (
+      <div className="lms-scope lms-page">
+        <div className="lms-container">
+          <div className="lms-empty">
+            <p className="lms-empty__title">Vague introuvable</p>
+            <p>Cette session n'existe pas ou a été supprimée.</p>
           </div>
+        </div>
+      </div>
+    );
+  }
 
-          {/* 🌟 Action 2 : Assigner un Quiz massif */}
-          <div className="bg-white p-6 rounded shadow-sm border border-l-4 border-l-green-500">
-            <h2 className="text-lg font-bold mb-2">Assigner un Quiz</h2>
-            <p className="text-xs text-gray-500 mb-4">
-              Ce quiz sera assigné à <strong>tous les étudiants</strong> actuellement inscrits dans cette vague.
+  return (
+    <div className="lms-scope lms-page">
+      <div className="lms-container">
+        {/* En-tête */}
+        <div className="lms-card lms-card--pad-lg lms-header-row" style={{ marginBottom: 'var(--space-6)' }}>
+          <div>
+            <p className="lms-eyebrow" style={{ marginBottom: 'var(--space-2)' }}>Session</p>
+            <h1 className="lms-pageheader__title">{vague.formation_nom}</h1>
+            <p className="lms-pageheader__subtitle">
+              Du {new Date(vague.debut).toLocaleDateString()} au {new Date(vague.fin).toLocaleDateString()}
             </p>
-            <form onSubmit={handleAssignQuiz} className="flex flex-col gap-4">
-              <select 
-                className="border p-2 rounded"
-                value={selectedQuizId}
-                onChange={(e) => setSelectedQuizId(e.target.value)}
-                required
-              >
-                <option value="">-- Choisir un quiz --</option>
-                {quizzesDisponibles.map(quiz => (
-                  <option key={quiz.id} value={quiz.id}>
-                    Quiz #{quiz.id} {quiz.status === 'draft' ? '(Brouillon)' : ''}
-                  </option>
-                ))}
-              </select>
-              <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">
-                Assigner à toute la classe
-              </button>
-            </form>
+          </div>
+          <div className="lms-headline-stat">
+            {vague.etudiants.length} inscrit(s)
+          </div>
+        </div>
+
+        <div className="lms-grid lms-grid--sidebar">
+
+          {/* Colonne de gauche : Formulaires d'actions */}
+          <div className="lms-stack">
+
+            {/* Action 1 : Inscrire un étudiant */}
+            <div className="lms-card lms-card--tab">
+              <div className="lms-card__title" style={{ marginBottom: 'var(--space-4)' }}>Inscrire un étudiant</div>
+              <form onSubmit={handleAssignStudent} className="lms-stack" style={{ gap: 'var(--space-4)' }}>
+                <select
+                  className="lms-select"
+                  value={selectedApprenantId}
+                  onChange={(e) => setSelectedApprenantId(e.target.value)}
+                  required
+                >
+                  <option value="">-- Choisir un apprenant --</option>
+                  {apprenantsDisponibles.map(apprenant => (
+                    <option key={apprenant.id} value={apprenant.id}>
+                      {apprenant.username} ({apprenant.email})
+                    </option>
+                  ))}
+                </select>
+                <button type="submit" className="lms-btn lms-btn--primary lms-btn--block">
+                  Ajouter à la vague
+                </button>
+              </form>
+            </div>
+
+            {/* 🌟 Action 2 : Assigner un Quiz massif */}
+            <div className="lms-card lms-card--tab-success">
+              <div className="lms-card__title">Assigner un quiz</div>
+              <p className="lms-card__hint">
+                Ce quiz sera assigné à <strong>tous les étudiants</strong> actuellement inscrits dans cette vague.
+              </p>
+              <form onSubmit={handleAssignQuiz} className="lms-stack" style={{ gap: 'var(--space-4)' }}>
+                <select
+                  className="lms-select"
+                  value={selectedQuizId}
+                  onChange={(e) => setSelectedQuizId(e.target.value)}
+                  required
+                >
+                  <option value="">-- Choisir un quiz --</option>
+                  {quizzesDisponibles.map(quiz => (
+                    <option key={quiz.id} value={quiz.id}>
+                      Quiz #{quiz.id} {quiz.status === 'draft' ? '(Brouillon)' : ''}
+                    </option>
+                  ))}
+                </select>
+                <button type="submit" className="lms-btn lms-btn--success lms-btn--block">
+                  Assigner à toute la classe
+                </button>
+              </form>
+            </div>
+
+          </div>
+
+          {/* Colonne de droite : Liste des inscrits */}
+          <div className="lms-card lms-card--flush">
+            <div style={{ padding: 'var(--space-5) var(--space-5) 0' }}>
+              <div className="lms-card__title">Étudiants inscrits dans la session</div>
+            </div>
+
+            <table className="lms-table" style={{ marginTop: 'var(--space-3)' }}>
+              <thead>
+                <tr>
+                  <th>Nom d'utilisateur</th>
+                  <th>Email</th>
+                </tr>
+              </thead>
+              <tbody>
+                {vague.etudiants.length === 0 ? (
+                  <tr>
+                    <td colSpan="2" className="lms-table__empty">
+                      Aucun étudiant inscrit dans cette vague pour le moment.
+                    </td>
+                  </tr>
+                ) : (
+                  vague.etudiants.map(etudiant => (
+                    <tr key={etudiant.etudiant_id}>
+                      <td className="lms-table__name">{etudiant.username}</td>
+                      <td>{etudiant.email}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
 
         </div>
-
-        {/* Colonne de droite : Liste des inscrits */}
-        <div className="col-span-2 bg-white p-6 rounded shadow-sm border">
-          <h2 className="text-lg font-bold mb-4">Étudiants inscrits dans la session</h2>
-          
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b bg-gray-50">
-                <th className="py-2 px-3">Nom d'utilisateur</th>
-                <th className="py-2 px-3">Email</th>
-              </tr>
-            </thead>
-            <tbody>
-              {vague.etudiants.length === 0 ? (
-                <tr>
-                  <td colSpan="2" className="py-8 text-center text-gray-500">
-                    Aucun étudiant inscrit dans cette vague pour le moment.
-                  </td>
-                </tr>
-              ) : (
-                vague.etudiants.map(etudiant => (
-                  <tr key={etudiant.etudiant_id} className="border-b hover:bg-gray-50">
-                    <td className="py-3 px-3 font-medium">{etudiant.username}</td>
-                    <td className="py-3 px-3 text-gray-600">{etudiant.email}</td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-
       </div>
     </div>
   );
