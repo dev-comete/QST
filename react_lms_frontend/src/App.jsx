@@ -14,17 +14,27 @@ import QuizListPage from './pages/QuizListPage';
 import QuizCreatePage from './pages/QuizCreatePage';
 import QuizAssignQuestionsPage from './pages/QuizAssignQuestionsPage';
 
+import BaremeListPage from './pages/BaremeListPage';
+import BaremeFormPage from './pages/BaremeFormPage';
+
+import FormationListPage from './pages/FormationListPage';
+import FormationFormPage from './pages/FormationFormPage';
+
+import VagueFormPage from './pages/VagueFormPage';
+import VagueListPage from './pages/VagueListPage';
+import VagueDetailPage from './pages/VagueDetailPage';
+
 function App() {
   return (
     <AuthProvider>
       <Router>
         <Routes>
           {/* Routes Publiques */}
-          <Route path="/login" element={
-            <PublicRoute>
-              <LoginPage />
-            </PublicRoute>
-          } />
+            <Route path="/login" element={
+              <PublicRoute>
+                <LoginPage />
+              </PublicRoute>
+            } />
           
             {/* Routes Protégées (Nécessite juste d'être connecté) */}
             <Route 
@@ -70,6 +80,87 @@ function App() {
               element={
                 <FormateurRoute>
                   <QuizAssignQuestionsPage />
+                </FormateurRoute>
+              } 
+            />
+
+            <Route 
+              path="/baremes" 
+              element={
+                <FormateurRoute>
+                  <BaremeListPage />
+                </FormateurRoute>
+              } 
+            />
+
+            <Route 
+              path="/baremes/create" 
+              element={
+                <FormateurRoute>
+                  <BaremeFormPage />
+                </FormateurRoute>
+              } 
+            />
+
+            <Route 
+              path="/baremes/:id/edit" 
+              element={
+                <FormateurRoute>
+                  <BaremeFormPage />
+                </FormateurRoute>
+              } 
+            />
+
+            <Route 
+              path="/formations" 
+              element={
+                <FormateurRoute>
+                  <FormationListPage />
+                </FormateurRoute>
+              } 
+            />
+
+            <Route 
+              path="/formations/create" 
+              element={
+                <FormateurRoute>
+                  <FormationFormPage />
+                </FormateurRoute>
+              } 
+            />
+
+            <Route 
+              path="/formations/:id/edit" 
+              element={
+                <FormateurRoute>
+                  <FormationFormPage />
+                </FormateurRoute>
+              } 
+            />
+
+            <Route 
+              path="/vagues/create" 
+              element={
+                <FormateurRoute>
+                  <VagueFormPage />
+                </FormateurRoute>
+              } 
+            />
+
+            <Route 
+              path="/vagues" 
+              element={
+                <FormateurRoute>
+                  <VagueListPage />
+                </FormateurRoute>
+              } 
+            />
+
+            <Route 
+              path="/vagues/:id" 
+              element={
+                <FormateurRoute>
+                  <VagueDetailPage />
                 </FormateurRoute>
               } 
             />
