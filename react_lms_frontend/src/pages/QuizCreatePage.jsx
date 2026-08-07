@@ -25,7 +25,7 @@ const QuizCreatePage = () => {
   useEffect(() => {
     const fetchFormations = async () => {
       try {
-        const data = await FormationService.getFormations();
+        const data = await FormationService.getAll();
         // Gère le cas où Django renvoie les données directement, ou sous forme paginée (data.results)
         setFormations(data.results || data);
       } catch (err) {
