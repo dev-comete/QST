@@ -20,9 +20,9 @@ const DashboardPage = () => {
         <div className="lms-card lms-card--pad-lg">
           <div className="lms-header-row" style={{ borderBottom: '1px solid var(--color-border)', paddingBottom: 'var(--space-4)', marginBottom: 'var(--space-5)' }}>
             <h2>Tableau de bord</h2>
-            <button onClick={handleLogout} className="lms-btn lms-btn--ghost" style={{ border: '1px solid var(--color-border-strong)' }}>
+            {/*<button onClick={handleLogout} className="lms-btn lms-btn--ghost" style={{ border: '1px solid var(--color-border-strong)' }}>
               Se déconnecter
-            </button>
+            </button> */}
           </div>
 
           <div className="lms-header-row" style={{ marginBottom: 'var(--space-5)' }}>
