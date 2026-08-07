@@ -7,8 +7,11 @@ const Navbar = () => {
   const { user, logoutContext } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logoutContext();
+  const handleLogout = async () => {
+    // 1. On attend que le backend bloque le token et que le state soit nettoyé
+    await logoutContext();
+    
+    // 2. Seulement après, on redirige l'utilisateur
     navigate('/login');
   };
 

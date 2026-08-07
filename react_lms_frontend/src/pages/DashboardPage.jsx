@@ -16,7 +16,6 @@ const DashboardPage = () => {
       <div className="card" style={{ maxWidth: '600px', margin: '0 auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #eee', paddingBottom: '1rem', marginBottom: '1rem' }}>
           <h2>Tableau de Bord</h2>
-          <button onClick={handleLogout} className="btn" style={{ background: '#dc3545' }}>Déconnexion</button>
         </div>
         
         <div>
