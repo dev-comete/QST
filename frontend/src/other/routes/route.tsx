@@ -14,17 +14,30 @@ import Home from "../../product/pages/common/Home";
 import Login from "../../product/pages/common/Login";
 import AdminDashboard from "../../product/pages/admin/AdminDashboard";
 import ProtectedRoute from "../../product/layout/common/ProtectedRoute";
-
-/* FOR TESTING ONLY */
-import Test from "../../product/pages/Test";
+import Unauthorized from "../../product/pages/common/Unauthorized";
+import { RootRedirect } from "../../product/layout/common/RootRedirect";
+import CreationQuestion from "../../product/pages/formateur/CreationQuestion";
 
 export const router = createBrowserRouter([
 
 	// Public routes
-	{ path: "/test", element: <Test /> },
-	{ path: '/', element: <Home /> },
+	{ path: '/', element: <RootRedirect />},
 	{ path: '/login', element: <Login /> },
-	// { path: '/unauthorized', element: <Unauthorized /> },
+	{ path: '/unauthorized', element: <Unauthorized /> },
+
+	{
+		element: <ProtectedRoute allowedRole={['admin', 'apprenant', 'formateur', 'rfq']}/>, 
+		children: [
+			{
+				path: '/home',
+				element: <Home />
+			},
+			{
+				path: '/',
+				element: <Home />
+			}
+		]
+	},
 
 	//Admin routes
 	{
@@ -45,7 +58,7 @@ export const router = createBrowserRouter([
 	//Formateur routes
 	{
 		path: '/formateur',
-		element: <ProtectedRoute allowedRole={['formateur']}/>,
+		element: <ProtectedRoute allowedRole={['admin', 'formateur']}/>,
 		children: [
 			{ 
 				element: <FormateurTemplate />,
@@ -53,8 +66,9 @@ export const router = createBrowserRouter([
 					{ index: true, element: <Navigate to="planning" replace /> },
 					{ path: "planning", element: <Planning /> },
 					{ path: "gestion_question", element: <QuestionManagement /> },
+					{ path: "creation_question", element: <CreationQuestion />},
 					{ path: "gestion_quizz", element: <QuizManagement /> },
-					{ path: "tableau_de_bord", element: <Dashboard /> }
+					{ path: "tableau_de_bord", element: <Dashboard /> },
 				],
 			}
 		]
@@ -62,12 +76,13 @@ export const router = createBrowserRouter([
 
 	//Apprenant routes
 	{
-		element: <ProtectedRoute allowedRole={['apprenant']}/>,
+		path: "/",
+		element: <ProtectedRoute allowedRole={['admin', 'apprenant']}/>,
 		children: [
 			{ 
 				element: <ApprenantTemplate />,
 				children: [
-					{ index: true, element: <Navigate to="planning" replace /> },
+					{ index: true, element: <Navigate to="calendrier_quiz" replace /> },
 					{ path: "calendrier_quiz", element: <Calendar /> },
 					{ path: "bulletin", element: <Bulletin /> },
 					{ path: "evaluation", element: <Evaluation /> }

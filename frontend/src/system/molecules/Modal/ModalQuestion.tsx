@@ -7,6 +7,7 @@ import ActionButton from "../Buttons/ActionButton";
 import { ResponseMakingList } from "../List/ResponseMaking";
 import { Modal } from "./Modal";
 import { initialQuestion } from "../../../other/types/constant";
+import { useQuestion } from "../../../other/hooks/useQuestion";
 
 interface ModalCreateQuestionProps {
 	isOpen: boolean,
@@ -18,7 +19,7 @@ interface QuestionMakingProps {
 	setQuestion: Dispatch<SetStateAction<questionType>>;
 }
 
-const EnonceForm = ({ question, setQuestion } : QuestionMakingProps) => {
+export const EnonceForm = ({ question, setQuestion } : QuestionMakingProps) => {
 
 	const types = [
 		{id: "qcm", value: "QCM"},
@@ -73,7 +74,7 @@ const EnonceForm = ({ question, setQuestion } : QuestionMakingProps) => {
 	)
 }
 
-const OptionForm = ({ question, setQuestion } : QuestionMakingProps) => {
+export const OptionForm = ({ question, setQuestion } : QuestionMakingProps) => {
 	
 	const [ input, setInput ] = useState("")
 
@@ -111,11 +112,6 @@ const OptionForm = ({ question, setQuestion } : QuestionMakingProps) => {
 			<Box customStyling="h-[50%] overflow-y-auto">
 				<ResponseMakingList responses={question.options} />
 			</Box>
-			<ActionButton
-				action={() => { alert("Question créée !"); console.log("Question = ", question) }}
-				btnColor="secondary"
-				textColor="white"
-			>{"Créer question"}</ActionButton>
 		</Box>
 	)
 }
@@ -125,6 +121,7 @@ const ModalCreateQuestion = ({ isOpen, closeModal } : ModalCreateQuestionProps) 
 	const subtitle = ["Enoncé", "Option"]
 
 	const [ question, setQuestion ] = useState<questionType>(initialQuestion)
+	const { handleCreate } = useQuestion(question)
 
 	return (
 		<Modal
@@ -133,8 +130,15 @@ const ModalCreateQuestion = ({ isOpen, closeModal } : ModalCreateQuestionProps) 
 			isOpen={isOpen}
 			closeModal={closeModal}
 		>
-			<EnonceForm question={question} setQuestion={setQuestion}/>
-			<OptionForm question={question} setQuestion={setQuestion}/>
+			<form onSubmit={handleCreate}>
+				<EnonceForm question={question} setQuestion={setQuestion}/>
+				<OptionForm question={question} setQuestion={setQuestion}/>
+				<ActionButton
+					type="submit"
+					btnColor="secondary"
+					textColor="white"
+				>{"Créer question"}</ActionButton>
+			</form>
 		</Modal>
 	)
 }

@@ -1,27 +1,23 @@
-import { useState } from "react";
 import ActionButton from "../../../system/molecules/Buttons/ActionButton";
-import ModalCreateQuestion from "../../../system/molecules/Modal/ModalQuestion";
 import BodyLayout from "../../layout/common/BodyLayout";
+import { useNavigate } from "react-router";
 
 const QuestionManagement = () => {
 
-	const [ open, setOpen ] = useState(false)
+	const navigate = useNavigate()
 
     return (
         <BodyLayout
 			title={"Liste des questions"}
 			titleButton={
 				<ActionButton
-					action={() => setOpen(true)}
+					action={() => navigate("/formateur/creation_question")}
 					btnColor="secondary"
 					textColor="white"
 				>{"+ Créer une question"}</ActionButton>
 		}
 		>
-			<ModalCreateQuestion 
-				isOpen={open}
-				closeModal={() => setOpen(false)}
-			/>
+			{"Liste des questions"}
 		</BodyLayout>
     )
 }

@@ -10,7 +10,7 @@ interface BodyLayoutProps {
 
 const BodyLayout = ({ title, titleButton, children } : BodyLayoutProps) => {
 	return (
-		<Box customStyling="p-10">
+		<Box customStyling="p-10" direction="column">
 			<Title title={title} sideButton={titleButton}/>
 			{children}
 		</Box>

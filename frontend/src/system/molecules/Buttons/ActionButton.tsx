@@ -8,8 +8,9 @@ interface ActionButtonProps {
 	btnColor?: ColorTheme,
 	btnStyling?: string,
 	textColor?: ColorTheme,
-	action : () => void,
-	disabled? : boolean
+	action? : () => void,
+	disabled? : boolean,
+	type?: 'submit' | 'reset' | 'button',
 }
 
 const ActionButton = ({
@@ -18,6 +19,7 @@ const ActionButton = ({
 	btnStyling,
 	textColor = "text",
 	disabled = false,
+	type,
 	action
 } : ActionButtonProps) => {
 	return (
@@ -26,6 +28,7 @@ const ActionButton = ({
 			customStyling={btnStyling}
 			action={action}
 			disabled={disabled}
+			type={type}
 		>
 			<CustomText color={textColor} weight="bold">{children}</CustomText>
 		</Button>

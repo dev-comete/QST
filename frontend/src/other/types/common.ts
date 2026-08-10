@@ -10,7 +10,7 @@ type Role = 'admin' | 'formateur' | 'apprenant' | 'rfq'
 
 export interface User {
 	id: number,
-	role: string,
+	role: Role,
 	username: string,
 	first_name: string,
 	last_name: string,

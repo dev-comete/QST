@@ -10,7 +10,8 @@ interface ButtonProps {
 	paddingY?: number;
 	isRounded?: boolean;
 	disabled?: boolean;
-	action : () => void;
+	action? : () => void;
+	type?: 'submit' | 'reset' | 'button';
 }
 
 const Button = ({
@@ -19,6 +20,7 @@ const Button = ({
 	isRounded = true,
 	customStyling,
 	disabled = false,
+	type,
 	action 
 }: ButtonProps) => {
 
@@ -30,6 +32,7 @@ const Button = ({
 			className={`${backgroundColor[color]} ${customStyling} px-3 py-2 ${roundParam} w-fit ${isDisable}`}
 			disabled={disabled}
 			onClick={action}
+			type={type}
 		>
 			{children}
 		</button>

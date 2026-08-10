@@ -1,12 +1,12 @@
-import { useNavigate } from "react-router";
 import Box from "../../atoms/Container/Box";
 import Paper from "../../atoms/Container/Paper";
 import ActionButton from "../Buttons/ActionButton";
 import Logo from "../Logo/Logo";
+import { useLogout } from "../../../other/hooks/useAuth";
 
 const Header = () => {
 
-	const navigate = useNavigate();
+	const logout = useLogout();
 
 	return (
 		<Paper
@@ -17,7 +17,7 @@ const Header = () => {
 			<Box customStyling="justify-between items-center">
 				<Logo />
 				<ActionButton
-					action={() => navigate("/login")}
+					action={logout}
 				>{"Déconnexion"}</ActionButton>
 			</Box>
 		</Paper>
