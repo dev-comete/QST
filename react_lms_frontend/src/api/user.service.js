@@ -3,8 +3,8 @@ import apiClient from './client';
 
 // Adaptez l'URL si votre route Django est légèrement différente
 const USER_URL = '/quizzes/crud/utilisateurs/'; 
-const ROLES_URL = '/quizzes/types-utilisateurs/';
-const ORGANISATIONS_URL = '/quizzes/organisations/';
+const ROLES_URL = '/quizzes/crud/types-utilisateurs/';
+const ORGANISATIONS_URL = '/quizzes/crud/organisations/';
 
 export const UserService = {
   // Récupère la liste complète (filtrée par le backend selon qui demande)
