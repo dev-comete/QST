@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 import { useAuth } from '../context/AuthContext';
 import '../styles/index.css';
+import comete from '../assets/comete.jpg';
 
 const NAV_LINKS = [
   { to: '/dashboard', label: 'Tableau de Bord', rolesOnly: false },
@@ -12,6 +13,7 @@ const NAV_LINKS = [
   { to: '/baremes', label: 'Barèmes', rolesOnly: true },
   { to: '/vagues', label: 'Vagues', rolesOnly: true },
   { to: '/users', label: 'Utilisateurs', rolesOnly: true },
+  { to: '/organisations', label: 'Organisations', rolesOnly: true }
 ];
 
 const Navbar = () => {
@@ -33,7 +35,11 @@ const Navbar = () => {
     <nav className="lms-scope lms-navbar">
       {/* Logo / Marque */}
       <Link to="/dashboard" className="lms-navbar__brand">
-        <span className="lms-navbar__brand-glyph">C</span>
+        <img 
+          src={comete} 
+          alt="Logo QST" 
+          className="lms-navbar__logo-img" 
+        />
         QST Platform
       </Link>
 

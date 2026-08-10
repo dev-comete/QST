@@ -28,6 +28,9 @@ import UserListPage from './pages/UserListPage';
 import UserFormPage from './pages/UserFormPage';
 import AdminRoute from './components/AdminRoute';
 
+import OrganisationListPage from './pages/OrganisationListPage';
+import OrganisationFormPage from './pages/OrganisationFormPage';
+
 function App() {
   return (
     <AuthProvider>
@@ -192,6 +195,12 @@ function App() {
                 </AdminRoute>
               }
             />
+
+            <Route path="/organisations" element={<AdminRoute><OrganisationListPage /></AdminRoute>} />
+
+            <Route path="/organisations/create" element={<AdminRoute><OrganisationFormPage /></AdminRoute>} />
+
+            <Route path="/organisations/:id/edit" element={<AdminRoute><OrganisationFormPage /></AdminRoute>} />
 
           </Route>
           
