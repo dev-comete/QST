@@ -21,8 +21,15 @@ export interface User {
 	organisations: []
 }
 
+type userData = {
+	access: string,
+	refresh: string,
+	user: User
+}
+
 export type {
 	ColorTheme,
 	NavItem,
-	Role
+	Role,
+	userData
 }
