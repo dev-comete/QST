@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FormationService } from '../api/formation.service';
+import '../styles/index.css';
 
 export default function FormationFormPage() {
   const navigate = useNavigate();
@@ -9,7 +10,7 @@ export default function FormationFormPage() {
   const isEditing = Boolean(id);
 
   const [formData, setFormData] = useState({
-    nom_formation: '', 
+    nom_formation: '',
   });
 
   useEffect(() => {
@@ -37,28 +38,34 @@ export default function FormationFormPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">
-        {isEditing ? 'Modifier la Formation' : 'Créer une Formation'}
-      </h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block mb-1 font-medium">Nom de la formation</label>
-          <input 
-            type="text" 
-            name="nom_formation" 
-            value={formData.nom_formation} 
-            onChange={(e) => setFormData({ nom_formation: e.target.value })} 
-            required 
-            className="w-full border p-2 rounded"
-          />
-        </div>
-        <div className="flex gap-4 pt-4">
-          <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
-            Enregistrer
-          </button>
-        </div>
-      </form>
+    <div className="lms-scope lms-page lms-page--narrow">
+      <div className="lms-container--md" style={{ width: '100%' }}>
+        <h1 className="lms-pageheader__title" style={{ marginBottom: 'var(--space-6)' }}>
+          {isEditing ? 'Modifier la formation' : 'Créer une formation'}
+        </h1>
+        <form onSubmit={handleSubmit} className="lms-card lms-card--pad-lg">
+          <div className="lms-field">
+            <label className="lms-label">Nom de la formation</label>
+            <input
+              type="text"
+              name="nom_formation"
+              value={formData.nom_formation}
+              onChange={(e) => setFormData({ nom_formation: e.target.value })}
+              required
+              className="lms-input"
+              placeholder="Ex : Développement web full-stack"
+            />
+          </div>
+          <div className="lms-form-actions">
+            <button type="submit" className="lms-btn lms-btn--primary">
+              Enregistrer
+            </button>
+            <button type="button" onClick={() => navigate('/formations')} className="lms-btn lms-btn--outline">
+              Annuler
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

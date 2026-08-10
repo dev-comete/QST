@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import '../styles/index.css';
 
 const DashboardPage = () => {
   const { user, logoutContext } = useAuth();
@@ -11,36 +12,50 @@ const DashboardPage = () => {
     navigate('/login');
   };
 
+  const initials = `${user?.first_name?.[0] || ''}${user?.last_name?.[0] || ''}`.toUpperCase() || (user?.username?.[0]?.toUpperCase() ?? 'U');
+
   return (
-    <div className="container" style={{ marginTop: '5vh' }}>
-      <div className="card" style={{ maxWidth: '600px', margin: '0 auto' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #eee', paddingBottom: '1rem', marginBottom: '1rem' }}>
-          <h2>Tableau de Bord</h2>
-        </div>
-        
-        <div>
-          <h3>Bienvenue, {user?.first_name} {user?.last_name}!</h3>
-          <p style={{ marginTop: '1rem', color: '#666' }}>Voici les informations associées à votre profil :</p>
-          
-          <div style={{ background: '#f8f9fa', padding: '1.5rem', borderRadius: '4px', marginTop: '1rem' }}>
-            <ul style={{ listStyle: 'none', lineHeight: '2' }}>
-              <li><strong>ID Utilisateur :</strong> {user?.id}</li>
-              <li><strong>Username :</strong> {user?.username}</li>
-              <li><strong>Email :</strong> {user?.email}</li>
-              <li>
-                <strong>Rôle :</strong>{' '}
-                <span style={{ 
-                  background: '#0056b3', 
-                  color: 'white', 
-                  padding: '2px 8px', 
-                  borderRadius: '12px',
-                  fontSize: '0.85rem',
-                  textTransform: 'capitalize'
-                }}>
-                  {user?.role || 'Utilisateur standard'}
-                </span>
-              </li>
-            </ul>
+    <div className="lms-scope lms-page lms-page--narrow">
+      <div className="lms-container--md" style={{ width: '100%' }}>
+        <div className="lms-card lms-card--pad-lg">
+          <div className="lms-header-row" style={{ borderBottom: '1px solid var(--color-border)', paddingBottom: 'var(--space-4)', marginBottom: 'var(--space-5)' }}>
+            <h2>Tableau de bord</h2>
+            {/*<button onClick={handleLogout} className="lms-btn lms-btn--ghost" style={{ border: '1px solid var(--color-border-strong)' }}>
+              Se déconnecter
+            </button> */}
+          </div>
+
+          <div className="lms-header-row" style={{ marginBottom: 'var(--space-5)' }}>
+            <div>
+              <p className="lms-eyebrow">Bienvenue</p>
+              <h3 style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-lg)', fontWeight: 700 }}>
+                {user?.first_name} {user?.last_name}
+              </h3>
+            </div>
+            <div className="lms-avatar-ring">{initials}</div>
+          </div>
+
+          <p style={{ color: 'var(--color-slate)', marginBottom: 'var(--space-4)' }}>
+            Voici les informations associées à votre profil :
+          </p>
+
+          <div className="lms-card" style={{ background: 'var(--color-mist)', border: 'none', boxShadow: 'none' }}>
+            <div className="lms-summary-row">
+              <span className="lms-summary-row__label">ID utilisateur</span>
+              <span className="lms-summary-row__value">{user?.id}</span>
+            </div>
+            <div className="lms-summary-row">
+              <span className="lms-summary-row__label">Nom d'utilisateur</span>
+              <span className="lms-summary-row__value">{user?.username}</span>
+            </div>
+            <div className="lms-summary-row">
+              <span className="lms-summary-row__label">Email</span>
+              <span className="lms-summary-row__value">{user?.email}</span>
+            </div>
+            <div className="lms-summary-row">
+              <span className="lms-summary-row__label">Rôle</span>
+              <span className="lms-role-chip">{user?.role || 'Utilisateur standard'}</span>
+            </div>
           </div>
         </div>
       </div>

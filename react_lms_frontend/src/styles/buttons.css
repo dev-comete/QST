@@ -1,0 +1,109 @@
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
+
+.lms-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  line-height: 1;
+  padding: 0.65rem 1.1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--duration-fast) var(--ease-standard),
+              border-color var(--duration-fast) var(--ease-standard),
+              color var(--duration-fast) var(--ease-standard),
+              transform var(--duration-fast) var(--ease-standard);
+  text-decoration: none;
+}
+
+.lms-btn:active {
+  transform: translateY(1px);
+}
+
+.lms-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  transform: none;
+}
+
+.lms-btn--primary {
+  background: var(--color-harbor);
+  color: #fff;
+  border-color: var(--color-harbor);
+}
+.lms-btn--primary:hover:not(:disabled) {
+  background: var(--color-harbor-dark);
+  border-color: var(--color-harbor-dark);
+}
+
+.lms-btn--success {
+  background: var(--color-success);
+  color: #fff;
+  border-color: var(--color-success);
+}
+.lms-btn--success:hover:not(:disabled) {
+  background: var(--color-success-strong);
+  border-color: var(--color-success-strong);
+}
+
+.lms-btn--outline {
+  background: transparent;
+  color: var(--color-harbor);
+  border-color: var(--color-border-strong);
+}
+.lms-btn--outline:hover:not(:disabled) {
+  border-color: var(--color-harbor);
+  background: var(--color-harbor-light);
+}
+
+.lms-btn--ghost {
+  background: transparent;
+  color: var(--color-slate);
+  border-color: transparent;
+}
+.lms-btn--ghost:hover:not(:disabled) {
+  background: var(--color-mist-strong);
+  color: var(--color-ink);
+}
+
+.lms-btn--danger-text {
+  background: transparent;
+  color: var(--color-danger);
+  border-color: transparent;
+  padding: 0.35rem 0.5rem;
+}
+.lms-btn--danger-text:hover:not(:disabled) {
+  background: var(--color-danger-light);
+}
+
+.lms-btn--link-text {
+  background: transparent;
+  color: var(--color-harbor);
+  border-color: transparent;
+  padding: 0.35rem 0.5rem;
+}
+.lms-btn--link-text:hover:not(:disabled) {
+  background: var(--color-harbor-light);
+}
+
+.lms-btn--block {
+  width: 100%;
+}
+
+.lms-btn--sm {
+  padding: 0.4rem 0.75rem;
+  font-size: var(--text-xs);
+}
+
+.lms-btn--icon-only {
+  padding: 0.4rem;
+  width: 2rem;
+  height: 2rem;
+}

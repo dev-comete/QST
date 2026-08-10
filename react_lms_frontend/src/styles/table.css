@@ -1,0 +1,87 @@
+/* ==========================================================================
+   Tables — ledger-style, hairline row dividers, calm hover
+   ========================================================================== */
+
+.lms-tablewrap {
+  background: var(--color-paper);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-xs);
+}
+
+.lms-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.lms-table thead tr {
+  background: var(--color-mist-strong);
+  border-bottom: 1px solid var(--color-border-strong);
+}
+
+.lms-table th {
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-slate);
+}
+
+.lms-table td {
+  padding: var(--space-4);
+  font-size: var(--text-base);
+  color: var(--color-ink-soft);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.lms-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.lms-table tbody tr {
+  transition: background var(--duration-fast) var(--ease-standard);
+}
+
+.lms-table tbody tr:hover {
+  background: var(--color-mist);
+}
+
+.lms-table__id {
+  font-family: var(--font-mono);
+  color: var(--color-slate-light);
+  font-size: var(--text-sm);
+}
+
+.lms-table__name {
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.lms-table__empty {
+  text-align: center;
+  padding: var(--space-8) var(--space-4);
+  color: var(--color-slate);
+}
+
+.lms-table__actions {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.lms-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-4) 0;
+  margin-top: var(--space-2);
+}
+
+.lms-pagination__label {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--color-slate);
+}

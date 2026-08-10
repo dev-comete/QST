@@ -1,0 +1,69 @@
+/* ==========================================================================
+   Base — resets, global type, focus states
+   ========================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+.lms-scope {
+  font-family: var(--font-body);
+  color: var(--color-ink);
+  background: var(--color-mist);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  min-height: 100%;
+}
+
+.lms-scope *,
+.lms-scope *::before,
+.lms-scope *::after {
+  box-sizing: border-box;
+}
+
+.lms-scope h1,
+.lms-scope h2,
+.lms-scope h3,
+.lms-scope h4 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--color-ink);
+  line-height: 1.2;
+  margin: 0;
+}
+
+.lms-scope p {
+  margin: 0;
+  line-height: 1.55;
+}
+
+.lms-scope a {
+  color: inherit;
+}
+
+.lms-scope button {
+  font-family: var(--font-body);
+}
+
+.lms-scope :focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+  border-radius: var(--radius-sm);
+}
+
+.lms-scope ::selection {
+  background: var(--color-harbor-tint);
+  color: var(--color-harbor-darker);
+}
+
+/* Utility: monospace figures for ids / counts / durations */
+.lms-num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.lms-eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-slate);
+}

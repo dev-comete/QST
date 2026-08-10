@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { BaremeService } from '../api/bareme.service';
+import '../styles/index.css';
 
 export default function BaremeListPage() {
   const [baremes, setBaremes] = useState([]);
@@ -32,53 +33,71 @@ export default function BaremeListPage() {
     }
   };
 
-  if (loading) return <div>Chargement des barèmes...</div>;
+  if (loading) {
+    return (
+      <div className="lms-scope lms-page">
+        <div className="lms-container lms-loading">
+          <span className="lms-spinner" />
+          Chargement des barèmes…
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Gestion des Barèmes</h1>
-        <Link 
-          to="/baremes/create" 
-          className="bg-blue-600 text-white px-4 py-2 rounded"
-        >
-          + Nouveau Barème
-        </Link>
-      </div>
+    <div className="lms-scope lms-page">
+      <div className="lms-container">
+        <div className="lms-pageheader">
+          <div>
+            <h1 className="lms-pageheader__title">Gestion des barèmes</h1>
+            <p className="lms-pageheader__subtitle">Les grilles de points réutilisables pour vos questions.</p>
+          </div>
+          <Link
+            to="/baremes/create"
+            className="lms-btn lms-btn--primary"
+          >
+            + Nouveau barème
+          </Link>
+        </div>
 
-      <table className="w-full text-left border-collapse">
-        <thead>
-          <tr className="border-b">
-            <th className="py-3 px-4">Points</th>
-            <th className="py-3 px-4">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {baremes.length === 0 ? (
-            <tr><td colSpan="2" className="py-4 text-center">Aucun barème trouvé.</td></tr>
-          ) : (
-            baremes.map((bareme) => (
-              <tr key={bareme.id} className="border-b">
-                <td className="py-3 px-4 font-medium">{bareme.pts} pts</td>
-                <td className="py-3 px-4 flex gap-3">
-                  <Link 
-                    to={`/baremes/${bareme.id}/edit`} 
-                    className="text-blue-600 hover:underline"
-                  >
-                    Modifier
-                  </Link>
-                  <button 
-                    onClick={() => handleDelete(bareme.id)}
-                    className="text-red-600 hover:underline"
-                  >
-                    Supprimer
-                  </button>
-                </td>
+        <div className="lms-tablewrap">
+          <table className="lms-table">
+            <thead>
+              <tr>
+                <th>Points</th>
+                <th>Actions</th>
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+            </thead>
+            <tbody>
+              {baremes.length === 0 ? (
+                <tr><td colSpan="2" className="lms-table__empty">Aucun barème trouvé.</td></tr>
+              ) : (
+                baremes.map((bareme) => (
+                  <tr key={bareme.id}>
+                    <td className="lms-table__name lms-num">{bareme.pts} pts</td>
+                    <td>
+                      <div className="lms-table__actions">
+                        <Link
+                          to={`/baremes/${bareme.id}/edit`}
+                          className="lms-btn lms-btn--link-text lms-btn--sm"
+                        >
+                          Modifier
+                        </Link>
+                        <button
+                          onClick={() => handleDelete(bareme.id)}
+                          className="lms-btn lms-btn--danger-text lms-btn--sm"
+                        >
+                          Supprimer
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }
