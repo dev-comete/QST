@@ -4,16 +4,21 @@ import { UserService } from '../api/user.service';
 
 export default function UserListPage() {
   const [users, setUsers] = useState([]);
+  const [roles, setRoles] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchUsers();
+    fetchData();
   }, []);
 
-  const fetchUsers = async () => {
+  const fetchData = async () => {
     try {
-      const data = await UserService.getAll();
-      setUsers(data.results || data);
+      const [usersData, rolesData] = await Promise.all([
+        UserService.getAll(),
+        UserService.getRoles()
+      ]);
+      setUsers(usersData.results || usersData);
+      setRoles(rolesData.results || rolesData);
     } catch (error) {
       console.error("Erreur de chargement", error);
     } finally {
@@ -31,6 +36,11 @@ export default function UserListPage() {
         alert("Erreur lors de la suppression.");
       }
     }
+  };
+
+  const getRoleName = (roleId) => {
+    const role = roles.find(r => r.id === roleId);
+    return role ? role.type_utilisateur : 'Rôle inconnu';
   };
 
   return (
@@ -81,7 +91,7 @@ export default function UserListPage() {
                         <td>{user.email}</td>
                         <td>
                           {/* Vous pourriez utiliser lms-eyebrow ici pour le rôle */}
-                          <span className="lms-eyebrow">Rôle {user.type_utilisateur}</span>
+                          <span className="lms-eyebrow">{getRoleName(user.type_utilisateur)}</span>
                         </td>
                         <td>
                           <div className="lms-table__actions">
