@@ -1,0 +1,159 @@
+/* ==========================================================================
+   Navbar — the app's masthead. Solid harbor band, quiet link states.
+   ========================================================================== */
+
+.lms-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-5);
+  background: var(--color-harbor-darker);
+  color: #fff;
+  padding: 0.85rem 2rem;
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.lms-navbar__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: #fff;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+/* 🌟 Nouvelle classe pour l'image du logo */
+.lms-navbar__logo-img {
+  height: 2.5rem; /* Équivaut à 40px */
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
+
+.lms-navbar__brand-glyph {
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+
+.lms-navbar__links {
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+  flex-wrap: wrap;
+  flex: 1;
+  justify-content: center;
+}
+
+.lms-navbar__link {
+  color: rgba(255, 255, 255, 0.78);
+  text-decoration: none;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  padding: 0.45rem 0.75rem;
+  border-radius: var(--radius-sm);
+  transition: background var(--duration-fast) var(--ease-standard),
+              color var(--duration-fast) var(--ease-standard);
+  white-space: nowrap;
+}
+
+.lms-navbar__link:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.lms-navbar__link--active {
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+}
+
+.lms-navbar__user {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-shrink: 0;
+}
+
+.lms-navbar__identity {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.lms-navbar__avatar {
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--text-xs);
+  flex-shrink: 0;
+}
+
+.lms-navbar__name {
+  font-size: var(--text-sm);
+  color: #fff;
+  line-height: 1.2;
+}
+
+.lms-navbar__role {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 1px;
+}
+
+.lms-navbar__logout {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #fff;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  padding: 0.4rem 0.9rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-standard),
+              border-color var(--duration-fast) var(--ease-standard);
+}
+
+.lms-navbar__logout:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+@media (max-width: 960px) {
+  .lms-navbar {
+    flex-wrap: wrap;
+    row-gap: var(--space-3);
+  }
+  .lms-navbar__links {
+    order: 3;
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+
+}

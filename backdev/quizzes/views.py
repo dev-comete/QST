@@ -118,7 +118,7 @@ class CreateFullQuestionAPIView(APIView):
             question = create_question_with_answers(
                 enonce=data['enonce_question'],
                 type_id=data['type_id'],
-                bareme_id=data['bareme_id'],
+                bareme_pts=data['bareme_pts'],
                 options=data.get('options', [])
             )
             

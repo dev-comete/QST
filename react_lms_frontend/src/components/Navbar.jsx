@@ -1,100 +1,76 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 import { useAuth } from '../context/AuthContext';
+import '../styles/index.css';
+import comete from '../assets/comete.jpg';
+
+const NAV_LINKS = [
+  { to: '/dashboard', label: 'Tableau de Bord', rolesOnly: false },
+  { to: '/formations', label: 'Formations', rolesOnly: true },
+  { to: '/quizzes', label: 'Mes Quiz', rolesOnly: true },
+  { to: '/banque-questions', label: 'Banque de Questions', rolesOnly: true },
+  { to: '/baremes', label: 'Barèmes', rolesOnly: true },
+  { to: '/vagues', label: 'Vagues', rolesOnly: true },
+  { to: '/users', label: 'Utilisateurs', rolesOnly: true },
+  { to: '/organisations', label: 'Organisations', rolesOnly: true }
+];
 
 const Navbar = () => {
   const { user, logoutContext } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const canManage = user?.role === 'formateur' || user?.role === 'admin';
+  const initials = `${user?.first_name?.[0] || ''}${user?.last_name?.[0] || ''}`.toUpperCase() || (user?.username?.[0]?.toUpperCase() ?? 'U');
 
   const handleLogout = async () => {
     // 1. On attend que le backend bloque le token et que le state soit nettoyé
     await logoutContext();
-    
     // 2. Seulement après, on redirige l'utilisateur
     navigate('/login');
   };
 
   return (
-    <nav style={{
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      backgroundColor: '#0056b3',
-      color: 'white',
-      padding: '1rem 2rem',
-      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-    }}>
+    <nav className="lms-scope lms-navbar">
       {/* Logo / Marque */}
-      <div style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>
+      <Link to="/dashboard" className="lms-navbar__brand">
+        <img 
+          src={comete} 
+          alt="Logo QST" 
+          className="lms-navbar__logo-img" 
+        />
         QST Platform
-      </div>
+      </Link>
 
       {/* Liens de navigation */}
-      <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
-        <Link to="/dashboard" style={linkStyle}>
-          Tableau de Bord
-        </Link>
-        
-        {/* On affiche ce lien uniquement si l'utilisateur est formateur ou admin */}
-        {(user?.role === 'formateur' || user?.role === 'admin') && (
-            <>
-                <Link to="/formations" style={linkStyle}>
-                    Formations
-                </Link>
-
-                <Link to="/quizzes" style={linkStyle}>
-                Mes Quiz
-                </Link>
-
-                <Link to="/banque-questions" style={linkStyle}>
-                Banque de Questions
-                </Link>
-
-                <Link to="/baremes" style={linkStyle}>
-                  Barèmes
-                </Link>
-
-                <Link to="/vagues" style={linkStyle}>
-                  Vagues
-                </Link>
-            </>
-        )}
+      <div className="lms-navbar__links">
+        {NAV_LINKS.filter(link => !link.rolesOnly || canManage).map(link => (
+          <Link
+            key={link.to}
+            to={link.to}
+            className={`lms-navbar__link ${location.pathname.startsWith(link.to) ? 'lms-navbar__link--active' : ''}`}
+          >
+            {link.label}
+          </Link>
+        ))}
       </div>
 
       {/* Section Utilisateur & Déconnexion */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-        <span style={{ fontSize: '0.9rem' }}>
-          {user?.first_name} {user?.last_name} ({user?.role})
-        </span>
-        <button 
-          onClick={handleLogout} 
-          style={{
-            background: 'transparent',
-            border: '1px solid white',
-            color: 'white',
-            padding: '5px 15px',
-            borderRadius: '4px',
-            cursor: 'pointer'
-          }}
-          onMouseOver={(e) => e.target.style.background = 'rgba(255,255,255,0.1)'}
-          onMouseOut={(e) => e.target.style.background = 'transparent'}
-        >
+      <div className="lms-navbar__user">
+        <div className="lms-navbar__identity">
+          <span className="lms-navbar__avatar">{initials}</span>
+          <span className="lms-navbar__name">
+            {user?.first_name} {user?.last_name}
+            <span className="lms-navbar__role">{user?.role}</span>
+          </span>
+        </div>
+        <button onClick={handleLogout} className="lms-navbar__logout">
           Déconnexion
         </button>
       </div>
     </nav>
   );
-};
-
-// Style réutilisable pour les liens
-const linkStyle = {
-  color: 'white',
-  textDecoration: 'none',
-  fontWeight: '500',
-  padding: '5px 10px',
-  borderRadius: '4px',
-  transition: 'background-color 0.2s'
 };
 
 export default Navbar;

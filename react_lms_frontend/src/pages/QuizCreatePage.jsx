@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { QuizService } from '../api/quiz.service';
-import { FormationService } from '../api/formation.service'; // <-- Nouvel import
+import { FormationService } from '../api/formation.service';
+import '../styles/index.css';
 
 const QuizCreatePage = () => {
   const navigate = useNavigate();
-  
+
   // États pour le formulaire
   const [formData, setFormData] = useState({
-    formation: '', 
+    formation: '',
     duree: '00:45:00',
     status: 'draft'
   });
-  
+
   // États pour charger les formations dynamiquement
   const [formations, setFormations] = useState([]);
   const [isLoadingFormations, setIsLoadingFormations] = useState(true);
@@ -25,7 +26,7 @@ const QuizCreatePage = () => {
   useEffect(() => {
     const fetchFormations = async () => {
       try {
-        const data = await FormationService.getFormations();
+        const data = await FormationService.getAll();
         // Gère le cas où Django renvoie les données directement, ou sous forme paginée (data.results)
         setFormations(data.results || data);
       } catch (err) {
@@ -69,60 +70,59 @@ const QuizCreatePage = () => {
   };
 
   return (
-    <div className="container" style={{ marginTop: '30px', maxWidth: '600px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <h2>Créer un nouveau Quiz</h2>
-        <Link to="/quizzes" className="btn" style={{ backgroundColor: '#6c757d', textDecoration: 'none' }}>
-          Retour
-        </Link>
-      </div>
+    <div className="lms-scope lms-page lms-page--narrow">
+      <div className="lms-container--md" style={{ width: '100%' }}>
+        <div className="lms-header-row" style={{ marginBottom: 'var(--space-6)' }}>
+          <h1 className="lms-pageheader__title">Créer un nouveau quiz</h1>
+          <Link to="/quizzes" className="lms-btn lms-btn--outline">
+            Retour
+          </Link>
+        </div>
 
-      <div className="card">
-        <form onSubmit={handleSubmit}>
-          
+        <form onSubmit={handleSubmit} className="lms-card lms-card--pad-lg">
+
           {/* Champ Formation (SELECT DYNAMIQUE) */}
-          <div className="form-group">
-            <label>Formation *</label>
-            <select 
-              name="formation" 
-              className="form-control" 
-              value={formData.formation} 
-              onChange={handleChange} 
+          <div className="lms-field">
+            <label className="lms-label">Formation *</label>
+            <select
+              name="formation"
+              className="lms-select"
+              value={formData.formation}
+              onChange={handleChange}
               required
               disabled={isLoadingFormations}
             >
               <option value="" disabled>-- Sélectionnez une formation --</option>
               {formations.map((f) => (
                 <option key={f.id} value={f.id}>
-                  {/* Mise à jour ici pour utiliser le bon champ du JSON */}
-                  {f.nom_formation} 
+                  {f.nom_formation}
                 </option>
               ))}
             </select>
-            {isLoadingFormations && <small style={{ color: '#0056b3' }}>Chargement des formations...</small>}
+            {isLoadingFormations && <p className="lms-form-note">Chargement des formations…</p>}
           </div>
 
-          <div className="form-group">
-            <label>Durée (HH:MM:SS) *</label>
-            <input 
-              type="text" 
-              name="duree" 
-              className="form-control" 
-              value={formData.duree} 
-              onChange={handleChange} 
+          <div className="lms-field">
+            <label className="lms-label">Durée (HH:MM:SS) *</label>
+            <input
+              type="text"
+              name="duree"
+              className="lms-input lms-num"
+              value={formData.duree}
+              onChange={handleChange}
               placeholder="00:45:00"
               pattern="[0-9]{2}:[0-9]{2}:[0-9]{2}"
               title="Le format doit être HH:MM:SS"
-              required 
+              required
             />
           </div>
 
-          <div className="form-group">
-            <label>Statut</label>
-            <select 
-              name="status" 
-              className="form-control" 
-              value={formData.status} 
+          <div className="lms-field">
+            <label className="lms-label">Statut</label>
+            <select
+              name="status"
+              className="lms-select"
+              value={formData.status}
               onChange={handleChange}
             >
               <option value="draft">Brouillon (draft)</option>
@@ -130,10 +130,10 @@ const QuizCreatePage = () => {
             </select>
           </div>
 
-          {error && <div className="text-danger" style={{ marginBottom: '15px' }}>{error}</div>}
+          {error && <div className="lms-alert lms-alert--danger" style={{ marginBottom: 'var(--space-5)' }}>{error}</div>}
 
-          <button type="submit" className="btn" style={{ width: '100%', backgroundColor: '#28a745' }} disabled={isSubmitting || isLoadingFormations}>
-            {isSubmitting ? 'Création en cours...' : 'Créer le Quiz'}
+          <button type="submit" className="lms-btn lms-btn--success lms-btn--block" disabled={isSubmitting || isLoadingFormations}>
+            {isSubmitting ? 'Création en cours…' : 'Créer le quiz'}
           </button>
         </form>
       </div>
