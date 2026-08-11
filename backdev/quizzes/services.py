@@ -239,18 +239,22 @@ def assign_questions_to_quiz(quiz, questions_choisies):
     return len(links_to_create)
 
 @transaction.atomic
-def create_question_with_answers(enonce, type_id, bareme_id, options):
+def create_question_with_answers(enonce, type_id, bareme_pts, options):
     """
     Creates a question, links its configurations, and generates its answers and corrigé.
     Wrapped in @transaction.atomic to guarantee database integrity.
     """
     
-    # 1. Fetch relations to ensure they exist
     try:
         type_obj = TypeQuestion.objects.get(id=type_id)
-        bareme_obj = Bareme.objects.get(id=bareme_id)
-    except (TypeQuestion.DoesNotExist, Bareme.DoesNotExist):
-        raise ValidationError("Le Type ou le Barème spécifié n'existe pas.")
+    except TypeQuestion.DoesNotExist:
+        raise ValidationError("Le Type spécifié n'existe pas.")
+
+ 
+    try:
+        bareme_obj, _ = Bareme.objects.get_or_create(pts=float(bareme_pts))
+    except (ValueError, TypeError):
+        raise ValidationError("La valeur du barème (bareme_pts) doit être un nombre valide.")
 
     # 2. Strict Business Logic Check (QCU vs QCM vs Ouverte)
     system_code = type_obj.code.upper() if type_obj.code else "UNKNOWN"

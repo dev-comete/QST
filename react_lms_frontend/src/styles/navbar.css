@@ -29,6 +29,14 @@
   flex-shrink: 0;
 }
 
+/* 🌟 Nouvelle classe pour l'image du logo */
+.lms-navbar__logo-img {
+  height: 2.5rem; /* Équivaut à 40px */
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
+
 .lms-navbar__brand-glyph {
   width: 1.9rem;
   height: 1.9rem;
@@ -146,4 +154,6 @@
     width: 100%;
     justify-content: flex-start;
   }
+
+
 }

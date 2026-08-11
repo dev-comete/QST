@@ -169,7 +169,11 @@ class ReponseOptionSerializer(serializers.Serializer):
 class CreateFullQuestionSerializer(serializers.Serializer):
     enonce_question = serializers.CharField()
     type_id = serializers.IntegerField(required=True)
-    bareme_id = serializers.IntegerField(required=True)
+    bareme_pts = serializers.FloatField(
+        required=True, 
+        min_value=0.1,
+        help_text="Les points attribués à cette question (ex: 2.5). Le barème sera créé dynamiquement s'il n'existe pas."
+    )
     
     # Nested list of all options (right and wrong) the formateur provided
     options = ReponseOptionSerializer(many=True, allow_empty=True, required=False)
