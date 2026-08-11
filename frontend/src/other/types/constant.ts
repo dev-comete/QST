@@ -18,7 +18,7 @@ const backgroundColor : Record<ColorTheme, string> = {
 const initialQuestion : questionType = {
 	enonce_question: "",
 	type_id: 0,
-	bareme_id: 0,
+	bareme_pts: 0.1,
 	options: []
 }
 

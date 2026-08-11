@@ -8,9 +8,10 @@ interface ActionButtonProps {
 	btnColor?: ColorTheme,
 	btnStyling?: string,
 	textColor?: ColorTheme,
-	action? : () => void,
+	action? : (event: React.MouseEvent<HTMLButtonElement>) => void,
 	disabled? : boolean,
 	type?: 'submit' | 'reset' | 'button',
+	form?: string
 }
 
 const ActionButton = ({
@@ -20,6 +21,7 @@ const ActionButton = ({
 	textColor = "text",
 	disabled = false,
 	type,
+	form,
 	action
 } : ActionButtonProps) => {
 	return (
@@ -29,6 +31,7 @@ const ActionButton = ({
 			action={action}
 			disabled={disabled}
 			type={type}
+			form={form}
 		>
 			<CustomText color={textColor} weight="bold">{children}</CustomText>
 		</Button>

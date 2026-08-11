@@ -1,11 +1,14 @@
+import type { ChangeEvent } from "react";
+
 interface SelectProps {
     id: string;
 	name: string;
 	label?: string;
     required?: boolean;
-    values: { id: string, value: string }[];
-    size?: number;
-	handleChange: () => void
+    selectionValue: { id: string, value: string | number }[];
+    // size?: number;
+	value?: string | number;
+	handleChange: (event: ChangeEvent<HTMLSelectElement>) => void;
 }
 
 const Select = ({
@@ -13,32 +16,38 @@ const Select = ({
 	id,
 	name,
     required = false,
-    values,
-    size = 1,
+    selectionValue,
+	value,
+    // size = 1,
 	handleChange
 }: SelectProps) => {
 
     const styling = "bg-white focus:outline-none outline-none";
-			
+	const selectId = id || name;
+
 	return (
-		<div className="flex flex-col">
-			{label && <label className="text-text" htmlFor={name}>{label}</label>}
+		<div className="flex flex-col gap-1 w-full text-left relative">
+			{label && (
+			<label className="text-sm font-medium text-text" htmlFor={selectId}>
+				{label}
+			</label>
+			)}
 			<select
-				id={id}
+				id={selectId}
 				name={name}
-                required={required}
-                size={size}
+				required={required}
+				value={value}
 				className={styling}
 				onChange={handleChange}
-            >
-                {
-                    values.map(({id, value}) => (
-                        <option key={id} value={value}>{value}</option>
-                    ))
-                }
-            </select>
+			>
+			{selectionValue.map((selected) => (
+				<option key={selected.id} value={selected.id}>
+				{selected.value}
+				</option>
+			))}
+			</select>
 		</div>
-	)
+	);
 }
 
 export default Select;

@@ -1,12 +1,13 @@
 type respType = {
 	reponse: string,
-	est_correcte: boolean
+	est_correct: boolean,
+	explication?: string
 }
 
 type questionType = {
 	enonce_question: string,
 	type_id: number,
-	bareme_id: number,
+	bareme_pts: number,
 	options: respType[]
 }
 
