@@ -1,13 +1,13 @@
-import type { respType } from "../../../other/types/questionType"
+import type { questionType } from "../../../other/types/questionType"
 import Box from "../../atoms/Container/Box"
 import { Table, type Column } from "../../atoms/Table/Table"
 import ActionButton from "../Buttons/ActionButton"
 
-interface ResponseMakingProps {
-	responses: respType[]
+interface QuestionTabProps {
+	questions: questionType[]
 }
 
-const responseMakingColumns: Column<respType>[] = [
+const questionTabColumn: Column<questionType>[] = [
 	{
 		header: 'Sélection',
 		key: "est_correct"
@@ -27,16 +27,16 @@ const responseMakingColumns: Column<respType>[] = [
 	}
 ]
 
-const ResponseMakingList = ({ responses } : ResponseMakingProps) => {
+const QuestionTab = ({ questions } : QuestionTabProps) => {
 	return (
 		<Box direction="column" customStyling="w-full items-center justify-center">
 			<Table 
-				columns={responseMakingColumns}
-				data={responses}
-				rowKey={'est_correct'}
+				columns={questionTabColumn}
+				data={questions}
+				rowKey={'type_id'}
 			/>
 		</Box>
 	)
 }
 
-export default ResponseMakingList
+export default QuestionTab;

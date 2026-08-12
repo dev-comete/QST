@@ -19,4 +19,10 @@ export const QuestionService = {
 		const response = await apiClient.get(url);
 		return response.data as baremeType[];
 	},
+
+	getAllQuestion: async () => {
+		const url = import.meta.env.VITE_CREATE_QUESTION
+		const response = await apiClient.get(url);
+		return response.data as questionType[];
+	},
 }

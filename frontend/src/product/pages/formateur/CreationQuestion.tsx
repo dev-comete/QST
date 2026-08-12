@@ -1,17 +1,17 @@
-import { useEffect, useState, type ChangeEvent } from "react";
+import { useState, type ChangeEvent } from "react";
 import ActionButton from "../../../system/molecules/Buttons/ActionButton";
-import { useCreateQuestion, useQuestion } from "../../../other/hooks/useQuestion";
+import { useCreateQuestion } from "../../../other/hooks/useQuestion";
 import type { respType } from "../../../other/types/questionType";
 import BodyLayout from "../../layout/common/BodyLayout";
 import Box from "../../../system/atoms/Container/Box";
 import TextArea from "../../../system/atoms/Form/TextArea";
 import Select from "../../../system/atoms/Form/Select";
-import { ResponseMakingList } from "../../../system/molecules/List/ResponseMaking";
+import ResponseMakingList from "../../../system/molecules/List/ResponseMaking";
+import CustomText from "../../../system/atoms/Text/CustomText";
 
 const EnonceForm = () => {
 
-	const { question, setQuestion } = useCreateQuestion();
-	const {  questionTypeQuery, baremeQuery } = useQuestion()
+	const { question, setQuestion, questionTypeQuery, baremeQuery  } = useCreateQuestion();
 	const { data : questionType, status : questionTypeStatus } = questionTypeQuery
 	const { data : bareme, status : baremeStatus } = baremeQuery
 
@@ -76,15 +76,17 @@ const EnonceForm = () => {
 
 export const OptionForm = () => {
 	
-	const [ input, setInput ] = useState("")
+	const [ resp, setResp ] = useState("")
+	const [ explication, setExplication ] = useState("")
 	const { question, setQuestion } = useCreateQuestion();
 
 	const addNewResponse = (e: React.MouseEvent) => {
 		e.preventDefault()
 
 		const newOption: respType = {
-			reponse: input,
-			est_correct: false,
+			reponse: resp,
+			est_correct: true,
+			explication: explication
 		};
 
 		setQuestion((prev) => ({
@@ -95,21 +97,32 @@ export const OptionForm = () => {
 
 	return (
 		<Box direction="column" customStyling="w-full justify-between px-5" >
-			<Box customStyling="w-3/4">
-				<TextArea 
-					id="reponseInput"
-					name="reponseInput"
-					placeholder="Ecrivez une réponse"
-					value={input}
-					readonly={false}
-					onChange={(e) => setInput(e.target.value)}
-				/>
+			<CustomText textTag="h4">Réponses</CustomText>
+			<Box customStyling="gap-2">
+				<Box direction="column" customStyling="flex flex-col w-full">
+					<TextArea 
+						id="reponseInput"
+						name="reponseInput"
+						placeholder="Ecrivez une réponse"
+						value={resp}
+						readonly={false}
+						onChange={(e) => setResp(e.target.value)}
+					/>
+					<TextArea 
+						id="reponseInput"
+						name="reponseInput"
+						placeholder="Ecrivez une explication"
+						value={explication}
+						readonly={false}
+						onChange={(e) => setExplication(e.target.value)}
+					/>
+				</Box>
+				<ActionButton
+					action={(e) => addNewResponse(e)}
+					btnColor="secondary"
+					textColor="white"
+				>{"+ Réponse"}</ActionButton>
 			</Box>
-			<ActionButton
-				action={(e) => addNewResponse(e)}
-				btnColor="secondary"
-				textColor="white"
-			>{"+ Réponse"}</ActionButton>
 			<ResponseMakingList responses={question.options} />
 		</Box>
 	)
@@ -117,10 +130,10 @@ export const OptionForm = () => {
 
 const CreationQuestion = () => {
 
-	const { handleCreate } = useQuestion()
+	const { handleCreate } = useCreateQuestion()
 
 	return (
-		<BodyLayout title={"Création de question"}>
+		<BodyLayout title={"Création de question"} linkBack="/formateur/gestion_question">
 			<form
 				id="createQuestion"
 				onSubmit={handleCreate}

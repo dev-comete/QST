@@ -1,7 +1,7 @@
 type respType = {
 	reponse: string,
 	est_correct: boolean,
-	explication?: string
+	explication: string
 }
 
 type questionIdType  = {
