@@ -4,6 +4,17 @@ type respType = {
 	explication?: string
 }
 
+type questionIdType  = {
+	id : number,
+	type_question: string,
+	code : string
+}
+
+type baremeType = {
+	id: number,
+	pts: number
+}
+
 type questionType = {
 	enonce_question: string,
 	type_id: number,
@@ -13,5 +24,7 @@ type questionType = {
 
 export type {
 	questionType,
-	respType
+	respType,
+	questionIdType,
+	baremeType
 }

@@ -1,4 +1,4 @@
-import type { questionType } from "../types/questionType";
+import type { baremeType, questionIdType, questionType } from "../types/questionType";
 import apiClient from "./apiClient";
 
 export const QuestionService = {
@@ -11,12 +11,12 @@ export const QuestionService = {
 	getTypeQuestion : async () => {
 		const url = import.meta.env.VITE_TYPE_QUESTION
 		const response = await apiClient.get(url);
-		return response.data;
+		return response.data as questionIdType[];
 	},
 
 	getBareme : async () => {
 		const url = import.meta.env.VITE_BAREME
 		const response = await apiClient.get(url);
-		return response.data;
+		return response.data as baremeType[];
 	},
 }

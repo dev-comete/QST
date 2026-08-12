@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent } from "react";
+import { useEffect, useState, type ChangeEvent } from "react";
 import ActionButton from "../../../system/molecules/Buttons/ActionButton";
 import { useCreateQuestion, useQuestion } from "../../../other/hooks/useQuestion";
 import type { respType } from "../../../other/types/questionType";
@@ -17,18 +17,28 @@ const EnonceForm = () => {
 
 	if (questionTypeStatus == 'pending' || baremeStatus == 'pending')
 		return <div>Chargement en cours....</div>
+	
+	if (!questionType || !bareme)
+		return <div>Erreur....</div>
 
-	console.log("Types = ", questionType, bareme)
-	console.log("Baremes = ", bareme)
+	const selectionQuestionType = questionType.map((item, idx) => (
+		{id: String(idx), value: item.code}
+	))
+
+	const selectionBareme = bareme.map((item, idx) => (
+		{ id: String(idx), value: item.pts}
+	))
 
 	const handleTypeChange = (event: ChangeEvent<HTMLSelectElement>) => {
 		const value = event.target.value;
-		setQuestion((prev) => ({ ...prev, type_id: Number(value) }));
+		let selectedQuestionType = questionType.find(q => q.code === value)
+		if (!selectedQuestionType)
+			selectedQuestionType = questionType[0]
+		setQuestion((prev) => ({ ...prev, type_id: selectedQuestionType.id }));
 	};
 
 	const handleBaremeChange = (event: ChangeEvent<HTMLSelectElement>) => {
 		const value = event.target.value;
-		console.log("Value bareme = ", value)
 		setQuestion((prev) => ({ ...prev, bareme_pts: Number(value) }));
 	};
 
@@ -36,7 +46,6 @@ const EnonceForm = () => {
 		const value = event.target.value;
 		setQuestion((prev) => ({ ...prev, enonce_question: value }));
 	};
-	
 
 	return (
 		<Box direction="column" customStyling="w-full px-5">
@@ -50,14 +59,14 @@ const EnonceForm = () => {
 			<Select
 				id={"type"}
 				name={"type"}
-				selectionValue={questionType}
+				selectionValue={selectionQuestionType}
 				label="Type"
 				handleChange={handleTypeChange}
 			/>
 			<Select
 				id={"bareme"}
 				name={"bareme"}
-				selectionValue={bareme}
+				selectionValue={selectionBareme}
 				label="Barème"
 				handleChange={handleBaremeChange}
 			/>
@@ -86,21 +95,21 @@ export const OptionForm = () => {
 
 	return (
 		<Box direction="column" customStyling="w-full justify-between px-5" >
-				<Box customStyling="w-3/4">
-					<TextArea 
-						id="reponseInput"
-						name="reponseInput"
-						placeholder="Ecrivez une réponse"
-						value={input}
-						readonly={false}
-						onChange={(e) => setInput(e.target.value)}
-					/>
-				</Box>
-				<ActionButton
-					action={(e) => addNewResponse(e)}
-					btnColor="secondary"
-					textColor="white"
-				>{"+ Réponse"}</ActionButton>
+			<Box customStyling="w-3/4">
+				<TextArea 
+					id="reponseInput"
+					name="reponseInput"
+					placeholder="Ecrivez une réponse"
+					value={input}
+					readonly={false}
+					onChange={(e) => setInput(e.target.value)}
+				/>
+			</Box>
+			<ActionButton
+				action={(e) => addNewResponse(e)}
+				btnColor="secondary"
+				textColor="white"
+			>{"+ Réponse"}</ActionButton>
 			<ResponseMakingList responses={question.options} />
 		</Box>
 	)
