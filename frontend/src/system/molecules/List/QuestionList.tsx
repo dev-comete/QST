@@ -7,10 +7,6 @@ import { Table, type Column } from "../../atoms/Table/Table"
 import IconButton from "../Buttons/IconButton"
 
 const questionTabColumn: Column<questionType>[] = [
-	// {
-	// 	header: "Activité",
-	// 	key: "is_active"
-	// },
 	{
 		header: 'Enoncé',
 		key: "enonce_question"

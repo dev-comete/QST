@@ -18,6 +18,7 @@ import Unauthorized from "../../product/pages/common/Unauthorized";
 import { RootRedirect } from "../../product/layout/common/RootRedirect";
 import { QuestionCreateProvider } from "../../product/context/QuestionCreateProvider";
 import QuestionCreate from "../../product/pages/formateur/question/QuestionCreate";
+import QuizAssign from "../../product/pages/formateur/quizz/QuizAssign";
 
 export const router = createBrowserRouter([
 
@@ -69,6 +70,7 @@ export const router = createBrowserRouter([
 					{ path: "gestion_question", element: <QuestionManagement /> },
 					{ path: "creation_question", element: <QuestionCreateProvider><QuestionCreate /></QuestionCreateProvider>},
 					{ path: "gestion_quizz", element: <QuizManagement /> },
+					{ path: ":id/quiz_assign", element: <QuizAssign /> },
 					{ path: "tableau_de_bord", element: <Dashboard /> },
 				],
 			}
