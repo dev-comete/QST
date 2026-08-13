@@ -6,6 +6,8 @@ interface InputProps {
 	id: string;
 	name: string;
 	textColor?: ColorTheme;
+	onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+	step?: number
 }
 
 const Input = ({
@@ -13,16 +15,20 @@ const Input = ({
 	type = 'text',
 	id,
 	name,
-	textColor='text'
+	textColor='text',
+	onChange,
+	step
 }: InputProps) => {
 	return (
-		<div className="flex flex-col">
+		<div className="flex flex-col w-full">
 			<label htmlFor={name} className={`text-${textColor}`}>{label}</label>
 			<input
 				type={type}
 				id={id}
 				name={name}
-				className="bg-white w-fit focus:outline-accent focus:outline-1"
+				className="flex bg-white w-full items-center justify-center focus:outline-accent focus:outline-1"
+				onChange={onChange}
+				step={step}
 			/>
 		</div>
 	)

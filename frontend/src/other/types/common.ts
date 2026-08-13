@@ -27,9 +27,17 @@ type userData = {
 	user: User
 }
 
+type formationType = {
+	id: number,
+	nom_formation: string,
+	createur: number,
+	organisation: string | null	
+}
+
 export type {
 	ColorTheme,
 	NavItem,
 	Role,
-	userData
+	userData,
+	formationType
 }

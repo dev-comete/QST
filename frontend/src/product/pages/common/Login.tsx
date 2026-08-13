@@ -1,4 +1,4 @@
-import { useLogin } from "../../../other/hooks/useAuth";
+import { useLogin } from "../../../other/hooks/auth/useAuth";
 import Button from "../../../system/atoms/Button/Button";
 import Box from "../../../system/atoms/Container/Box";
 import Paper from "../../../system/atoms/Container/Paper";

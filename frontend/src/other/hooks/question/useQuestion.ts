@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { QuestionService } from "../services/questionService";
+import { QuestionService } from "../../services/questionService";
 
 const useQuestion = () => {
 
@@ -9,8 +9,6 @@ const useQuestion = () => {
 	})
 
 	return {
-		// status,
-		// handleCreate,
 		getAllQuestion
 	}
 }

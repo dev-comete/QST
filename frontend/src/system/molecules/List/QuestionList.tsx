@@ -1,20 +1,19 @@
+import { useQuestion } from "../../../other/hooks/question/useQuestion"
 import type { questionType } from "../../../other/types/questionType"
 import Box from "../../atoms/Container/Box"
+import FetchError from "../../atoms/Loading/FetchError"
+import Loading from "../../atoms/Loading/Loading"
 import { Table, type Column } from "../../atoms/Table/Table"
 import ActionButton from "../Buttons/ActionButton"
 
-interface QuestionTabProps {
-	questions: questionType[]
-}
-
 const questionTabColumn: Column<questionType>[] = [
 	{
-		header: 'Sélection',
-		key: "est_correct"
+		header: 'Enoncé',
+		key: "enonce_question"
 	},
 	{
-		header: "Réponse",
-		key: "reponse"
+		header: "Activité",
+		key: "is_active"
 	},
 	{
 		header: "Action",
@@ -27,16 +26,26 @@ const questionTabColumn: Column<questionType>[] = [
 	}
 ]
 
-const QuestionTab = ({ questions } : QuestionTabProps) => {
+const QuestionList = () => {
+
+	const { getAllQuestion } = useQuestion()
+	const { data: questions, status } = getAllQuestion
+
+	if (status == "pending")
+		return <Loading />
+
+	if (!questions)
+		return <FetchError />
+
 	return (
 		<Box direction="column" customStyling="w-full items-center justify-center">
 			<Table 
 				columns={questionTabColumn}
 				data={questions}
-				rowKey={'type_id'}
+				rowKey={'enonce_question'}
 			/>
 		</Box>
 	)
 }
 
-export default QuestionTab;
+export default QuestionList;

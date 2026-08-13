@@ -8,7 +8,7 @@ interface SelectProps {
     selectionValue: { id: string, value: string | number }[];
     // size?: number;
 	value?: string | number;
-	handleChange: (event: ChangeEvent<HTMLSelectElement>) => void;
+	handleChange?: (event: ChangeEvent<HTMLSelectElement>) => void;
 }
 
 const Select = ({

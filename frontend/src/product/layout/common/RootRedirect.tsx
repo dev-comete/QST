@@ -1,5 +1,5 @@
 import { Navigate } from "react-router";
-import { useAuth } from "../../../other/hooks/useAuth";
+import { useAuth } from "../../../other/hooks/auth/useAuth";
 
 export const RootRedirect = () => {
 	const { authUser } = useAuth();

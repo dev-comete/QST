@@ -21,7 +21,7 @@ export const QuestionService = {
 	},
 
 	getAllQuestion: async () => {
-		const url = import.meta.env.VITE_CREATE_QUESTION
+		const url = import.meta.env.VITE_CRUD_QUESTION
 		const response = await apiClient.get(url);
 		return response.data as questionType[];
 	},

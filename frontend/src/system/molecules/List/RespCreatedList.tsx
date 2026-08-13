@@ -1,11 +1,8 @@
+import { useCreateQuestion } from "../../../other/hooks/question/useQuestionCreate"
 import type { respType } from "../../../other/types/questionType"
 import Box from "../../atoms/Container/Box"
 import { Table, type Column } from "../../atoms/Table/Table"
 import ActionButton from "../Buttons/ActionButton"
-
-interface ResponseMakingProps {
-	responses: respType[]
-}
 
 const responseMakingColumns: Column<respType>[] = [
 	{
@@ -27,7 +24,11 @@ const responseMakingColumns: Column<respType>[] = [
 	}
 ]
 
-const ResponseMakingList = ({ responses } : ResponseMakingProps) => {
+const RespCreatedList = () => {
+
+	const { question } = useCreateQuestion()
+	const responses = question.options
+
 	return (
 		<Box direction="column" customStyling="w-full items-center justify-center">
 			<Table 
@@ -39,4 +40,4 @@ const ResponseMakingList = ({ responses } : ResponseMakingProps) => {
 	)
 }
 
-export default ResponseMakingList
+export default RespCreatedList

@@ -1,8 +1,8 @@
+import { useLogout } from "../../../other/hooks/auth/useAuth";
 import Box from "../../atoms/Container/Box";
 import Paper from "../../atoms/Container/Paper";
 import ActionButton from "../Buttons/ActionButton";
 import Logo from "../Logo/Logo";
-import { useLogout } from "../../../other/hooks/useAuth";
 
 const Header = () => {
 

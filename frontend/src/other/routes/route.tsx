@@ -1,8 +1,8 @@
 import { createBrowserRouter, Navigate } from "react-router";
 import FormateurTemplate from "../../product/layout/role/FormateurTemplate";
-import QuestionManagement from "../../product/pages/formateur/QuestionManagement";
+import QuestionManagement from "../../product/pages/formateur/question/QuestionManagement";
 import Planning from "../../product/pages/formateur/Planning";
-import QuizManagement from "../../product/pages/formateur/QuizManagement";
+import QuizManagement from "../../product/pages/formateur/quizz/QuizManagement";
 import Dashboard from "../../product/pages/formateur/Dashboard";
 import AdminTemplate from "../../product/layout/role/AdminTemplate";
 import ApprenantTemplate from "../../product/layout/role/ApprenantTemplate";
@@ -16,8 +16,8 @@ import AdminDashboard from "../../product/pages/admin/AdminDashboard";
 import ProtectedRoute from "../../product/layout/common/ProtectedRoute";
 import Unauthorized from "../../product/pages/common/Unauthorized";
 import { RootRedirect } from "../../product/layout/common/RootRedirect";
-import CreationQuestion from "../../product/pages/formateur/CreationQuestion";
-import { CreationQuestionProvider } from "../../product/context/CreateQuestionProvider";
+import { QuestionCreateProvider } from "../../product/context/QuestionCreateProvider";
+import QuestionCreate from "../../product/pages/formateur/question/QuestionCreate";
 
 export const router = createBrowserRouter([
 
@@ -67,7 +67,7 @@ export const router = createBrowserRouter([
 					{ index: true, element: <Navigate to="planning" replace /> },
 					{ path: "planning", element: <Planning /> },
 					{ path: "gestion_question", element: <QuestionManagement /> },
-					{ path: "creation_question", element: <CreationQuestionProvider><CreationQuestion /></CreationQuestionProvider>},
+					{ path: "creation_question", element: <QuestionCreateProvider><QuestionCreate /></QuestionCreateProvider>},
 					{ path: "gestion_quizz", element: <QuizManagement /> },
 					{ path: "tableau_de_bord", element: <Dashboard /> },
 				],

@@ -1,6 +1,5 @@
 /* eslint-disable no-constant-binary-expression */
 import axios from 'axios';
-import { TokenStorage } from './storage';
 
 const apiClient = axios.create({
 	baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/',
@@ -11,9 +10,10 @@ const apiClient = axios.create({
 
 apiClient.interceptors.request.use(
 	(config) => {
-	const token = TokenStorage.getAccessToken();
+	const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
 	if (token) {
-		config.headers.Authorization = `Bearer ${token}`;
+		if (!config.headers) config.headers = {};
+		(config.headers as any).Authorization = `Bearer ${token}`;
 	}
 	return config;
 	},
