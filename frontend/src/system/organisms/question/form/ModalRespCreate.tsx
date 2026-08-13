@@ -34,7 +34,7 @@ const RespForm = () => {
 	}
 
 	return (
-		<Box direction="column" customStyling="w-full items-center px-5 gap-10" >
+		<Box direction="column" className="w-full items-center px-5 gap-10" >
 			<TextArea 
 				id="reponseInput"
 				name="reponseInput"

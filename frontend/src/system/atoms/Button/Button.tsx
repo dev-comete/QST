@@ -5,7 +5,7 @@ import type { ColorTheme } from "../../../other/types/common";
 interface ButtonProps {
 	children?: React.ReactNode;
 	color?: ColorTheme;
-	customStyling?: string;
+	className?: string;
 	paddingX?: number;
 	paddingY?: number;
 	isRounded?: boolean;
@@ -19,7 +19,7 @@ const Button = ({
 	children,
 	color = 'white',
 	isRounded = true,
-	customStyling,
+	className,
 	disabled = false,
 	type,
 	form,
@@ -31,7 +31,7 @@ const Button = ({
 
 	return (
 		<button 
-			className={`${backgroundColor[color]} ${customStyling} px-3 py-2 ${roundParam} w-fit ${isDisable}`}
+			className={`${backgroundColor[color]} ${className} px-3 py-2 ${roundParam} w-fit ${isDisable}`}
 			disabled={disabled}
 			onClick={action}
 			type={type}

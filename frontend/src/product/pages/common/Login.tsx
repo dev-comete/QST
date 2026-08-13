@@ -9,8 +9,8 @@ const Login = () => {
 	const { handleSubmit } = useLogin()
 
     return (
-        <Box direction="column" customStyling="flex items-center justify-center h-screen">
-			<Paper color="primary" customStyling="p-5">
+        <Box direction="column" className="flex items-center justify-center h-screen">
+			<Paper color="primary" className="p-5">
 				<form onSubmit={handleSubmit}>
 					<Box direction="column">
 						<Input

@@ -26,7 +26,7 @@ const EnonceForm = () => {
 	const selectionBareme = getSelectData(bareme, 'pts')
 
 	return (
-		<Box direction="column" customStyling="w-full px-5">
+		<Box direction="column" className="w-full px-5">
 			<Title title="Enoncé" />
 			<TextArea
 				id={"enonce"}

@@ -12,9 +12,9 @@ const Header = () => {
 		<Paper
 			color="primary"
 			hasShadow={true}
-			customStyling="w-full py-3 px-8 border border-b-background"
+			className="w-full py-3 px-8 border border-b-background"
 		>
-			<Box customStyling="justify-between items-center">
+			<Box className="justify-between items-center">
 				<Logo />
 				<ActionButton
 					action={logout}

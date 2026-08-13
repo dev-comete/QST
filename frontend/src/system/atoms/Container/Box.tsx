@@ -3,20 +3,20 @@ import type React from "react";
 interface BoxProps {
 	children: React.ReactNode;
 	direction?: 'column' | 'row';
-	customStyling?: string;
+	className?: string;
 }
 
 const Box = ({
 	children,
 	direction = 'row',
-	customStyling
+	className
 } : BoxProps) => {
 
 	const flexDirection = direction === 'column' ? "flex-col" : "flex-row";
 
 	return (
 		<div
-			className={`flex ${flexDirection} gap-3 ${customStyling}`}
+			className={`flex ${flexDirection} gap-2 ${className}`}
 		>{children}</div>		
 	)
 }

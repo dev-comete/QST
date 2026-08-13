@@ -43,7 +43,7 @@ interface ModalSubtitleProps {
 const ModalNav = ({ subIdx, increaseIdx, decreaseIdx, subtitle } : ModalSubtitleProps) => {
 
 	return (
-		<Box customStyling="justify-between w-full">
+		<Box className="justify-between w-full">
 			<ActionButton
 				action={decreaseIdx}
 				textColor="text"
@@ -85,7 +85,7 @@ const Modal = ({
 			<Paper
 				color={bgColor}
 				position="fixed"
-				customStyling="
+				className="
 					w-[50%] max-h-[85vh] h-[85vh]
 					top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
 					z-101
@@ -93,8 +93,8 @@ const Modal = ({
 					flex flex-col
 					"
 			>
-				<Box direction="column" customStyling="justify-between h-full w-full min-h-0">
-					<Box direction="column" customStyling="justify-between grow min-h-0">
+				<Box direction="column" className="justify-between h-full w-full min-h-0">
+					<Box direction="column" className="justify-between grow min-h-0">
 						<div className="flex justify-end px-2 flex-none">
 							{ closeModal && 
 								<ActionButton
@@ -104,13 +104,13 @@ const Modal = ({
 							}
 						</div>
 
-						<Box direction="column" customStyling="justify-between items-center p-3 grow min-h-0">
-							<Box direction="column" customStyling="flex-none w-full mb-3">
+						<Box direction="column" className="justify-between items-center p-3 grow min-h-0">
+							<Box direction="column" className="flex-none w-full mb-3">
 								{ title && <Title title={title} /> }
 								{ subtitle && <CustomText textTag="h3">{subtitle[subIdx]}</CustomText>}
 							</Box>
 
-							<Box customStyling="grow w-full overflow-y-auto min-h-0">
+							<Box className="grow w-full overflow-y-auto min-h-0">
 								{subPage[subIdx]}
 							</Box>
 						</Box>

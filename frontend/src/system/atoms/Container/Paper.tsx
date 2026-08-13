@@ -7,7 +7,7 @@ interface PaperProps {
 	color?: ColorTheme,
 	hasShadow?: boolean,
 	position?: 'absolute' | 'sticky' |'relative' | 'fixed',
-	customStyling?: string
+	className?: string
 }
 
 const Paper = ({
@@ -15,14 +15,14 @@ const Paper = ({
 	color = "white",
 	hasShadow = false,
 	position,
-	customStyling
+	className
 } : PaperProps) => {
 
 	const boxShadow = hasShadow === true ? "shadow-md" : null ;
 
 	return (
 		<div
-			className={`${backgroundColor[color]} ${boxShadow} ${position} ${customStyling}`}
+			className={`${backgroundColor[color]} ${boxShadow} ${position} ${className}`}
 		>{children}</div>
 	)
 }

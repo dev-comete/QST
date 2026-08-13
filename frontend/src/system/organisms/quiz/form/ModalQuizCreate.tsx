@@ -33,7 +33,7 @@ const QuizForm = () => {
 	const selectedFormations = getSelectData(formations, 'nom_formation')
 
 	return (
-		<Box direction="column" customStyling="w-full items-center px-5 gap-10" >
+		<Box direction="column" className="w-full items-center px-5 gap-10" >
 			<form
 				id="quizForm"
 				onSubmit={handleQuizSubmit}

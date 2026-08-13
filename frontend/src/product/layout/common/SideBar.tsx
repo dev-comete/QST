@@ -17,7 +17,7 @@ const SideBar = ({ navList } : SideBarProps ) => {
 						<NavButton
 							key={`Label + ${index}`}
 							link={link}
-							customStyling="w-full"
+							className="w-full"
 						>
 							{label}
 						</NavButton>

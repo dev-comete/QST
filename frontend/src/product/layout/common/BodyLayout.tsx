@@ -11,7 +11,7 @@ interface BodyLayoutProps {
 
 const BodyLayout = ({ title, titleButton, children, linkBack } : BodyLayoutProps) => {
 	return (
-		<Box direction="column" customStyling="p-10">
+		<Box direction="column" className="p-10">
 			<Title title={title} sideButton={titleButton} linkBack={linkBack}/>
 			{children}
 		</Box>

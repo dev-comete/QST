@@ -4,24 +4,33 @@ import Box from "../../atoms/Container/Box"
 import FetchError from "../../atoms/Loading/FetchError"
 import Loading from "../../atoms/Loading/Loading"
 import { Table, type Column } from "../../atoms/Table/Table"
-import ActionButton from "../Buttons/ActionButton"
+import IconButton from "../Buttons/IconButton"
 
 const questionTabColumn: Column<questionType>[] = [
+	// {
+	// 	header: "Activité",
+	// 	key: "is_active"
+	// },
 	{
 		header: 'Enoncé',
 		key: "enonce_question"
 	},
 	{
-		header: "Activité",
-		key: "is_active"
-	},
-	{
 		header: "Action",
 		key: 'action',
 		render: () => (
-			<ActionButton 
-				action={() => alert("Remove question")}
-			>Effacer</ActionButton>
+			<Box>
+				<IconButton
+					iconName="edit"
+					iconStyling="text-text hover:text-success"
+					action={() => alert('Edition')}
+				/>
+				<IconButton
+					iconName="trash"
+					iconStyling="text-text hover:text-error"
+					action={() => alert('Suppression')}
+				/>
+			</Box>
 		)
 	}
 ]
@@ -38,7 +47,7 @@ const QuestionList = () => {
 		return <FetchError />
 
 	return (
-		<Box direction="column" customStyling="w-full items-center justify-center">
+		<Box direction="column" className="w-full items-center justify-center">
 			<Table 
 				columns={questionTabColumn}
 				data={questions}

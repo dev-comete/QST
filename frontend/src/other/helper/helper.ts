@@ -31,7 +31,31 @@ const getSelectData = <T extends Record<string, unknown>>(
     }));
 };
 
+// Accept unknown or T[keyof T] | undefined
+function formatDate(value?: unknown): string {
+	if (typeof value !== 'string' || !value) {
+		return '-'; // Fallback for null, undefined, or empty values
+	}
+
+	const date = new Date(value);
+	if (isNaN(date.getTime())) return '-';
+
+	return new Intl.DateTimeFormat('en-GB', {
+		day: '2-digit',
+		month: '2-digit',
+		year: 'numeric',
+		hour: '2-digit',
+		minute: '2-digit',
+		// second: '2-digit',
+		hourCycle: 'h23',
+		timeZone: 'UTC'
+	})
+	.format(date)
+	.replace(',', '');
+}
+
 export {
 	formChangeHandler,
-	getSelectData
+	getSelectData,
+	formatDate
 }

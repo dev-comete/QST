@@ -1,7 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { QuizService } from "../../services/quizService";
 import { useEffect, useState } from "react";
-import type { FormEvent } from "react";
 import type { quizCreateType } from "../../types/quizType";
 
 const initQuiz = {
@@ -26,7 +25,6 @@ const useQuiz = () => {
 
 	const handleQuizSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		console.log("Quiz data", quiz)
 		mutate(quiz);
 	}
 

@@ -7,7 +7,9 @@ interface InputProps {
 	name: string;
 	textColor?: ColorTheme;
 	onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-	step?: number
+	step?: number,
+	checked?: boolean,
+	className?: string
 }
 
 const Input = ({
@@ -17,8 +19,13 @@ const Input = ({
 	name,
 	textColor='text',
 	onChange,
-	step
+	step,
+	checked,
+	className
 }: InputProps) => {
+
+	const basicStyle = "flex bg-white w-full items-center justify-center focus:outline-accent focus:outline-1"
+
 	return (
 		<div className="flex flex-col w-full">
 			<label htmlFor={name} className={`text-${textColor}`}>{label}</label>
@@ -26,9 +33,10 @@ const Input = ({
 				type={type}
 				id={id}
 				name={name}
-				className="flex bg-white w-full items-center justify-center focus:outline-accent focus:outline-1"
+				className={`${basicStyle} ${className}`}
 				onChange={onChange}
 				step={step}
+				checked={checked}
 			/>
 		</div>
 	)
