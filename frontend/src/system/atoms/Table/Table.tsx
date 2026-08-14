@@ -14,6 +14,8 @@ interface TableProps<T> {
 }
 
 export const Table = <T,>({ columns, data, rowKey }: TableProps<T>) => {
+
+	
 	return (
 			data.length == 0 ? <CustomText>Pas encore de données...</CustomText>
 			: 

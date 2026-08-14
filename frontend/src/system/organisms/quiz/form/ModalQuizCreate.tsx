@@ -2,7 +2,7 @@ import Box from "../../../atoms/Container/Box";
 import ActionButton from "../../../molecules/Buttons/ActionButton";
 import { Modal } from "../../../molecules/Modal/Modal";
 import Input from "../../../atoms/Form/Input";
-import useQuiz from "../../../../other/hooks/quiz/useQuiz";
+import useCreateQuiz from "../../../../other/hooks/quiz/useCreateQuiz";
 import Select from "../../../atoms/Form/Select";
 import Loading from "../../../atoms/Loading/Loading";
 import FetchError from "../../../atoms/Loading/FetchError";
@@ -15,7 +15,7 @@ interface ModalQuizCreateProps {
 
 const QuizForm = () => {
 	
-	const { handleQuizSubmit, formationQuery, setQuiz } = useQuiz()
+	const { handleQuizSubmit, formationQuery, setQuiz } = useCreateQuiz()
 
 	const statusValue = [
 		{ id: 'draft', value: 'Brouillon' },

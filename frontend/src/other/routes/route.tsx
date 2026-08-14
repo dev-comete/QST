@@ -69,8 +69,8 @@ export const router = createBrowserRouter([
 					{ path: "planning", element: <Planning /> },
 					{ path: "gestion_question", element: <QuestionManagement /> },
 					{ path: "creation_question", element: <QuestionCreateProvider><QuestionCreate /></QuestionCreateProvider>},
-					{ path: "gestion_quizz", element: <QuizManagement /> },
-					{ path: ":id/quiz_assign", element: <QuizAssign /> },
+					{ path: "gestion_quiz", element: <QuizManagement /> },
+					{ path: ":id/assign_quiz", element: <QuizAssign /> },
 					{ path: "tableau_de_bord", element: <Dashboard /> },
 				],
 			}

@@ -9,7 +9,7 @@ const initQuiz = {
 	status: 'draft'
 }
 
-const useQuiz = () => {
+const useCreateQuiz = () => {
 
 	const [quiz, setQuiz] = useState<quizCreateType>(initQuiz)
 
@@ -63,4 +63,4 @@ const useQuiz = () => {
 	}
 }
 
-export default useQuiz
+export default useCreateQuiz

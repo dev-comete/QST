@@ -4,7 +4,7 @@ import { QuestionService } from "../../services/questionService";
 const useQuestion = () => {
 
 	const getAllQuestion = useQuery({
-		queryKey: ['question_list'],
+		queryKey: ['bank_question'],
 		queryFn: QuestionService.getAllQuestion
 	})
 

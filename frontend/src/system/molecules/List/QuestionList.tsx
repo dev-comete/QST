@@ -1,12 +1,12 @@
 import { useQuestion } from "../../../other/hooks/question/useQuestion"
-import type { questionType } from "../../../other/types/questionType"
+import type { bankQuestionType } from "../../../other/types/questionType"
 import Box from "../../atoms/Container/Box"
 import FetchError from "../../atoms/Loading/FetchError"
 import Loading from "../../atoms/Loading/Loading"
 import { Table, type Column } from "../../atoms/Table/Table"
 import IconButton from "../Buttons/IconButton"
 
-const questionTabColumn: Column<questionType>[] = [
+const questionTabColumn: Column<bankQuestionType>[] = [
 	{
 		header: 'Enoncé',
 		key: "enonce_question"

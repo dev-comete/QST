@@ -1,6 +1,14 @@
+import QuizAssignForm from "../../../../system/organisms/quiz/form/QuizAssignForm";
+import BodyLayout from "../../../layout/common/BodyLayout";
+
 const QuizAssign = () => {
 	return (
-		<>Assign the questions to quizz</>
+		<BodyLayout
+			title="Assignation de questions"
+			linkBack="/formateur/gestion_quiz"
+		>
+			<QuizAssignForm />
+		</BodyLayout>
 	)
 }
 

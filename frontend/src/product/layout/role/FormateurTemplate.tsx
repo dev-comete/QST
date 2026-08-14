@@ -6,7 +6,7 @@ const FormateurTemplate = () => {
 	const navList : NavItem[] = [
 		{ label: 'Plannification', link: '/formateur/planning' },
 		{ label: 'Gestion de question', link: '/formateur/gestion_question' },
-		{ label: 'Gestion de quizz', link: '/formateur/gestion_quizz' },
+		{ label: 'Gestion de quizz', link: '/formateur/gestion_quiz' },
 		{ label: 'Tableau de bord', link: '/formateur/tableau_de_bord' }
 	]
 

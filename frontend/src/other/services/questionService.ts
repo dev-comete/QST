@@ -1,4 +1,4 @@
-import type { baremeType, questionIdType, questionType } from "../types/questionType";
+import type { bankQuestionType, baremeType, questionIdType, questionType } from "../types/questionType";
 import apiClient from "./apiClient";
 
 export const QuestionService = {
@@ -21,8 +21,9 @@ export const QuestionService = {
 	},
 
 	getAllQuestion: async () => {
-		const url = import.meta.env.VITE_CRUD_QUESTION
+		const url = import.meta.env.VITE_BANK_QUESTION
 		const response = await apiClient.get(url);
-		return response.data as questionType[];
+		const result = response.data.results as bankQuestionType[]
+		return result;
 	},
 }

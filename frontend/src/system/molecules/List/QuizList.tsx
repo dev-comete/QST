@@ -1,11 +1,33 @@
+import { useNavigate } from "react-router"
 import { formatDate } from "../../../other/helper/helper"
-import useQuiz from "../../../other/hooks/quiz/useQuiz"
+import useCreateQuiz from "../../../other/hooks/quiz/useCreateQuiz"
 import type { quizType } from "../../../other/types/quizType"
 import Box from "../../atoms/Container/Box"
 import FetchError from "../../atoms/Loading/FetchError"
 import Loading from "../../atoms/Loading/Loading"
 import { Table, type Column } from "../../atoms/Table/Table"
 import IconButton from "../Buttons/IconButton"
+
+const ActionCell = ({ rowId } : {rowId : string | number | boolean }) => {
+    const navigate = useNavigate();
+
+    return (
+        <Box>
+            <IconButton
+                iconName="edit"
+                iconStyling="text-text hover:text-success"
+                action={() => {
+                    navigate(`/formateur/${rowId}/assign_quiz`);
+                }}
+            />
+            <IconButton
+                iconName="trash"
+                iconStyling="text-text hover:text-error"
+                action={() => alert('Suppression')}
+            />
+        </Box>
+    );
+};
 
 const quizTabColumn: Column<quizType>[] = [
 	{
@@ -27,27 +49,18 @@ const quizTabColumn: Column<quizType>[] = [
 	},
 	{
 		header: "Action",
-		key: 'action',
-		render: () => (
-			<Box>
-				<IconButton
-					iconName="edit"
-					iconStyling="text-text hover:text-success"
-					action={() => alert('Assign question')}
-				/>
-				<IconButton
-					iconName="trash"
-					iconStyling="text-text hover:text-error"
-					action={() => alert('Suppression')}
-				/>
-			</Box>
-		)
+		key: 'id',
+		render: (value) => {
+			return <ActionCell rowId={value ? value : ''} />
+		}
+		
 	}
 ]
 
+// Todo : Transform formation(id) to formation(name) and render with new quizType
 const QuizList = () => {
 
-	const { getAllQuiz } = useQuiz()
+	const { getAllQuiz } = useCreateQuiz()
 	const { data: quizzes, status } = getAllQuiz
 
 	if (status == 'pending')
