@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useCreateQuestion } from "../../../../other/hooks/question/useQuestionCreate";
+import { useQuestionCreate } from "../../../../other/hooks/question/useQuestionCreate";
 import type { respType } from "../../../../other/types/questionType";
 import Box from "../../../atoms/Container/Box";
 import TextArea from "../../../atoms/Form/TextArea";
@@ -16,7 +16,7 @@ const RespForm = () => {
 	
 	const [ resp, setResp ] = useState("")
 	const [ explication, setExplication ] = useState("")
-	const { setQuestion } = useCreateQuestion();
+	const { setQuestion } = useQuestionCreate();
 
 	const addNewResponse = (e: React.MouseEvent) => {
 		e.preventDefault()

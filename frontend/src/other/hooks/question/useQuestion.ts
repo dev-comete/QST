@@ -8,8 +8,20 @@ const useQuestion = () => {
 		queryFn: QuestionService.getAllQuestion
 	})
 
+	const questionTypeQuery = useQuery({
+		queryKey: ['question_type'],
+		queryFn: QuestionService.getTypeQuestion
+	})
+
+	const baremeQuery = useQuery({
+		queryKey: ['bareme'],
+		queryFn: QuestionService.getBareme
+	}) 
+
 	return {
-		getAllQuestion
+		getAllQuestion,
+		questionTypeQuery,
+		baremeQuery
 	}
 }
 

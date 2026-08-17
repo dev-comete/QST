@@ -27,7 +27,7 @@ const Button = ({
 }: ButtonProps) => {
 
 	const roundParam = isRounded ? "rounded-sm" : ""
-	const isDisable = disabled ? "disabled:pointer-events-none" : ""
+	const isDisable = disabled ? "disabled:pointer-events-none" : "cursor-pointer"
 
 	return (
 		<button 

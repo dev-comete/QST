@@ -1,18 +1,18 @@
 import { type UseQueryResult } from "@tanstack/react-query";
-import type { questionType } from "../../types/questionType";
+import type { baremeType, questionIdType, questionType } from "../../types/questionType";
 import { createContext, useContext, type Dispatch, type SetStateAction } from "react";
 
-interface QuestionCreqteContextType {
+interface QuestionCreateContextType {
 	question: questionType,
 	setQuestion: Dispatch<SetStateAction<questionType>>;
 	handleCreate: (e: React.SubmitEvent<HTMLFormElement>) => void
-	baremeQuery: UseQueryResult<any, Error>
-	questionTypeQuery: UseQueryResult<any, Error>
+	baremeQuery: UseQueryResult<baremeType[], Error>
+	questionTypeQuery: UseQueryResult<questionIdType[], Error>
 }
 
-export const QuestionCreateContext = createContext<QuestionCreqteContextType | undefined>(undefined);
+export const QuestionCreateContext = createContext<QuestionCreateContextType | undefined>(undefined);
 
-export const useCreateQuestion = () => {
+export const useQuestionCreate = () => {
 	const context = useContext(QuestionCreateContext);
 	if (!context) throw new Error('useCreateQuestion must be used within an AuthProvider');
 	return context;

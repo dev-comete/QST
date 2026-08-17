@@ -1,12 +1,9 @@
 import type { Dispatch, SetStateAction } from "react";
 import useAssignQuiz from "../../../../other/hooks/quiz/useAssignQuiz";
 import type { assignQuestionType } from "../../../../other/types/questionType";
-import Box from "../../../atoms/Container/Box";
 import ActionButton from "../../../molecules/Buttons/ActionButton";
 import QuizBankQuestion from "../list/QuizBankQuestion";
 import QuizQuestionList from "../list/QuizQuestionList";
-import Paper from "../../../atoms/Container/Paper";
-import CustomText from "../../../atoms/Text/CustomText";
 import AssignBloc from "../container/AssignBloc";
 
 export interface QuizAssignManipProps {

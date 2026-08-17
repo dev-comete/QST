@@ -1,4 +1,4 @@
-import { useCreateQuestion } from "../../../other/hooks/question/useQuestionCreate"
+import { useQuestionCreate } from "../../../other/hooks/question/useQuestionCreate"
 import type { respType } from "../../../other/types/questionType"
 import Box from "../../atoms/Container/Box"
 import Input from "../../atoms/Form/Input"
@@ -41,7 +41,7 @@ const getResponseColumns = (
 
 const RespCreatedList = () => {
 
-	const { question, setQuestion } = useCreateQuestion()
+	const { question, setQuestion } = useQuestionCreate()
 	
 	const handleCheckboxChange = (index: number, isChecked: boolean) => {
 		setQuestion((prev) => ({

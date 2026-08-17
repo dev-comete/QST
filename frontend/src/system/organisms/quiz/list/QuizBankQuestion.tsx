@@ -1,6 +1,5 @@
 import { useQuestion } from "../../../../other/hooks/question/useQuestion";
 import type { assignQuestionType, bankQuestionType } from "../../../../other/types/questionType";
-import Box from "../../../atoms/Container/Box";
 import Paper from "../../../atoms/Container/Paper";
 import FetchError from "../../../atoms/Loading/FetchError";
 import Loading from "../../../atoms/Loading/Loading";

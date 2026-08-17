@@ -5,7 +5,7 @@ import Box from "../../../atoms/Container/Box";
 
 const AssignBloc = ({title, children} : { title: string, children : ReactNode}) => {
 	return (
-		<Paper className="flex flex-col items-center rounded-xl p-5 h-full">
+		<Paper className="flex flex-col items-center rounded-xl p-5 h-full gap-5">
 			<CustomText weight="bold" textTag="h1">{title}</CustomText>
 			<Box direction="column" className="justify-center h-4/5 overflow-y-auto items-center">
 				{children}

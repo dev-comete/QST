@@ -1,4 +1,4 @@
-import { useCreateQuestion } from "../../../../other/hooks/question/useQuestionCreate";
+import { useQuestionCreate } from "../../../../other/hooks/question/useQuestionCreate";
 import Box from "../../../atoms/Container/Box";
 import Title from "../../../molecules/LayoutElement/Title";
 import TextArea from "../../../atoms/Form/TextArea";
@@ -12,7 +12,7 @@ import FetchError from "../../../atoms/Loading/FetchError";
 
 const EnonceForm = () => {
 
-	const { question, setQuestion, questionTypeQuery, baremeQuery  } = useCreateQuestion();
+	const { question, setQuestion, questionTypeQuery, baremeQuery  } = useQuestionCreate();
 	const { data : questionType, status : questionTypeStatus } = questionTypeQuery
 	const { data : bareme, status : baremeStatus } = baremeQuery
 
@@ -58,7 +58,7 @@ const EnonceForm = () => {
 
 
 const QuestionForm = ({ openRespForm } : { openRespForm : () => void}) => {
-	const { handleCreate } = useCreateQuestion()
+	const { handleCreate } = useQuestionCreate()
 
 	return (
 		<form
