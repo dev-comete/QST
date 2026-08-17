@@ -19,6 +19,7 @@ const QuizQuestionItem = ({ numero, question, baremes_pts } : QuizQuestionItemPr
 
 	return (
 		<Paper className="w-full p-3 rounded-xl" color="background">
+			
 			<Box direction="column">
 				<CustomText>{`${numero}. ${question.texte_enonce}`}</CustomText>
 				<Select 
