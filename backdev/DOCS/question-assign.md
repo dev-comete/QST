@@ -45,17 +45,14 @@ Authorization: Bearer <your_token_here>
   "questions_choisies": [
     {
       "question_id": 5,
-      "type_id": 2,
       "bareme_pts": 3
     },
     {
       "question_id": 8,
-      "type_id": 1,
       "bareme_pts": 4
     },
     {
       "question_id": 12,
-      "type_id": 2,
       "bareme_pts": 3
     }
   ]
@@ -85,12 +82,8 @@ Authorization: Bearer <your_token_here>
 ```
 
 ### 🔴 400 Bad Request
-Returned for validation failures (empty selection, malformed payload, or a business rule raised in the service layer), including invalid `QCU`/`QCM` answer configuration or an invalid question/type reference:
-```json
-{
-  "error": "Impossible d'assigner la question 12 en tant que QCU. Elle possède actuellement 2 réponses correctes dans la banque, alors qu'un QCU en exige exactement UNE."
-}
-```
+Returned for validation failures (empty selection, malformed payload, or a business rule raised in the service layer)
+
 
 ### 🔴 403 Forbidden
 Returned when a non-admin Formateur attempts to assign questions to a quiz they don't own:

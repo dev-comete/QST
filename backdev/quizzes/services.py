@@ -190,7 +190,7 @@ def assign_questions_to_quiz(quiz, questions_choisies):
 
     for item in questions_choisies:
         q_id = item['question_id']
-        t_id = item['type_id']
+        # t_id = item['type_id']  # 🆕 On reçoit l'ID du type, mais on ne l'utilise plus
         bareme_pts = item['bareme_pts']  # 🆕 On reçoit les points, pas l'ID !
 
         # 1. Vérifier que la question existe bien dans la banque
@@ -202,37 +202,26 @@ def assign_questions_to_quiz(quiz, questions_choisies):
         bareme_obj, _ = Bareme.objects.get_or_create(pts=float(bareme_pts))
         QuestionBareme.objects.get_or_create(question_id=q_id, bareme=bareme_obj)
 
-        # 3. Gestion Dynamique du Type
+        # 3. Récupérer le type ORIGINAL de la question (Garanti son intégrité)
         try:
-            type_obj = TypeQuestion.objects.get(id=t_id)
-        except TypeQuestion.DoesNotExist:
-            raise ValidationError(f"Le type de question spécifié ({t_id}) n'existe pas.")
-        
-        QuestionTypeQuestion.objects.get_or_create(question_id=q_id, type_question=type_obj)
+            type_link = QuestionTypeQuestion.objects.select_related('type_question').get(question_id=q_id)
+            type_obj = type_link.type_question
+        except QuestionTypeQuestion.DoesNotExist:
+            raise ValidationError(f"La question {q_id} n'a pas de type défini dans la banque.")
 
-        # 4. 🚨 VÉRIFICATION DE SÉCURITÉ MÉTIER 🚨
-        # Si le formateur change le type d'une question existante, on vérifie que le Corrigé reste valide
-        system_code = type_obj.code.upper() if type_obj.code else "UNKNOWN"
-        correct_count = Corrigee.objects.filter(question_id=q_id, est_correct=True).count()
-
-        if system_code == 'QCU' and correct_count != 1:
-            raise ValidationError(
-                f"Impossible d'assigner la question {q_id} en tant que QCU. "
-                f"Elle possède actuellement {correct_count} réponses correctes dans la banque, alors qu'un QCU en exige exactement UNE."
-            )
-        elif system_code == 'QCM' and correct_count < 1:
-            raise ValidationError(
-                f"Impossible d'assigner la question {q_id} en tant que QCM. "
-                f"Elle ne possède aucune réponse correcte."
-            )
-
-        # 5. Préparer la liaison avec le Quiz (si elle n'existe pas déjà pour CE quiz précis)
-        if not QuizQuestion.objects.filter(quiz=quiz, question_id=q_id, type_question=type_obj, bareme=bareme_obj).exists():
+        # 4. Préparer la liaison avec le Quiz (si elle n'existe pas déjà pour CE quiz précis)
+        # On ne vérifie plus la validité QCM/QCU ici, car le type n'a pas changé.
+        if not QuizQuestion.objects.filter(quiz=quiz, question_id=q_id).exists():
             links_to_create.append(
-                QuizQuestion(quiz=quiz, question_id=q_id, type_question=type_obj, bareme=bareme_obj)
+                QuizQuestion(
+                    quiz=quiz, 
+                    question_id=q_id, 
+                    type_question=type_obj, # ⬅️ On utilise le type original
+                    bareme=bareme_obj
+                )
             )
 
-    # 6. Exécution en base de données
+    # 5. Exécution en base de données
     if links_to_create:
         QuizQuestion.objects.bulk_create(links_to_create)
 

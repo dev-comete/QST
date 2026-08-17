@@ -133,7 +133,7 @@ class QuestionChoiceSerializer(serializers.Serializer):
     Sub-serializer to define the exact configuration of the chosen question.
     """
     question_id = serializers.IntegerField(required=True)
-    type_id = serializers.IntegerField(required=True)
+    #type_id = serializers.IntegerField(required=True)
     bareme_pts = serializers.FloatField(
         required=True, 
         min_value=0.1,
