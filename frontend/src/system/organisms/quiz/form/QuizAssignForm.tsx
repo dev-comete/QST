@@ -34,7 +34,7 @@ const QuizAssignForm = () => {
 				/>
 				<ActionButton
 					type="submit"
-					action={handleAssignQuestion}
+					action={(e) => {e.preventDefault() ; handleAssignQuestion()}}
 					btnColor={selectedQuestion.length ? "success" : "disabled"}
 					textColor="white"
 					disabled={selectedQuestion.length == 0}

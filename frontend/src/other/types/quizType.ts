@@ -9,9 +9,20 @@ type quizType = {
 	formation: string
 }
 
+type quizSelectedQuestion = {
+	question_id: number,
+	bareme_pts: number
+}
+
+type quizAssignPayload = {
+	quiz_id: number,
+	questions_choisies: quizSelectedQuestion[]
+}
+
 type quizCreateType = Pick<quizType, 'duree' | 'formation' | 'status' >
 
 export type {
 	quizType,
-	quizCreateType
+	quizCreateType,
+	quizAssignPayload
 }
