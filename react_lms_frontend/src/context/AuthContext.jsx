@@ -17,9 +17,9 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const loginContext = (access, refresh, userData) => {
-    TokenStorage.setAuthData(access, refresh, userData);
-    setUser(userData);
+  const loginContext = (access, refresh, authData) => {
+    TokenStorage.setAuthData(access, refresh, authData);
+    setUser(authData);
   };
 
   const logoutContext = async () => {

@@ -1,6 +1,6 @@
 import axios from "axios";
-import apiClient from "./apiClient";
-import type { User } from "../types/common";
+import apiClient from "../apiClient";
+import type { User } from "../../types/common";
 
 export const TokenStorage = {
 	getAccessToken: () => localStorage.getItem('access_token'),

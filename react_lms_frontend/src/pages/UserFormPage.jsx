@@ -29,12 +29,12 @@ export default function UserFormPage() {
         setOrganisations(orgsData.results || orgsData);
 
         if (isEditing) {
-          const userData = await UserService.getById(id);
+          const authData = await UserService.getById(id);
           setFormData({
-            username: userData.username,
-            email: userData.email,
-            type_utilisateur: userData.type_utilisateur || '',
-            organisation: userData.organisation || []
+            username: authData.username,
+            email: authData.email,
+            type_utilisateur: authData.type_utilisateur || '',
+            organisation: authData.organisation || []
           });
         }
       } catch (err) {

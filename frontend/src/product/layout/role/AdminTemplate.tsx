@@ -4,7 +4,7 @@ import Layout from "../common/Layout";
 const AdminTemplate = () => {
 
 	const navList : NavItem[] = [
-		{ label: 'Gestion des comptes', link: '/admin/gestion_compte' },
+		{ label: 'Gestion des utilisateurs', link: '/admin/gestion_utilisateurs' },
 		{ label: 'Tableau de bord', link: '/admin/tableau_de_bord' }
 	]
 

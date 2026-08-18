@@ -21,7 +21,7 @@ export interface User {
 	organisations: []
 }
 
-type userData = {
+type authData = {
 	access: string,
 	refresh: string,
 	user: User
@@ -38,6 +38,6 @@ export type {
 	ColorTheme,
 	NavItem,
 	Role,
-	userData,
+	authData,
 	formationType
 }

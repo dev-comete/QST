@@ -7,6 +7,7 @@ import ActionButton from "../Buttons/ActionButton";
 import type { ColorTheme } from "../../../other/types/common";
 import { Children, useState } from "react";
 import Title from "../LayoutElement/Title";
+import IconButton from "../Buttons/IconButton";
 
 interface ModalProps {
 	bgColor?: ColorTheme,
@@ -44,18 +45,20 @@ const ModalNav = ({ subIdx, increaseIdx, decreaseIdx, subtitle } : ModalSubtitle
 
 	return (
 		<Box className="justify-between w-full">
-			<ActionButton
+			<IconButton
 				action={decreaseIdx}
 				textColor="text"
 				btnColor={ subIdx > 0 ? "accent" : "disabled" }
 				disabled={ subIdx > 0 ? false : true }
-			>{"<-"}</ActionButton>
-			<ActionButton
+				iconName="chevron-left"
+			/>
+			<IconButton
 				action={increaseIdx}
 				textColor="text"
 				btnColor={ subIdx < subtitle.length - 1 ? "accent" : "disabled" }
 				disabled={ subIdx < subtitle.length - 1 ? false : true }
-			>{"->"}</ActionButton>
+				iconName="chevron-right"
+			/>
 		</Box>
 	)
 }
@@ -69,7 +72,7 @@ const Modal = ({
 	closeModal
 } : ModalProps) => {
 
-	const modalOverlayStyling = "fixed top-0 left-0 w-full h-full bg-black/50 z-100";
+	const modalOverlayStyling = "fixed top-0 left-0 w-full h-full bg-black/90 z-100";
 
 	const checkModal = isOpen ? null : 'hidden';
 
@@ -86,6 +89,7 @@ const Modal = ({
 				color={bgColor}
 				position="fixed"
 				className="
+					rounded-xl
 					w-[50%] max-h-[85vh] h-[85vh]
 					top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
 					z-101
@@ -97,10 +101,11 @@ const Modal = ({
 					<Box direction="column" className="justify-between grow min-h-0">
 						<div className="flex justify-end px-2 flex-none">
 							{ closeModal && 
-								<ActionButton
+								<IconButton
 									action={() => { closeModal() ; setSubIdx(0)}}
 									btnColor="transparent"
-								>{"x"}</ActionButton>
+									iconName="circle-xmark"
+								/>
 							}
 						</div>
 

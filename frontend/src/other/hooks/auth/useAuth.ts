@@ -2,8 +2,8 @@ import { createContext, useContext } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import type { Role, User } from "../../types/common";
-import { AuthService } from "../../services/authService";
-import { TokenStorage } from "../../services/storage";
+import { AuthService } from "../../services/auth/authService";
+import { TokenStorage } from "../../services/auth/storage";
 
 interface AuthContextType {
 	authUser: User | null;
@@ -41,7 +41,8 @@ const useLogin = () => {
 			const { user, access, refresh } = data;
 			TokenStorage.setAuthData(access, refresh, user);
 			setAuthUser(user);
-			navigate(getRoleLandingPath(user.role), { replace: true });
+			const path = getRoleLandingPath(user.role)
+			navigate(path, { replace: true });
 		},
 		onError: (err) => {
 			console.error('Login failed:', err);

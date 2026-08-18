@@ -7,6 +7,8 @@ export const RootRedirect = () => {
 	if (!authUser)
 		return <Navigate to="/login" replace />;
 
+	console.log("Root redirection", authUser)
+
 	switch (authUser.role) {
 		case 'admin':
 			return <Navigate to="/admin" replace />;

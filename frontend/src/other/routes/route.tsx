@@ -49,8 +49,8 @@ export const router = createBrowserRouter([
 			{	
 				element: <AdminTemplate />,
 				children: [
-					{ index: true, element: <Navigate to="gestion_compte" replace /> },
-					{ path: 'gestion_compte', element: <UserManagement /> },
+					{ index: true, element: <Navigate to="gestion_utilisateurs" replace /> },
+					{ path: 'gestion_utilisateurs', element: <UserManagement /> },
 					{ path: 'tableau_de_bord', element: <AdminDashboard /> },
 				]
 			},
