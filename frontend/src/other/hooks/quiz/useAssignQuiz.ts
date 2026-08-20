@@ -30,16 +30,13 @@ const useAssignQuiz = () => {
 		//   return;
 		// }
 
-		console.log("Selected questions : ", selectedQuestion)
-
-		// Préparation du Payload selon votre format JSON
 		const payload = {
-		  quiz_id: Number(id ?? 0),
-		  questions_choisies: selectedQuestion.map(q => ({
+			quiz_id: Number(id ?? 0),
+			questions_choisies: selectedQuestion.map(q => ({
 				question_id: q.id,
 				type_id: 1,
 				bareme_pts: q.bareme_pts
-		  }))
+			}))
 		};
 
 		mutate(payload)

@@ -1,12 +1,5 @@
-type ColorTheme = 'background' | 'primary' | 'secondary' | 'accent' | 'success' | 'error' | 'warning' | 'text' | 'white' | 'disabled' | 'transparent';
 
-type NavItem = {
-    label: string;
-    link: string;
-	title?: string
-};
-
-type Role = 'admin' | 'formateur' | 'apprenant' | 'rfq'
+	/* Interface */
 
 export interface User {
 	id: number,
@@ -21,6 +14,13 @@ export interface User {
 	organisations: []
 }
 
+export interface ModalsProps {
+	open: boolean;
+	closeModal: () => void
+}
+
+	/* Type */
+
 type authData = {
 	access: string,
 	refresh: string,
@@ -33,6 +33,16 @@ type formationType = {
 	createur: number,
 	organisation: string | null	
 }
+
+type ColorTheme = 'background' | 'primary' | 'secondary' | 'accent' | 'success' | 'error' | 'warning' | 'text' | 'white' | 'disabled' | 'transparent';
+
+type NavItem = {
+    label: string;
+    link: string;
+	title?: string
+};
+
+type Role = 'admin' | 'formateur' | 'apprenant' | 'rfq'
 
 export type {
 	ColorTheme,

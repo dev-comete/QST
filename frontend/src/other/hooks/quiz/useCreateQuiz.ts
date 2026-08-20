@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { QuizService } from "../../services/quizService";
 import { useEffect, useState } from "react";
 import type { quizCreateType } from "../../types/quizType";
+import { useFormation } from "../formation/useFormation";
 
 const initQuiz = {
 	formation: '',
@@ -12,6 +13,7 @@ const initQuiz = {
 const useCreateQuiz = () => {
 
 	const [quiz, setQuiz] = useState<quizCreateType>(initQuiz)
+	const { formationListQuery } = useFormation()
 
 	const { mutate, status } = useMutation({
 		mutationFn: QuizService.create,
@@ -28,35 +30,29 @@ const useCreateQuiz = () => {
 		mutate(quiz);
 	}
 
-	const formationQuery = useQuery({
-		queryKey: ['formation_list'],
-		queryFn: QuizService.getFormation
-	})
-
 	const getAllQuiz = useQuery({
 		queryKey: ['quiz_list'],
-		queryFn: QuizService.getAllQuiz
+		queryFn: QuizService.list
 	})
 
 	useEffect(() => {
 
 		const initQuestion = async () => {
-			if (formationQuery.data?.[0]) {
+			if (formationListQuery.data?.[0]) {
 				setQuiz((prev) => ({
 					...prev,
-					formation: String(formationQuery.data[0].id),
+					formation: String(formationListQuery.data[0].id),
 				}));
 			}
 		}
 
 		initQuestion()
 
-	}, [formationQuery.data]);
+	}, [formationListQuery.data]);
 
 	return {
 		status,
 		handleQuizSubmit,
-		formationQuery,
 		quiz,
 		setQuiz,
 		getAllQuiz

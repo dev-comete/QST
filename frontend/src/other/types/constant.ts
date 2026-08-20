@@ -22,7 +22,12 @@ const initialQuestion : questionType = {
 	options: []
 }
 
+const GENERAL_STALE_TIME = 1000 * 60 * 5
+const GENERAL_CACHE_TIME = 1000 * 60 * 10
+
 export {
 	backgroundColor,
-	initialQuestion
+	initialQuestion,
+	GENERAL_CACHE_TIME,
+	GENERAL_STALE_TIME
 }

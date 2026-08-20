@@ -1,7 +1,7 @@
 import { createBrowserRouter, Navigate } from "react-router";
 import FormateurTemplate from "../../product/layout/role/FormateurTemplate";
 import QuestionManagement from "../../product/pages/formateur/question/QuestionManagement";
-import Planning from "../../product/pages/formateur/Planning";
+import VagueManagement from "../../product/pages/formateur/VagueManagement";
 import QuizManagement from "../../product/pages/formateur/quizz/QuizManagement";
 import Dashboard from "../../product/pages/formateur/Dashboard";
 import AdminTemplate from "../../product/layout/role/AdminTemplate";
@@ -65,8 +65,8 @@ export const router = createBrowserRouter([
 			{ 
 				element: <FormateurTemplate />,
 				children: [
-					{ index: true, element: <Navigate to="planning" replace /> },
-					{ path: "planning", element: <Planning /> },
+					{ index: true, element: <Navigate to="gestion_vague" replace /> },
+					{ path: "gestion_vague", element: <VagueManagement /> },
 					{ path: "gestion_question", element: <QuestionManagement /> },
 					{ path: "creation_question", element: <QuestionCreateProvider><QuestionCreate /></QuestionCreateProvider>},
 					{ path: "gestion_quiz", element: <QuizManagement /> },

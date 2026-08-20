@@ -2,7 +2,7 @@ import type { ColorTheme } from "../../../other/types/common";
 
 interface InputProps {
 	label?: string;
-	type?: 'text' | 'password' | 'email' | 'search' | 'time' | 'checkbox';
+	type?: 'text' | 'password' | 'email' | 'search' | 'time' | 'checkbox' | 'date' | 'datetime-local';
 	id: string;
 	name: string;
 	textColor?: ColorTheme;

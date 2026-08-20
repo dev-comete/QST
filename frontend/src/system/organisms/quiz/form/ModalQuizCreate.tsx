@@ -7,6 +7,7 @@ import Select from "../../../atoms/Form/Select";
 import Loading from "../../../atoms/Loading/Loading";
 import FetchError from "../../../atoms/Loading/FetchError";
 import { formChangeHandler, getSelectData } from "../../../../other/helper/helper";
+import { useFormation } from "../../../../other/hooks/formation/useFormation";
 
 interface ModalQuizCreateProps {
 	open: boolean;
@@ -15,14 +16,15 @@ interface ModalQuizCreateProps {
 
 const QuizForm = () => {
 	
-	const { handleQuizSubmit, formationQuery, setQuiz } = useCreateQuiz()
+	const { handleQuizSubmit, setQuiz } = useCreateQuiz()
+	const { formationListQuery } = useFormation()
 
 	const statusValue = [
 		{ id: 'draft', value: 'Brouillon' },
 		{ id: 'published', value: 'Publié' },
 	]
 
-	const { data: formations, status: formationStat } = formationQuery
+	const { data: formations, status: formationStat } = formationListQuery
 
 	if (formationStat == 'pending')
 		return <Loading />
