@@ -10,9 +10,11 @@ export default function VagueDetailPage() {
 
   const [vague, setVague] = useState(null);
   const [apprenantsDisponibles, setApprenantsDisponibles] = useState([]);
-  const [selectedApprenantId, setSelectedApprenantId] = useState('');
+  
+  // 🌟 NOUVEAU : On utilise un tableau pour stocker plusieurs IDs
+  const [selectedApprenantIds, setSelectedApprenantIds] = useState([]);
 
-  // 🌟 Nouveaux états pour les Quiz
+  // États pour les Quiz
   const [quizzesDisponibles, setQuizzesDisponibles] = useState([]);
   const [selectedQuizId, setSelectedQuizId] = useState('');
 
@@ -33,9 +35,8 @@ export default function VagueDetailPage() {
       const apprenants = await UserService.getApprenants();
       setApprenantsDisponibles(apprenants);
 
-      // 🌟 3. Récupération des Quiz du formateur
-      // (On gère le cas où l'API renvoie des données paginées avec .results)
-      const quizzes = await QuizService.getQuizzes(); // Adaptez le nom de la méthode si besoin
+      // 3. Récupération des Quiz du formateur
+      const quizzes = await QuizService.getQuizzes();
       const listeQuizzes = quizzes.results || quizzes;
       setQuizzesDisponibles(listeQuizzes);
 
@@ -48,33 +49,44 @@ export default function VagueDetailPage() {
 
   // --- ACTIONS ---
 
-  const handleAssignStudent = async (e) => {
+  // 🌟 NOUVEAU : Fonction pour cocher/décocher un étudiant
+  const toggleStudent = (studentId) => {
+    setSelectedApprenantIds((prev) => {
+      if (prev.includes(studentId)) {
+        return prev.filter(id => id !== studentId); // Décocher
+      } else {
+        return [...prev, studentId]; // Cocher
+      }
+    });
+  };
+
+  // 🌟 MIS À JOUR : Envoi du tableau d'étudiants
+  const handleAssignStudents = async (e) => {
     e.preventDefault();
-    if (!selectedApprenantId) return;
+    if (selectedApprenantIds.length === 0) return;
 
     try {
-      const response = await VagueService.assignStudent(id, selectedApprenantId);
+      // Assurez-vous que votre VagueService expose bien cette méthode qui envoie 'etudiant_ids'
+      const response = await VagueService.assignStudents(id, selectedApprenantIds);
       alert(response.message);
-      fetchData();
-      setSelectedApprenantId('');
+      fetchData(); // Rafraîchir la liste
+      setSelectedApprenantIds([]); // Vider la sélection
     } catch (error) {
       console.error("Erreur lors de l'inscription", error);
       alert(error.response?.data?.error || "Erreur lors de l'assignation");
     }
   };
 
-  // 🌟 NOUVELLE ACTION : Assigner le Quiz
   const handleAssignQuiz = async (e) => {
     e.preventDefault();
     if (!selectedQuizId) return;
 
     try {
       const response = await VagueService.assignQuiz(id, selectedQuizId);
-      alert(response.message); // Ex: "Succès ! Le quiz a été assigné à X étudiants."
-      setSelectedQuizId(''); // On réinitialise la liste déroulante
+      alert(response.message);
+      setSelectedQuizId('');
     } catch (error) {
       console.error("Erreur d'assignation du quiz", error);
-      // Le backend renverra une erreur si le quiz ne fait pas partie de la même formation
       const errorMsg = error.response?.data?.non_field_errors?.[0] || error.response?.data?.error || "Impossible d'assigner ce quiz.";
       alert(errorMsg);
     }
@@ -104,6 +116,11 @@ export default function VagueDetailPage() {
     );
   }
 
+  // 🌟 BONUS UX : On filtre les apprenants pour ne pas afficher ceux qui sont déjà dans la vague
+  const apprenantsNonInscrits = apprenantsDisponibles.filter(
+    (apprenant) => !vague.etudiants.some((e) => e.etudiant_id === apprenant.id)
+  );
+
   return (
     <div className="lms-scope lms-page">
       <div className="lms-container">
@@ -126,30 +143,56 @@ export default function VagueDetailPage() {
           {/* Colonne de gauche : Formulaires d'actions */}
           <div className="lms-stack">
 
-            {/* Action 1 : Inscrire un étudiant */}
+            {/* 🌟 Action 1 : Inscription en masse */}
             <div className="lms-card lms-card--tab">
-              <div className="lms-card__title" style={{ marginBottom: 'var(--space-4)' }}>Inscrire un étudiant</div>
-              <form onSubmit={handleAssignStudent} className="lms-stack" style={{ gap: 'var(--space-4)' }}>
-                <select
-                  className="lms-select"
-                  value={selectedApprenantId}
-                  onChange={(e) => setSelectedApprenantId(e.target.value)}
-                  required
+              <div className="lms-card__title" style={{ marginBottom: 'var(--space-4)' }}>Inscrire des étudiants</div>
+              <form onSubmit={handleAssignStudents} className="lms-stack" style={{ gap: 'var(--space-4)' }}>
+                
+                <div className="lms-picker" style={{ maxHeight: '220px', overflowY: 'auto', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)' }}>
+                  {apprenantsNonInscrits.length === 0 ? (
+                    <div style={{ padding: 'var(--space-4)', textAlign: 'center', fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)' }}>
+                      Tous les apprenants disponibles sont déjà inscrits.
+                    </div>
+                  ) : (
+                    apprenantsNonInscrits.map(apprenant => (
+                      <label 
+                        key={apprenant.id} 
+                        style={{ 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          padding: 'var(--space-3)', 
+                          borderBottom: '1px solid var(--color-border)',
+                          cursor: 'pointer',
+                          backgroundColor: selectedApprenantIds.includes(apprenant.id) ? 'var(--color-surface-hover)' : 'transparent',
+                          margin: 0
+                        }}
+                      >
+                        <input 
+                          type="checkbox" 
+                          checked={selectedApprenantIds.includes(apprenant.id)}
+                          onChange={() => toggleStudent(apprenant.id)}
+                          style={{ marginRight: 'var(--space-3)' }}
+                        />
+                        <div>
+                          <strong style={{ display: 'block', fontSize: 'var(--text-sm)' }}>{apprenant.username}</strong>
+                          <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)' }}>{apprenant.email}</div>
+                        </div>
+                      </label>
+                    ))
+                  )}
+                </div>
+
+                <button 
+                  type="submit" 
+                  className="lms-btn lms-btn--primary lms-btn--block"
+                  disabled={selectedApprenantIds.length === 0}
                 >
-                  <option value="">-- Choisir un apprenant --</option>
-                  {apprenantsDisponibles.map(apprenant => (
-                    <option key={apprenant.id} value={apprenant.id}>
-                      {apprenant.username} ({apprenant.email})
-                    </option>
-                  ))}
-                </select>
-                <button type="submit" className="lms-btn lms-btn--primary lms-btn--block">
-                  Ajouter à la vague
+                  Ajouter {selectedApprenantIds.length > 0 ? `(${selectedApprenantIds.length})` : ''} à la vague
                 </button>
               </form>
             </div>
 
-            {/* 🌟 Action 2 : Assigner un Quiz massif */}
+            {/* Action 2 : Assigner un Quiz massif */}
             <div className="lms-card lms-card--tab-success">
               <div className="lms-card__title">Assigner un quiz</div>
               <p className="lms-card__hint">
@@ -164,8 +207,9 @@ export default function VagueDetailPage() {
                 >
                   <option value="">-- Choisir un quiz --</option>
                   {quizzesDisponibles.map(quiz => (
+                    // 🌟 MIS À JOUR : On utilise le nouveau champ `titre` !
                     <option key={quiz.id} value={quiz.id}>
-                      Quiz #{quiz.id} {quiz.status === 'draft' ? '(Brouillon)' : ''}
+                      {quiz.titre || `Quiz #${quiz.id}`} {quiz.status === 'draft' ? '(Brouillon)' : ''}
                     </option>
                   ))}
                 </select>

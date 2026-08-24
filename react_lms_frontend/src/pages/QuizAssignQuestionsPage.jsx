@@ -7,12 +7,10 @@ import useDebounce from '../hooks/useDebounce';
 import '../styles/index.css';
 
 const QuizAssignQuestionsPage = () => {
-  const { id: quizId } = useParams(); // Récupère l'ID du quiz depuis l'URL
+  const { id: quizId } = useParams();
   const navigate = useNavigate();
 
-  // États pour les données de base
-  const [types, setTypes] = useState([]);
-  const [baremes, setBaremes] = useState([]);
+  // État pour les questions de la banque
   const [bankQuestions, setBankQuestions] = useState([]);
 
   // État pour les questions sélectionnées (Panier)
@@ -26,23 +24,9 @@ const QuizAssignQuestionsPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
-  // 1. Charger les types, barèmes, et questions initiales
+  // 1. Charger la banque au montage
   useEffect(() => {
-    const fetchInitialData = async () => {
-      try {
-        const [typesData, baremesData] = await Promise.all([
-          AssignmentService.getTypes(),
-          AssignmentService.getBaremes()
-        ]);
-        setTypes(typesData);
-        setBaremes(baremesData);
-        fetchBankQuestions();
-      } catch (err) {
-        console.error(err);
-        setError("Erreur lors du chargement des données.");
-      }
-    };
-    fetchInitialData();
+    fetchBankQuestions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -74,8 +58,7 @@ const QuizAssignQuestionsPage = () => {
       {
         question_id: question.id,
         texte_enonce: question.enonce_question, // Pour l'affichage uniquement
-        type_id: '', // À remplir par l'utilisateur
-        bareme_pts: '' // À remplir par l'utilisateur
+        bareme_pts: '' // L'utilisateur tapera directement les points
       }
     ]);
   };
@@ -85,11 +68,11 @@ const QuizAssignQuestionsPage = () => {
     setSelectedQuestions(selectedQuestions.filter(q => q.question_id !== questionId));
   };
 
-  // 5. Mettre à jour les paramètres d'une question sélectionnée (Type / Barème)
-  const handleQuestionParamChange = (questionId, field, value) => {
+  // 5. Mettre à jour les points d'une question sélectionnée
+  const handleQuestionParamChange = (questionId, value) => {
     const updatedList = selectedQuestions.map(q => {
       if (q.question_id === questionId) {
-        return { ...q, [field]: field === 'type_id' ? parseInt(value) : value };
+        return { ...q, bareme_pts: value };
       }
       return q;
     });
@@ -98,24 +81,23 @@ const QuizAssignQuestionsPage = () => {
 
   // 6. Soumettre le payload final
   const handleSubmit = async () => {
-    // Validation : Vérifier que toutes les questions ont un type et un barème
-    const isValid = selectedQuestions.every(q => q.type_id !== '' && q.bareme_pts !== '');
+    // Validation : Vérifier que toutes les questions ont un barème valide (supérieur à 0)
+    const isValid = selectedQuestions.every(q => q.bareme_pts !== '' && parseFloat(q.bareme_pts) > 0);
+    
     if (!isValid) {
-      setError("Veuillez sélectionner un type et un barème pour toutes les questions choisies.");
+      setError("Veuillez saisir un barème valide (points) pour toutes les questions choisies.");
       return;
     }
 
     setIsSubmitting(true);
     setError(null);
 
-    // Préparation du Payload selon votre format JSON
+    // Préparation du Payload mis à jour
     const payload = {
       quiz_id: parseInt(quizId),
       questions_choisies: selectedQuestions.map(q => ({
         question_id: q.question_id,
-        type_id: q.type_id,
-        // Conversion en nombre si le backend attend un entier pour bareme_pts
-        bareme_pts: parseFloat(q.bareme_pts)
+        bareme_pts: parseFloat(q.bareme_pts) // Le backend accepte maintenant directement les points !
       }))
     };
 
@@ -125,7 +107,7 @@ const QuizAssignQuestionsPage = () => {
       navigate('/quizzes');
     } catch (err) {
       console.error(err);
-      setError("Erreur lors de l'assignation des questions.");
+      setError(err.response?.data?.error || "Erreur lors de l'assignation des questions.");
     } finally {
       setIsSubmitting(false);
     }
@@ -160,12 +142,12 @@ const QuizAssignQuestionsPage = () => {
             {loading ? (
               <div className="lms-loading"><span className="lms-spinner" />Chargement…</div>
             ) : (
-              <div className="lms-picker">
+              <div className="lms-picker" style={{ maxHeight: '400px', overflowY: 'auto' }}>
                 {bankQuestions.map(q => {
                   const isAdded = selectedQuestions.find(sq => sq.question_id === q.id);
                   return (
-                    <div key={q.id} className="lms-picker-item">
-                      <span className="lms-picker-item__text">{q.enonce_question}</span>
+                    <div key={q.id} className="lms-picker-item" style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--space-3)', borderBottom: '1px solid var(--color-border)' }}>
+                      <span className="lms-picker-item__text" style={{ flex: 1, paddingRight: 'var(--space-3)' }}>{q.enonce_question}</span>
                       <button
                         onClick={() => handleAddQuestion(q)}
                         disabled={isAdded}
@@ -193,43 +175,32 @@ const QuizAssignQuestionsPage = () => {
             ) : (
               <div className="lms-picker" style={{ marginBottom: 'var(--space-4)' }}>
                 {selectedQuestions.map((q, index) => (
-                  <div key={q.question_id} className="lms-selected-item">
+                  <div key={q.question_id} className="lms-selected-item" style={{ padding: 'var(--space-3)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', marginBottom: 'var(--space-3)' }}>
 
-                    <div className="lms-selected-item__head">
+                    <div className="lms-selected-item__head" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--space-3)' }}>
                       <strong className="lms-selected-item__title">{index + 1}. {q.texte_enonce}</strong>
-                      <button onClick={() => handleRemoveQuestion(q.question_id)} className="lms-remove-btn">✕</button>
+                      <button 
+                        onClick={() => handleRemoveQuestion(q.question_id)} 
+                        className="lms-btn lms-btn--ghost lms-btn--sm"
+                        style={{ color: 'var(--color-danger)', padding: '4px 8px' }}
+                      >
+                        ✕
+                      </button>
                     </div>
 
                     <div className="lms-selected-item__row">
-                      {/* Select pour le Type */}
-                      <div className="lms-selected-item__field">
-                        <label>Type *</label>
-                        <select
-                          className="lms-select"
-                          value={q.type_id}
-                          onChange={(e) => handleQuestionParamChange(q.question_id, 'type_id', e.target.value)}
-                        >
-                          <option value="" disabled>Choisir…</option>
-                          {types.map(t => (
-                            <option key={t.id} value={t.id}>{t.type_utilisateur || `Type #${t.id}`}</option>
-                          ))}
-                        </select>
-                      </div>
-
-                      {/* Select pour le Barème */}
-                      <div className="lms-selected-item__field">
-                        <label>Barème (points) *</label>
-                        <select
-                          className="lms-select"
+                      {/* 🌟 NOUVEAU : Input numérique pour le barème au lieu du select */}
+                      <div className="lms-selected-item__field" style={{ width: '50%' }}>
+                        <label className="lms-label">Points *</label>
+                        <input
+                          type="number"
+                          min="0.1"
+                          step="0.1"
+                          className="lms-input"
+                          placeholder="Ex: 2.5"
                           value={q.bareme_pts}
-                          onChange={(e) => handleQuestionParamChange(q.question_id, 'bareme_pts', e.target.value)}
-                        >
-                          <option value="" disabled>Choisir…</option>
-                          {baremes.map(b => (
-                            // Ajustez b.points ou b.valeur selon le champ exact de votre JSON de barèmes
-                            <option key={b.id} value={b.points || b.valeur || b.id}>{b.points || b.valeur || b.id} pts</option>
-                          ))}
-                        </select>
+                          onChange={(e) => handleQuestionParamChange(q.question_id, e.target.value)}
+                        />
                       </div>
                     </div>
 

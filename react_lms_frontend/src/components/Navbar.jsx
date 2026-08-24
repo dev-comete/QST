@@ -5,15 +5,23 @@ import { useAuth } from '../context/AuthContext';
 import '../styles/index.css';
 import comete from '../assets/comete.jpg';
 
+// 🌟 NOUVEAU : Configuration claire basée sur les rôles
 const NAV_LINKS = [
-  { to: '/dashboard', label: 'Tableau de Bord', rolesOnly: false },
-  { to: '/formations', label: 'Formations', rolesOnly: true },
-  { to: '/quizzes', label: 'Mes Quiz', rolesOnly: true },
-  { to: '/banque-questions', label: 'Banque de Questions', rolesOnly: true },
-  { to: '/baremes', label: 'Barèmes', rolesOnly: true },
-  { to: '/vagues', label: 'Vagues', rolesOnly: true },
-  { to: '/users', label: 'Utilisateurs', rolesOnly: true },
-  { to: '/organisations', label: 'Organisations', rolesOnly: true }
+  // Lien Formateur / Admin
+  { to: '/dashboard', label: 'Tableau de Bord', showFor: ['formateur', 'admin'] },
+  // 🌟 Lien Apprenant
+  { to: '/student/dashboard', label: 'Mon Espace', showFor: ['apprenant'] },
+  
+  // Liens Formateur / Admin
+  { to: '/formations', label: 'Formations', showFor: ['formateur', 'admin'] },
+  { to: '/quizzes', label: 'Mes Quiz', showFor: ['formateur', 'admin'] },
+  { to: '/banque-questions', label: 'Banque de Questions', showFor: ['formateur', 'admin'] },
+  { to: '/baremes', label: 'Barèmes', showFor: ['formateur', 'admin'] },
+  { to: '/vagues', label: 'Vagues', showFor: ['formateur', 'admin'] },
+  
+  // Liens strictement Admin
+  { to: '/users', label: 'Utilisateurs', showFor: ['admin'] },
+  { to: '/organisations', label: 'Organisations', showFor: ['admin'] }
 ];
 
 const Navbar = () => {
@@ -21,7 +29,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const canManage = user?.role === 'formateur' || user?.role === 'admin';
+  const userRole = user?.role;
   const initials = `${user?.first_name?.[0] || ''}${user?.last_name?.[0] || ''}`.toUpperCase() || (user?.username?.[0]?.toUpperCase() ?? 'U');
 
   const handleLogout = async () => {
@@ -31,10 +39,13 @@ const Navbar = () => {
     navigate('/login');
   };
 
+  // 🌟 NOUVEAU : Lien dynamique pour le logo selon le rôle
+  const homeLink = userRole === 'apprenant' ? '/student/dashboard' : '/dashboard';
+
   return (
     <nav className="lms-scope lms-navbar">
       {/* Logo / Marque */}
-      <Link to="/dashboard" className="lms-navbar__brand">
+      <Link to={homeLink} className="lms-navbar__brand">
         <img 
           src={comete} 
           alt="Logo QST" 
@@ -45,7 +56,7 @@ const Navbar = () => {
 
       {/* Liens de navigation */}
       <div className="lms-navbar__links">
-        {NAV_LINKS.filter(link => !link.rolesOnly || canManage).map(link => (
+        {NAV_LINKS.filter(link => link.showFor.includes(userRole)).map(link => (
           <Link
             key={link.to}
             to={link.to}
