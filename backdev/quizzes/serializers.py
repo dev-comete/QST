@@ -185,10 +185,12 @@ class StudentTodoQuizSerializer(serializers.ModelSerializer):
 
     date_ouverture = serializers.DateTimeField(source='quiz.date_ouverture', read_only=True)
     date_fermeture = serializers.DateTimeField(source='quiz.date_fermeture', read_only=True)
+
+    quiz_titre = serializers.CharField(source='quiz.titre', read_only=True)
     
     class Meta:
         model = UtilisateurQuiz
-        fields = ['id', 'quiz', 'formation_nom', 'duree', 'date_assignation', 'date_ouverture', 'date_fermeture','termine']
+        fields = ['id', 'quiz', 'quiz_titre', 'formation_nom', 'duree', 'date_assignation', 'date_ouverture', 'date_fermeture','termine']
 
 class SubmitAnswerSerializer(serializers.Serializer):
     question_id = serializers.IntegerField()

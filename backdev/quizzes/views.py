@@ -368,6 +368,7 @@ class TakeQuizAPIView(APIView):
         # Return a nice, clean payload for the frontend
         return Response({
             "quiz_id": assignment.quiz.id,
+            "quiz_titre": assignment.quiz.titre,
             "quiz_duree": assignment.quiz.duree,
             "heure_debut": assignment.heure_debut,
             "questions": serializer.data

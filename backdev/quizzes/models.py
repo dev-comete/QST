@@ -6,6 +6,11 @@ class ActiveManager(models.Manager):
         return super().get_queryset().filter(is_active=True)
 
 class Quiz(models.Model):
+    titre = models.CharField(
+        max_length=255, 
+        default="Quiz sans titre", 
+        help_text="Le nom ou le titre de ce quiz"
+    )
     # Represents Sous dossier/Quiz
     formation = models.ForeignKey('formations.Formation', on_delete=models.CASCADE)
     date_creation_quiz = models.DateTimeField(auto_now_add=True)
@@ -35,7 +40,7 @@ class Quiz(models.Model):
         self.save()
 
     def __str__(self):
-        return f"Quiz {self.id} - {self.formation.nom_formation}"
+        return f"Quiz {self.id} -{self.titre}- {self.formation.nom_formation}"
 
 class Question(models.Model):
     enonce_question = models.TextField()

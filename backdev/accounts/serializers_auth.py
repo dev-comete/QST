@@ -1,5 +1,6 @@
 # serializers_auth.py
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework import serializers
 
 class CustomLoginSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
@@ -42,3 +43,13 @@ class CustomLoginSerializer(TokenObtainPairSerializer):
         # data['user']['role'] = 'formateur' if hasattr(user, 'formateur_profile') else 'apprenant'
 
         return data
+
+class ResetPasswordConfirmSerializer(serializers.Serializer):
+    uid = serializers.CharField(required=True)
+    token = serializers.CharField(required=True)
+    new_password = serializers.CharField(
+        required=True, 
+        write_only=True, 
+        min_length=8,
+        help_text="Le nouveau mot de passe (8 caractères minimum)."
+    )

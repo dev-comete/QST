@@ -31,6 +31,8 @@ import AdminRoute from './components/AdminRoute';
 import OrganisationListPage from './pages/OrganisationListPage';
 import OrganisationFormPage from './pages/OrganisationFormPage';
 
+import SetPasswordPage from './pages/SetPasswordPage';
+
 function App() {
   return (
     <AuthProvider>
@@ -40,6 +42,14 @@ function App() {
             <Route path="/login" element={
               <PublicRoute>
                 <LoginPage />
+              </PublicRoute>
+            } />
+
+            <Route 
+            path="/set-password/:uid/:token" 
+            element={
+              <PublicRoute>
+                <SetPasswordPage />
               </PublicRoute>
             } />
           
@@ -53,6 +63,7 @@ function App() {
             >
             {/* Accessible à TOUT le monde (Apprenants, Formateurs, Admins) */}
             <Route path="/dashboard" element={<DashboardPage />} />
+            
             
             {/* Routes RESTREINTES (Nécessite le rôle formateur/admin) */}
             <Route 
