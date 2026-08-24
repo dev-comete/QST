@@ -29,5 +29,10 @@ export const StudentQuizService = {
   reviewQuiz: async (quizId) => {
     const response = await apiClient.get(`quizzes/${quizId}/review/`);
     return response.data;
+  },
+  getBulletin: async (vagueId) => {
+    // Ajustez l'URL selon votre urls.py
+    const response = await apiClient.get(`quizzes/bulletin/vague/${vagueId}/`);
+    return response.data;
   }
 };

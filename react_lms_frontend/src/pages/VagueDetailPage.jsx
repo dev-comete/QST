@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams , Link} from 'react-router-dom';
 import { VagueService } from '../api/vague.service';
 import { UserService } from '../api/user.service';
 import { QuizService } from '../api/quiz.service';
@@ -136,6 +136,9 @@ export default function VagueDetailPage() {
           <div className="lms-headline-stat">
             {vague.etudiants.length} inscrit(s)
           </div>
+          <Link to={`/vagues/${vague.id}/analytics`} className="lms-btn lms-btn--primary">
+              Voir les statistiques
+            </Link>
         </div>
 
         <div className="lms-grid lms-grid--sidebar">

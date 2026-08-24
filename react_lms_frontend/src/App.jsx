@@ -12,7 +12,10 @@ import MainLayout from './components/MainLayout';
 
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
+
 import QuestionBankPage from './pages/QuestionBankPage';
+import QuestionFormPage from './pages/QuestionFormPage';
+
 import QuizListPage from './pages/QuizListPage';
 import QuizCreatePage from './pages/QuizCreatePage';
 import QuizAssignQuestionsPage from './pages/QuizAssignQuestionsPage';
@@ -38,6 +41,11 @@ import SetPasswordPage from './pages/SetPasswordPage';
 import StudentDashboardPage from './pages/StudentDashboardPage';
 import TakeQuizPage from './pages/TakeQuizPage';
 import ReviewQuizPage from './pages/ReviewQuizPage';
+
+import VagueAnalyticsPage from './pages/VagueAnalyticsPage';
+import StudentBulletinPage from './pages/StudentBulletinPage';
+
+
 
 function App() {
   return (
@@ -94,9 +102,12 @@ function App() {
                 </ApprenantRoute>
               }
             />
+            <Route path="/student/vagues/:id/bulletin" element={<ApprenantRoute><StudentBulletinPage /></ApprenantRoute>} />
             
             
             {/* Routes RESTREINTES (Nécessite le rôle formateur/admin) */}
+            <Route path="/vagues/:id/analytics" element={<FormateurRoute><VagueAnalyticsPage /></FormateurRoute>} />
+
             <Route 
               path="/banque-questions" 
               element={
@@ -105,6 +116,15 @@ function App() {
                 </FormateurRoute>
               } 
             />
+            <Route 
+              path="/banque-questions/create" 
+              element={
+                <FormateurRoute>
+                  <QuestionFormPage />
+                </FormateurRoute>
+              } 
+            />
+            
               <Route 
                 path="/quizzes" 
                 element={
