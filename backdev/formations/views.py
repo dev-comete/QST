@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from django.db import transaction
+from rest_framework.permissions import IsAuthenticated
 
 from quizzes.permissions import IsFormateurOrAdminOrReadOnly, IsOwnerOrAdminOrReadOnly
 
@@ -72,6 +73,28 @@ class CreateVagueAPIView(GenericAPIView):
             "debut": vague.debut,
             "fin": vague.fin
         }, status=status.HTTP_201_CREATED)
+class MesVaguesAPIView(APIView):
+    """
+    Retourne la liste des vagues auxquelles l'étudiant connecté est inscrit.
+    """
+    permission_classes = [IsAuthenticated] # Vous pouvez ajouter IsApprenant si vous l'avez
+
+    def get(self, request):
+        # On récupère les inscriptions de cet étudiant uniquement
+        inscriptions = UtilisateurVague.objects.filter(
+            utilisateur=request.user
+        ).select_related('vague', 'vague__formation')
+        
+        data = []
+        for inscription in inscriptions:
+            data.append({
+                "vague_id": inscription.vague.id,
+                "formation_nom": inscription.vague.formation.nom_formation,
+                "debut": inscription.vague.debut,
+                "fin": inscription.vague.fin
+            })
+            
+        return Response(data)
 
 
 class AssignStudentToVagueAPIView(GenericAPIView):

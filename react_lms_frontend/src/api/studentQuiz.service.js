@@ -7,6 +7,10 @@ export const StudentQuizService = {
     const response = await apiClient.get('/quizzes/mes-quiz/');
     return response.data;
   },
+  getMyVagues: async () => {
+    const response = await apiClient.get('/formation/student/mes-vagues/');
+    return response.data;
+  },
 
   // Démarre le quiz et récupère les questions
   startQuiz: async (quizId) => {
