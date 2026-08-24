@@ -86,7 +86,7 @@ const Modal = ({
 		<>
 			<div className={`${modalOverlayStyling} ${checkModal}`}></div>
 			<Paper
-				color={bgColor}
+				color={"white"}
 				position="fixed"
 				className="
 					rounded-xl

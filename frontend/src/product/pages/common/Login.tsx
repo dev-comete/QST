@@ -11,8 +11,8 @@ const Login = () => {
 
     return (
         <Box className="flex h-screen w-full overflow-hidden">
-            {/* Left Section: Form Container */}
-            <Box className="w-full md:w-1/3 h-full flex flex-col justify-center pt-50 p-6 bg-white z-10">
+
+            <Box className="w-full md:w-1/3 h-full flex flex-col justify-center pt-10 p-6 bg-white z-10">
                 <Paper color="white" className="w-full max-w-md p-8 shadow-none">
                     <Box direction="column" className="space-y-6 items-center w-full">
                         <Box direction="column" className="items-center">
@@ -43,7 +43,6 @@ const Login = () => {
                 </Paper>
             </Box>
 
-            {/* Right Section: Full Screen Image Cover */}
             <Box className="hidden md:block md:w-2/3 h-full relative">
                 <img 
                     src="/src/assets/illustration.jpg" 
