@@ -39,7 +39,8 @@ type ColorTheme = 'background' | 'primary' | 'secondary' | 'accent' | 'success' 
 type NavItem = {
     label: string;
     link: string;
-	title?: string
+	title?: string;
+	icon?: string
 };
 
 type Role = 'admin' | 'formateur' | 'apprenant' | 'rfq'

@@ -25,8 +25,6 @@ const UserManagement = () => {
 			titleButton={
 				<ActionButton
 					action={() => setOpen(true)}
-					btnColor="secondary"
-					textColor="white"
 				>{"+ Créer un utilisateur"}</ActionButton>
 			}
 		>

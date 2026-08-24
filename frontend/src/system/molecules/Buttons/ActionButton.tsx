@@ -16,9 +16,9 @@ interface ActionButtonProps {
 
 const ActionButton = ({
 	children,
-	btnColor = "white",
+	btnColor = "primary",
 	btnStyling,
-	textColor = "text",
+	textColor = "white",
 	disabled = false,
 	type,
 	form,

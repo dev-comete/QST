@@ -12,8 +12,6 @@ const QuestionManagement = () => {
 			titleButton={
 				<ActionButton
 					action={() => navigate("/formateur/creation_question")}
-					btnColor="secondary"
-					textColor="white"
 				>{"+ Créer une question"}</ActionButton>
 			}
 		>

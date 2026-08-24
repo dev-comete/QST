@@ -16,7 +16,7 @@ interface IconButtonProps {
 }
 
 const IconButton = ({
-	btnColor = "white",
+	btnColor = "transparent",
 	btnStyling,
 	disabled = false,
 	type,

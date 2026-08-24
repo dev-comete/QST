@@ -14,8 +14,6 @@ const QuizManagement = () => {
 			titleButton={
 				<ActionButton
 					action={(e) => { e.preventDefault(); setOpen(true)}}
-					btnColor="secondary"
-					textColor="white"
 				>{"+ Créer un quiz "}</ActionButton>
 			}
 		>

@@ -14,8 +14,6 @@ const VagueManagement = () => {
 			titleButton={
 				<ActionButton
 					action={(e) => { e.preventDefault(); setOpen(true)}}
-					btnColor="secondary"
-					textColor="white"
 				>{"+ Créer une vague "}</ActionButton>
 			}
 		>

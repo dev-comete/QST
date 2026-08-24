@@ -1,7 +1,7 @@
 import type React from "react";
 import type { ColorTheme } from "../../../other/types/common";
 
-type TextType = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span';
+type TextType = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span' | 'caption';
 
 type TextWeight = 'light' | 'normal' | 'bold';
 
@@ -21,7 +21,8 @@ const textBase : Record<TextType, string> = {
 	'h5': 'text-sm',
 	'h6': 'text-xs',
 	'p': 'text-base',
-	'span': 'text-base'
+	'span': 'text-base',
+	'caption': 'text-sm'
 };
 
 const textWeight : Record<TextWeight, string> = {
