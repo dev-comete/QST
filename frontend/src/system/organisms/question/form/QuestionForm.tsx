@@ -73,16 +73,12 @@ const QuestionForm = ({ openRespForm } : { openRespForm : () => void}) => {
 				sideButton={
 					<ActionButton
 						action={(e) => {e.preventDefault() ; openRespForm()}}
-						btnColor="secondary"
-						textColor="white"
 					>{"+ Réponse"}</ActionButton>
 				}
 			/>
 			<RespCreatedList />
 			<ActionButton
 				type="submit"
-				btnColor="secondary"
-				textColor="white"
 				form="createQuestion"
 			>{"Créer question"}</ActionButton>
 		</form>

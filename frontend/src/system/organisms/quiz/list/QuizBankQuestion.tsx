@@ -23,7 +23,7 @@ const QuestionItem = ({ addQuestionToAssign, item, disabled } : QuestionItemProp
 				<ActionButton
 					action={addQuestionToAssign}
 					btnColor={"secondary"}
-					textColor={"white"}
+					textColor="text"
 					disabled={disabled}
 				>Ajouter</ActionButton>
 			}

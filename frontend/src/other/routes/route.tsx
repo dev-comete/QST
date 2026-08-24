@@ -1,7 +1,6 @@
 import { createBrowserRouter, Navigate } from "react-router";
 import FormateurTemplate from "../../product/layout/role/FormateurTemplate";
 import QuestionManagement from "../../product/pages/formateur/question/QuestionManagement";
-import VagueManagement from "../../product/pages/formateur/VagueManagement";
 import QuizManagement from "../../product/pages/formateur/quizz/QuizManagement";
 import Dashboard from "../../product/pages/formateur/Dashboard";
 import AdminTemplate from "../../product/layout/role/AdminTemplate";
@@ -19,6 +18,8 @@ import { RootRedirect } from "../../product/layout/common/RootRedirect";
 import { QuestionCreateProvider } from "../../product/context/QuestionCreateProvider";
 import QuestionCreate from "../../product/pages/formateur/question/QuestionCreate";
 import QuizAssign from "../../product/pages/formateur/quizz/QuizAssign";
+import VagueAssign from "../../product/pages/formateur/vague/VagueAssign";
+import VagueManagement from "../../product/pages/formateur/vague/VagueManagement";
 
 export const router = createBrowserRouter([
 
@@ -67,6 +68,7 @@ export const router = createBrowserRouter([
 				children: [
 					{ index: true, element: <Navigate to="gestion_vague" replace /> },
 					{ path: "gestion_vague", element: <VagueManagement /> },
+					{ path: ":id/assign_vague", element: <VagueAssign /> },
 					{ path: "gestion_question", element: <QuestionManagement /> },
 					{ path: "creation_question", element: <QuestionCreateProvider><QuestionCreate /></QuestionCreateProvider>},
 					{ path: "gestion_quiz", element: <QuizManagement /> },

@@ -55,8 +55,6 @@ const RespForm = () => {
 			/>
 			<ActionButton
 				action={(e) => addNewResponse(e)}
-				btnColor="secondary"
-				textColor="white"
 			>{"Créer"}</ActionButton>
 		</Box>
 	)

@@ -17,7 +17,7 @@ const BackButton = ({ link } : { link : string}) => {
 		<IconButton 
 			iconName="chevron-left"
 			action={() => navigate(link)}
-			btnStyling="rounded-full"
+			btnStyling="rounded-full bg-white"
 		/>
 	)
 }
@@ -43,7 +43,7 @@ const Title = ({ title, sideButton, linkBack } : TitleProps) => {
 		}
 
 		const justifyClass = !linkBack && !sideButton 
-			? "justify-end" 
+			? "justify-center" 
 			: "justify-between";
 	
 		return (

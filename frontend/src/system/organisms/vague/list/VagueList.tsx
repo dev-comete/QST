@@ -18,7 +18,7 @@ const ActionCell = ({ rowId } : {rowId : unknown }) => {
                 iconName="edit"
                 iconStyling="text-text hover:text-success"
                 action={() => {
-                    navigate(`/formateur/${rowId}/vague`);
+                    navigate(`/formateur/${rowId}/assign_vague`);
                 }}
             />
             <IconButton

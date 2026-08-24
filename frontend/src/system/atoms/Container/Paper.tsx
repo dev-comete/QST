@@ -22,7 +22,7 @@ const Paper = ({
 
 	return (
 		<div
-			className={`${backgroundColor[color]} ${boxShadow} ${position} ${className}`}
+			className={`${backgroundColor[color]} ${boxShadow} ${position} ${className} rounded-xl`}
 		>{children}</div>
 	)
 }
