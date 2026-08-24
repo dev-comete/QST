@@ -32,9 +32,13 @@ class AssignStudentToVagueSerializer(serializers.Serializer):
     vague_id = serializers.PrimaryKeyRelatedField(
         queryset=Vague.objects.all()
     )
-    # This creates a dropdown of all Users (Students)
-    etudiant_id = serializers.PrimaryKeyRelatedField(
-        queryset=Utilisateur.objects.all() 
+    etudiant_ids = serializers.ListField(
+        child=serializers.PrimaryKeyRelatedField(
+            # DRF n'acceptera que les IDs des utilisateurs ayant le rôle 'apprenant'
+            queryset=Utilisateur.objects.filter(type_utilisateur__type_utilisateur='apprenant')
+        ),
+        allow_empty=False,
+        help_text="Liste des IDs des étudiants à inscrire."
     )
 
 class AssignQuizToVagueSerializer(serializers.Serializer):
