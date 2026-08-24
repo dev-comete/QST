@@ -4,23 +4,67 @@ import { StudentQuizService } from '../api/studentQuiz.service';
 
 // 🌟 CORRECTION 1 : Gère parfaitement le format DRF ("00:30:00", "1 02:30:00", "00:30:00.123")
 const parseDurationToMs = (durationStr) => {
-  if (!durationStr) return 0;
+  if (durationStr === null || durationStr === undefined || durationStr === '') {
+    console.warn('[QUIZ DEBUG] parseDurationToMs: durationStr is empty/null ->', durationStr);
+    return 0;
+  }
+
+  // 🌟 CORRECTION 4 : Gère le format "300.0" (nombre pur = SECONDES).
+  // C'est le format renvoyé par votre API pour quiz_duree (ex: "300.0", "45", "90.5").
+  // On teste AVANT le format HH:MM:SS car il n'y a pas de ":" dans ce cas.
+  if (!String(durationStr).includes(':')) {
+    const asNumber = parseFloat(durationStr);
+    if (!isNaN(asNumber)) {
+      const result = asNumber * 1000; // secondes -> ms
+      console.log('[QUIZ DEBUG] parseDurationToMs OK (format numérique = secondes):', {
+        input: durationStr,
+        secondes: asNumber,
+        resultMs: result,
+        resultMinutes: result / 60000,
+      });
+      return result;
+    }
+    // Ni un nombre, ni un format HH:MM:SS -> vraiment inconnu
+    console.error('[QUIZ DEBUG] parseDurationToMs: FORMAT NON RECONNU (pas de ":" et pas un nombre), retourne 0 !', {
+      input: durationStr,
+    });
+    return 0;
+  }
+
+  // Format DRF classique "HH:MM:SS" ou "D HH:MM:SS"
   let days = 0;
   let timeStr = durationStr;
-  
+
   if (durationStr.includes(' ')) {
     const parts = durationStr.split(' ');
     days = parseInt(parts[0], 10) || 0;
     timeStr = parts[1];
   }
-  
+
   const timeParts = timeStr.split(':');
   if (timeParts.length >= 3) {
     const hours = parseInt(timeParts[0], 10) || 0;
     const minutes = parseInt(timeParts[1], 10) || 0;
     const seconds = parseFloat(timeParts[2]) || 0;
-    return (days * 86400 + hours * 3600 + minutes * 60 + seconds) * 1000;
+    const result = (days * 86400 + hours * 3600 + minutes * 60 + seconds) * 1000;
+    console.log('[QUIZ DEBUG] parseDurationToMs OK (format HH:MM:SS):', {
+      input: durationStr,
+      days,
+      hours,
+      minutes,
+      seconds,
+      resultMs: result,
+      resultMinutes: result / 60000,
+    });
+    return result;
   }
+
+  // 🌟 DEBUG: si on arrive ici, le format n'a pas été reconnu -> durée = 0 -> quiz expire instantanément
+  console.error('[QUIZ DEBUG] parseDurationToMs: FORMAT NON RECONNU, retourne 0 !', {
+    input: durationStr,
+    timeStr,
+    timeParts,
+  });
   return 0; // Si le format est inconnu
 };
 
@@ -38,20 +82,20 @@ export default function TakeQuizPage() {
 
   const [quizInfo, setQuizInfo] = useState(null);
   const [questions, setQuestions] = useState([]);
-  
+
   const [answers, setAnswers] = useState({});
   // 🌟 CORRECTION 2 : Un "Ref" pour toujours avoir accès aux dernières réponses dans le chronomètre
   const answersRef = useRef({});
-  
+
   // Met à jour la référence dès que answers change
   useEffect(() => {
     answersRef.current = answers;
   }, [answers]);
-  
+
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
-  
+
   const [timeLeft, setTimeLeft] = useState(null);
 
   // 1. Chargement des données du Quiz et Chronomètre
@@ -61,6 +105,14 @@ export default function TakeQuizPage() {
     const fetchQuizData = async () => {
       try {
         const data = await StudentQuizService.startQuiz(id);
+
+        // 🌟 DEBUG: inspecter la réponse brute de l'API AVANT tout traitement
+        console.log('[QUIZ DEBUG] Réponse brute startQuiz():', data);
+        console.log('[QUIZ DEBUG] data.heure_debut (raw):', JSON.stringify(data.heure_debut));
+        console.log('[QUIZ DEBUG] data.quiz_duree (raw):', JSON.stringify(data.quiz_duree));
+        console.log('[QUIZ DEBUG] typeof heure_debut:', typeof data.heure_debut);
+        console.log('[QUIZ DEBUG] typeof quiz_duree:', typeof data.quiz_duree);
+
         setQuizInfo(data);
         setQuestions(data.questions);
 
@@ -73,19 +125,56 @@ export default function TakeQuizPage() {
 
         // Calcul du temps sécurisé
         const durationMs = parseDurationToMs(data.quiz_duree);
-        
+
         // Sécurité timezone (ajoute le Z si Django envoie une date naïve pour la forcer en UTC)
         let debutStr = data.heure_debut;
-        if (!debutStr.endsWith('Z') && !debutStr.includes('+')) debutStr += 'Z';
-        
+        const hadOffsetOrZ = debutStr.endsWith('Z') || debutStr.includes('+');
+        if (!hadOffsetOrZ) debutStr += 'Z';
+
+        console.log('[QUIZ DEBUG] debutStr après ajout Z (si besoin):', debutStr, '| avait déjà un offset/Z ?', hadOffsetOrZ);
+
         const startTimeMs = new Date(debutStr).getTime();
         const endTimeMs = startTimeMs + durationMs;
-        
+        const nowMs = Date.now();
+
+        // 🌟 DEBUG: LE LOG LE PLUS IMPORTANT — vérifie si le temps restant est déjà négatif AVANT même de démarrer le timer
+        console.log('[QUIZ DEBUG] === CALCUL DU CHRONOMÈTRE ===', {
+          debutStr,
+          startTimeMs,
+          startTimeISO: new Date(startTimeMs).toISOString(),
+          durationMs,
+          durationMinutes: durationMs / 60000,
+          endTimeMs,
+          endTimeISO: new Date(endTimeMs).toISOString(),
+          nowMs,
+          nowISO: new Date(nowMs).toISOString(),
+          remainingMs: endTimeMs - nowMs,
+          remainingMinutes: (endTimeMs - nowMs) / 60000,
+          isAlreadyExpired: (endTimeMs - nowMs) <= 0,
+        });
+
+        if (isNaN(startTimeMs)) {
+          console.error('[QUIZ DEBUG] ATTENTION: startTimeMs est NaN ! La date "heure_debut" n\'a pas pu être parsée:', debutStr);
+        }
+
         const updateTimer = () => {
           const now = Date.now();
           const remaining = endTimeMs - now;
-          
+
+          // 🌟 DEBUG: log à chaque tick pour voir l'évolution (peut être commenté si trop verbeux)
+          console.log('[QUIZ DEBUG] tick updateTimer ->', {
+            now,
+            nowISO: new Date(now).toISOString(),
+            remaining,
+            remainingSeconds: Math.floor(remaining / 1000),
+          });
+
           if (remaining <= 0) {
+            console.warn('[QUIZ DEBUG] remaining <= 0 -> déclenchement de forceSubmitTimeout()', {
+              remaining,
+              endTimeMs,
+              now,
+            });
             setTimeLeft(0);
             if (timerId) clearInterval(timerId); // 🌟 CORRECTION 3 : STOPPE LA BOUCLE IMMÉDIATEMENT
             forceSubmitTimeout(); // Soumission avec la copie à jour
@@ -98,6 +187,7 @@ export default function TakeQuizPage() {
         timerId = setInterval(updateTimer, 1000);
 
       } catch (err) {
+        console.error('[QUIZ DEBUG] Erreur dans fetchQuizData:', err);
         setError(err.response?.data?.error || "Erreur lors du chargement du quiz.");
       } finally {
         setLoading(false);
@@ -105,7 +195,7 @@ export default function TakeQuizPage() {
     };
 
     fetchQuizData();
-    
+
     // Nettoyage au démontage du composant
     return () => {
       if (timerId) clearInterval(timerId);
@@ -115,12 +205,14 @@ export default function TakeQuizPage() {
 
   // Fonction spéciale de soumission (hors cycle classique) quand le temps est écoulé
   const forceSubmitTimeout = async () => {
+    console.warn('[QUIZ DEBUG] forceSubmitTimeout() appelé - réponses envoyées:', answersRef.current);
     setSubmitting(true);
     try {
       const response = await StudentQuizService.submitQuiz(id, answersRef.current);
       alert(`Temps écoulé ! Quiz soumis automatiquement.\n\nScore : ${response.score_obtenu} points.`);
       navigate('/student/dashboard');
     } catch (err) {
+      console.error('[QUIZ DEBUG] Erreur dans forceSubmitTimeout:', err);
       setError(err.response?.data?.error || "Erreur lors de la soumission automatique.");
       setSubmitting(false);
     }
@@ -150,12 +242,14 @@ export default function TakeQuizPage() {
     const isConfirmed = window.confirm("Êtes-vous sûr de vouloir soumettre vos réponses ? Cette action est définitive.");
     if (!isConfirmed) return;
 
+    console.log('[QUIZ DEBUG] handleSubmitManually() - réponses envoyées:', answers);
     setSubmitting(true);
     try {
       const response = await StudentQuizService.submitQuiz(id, answers);
       alert(`Félicitations, quiz terminé !\n\nScore : ${response.score_obtenu} points.`);
       navigate('/student/dashboard');
     } catch (err) {
+      console.error('[QUIZ DEBUG] Erreur dans handleSubmitManually:', err);
       setError(err.response?.data?.error || "Erreur lors de la soumission du quiz.");
       setSubmitting(false);
     }
@@ -191,7 +285,7 @@ export default function TakeQuizPage() {
   return (
     <div className="lms-scope lms-page">
       <div className="lms-container lms-container--md">
-        
+
         {/* EN-TÊTE FIXE DU QUIZ */}
         <div className="lms-card lms-card--pad-lg" style={{ position: 'sticky', top: '16px', zIndex: 10, marginBottom: 'var(--space-6)', borderTop: '4px solid var(--color-primary)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -199,17 +293,17 @@ export default function TakeQuizPage() {
               <p className="lms-eyebrow" style={{ marginBottom: 'var(--space-2)' }}>Évaluation en cours</p>
               <h1 className="lms-card__title" style={{ margin: 0 }}>{quizInfo?.quiz_titre || 'Quiz'}</h1>
             </div>
-            
+
             {/* CHRONOMÈTRE */}
             <div style={{ textAlign: 'right' }}>
               <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 Temps restant
               </div>
-              <div style={{ 
-                fontSize: 'var(--text-2xl)', 
-                fontWeight: 700, 
+              <div style={{
+                fontSize: 'var(--text-2xl)',
+                fontWeight: 700,
                 color: timeLeft < 60000 ? 'var(--color-danger)' : 'var(--color-text)', // Rouge à 1 min
-                fontVariantNumeric: 'tabular-nums' 
+                fontVariantNumeric: 'tabular-nums'
               }}>
                 {formatTime(timeLeft)}
               </div>
@@ -221,7 +315,7 @@ export default function TakeQuizPage() {
         <div className="lms-stack" style={{ gap: 'var(--space-6)' }}>
           {questions.map((q, index) => {
             const isQCU = q.type_question?.code === 'QCU' || q.type_question === 'QCU';
-            
+
             return (
               <div key={q.question_id} className="lms-card">
                 <div className="lms-card__header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -230,7 +324,7 @@ export default function TakeQuizPage() {
                     {q.enonce}
                   </h3>
                 </div>
-                
+
                 <div className="lms-card__body">
                   <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', marginBottom: 'var(--space-4)' }}>
                     {isQCU ? "Sélectionnez une seule réponse." : "Sélectionnez une ou plusieurs réponses."}
@@ -238,10 +332,10 @@ export default function TakeQuizPage() {
 
                   <div className="lms-stack" style={{ gap: 'var(--space-3)' }}>
                     {q.options.map(opt => (
-                      <label 
-                        key={opt.id} 
-                        style={{ 
-                          display: 'flex', 
+                      <label
+                        key={opt.id}
+                        style={{
+                          display: 'flex',
                           alignItems: 'center',
                           padding: 'var(--space-3)',
                           border: '1px solid var(--color-border)',
@@ -251,8 +345,8 @@ export default function TakeQuizPage() {
                           transition: 'background-color 0.2s'
                         }}
                       >
-                        <input 
-                          type={isQCU ? "radio" : "checkbox"} 
+                        <input
+                          type={isQCU ? "radio" : "checkbox"}
                           name={`question_${q.question_id}`}
                           checked={answers[q.question_id]?.includes(opt.id) || false}
                           onChange={() => handleOptionToggle(q.question_id, opt.id, isQCU ? 'QCU' : 'QCM')}
@@ -270,8 +364,8 @@ export default function TakeQuizPage() {
 
         {/* BOUTON SOUMETTRE MANUEL */}
         <div style={{ marginTop: 'var(--space-8)', textAlign: 'right' }}>
-          <button 
-            className="lms-btn lms-btn--primary lms-btn--lg" 
+          <button
+            className="lms-btn lms-btn--primary lms-btn--lg"
             onClick={handleSubmitManually}
             disabled={submitting}
           >
