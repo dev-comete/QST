@@ -34,5 +34,11 @@ export const VagueService = {
       quiz_id: quizId
     });
     return response.data;
-  }
-};
+  },
+
+  getAnalytics: async (vagueId) => {
+      // Ajustez l'URL selon votre urls.py
+      const response = await apiClient.get(`/quizzes/analytics/vague/${vagueId}/`);
+      return response.data;
+    },
+  };

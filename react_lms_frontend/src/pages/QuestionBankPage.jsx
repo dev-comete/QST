@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { QuestionService } from '../api/question.service';
 import useDebounce from '../hooks/useDebounce';
+import { Link } from 'react-router-dom';
 import '../styles/index.css';
 
 const QuestionBankPage = () => {
@@ -48,6 +49,9 @@ const QuestionBankPage = () => {
         <div className="lms-pageheader">
           <div>
             <h1 className="lms-pageheader__title">Banque de questions</h1>
+            <Link to="/banque-questions/create" className="lms-btn lms-btn--primary">
+              + Créer une question
+            </Link>
             <p className="lms-pageheader__subtitle">
               <span className="lms-num">{data.count}</span> question(s) trouvée(s)
             </p>
