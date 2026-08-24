@@ -9,6 +9,7 @@ const QuizCreatePage = () => {
 
   // États pour le formulaire
   const [formData, setFormData] = useState({
+    titre: '',
     formation: '',
     duree: '00:45:00',
     status: 'draft'
@@ -80,6 +81,19 @@ const QuizCreatePage = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="lms-card lms-card--pad-lg">
+
+          <div className="lms-field">
+            <label className="lms-label">Titre du quiz *</label>
+            <input
+              type="text"
+              name="titre"
+              className="lms-input"
+              value={formData.titre}
+              onChange={handleChange}
+              placeholder="Ex: Évaluation finale - Module 1"
+              required
+            />
+          </div>
 
           {/* Champ Formation (SELECT DYNAMIQUE) */}
           <div className="lms-field">

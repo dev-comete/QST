@@ -6,5 +6,9 @@ export const QuestionService = {
       params: { search: searchTerm, type: typeCode, page: page }
     });
     return response.data; // Retourne { count, next, previous, results }
-  }
+  },
+  createFullQuestion: async (payload) => {
+    const response = await apiClient.post('/quizzes/questions/create-full/', payload);
+    return response.data;
+  },
 };
