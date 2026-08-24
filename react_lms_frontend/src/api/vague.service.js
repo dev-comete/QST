@@ -18,11 +18,11 @@ export const VagueService = {
     return response.data;
   },
 
-  // Assigner un étudiant (AssignStudentToVagueAPIView)
-  assignStudent: async (vagueId, etudiantId) => {
+  assignStudents: async (vagueId, studentIdsArray) => {
+    // On envoie 'etudiant_ids' (avec un 's') contenant le tableau d'IDs
     const response = await apiClient.post('/formation/vagues/assign-student/', {
       vague_id: vagueId,
-      etudiant_id: etudiantId
+      etudiant_ids: studentIdsArray
     });
     return response.data;
   },
