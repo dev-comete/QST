@@ -42,7 +42,7 @@ class UtilisateurViewSet(viewsets.ModelViewSet):
         token = default_token_generator.make_token(user)
 
         
-        frontend_url = getattr(settings, 'frontend_url', 'http://localhost:3000')
+        frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:3000')
         reset_link = f"{frontend_url}/set-password/{uid}/{token}"
 
         print(f"\n🔗 LIEN DIRECT (SANS ENCODAGE) : {reset_link}\n")

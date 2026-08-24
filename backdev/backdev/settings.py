@@ -37,7 +37,7 @@ SECRET_KEY = 'django-insecure-&4i12nu32-bcc)b@^8lc!spost6&*e1y)8=7k$9xokednjr&v%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-frontend_url = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
 
 ALLOWED_HOSTS = [
     '8000-cs-053069f0-3449-4470-96df-35d3150becaf.cs-asia-southeast1-fork.cloudshell.dev',
@@ -45,7 +45,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
     '127.0.0.1:8000',
-    frontend_url,
+    FRONTEND_URL,
     '*'
 ]
 
@@ -54,7 +54,7 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3001',
     'http://127.0.0.1:8000',
     'http://127.0.0.1:3001',
-    frontend_url,
+    FRONTEND_URL,
     'https://8000-cs-053069f0-3449-4470-96df-35d3150becaf.cs-asia-southeast1-fork.cloudshell.dev',
     'https://8000-cs-629375525277-default.cs-asia-southeast1-palm.cloudshell.dev'
   
@@ -66,7 +66,7 @@ CORS_TRUSTED_ORIGINS = [
     'http://localhost:8000',
     'http://127.0.0.1:8000',
     'http://127.0.0.1:3001',
-    frontend_url,
+    FRONTEND_URL,
     'https://8000-cs-053069f0-3449-4470-96df-35d3150becaf.cs-asia-southeast1-fork.cloudshell.dev',
     'https://8000-cs-629375525277-default.cs-asia-southeast1-palm.cloudshell.dev'
 ]
