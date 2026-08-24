@@ -4,7 +4,10 @@ import { AuthProvider } from './context/AuthContext';
 
 import PublicRoute from './components/PublicRoute';
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminRoute from './components/AdminRoute';
 import FormateurRoute from './components/FormateurRoute'; 
+import ApprenantRoute from './components/ApprenantRoute';
+
 import MainLayout from './components/MainLayout';
 
 import LoginPage from './pages/LoginPage';
@@ -26,12 +29,15 @@ import VagueDetailPage from './pages/VagueDetailPage';
 
 import UserListPage from './pages/UserListPage';
 import UserFormPage from './pages/UserFormPage';
-import AdminRoute from './components/AdminRoute';
 
 import OrganisationListPage from './pages/OrganisationListPage';
 import OrganisationFormPage from './pages/OrganisationFormPage';
 
 import SetPasswordPage from './pages/SetPasswordPage';
+
+import StudentDashboardPage from './pages/StudentDashboardPage';
+import TakeQuizPage from './pages/TakeQuizPage';
+import ReviewQuizPage from './pages/ReviewQuizPage';
 
 function App() {
   return (
@@ -63,6 +69,31 @@ function App() {
             >
             {/* Accessible à TOUT le monde (Apprenants, Formateurs, Admins) */}
             <Route path="/dashboard" element={<DashboardPage />} />
+
+            <Route 
+              path="/student/dashboard" 
+              element={
+                <ApprenantRoute>
+                  <StudentDashboardPage />
+                </ApprenantRoute>
+              }
+            />
+            <Route 
+              path="/student/quizzes/:id/take" 
+              element={
+                <ApprenantRoute>
+                  <TakeQuizPage />
+                </ApprenantRoute>
+              }
+            />
+            <Route 
+              path="/student/quizzes/:id/review" 
+              element={
+                <ApprenantRoute>
+                  <ReviewQuizPage />
+                </ApprenantRoute>
+              }
+            />
             
             
             {/* Routes RESTREINTES (Nécessite le rôle formateur/admin) */}
