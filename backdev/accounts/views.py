@@ -34,22 +34,23 @@ class UtilisateurViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminUser]
 
     def perform_create(self, serializer):
-        # 1. Sauvegarde l'utilisateur en base de données (ce qui appelle serializer.create)
+        # 1. Sauvegarde l'utilisateur en base de données
         user = serializer.save()
 
         # 2. Création du Token sécurisé pour réinitialiser le mot de passe
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         token = default_token_generator.make_token(user)
 
-        path = reverse('password_reset_confirm', kwargs={'uidb64': uid, 'token': token})
-        reset_link = self.request.build_absolute_uri(path)
+        
+        frontend_url = getattr(settings, 'frontend_url', 'http://localhost:3000')
+        reset_link = f"{frontend_url}/set-password/{uid}/{token}"
 
         print(f"\n🔗 LIEN DIRECT (SANS ENCODAGE) : {reset_link}\n")
 
         subject = "Invitation à rejoindre la plateforme QST"
         message = (
             f"Hi {user.username},\n\n"
-            f"Your account has been created."
+            f"Your account has been created. "
             f"To activate your account and set your password, "
             f"please click on the link below :\n\n"
             f"{reset_link}\n\n"
@@ -57,7 +58,6 @@ class UtilisateurViewSet(viewsets.ModelViewSet):
             f"See you soon !"
         )
         
-        # Le mail par défaut (défini dans settings.py avec DEFAULT_FROM_EMAIL)
         from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@comete.ai')
 
         send_mail(
@@ -65,7 +65,7 @@ class UtilisateurViewSet(viewsets.ModelViewSet):
             message,
             from_email,
             [user.email],
-            fail_silently=False, # Mettez True en production pour ne pas bloquer l'API si le mail échoue
+            fail_silently=False, 
         )
 
     def get_permissions(self):

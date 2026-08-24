@@ -1,7 +1,7 @@
 # urls.py
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
-from .views_auth import CustomLoginAPIView, LogoutAPIView
+from .views_auth import CustomLoginAPIView, LogoutAPIView , ConfirmPasswordResetAPIView
 
 urlpatterns = [
     # Login endpoint
@@ -11,4 +11,6 @@ urlpatterns = [
     path('auth/refresh/', TokenRefreshView.as_view(), name='api-token-refresh'),
 
     path('auth/logout/', LogoutAPIView.as_view(), name='api-logout'),
+
+    path('auth/reset-password-confirm/', ConfirmPasswordResetAPIView.as_view(), name='api_password_reset_confirm'),
 ]

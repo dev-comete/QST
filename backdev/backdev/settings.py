@@ -208,7 +208,11 @@ STATIC_URL = 'static/'
 # Tells Django to use the 'Utilisateur' model in the 'accounts' app for authentication
 AUTH_USER_MODEL = 'accounts.Utilisateur'
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-# Adresse mail par défaut qui apparaîtra comme expéditeur
-DEFAULT_FROM_EMAIL = 'noreply@comete.ai'
+# Configuration SMTP pour Gmail
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = env('EMAIL_HOST_USER') # Optionnel: remplace 'noreply@comete.ai' par votre adresse Gmail
