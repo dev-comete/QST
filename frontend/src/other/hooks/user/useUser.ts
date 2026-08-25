@@ -3,7 +3,11 @@ import { UserService } from "../../services/userService"
 import { useState } from "react"
 import type { userPayload } from "../../types/userType"
 
-export const useUser = () => {
+export interface UseUserProps {
+	role?: string;
+}
+
+export const useUser = ({ role }: UseUserProps = {}) => {
 
 	const [ user, setUser ] = useState<userPayload>({
 		username: '',
@@ -23,18 +27,19 @@ export const useUser = () => {
 	});
 
 	const getUserQuery = useQuery({
-		queryKey: ['users_list'],
-		queryFn: UserService.getAllUser
-	})
+		queryKey: ['users_list', role ?? 'all'],
+		queryFn: () => UserService.list(role ? { role } : undefined),
+		enabled: role !== undefined // Remove or tweak if you want to fetch even when role is omitted
+	});
 
 	const typeUserQuery = useQuery({
 		queryKey: ['utilisateur_type_list'],
-		queryFn: UserService.getTypeUser
+		queryFn: UserService.type
 	})
 
 	const organisationQuery = useQuery({
 		queryKey: ['organisation_list'],
-		queryFn: UserService.getOrganisation
+		queryFn: UserService.organisationList
 	})
 
 	const handleCreateUser = () => {
@@ -48,6 +53,6 @@ export const useUser = () => {
 		organisationQuery,
 		status,
 		user,
-		setUser
+		setUser,
 	}
 }

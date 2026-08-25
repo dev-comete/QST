@@ -40,7 +40,7 @@ const Button = ({
 
     return (
         <button 
-            className={`${backgroundColor[color]} px-3 py-2 ${roundParam} w-fit ${isDisable} ${className}`}
+            className={`${backgroundColor[color]} focus:outline focus:outline-accent px-3 py-2 ${roundParam} w-fit ${isDisable} ${className}`}
             disabled={disabled}
             onClick={action}
             type={type}

@@ -4,8 +4,8 @@ import BodyLayout from "../../../layout/common/BodyLayout";
 const VagueAssign = () => {
 	return (
 		<BodyLayout
-			title="Assignation de questions"
-			linkBack="/formateur/gestion_quiz"
+			title="Assignation de quiz et apprenants"
+			linkBack="/formateur/gestion_vague"
 		>
 			<VagueAssignForm />
 		</BodyLayout>

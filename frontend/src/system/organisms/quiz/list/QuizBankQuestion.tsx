@@ -16,14 +16,14 @@ interface QuestionItemProps {
 
 const QuestionItem = ({ addQuestionToAssign, item, disabled } : QuestionItemProps) => {
 	return (
-		<Paper color="background" className="flex justify-between gap-3 items-center p-3">
+		<Paper className="flex border border-background justify-between gap-3 items-center p-3">
 			<CustomText>{item.enonce_question}</CustomText>
 			{
 				!disabled &&
 				<ActionButton
 					action={addQuestionToAssign}
-					btnColor={"secondary"}
-					textColor="text"
+					btnColor={"text"}
+					textColor="white"
 					disabled={disabled}
 				>Ajouter</ActionButton>
 			}

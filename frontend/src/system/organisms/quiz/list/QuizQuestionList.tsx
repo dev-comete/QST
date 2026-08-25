@@ -7,7 +7,7 @@ import Select from "../../../atoms/Form/Select";
 import FetchError from "../../../atoms/Loading/FetchError";
 import Loading from "../../../atoms/Loading/Loading";
 import CustomText from "../../../atoms/Text/CustomText";
-import ActionButton from "../../../molecules/Buttons/ActionButton";
+import IconButton from "../../../molecules/Buttons/IconButton";
 import type { QuizAssignManipProps } from "../form/QuizAssignForm";
 
 interface QuizQuestionItemProps {
@@ -21,10 +21,8 @@ interface QuizQuestionItemProps {
 const QuizQuestionItem = ({ numero, question, baremes_pts, onBaremeChange, onDelete } : QuizQuestionItemProps) => {
 
 	return (
-		<Paper className="w-full p-3 rounded-xl" color="background">
-			<ActionButton
-				action={onDelete}
-			>x</ActionButton>
+		<Paper className="flex flex-col w-full p-3 rounded-xl border border-background">
+			<IconButton action={onDelete} iconName="circle-xmark" btnStyling="self-end"/>
 			<Box direction="column">
 				<CustomText>{`${numero}. ${question.texte_enonce}`}</CustomText>
 				<Select 
@@ -57,7 +55,6 @@ const QuizQuestionList = ({questions, setQuestion} : QuizAssignManipProps) => {
     const handleBaremeChange = (indexToUpdate: number, newValue: string) => {
         const updatedQuestions = questions.map((q, index) => {
             if (index === indexToUpdate) {
-				console.log("New value bareme ", newValue)
                 return { ...q, bareme_pts: Number(newValue) };
             }
             return q;

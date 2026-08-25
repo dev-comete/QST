@@ -24,7 +24,7 @@ const Input = ({
 	className
 }: InputProps) => {
 
-	const basicStyle = "flex p-2 bg-background w-full items-center justify-center focus:outline-accent focus:outline-1"
+	const basicStyle = "flex p-2 border border-background w-full items-center justify-center focus:outline focus:outline-primary"
 
 	return (
 		<div className="flex flex-col w-full">

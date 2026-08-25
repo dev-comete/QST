@@ -15,8 +15,7 @@ export const QuizService = {
 	},
 
 	assignQuestion: async(data : quizAssignPayload) => {
-		const url = import.meta.env.VITE_ASSIGN_QUESTIONS_TO_QUIZ
-		console.log("Assign question", data)
+		const url = import.meta.env.VITE_ASSIGN_QUESTION_QUIZ
 		const response = await apiClient.post(url, data);
 		return response.data;
 	}

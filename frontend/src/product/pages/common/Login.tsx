@@ -17,7 +17,7 @@ const Login = () => {
                     <Box direction="column" className="space-y-6 items-center w-full">
                         <Box direction="column" className="items-center">
                             <Logo />
-                            <CustomText textTag="caption" isItalic={true}>{"Entrez dans l'espace de création et d'évaluation de vos connaissances."}</CustomText>
+                            <CustomText textTag="h6" isItalic={true}>{"Entrez dans l'espace de création et d'évaluation de vos connaissances."}</CustomText>
                         </Box>
                         <form onSubmit={handleSubmit} className="w-full">
                             <Box direction="column" className="space-y-4 items-center w-full">

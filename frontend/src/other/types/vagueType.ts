@@ -21,7 +21,7 @@ type vaguePayload = {
 
 type assignStudentPayload = {
 	vague_id: number,
-	etudiant_id: number
+	etudiant_ids: number[]
 }
 
 type assignQuizPayload = {

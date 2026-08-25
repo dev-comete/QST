@@ -9,19 +9,24 @@ export const UserService = {
 		return response.data;
 	},
 
-	getAllUser: async () => {
-		const url = import.meta.env.VITE_CRUD_USER
-		const response = await apiClient.get(url);
-		return response.data as userType[];
+	list: async (params?: { role?: string }) => {
+		const role = params?.role;
+		const baseUrl = import.meta.env.VITE_CRUD_USER;
+		
+		const response = await apiClient.get<userType[]>(baseUrl, {
+			params: role ? { role } : undefined
+		});
+		
+		return response.data;
 	},
 
-	getTypeUser :  async () => {
+	type :  async () => {
 		const url = import.meta.env.VITE_TYPE_USER
 		const response = await apiClient.get(url);
 		return response.data as utilisateurType[];
 	},
 
-	getOrganisation :  async () => {
+	organisationList :  async () => {
 		const url = import.meta.env.VITE_ORGANISATION
 		const response = await apiClient.get(url);
 		return response.data as organisationType[];
