@@ -25,7 +25,7 @@ const getRoleLandingPath = (role: Role) => {
 		case 'formateur':
 			return '/formateur';
 		case 'apprenant':
-			return '/planning';
+			return '/';
 		default:
 			return '/home';
 	}

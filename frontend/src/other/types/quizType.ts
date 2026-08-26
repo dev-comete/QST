@@ -21,8 +21,17 @@ type quizAssignPayload = {
 
 type quizCreateType = Pick<quizType, 'duree' | 'formation' | 'status' >
 
+type studentQuizType = {
+	quiz_id: number,
+	quiz_titre: string,
+	formation_nom: string,
+	termine: boolean,
+	score_obtenu: number
+}
+
 export type {
 	quizType,
 	quizCreateType,
-	quizAssignPayload
+	quizAssignPayload,
+	studentQuizType
 }

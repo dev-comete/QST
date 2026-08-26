@@ -6,7 +6,7 @@ import Dashboard from "../../product/pages/formateur/Dashboard";
 import AdminTemplate from "../../product/layout/role/AdminTemplate";
 import ApprenantTemplate from "../../product/layout/role/ApprenantTemplate";
 import UserManagement from "../../product/pages/admin/UserManagement";
-import Calendar from "../../product/pages/apprenant/Calendar";
+import EvaluationPlanning from "../../product/pages/apprenant/EvaluationPlanning";
 import Bulletin from "../../product/pages/apprenant/Bulletin";
 import Evaluation from "../../product/pages/apprenant/Evaluation";
 import Home from "../../product/pages/common/Home";
@@ -20,6 +20,7 @@ import QuestionCreate from "../../product/pages/formateur/question/QuestionCreat
 import QuizAssign from "../../product/pages/formateur/quizz/QuizAssign";
 import VagueAssign from "../../product/pages/formateur/vague/VagueAssign";
 import VagueManagement from "../../product/pages/formateur/vague/VagueManagement";
+import Revue from "../../product/pages/apprenant/Revue";
 
 export const router = createBrowserRouter([
 
@@ -87,10 +88,11 @@ export const router = createBrowserRouter([
 			{ 
 				element: <ApprenantTemplate />,
 				children: [
-					{ index: true, element: <Navigate to="calendrier_quiz" replace /> },
-					{ path: "calendrier_quiz", element: <Calendar /> },
+					{ index: true, element: <Navigate to="planning" replace /> },
+					{ path: "planning", element: <EvaluationPlanning /> },
 					{ path: "bulletin", element: <Bulletin /> },
-					{ path: "evaluation", element: <Evaluation /> }
+					{ path: "quiz/:id/action", element: <Evaluation /> },
+					{ path: "quiz/:id/revue", element: <Revue /> }
 				],
 			}
 		]
