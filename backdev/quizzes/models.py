@@ -15,7 +15,7 @@ class Quiz(models.Model):
     formation = models.ForeignKey('formations.Formation', on_delete=models.CASCADE)
     date_creation_quiz = models.DateTimeField(auto_now_add=True)
     duree = models.DurationField(help_text="Durée allouée pour le quiz")
-    status = models.CharField(max_length=50)
+    status = models.CharField(max_length=50, default='draft', help_text="draft (brouillon), published (publié), deleted (supprimé)")
 
     date_ouverture = models.DateTimeField(
         null=True, 
