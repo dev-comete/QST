@@ -20,12 +20,34 @@ class QuizSerializer(serializers.ModelSerializer):
         date_ouverture = data.get('date_ouverture')
         date_fermeture = data.get('date_fermeture')
 
-        # Si les deux dates sont fournies, on vérifie la cohérence spatio-temporelle 
+        # 1. Vérification de la cohérence temporelle
         if date_ouverture and date_fermeture:
             if date_fermeture <= date_ouverture:
                 raise serializers.ValidationError({
                     "date_fermeture": "La date de fermeture doit être strictement ultérieure à la date d'ouverture."
                 })
+
+        # 2. 🌟 NOUVEAU : Sécurité en cas de modification d'un quiz existant
+        if self.instance:
+            # Vérifie si au moins un étudiant a déjà commencé ce quiz
+            quiz_deja_commence = self.instance.utilisateurquiz_set.filter(
+                heure_debut__isnull=False
+            ).exists()
+
+            if quiz_deja_commence:
+                # Empêcher le retour à l'état de brouillon
+                nouveau_statut = data.get('status', self.instance.status)
+                if nouveau_statut == 'draft' and self.instance.status == 'published':
+                    raise serializers.ValidationError({
+                        "status": "Impossible de repasser ce quiz en brouillon : des apprenants ont déjà commencé leur évaluation."
+                    })
+
+                # Empêcher la modification de la durée (pour ne pas casser les chronomètres en cours)
+                nouvelle_duree = data.get('duree', self.instance.duree)
+                if nouvelle_duree != self.instance.duree:
+                    raise serializers.ValidationError({
+                        "duree": "Impossible de modifier la durée d'un quiz qui a déjà démarré pour certains apprenants."
+                    })
 
         return data
 
