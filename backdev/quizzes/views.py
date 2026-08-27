@@ -404,3 +404,22 @@ class RemoveQuestionFromQuizAPIView(APIView):
 class QuestionsSupprimeesAPIView(APIView):
     def get(self, request):
         questions = Question.all_objects.filter(is_active=False)
+        
+class QuizAssignedQuestionsListAPIView(ListAPIView):
+    """
+    Retourne la liste détaillée de toutes les questions assignées à un quiz spécifique.
+    """
+    serializer_class = QuizQuestionSerializer
+    permission_classes = [IsFormateurOrAdminOrReadOnly] # Ou IsAuthenticated selon vos besoins
+
+    def get_queryset(self):
+        # Récupère l'ID du quiz depuis l'URL
+        quiz_id = self.kwargs.get('quiz_id')
+        
+        # select_related permet de faire les jointures SQL en une seule requête 
+        # pour éviter le problème du "N+1 queries"
+        return QuizQuestion.objects.filter(quiz_id=quiz_id).select_related(
+            'question', 
+            'type_question', 
+            'bareme'
+        ).order_by('id') # Vous pouvez trier par ID ou date d'ajout

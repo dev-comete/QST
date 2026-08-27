@@ -8,7 +8,7 @@ from .views import (
     SubmitQuizAPIView , AssignStudentAPIView, MyTodoQuizzesAPIView , AssignQuestionsAPIView , TypeQuestionViewSet, 
     BaremeViewSet, 
     QuestionTypeQuestionViewSet, 
-    QuestionBaremeViewSet , CreateFullQuestionAPIView , QuizQuestionViewSet , ApprenantQuizListAPIView , TakeQuizAPIView , QuizReviewAPIView , QuestionBankSearchAPIView, RemoveQuestionFromQuizAPIView 
+    QuestionBaremeViewSet , CreateFullQuestionAPIView , QuizQuestionViewSet , ApprenantQuizListAPIView , TakeQuizAPIView , QuizReviewAPIView , QuestionBankSearchAPIView, RemoveQuestionFromQuizAPIView , QuizAssignedQuestionsListAPIView
 )
 
 from .views_analytics import FormateurVagueAnalyticsAPIView , ApprenantBulletinAPIView
@@ -64,7 +64,13 @@ urlpatterns = [
 
     path('bulletin/vague/<int:vague_id>/pdf/', ApprenantBulletinPDFAPIView.as_view(), name='apprenant-bulletin-pdf'),
 
-    path('quizzes/remove-question/<int:quiz_id>/<int:question_id>/', RemoveQuestionFromQuizAPIView.as_view(), name='remove_quiz_question'),
+    path('remove-question/<int:quiz_id>/<int:question_id>/', RemoveQuestionFromQuizAPIView.as_view(), name='remove_quiz_question'),
+
+    path(
+        '<int:quiz_id>/questions/', 
+        QuizAssignedQuestionsListAPIView.as_view(), 
+        name='quiz-assigned-questions'
+    ),
 
     # Routes pour lister la corbeille
     path('corbeille/quizzes/', CorbeilleQuizAPIView.as_view(), name='corbeille-quizzes'),
