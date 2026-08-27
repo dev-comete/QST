@@ -29,9 +29,34 @@ type studentQuizType = {
 	score_obtenu: number
 }
 
+type Option = {
+	id: number | string;
+	reponse: string;
+};
+
+type Question = {
+	question_id: number | string;
+	enonce: string;
+	options: Option[];
+	type_question?: { code?: string } | string;
+};
+
+type QuizInfo = {
+	quiz_titre?: string;
+	quiz_duree: string | number | null;
+	heure_debut: string;
+	questions: Question[];
+};
+
+type AnswersMap = Record<string, Array<number | string>>;
+
 export type {
 	quizType,
 	quizCreateType,
 	quizAssignPayload,
-	studentQuizType
+	studentQuizType,
+	QuizInfo,
+	AnswersMap,
+	Question,
+	Option
 }
