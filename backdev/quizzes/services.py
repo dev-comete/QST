@@ -233,7 +233,7 @@ def assign_questions_to_quiz(quiz, questions_choisies):
     return len(links_to_create)
 
 @transaction.atomic
-def create_question_with_answers(enonce, type_id, bareme_pts, options):
+def create_question_with_answers(enonce, type_id, bareme_pts, options, user):
     """
     Creates a question, links its configurations, and generates its answers and corrigé.
     Wrapped in @transaction.atomic to guarantee database integrity.
@@ -262,7 +262,7 @@ def create_question_with_answers(enonce, type_id, bareme_pts, options):
         raise ValidationError("Une question ouverte ne doit pas avoir d'options prédéfinies.")
 
     # 3. Create the Question Object
-    question = Question.objects.create(enonce_question=enonce)
+    question = Question.objects.create(enonce_question=enonce, organisation=user.orga_principale)
 
     # 4. Link the Type and Bareme
     QuestionTypeQuestion.objects.create(question=question, type_question=type_obj)

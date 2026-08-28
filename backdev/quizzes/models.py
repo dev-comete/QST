@@ -48,6 +48,13 @@ class Question(models.Model):
     # NOUVEAU : Le champ pour le Soft Delete
     is_active = models.BooleanField(default=True)
 
+    organisation = models.ForeignKey(
+        'accounts.Organisation', 
+        on_delete=models.CASCADE,
+        null=True,   
+        blank=True
+    )
+
     # NOUVEAU : On assigne les Managers
     objects = ActiveManager()
     all_objects = models.Manager()
