@@ -18,7 +18,11 @@ export const QuizService = {
     return response.data;
   },
   getAssignedQuestions: async (quizId) => {
-    // Vérifiez que l'URL correspond à votre urls.py
     const response = await apiClient.get(`/quizzes/${quizId}/questions/`);
-    return response.data;}
+    return response.data;},
+
+  deleteQuiz: async (quizId) => {
+    const response = await apiClient.delete(`/quizzes/crud/quizzes/${quizId}/`);
+    return response.data;
+  },
 };
