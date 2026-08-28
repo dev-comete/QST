@@ -14,6 +14,13 @@ const IconTrash = (props) => (
   </svg>
 );
 
+const IconEdit = (props) => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M12 20h9" />
+    <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+  </svg>
+);
+
 const IconPublish = (props) => (
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" {...props}>
     <path d="M12 19V6" />
@@ -126,20 +133,30 @@ const QuizListPage = () => {
               <div key={quiz.id} className="lms-tile" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                 <div style={{ flex: 1 }}>
 
-                  {/* EN-TÊTE DE LA CARTE : Titre et suppression */}
+                  {/* EN-TÊTE DE LA CARTE : Titre et actions rapides */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 'var(--space-2)', marginBottom: 'var(--space-2)' }}>
                     <div className="lms-tile__title" style={{ margin: 0 }}>
                       {quiz.titre || `Quiz #${quiz.id}`}
                     </div>
 
-                    <button
-                      onClick={() => handleDeleteQuiz(quiz)}
-                      className="lms-icon-action"
-                      aria-label="Supprimer ce quiz"
-                      title="Supprimer ce quiz"
-                    >
-                      <IconTrash />
-                    </button>
+                    <div style={{ display: 'flex', gap: '0.15rem', flexShrink: 0 }}>
+                      <button
+                        onClick={() => navigate(`/quizzes/${quiz.id}/edit`)}
+                        className="lms-icon-action lms-icon-action--neutral"
+                        aria-label="Modifier ce quiz"
+                        title="Modifier ce quiz"
+                      >
+                        <IconEdit />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteQuiz(quiz)}
+                        className="lms-icon-action"
+                        aria-label="Supprimer ce quiz"
+                        title="Supprimer ce quiz"
+                      >
+                        <IconTrash />
+                      </button>
+                    </div>
                   </div>
 
                   {/* MÉTADONNÉES */}
