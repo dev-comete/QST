@@ -10,13 +10,18 @@ from rest_framework.permissions import IsAuthenticated
 
 from quizzes.permissions import IsFormateurOrAdminOrReadOnly, IsOwnerOrAdminOrReadOnly
 
-from .serializers import FormationSerializer , CreateVagueSerializer , AssignStudentToVagueSerializer , AssignQuizToVagueSerializer , VagueListWithStudentsSerializer
+from .serializers import FormationSerializer , CreateVagueSerializer , AssignStudentToVagueSerializer , AssignQuizToVagueSerializer , VagueListWithStudentsSerializer, VagueSerializer
 
 from .models import Formation , Vague , UtilisateurVague
 from quizzes.models import Quiz, UtilisateurQuiz
 
 
 User = get_user_model()
+
+class VagueViewSet(viewsets.ModelViewSet):
+    queryset = Vague.objects.all()
+    serializer_class = VagueSerializer
+    permission_classes = [IsFormateurOrAdminOrReadOnly]
 
 class FormationViewSet(viewsets.ModelViewSet):
     queryset = Formation.objects.all()

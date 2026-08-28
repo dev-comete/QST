@@ -10,6 +10,11 @@ class FormationSerializer(serializers.ModelSerializer):
 
         read_only_fields = ['createur']
 
+class VagueSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Vague
+        fields = '__all__'
+
 class CreateVagueSerializer(serializers.Serializer):
     formation_id = serializers.PrimaryKeyRelatedField(
         queryset=Formation.objects.all()
