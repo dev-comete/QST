@@ -21,14 +21,38 @@ from .models import Quiz, Question, Reponse , UtilisateurQuiz, QuizQuestion , Ty
 from formations.models import UtilisateurVague
 
 class QuizViewSet(viewsets.ModelViewSet):
-    queryset = Quiz.objects.all()
     serializer_class = QuizSerializer
     permission_classes = [IsFormateurOrAdminOrReadOnly]
 
+    def get_queryset(self):
+        user = self.request.user
+        queryset = Quiz.objects.all()
+        
+        # Si c'est un Admin, il voit tous les quiz du système
+        if user.is_staff or user.is_superuser:
+            return queryset
+            
+        # Si c'est un formateur, il ne voit que les quiz liés aux formations de son organisation
+        if user.type_utilisateur.type_utilisateur == 'formateur':
+            return queryset.filter(formation__organisation=user.orga_principale)
+            
+        return queryset.none()
+
 class QuestionViewSet(viewsets.ModelViewSet):
-    queryset = Question.objects.all()
     serializer_class = QuestionSerializer
     permission_classes = [IsFormateurOrAdminOrReadOnly]
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = Question.objects.all()
+        
+        if user.is_staff or user.is_superuser:
+            return queryset
+            
+        if user.type_utilisateur.type_utilisateur == 'formateur':
+            return queryset.filter(organisation=user.orga_principale)
+            
+        return queryset.none()
 
 class ReponseViewSet(viewsets.ModelViewSet):
     queryset = Reponse.objects.all()
@@ -119,7 +143,8 @@ class CreateFullQuestionAPIView(APIView):
                 enonce=data['enonce_question'],
                 type_id=data['type_id'],
                 bareme_pts=data['bareme_pts'],
-                options=data.get('options', [])
+                options=data.get('options', []),
+                user=request.user
             )
             
             return Response(
@@ -388,11 +413,23 @@ class QuestionBankSearchAPIView(APIView):
         search_term = request.query_params.get('search', '').strip()
         type_code = request.query_params.get('type', '').strip()
 
-        queryset = search_questions_in_bank_service(search_term, type_code)
+        user = request.user
+        if user.is_staff or user.is_superuser:
+            # L'admin fouille partout
+            queryset = Question.objects.prefetch_related('corrigee_set__reponse').all().order_by('-id')
+        else:
+            # Le formateur fouille uniquement dans son organisation
+            queryset = Question.objects.prefetch_related('corrigee_set__reponse').filter(
+                organisation=user.orga_principale
+            ).order_by('-id')
+
+        if search_term:
+            queryset = queryset.filter(enonce_question__icontains=search_term)
+        if type_code:
+            queryset = queryset.filter(questiontypequestion__type_question__code__iexact=type_code)
 
         paginator = QuestionBankPagination()
-        paginated_queryset = paginator.paginate_queryset(queryset, request)
-
+        paginated_queryset = paginator.paginate_queryset(queryset.distinct(), request)
         serializer = QuestionBankSerializer(paginated_queryset, many=True)
         return paginator.get_paginated_response(serializer.data)
 
