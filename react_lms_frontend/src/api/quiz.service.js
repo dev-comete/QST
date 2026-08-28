@@ -17,4 +17,8 @@ export const QuizService = {
     const response = await apiClient.patch(`/quizzes/crud/quizzes/${quizId}/`, { status: newStatus });
     return response.data;
   },
+  getAssignedQuestions: async (quizId) => {
+    // Vérifiez que l'URL correspond à votre urls.py
+    const response = await apiClient.get(`/quizzes/${quizId}/questions/`);
+    return response.data;}
 };

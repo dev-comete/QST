@@ -109,24 +109,30 @@ const QuizListPage = () => {
                 {/* 🌟 FOOTER MIS À JOUR : Ajout du bouton principal de publication */}
                 <div className="lms-tile__footer" style={{ flexWrap: 'wrap', gap: 'var(--space-2)', marginTop: 'var(--space-4)' }}>
                   
-                  {/* Bouton de statut (Prend toute la largeur en haut) */}
                   <button
                     className={`lms-btn ${quiz.status === 'published' ? 'lms-btn--outline' : 'lms-btn--success'}`}
                     style={{ flex: '1 1 100%' }}
                     onClick={() => handleToggleStatus(quiz)}
                   >
-                    {quiz.status === 'published' ? '⬇Repasser en brouillon' : ' Publier'}
+                    {quiz.status === 'published' ? '⬇️ Repasser en brouillon' : 'Publier le quiz'}
                   </button>
 
-                  <button className="lms-btn lms-btn--outline" style={{ flex: 1 }}>
-                    Paramètres
+                  {/* Bouton pour VOIR les questions existantes */}
+                  <button 
+                    className="lms-btn lms-btn--outline" 
+                    style={{ flex: 1 }}
+                    onClick={() => navigate(`/quizzes/${quiz.id}/questions`)}
+                  >
+                    Questions
                   </button>
+                  
+                  {/* Bouton pour AJOUTER/ASSIGNER de nouvelles questions */}
                   <button
                     className="lms-btn lms-btn--ghost"
                     style={{ flex: 1, border: '1px solid var(--color-border-strong)' }}
                     onClick={() => navigate(`/quizzes/${quiz.id}/assign`)}
                   >
-                    Questions
+                    Assigner
                   </button>
 
                 </div>
