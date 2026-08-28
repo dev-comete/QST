@@ -312,7 +312,8 @@ class ApprenantQuizListAPIView(ListAPIView):
         # We only return the assignments that belong to the exact user making the request.
         # select_related makes the database query extremely fast by joining the tables!
         return UtilisateurQuiz.objects.filter(
-            utilisateur=self.request.user
+            utilisateur=self.request.user,
+            quiz__status='published'
         ).select_related('quiz', 'quiz__formation')
     
 class TakeQuizAPIView(APIView):
@@ -333,6 +334,12 @@ class TakeQuizAPIView(APIView):
 
         quiz = assignment.quiz
         current_time = now()
+
+        if quiz.status != 'published':
+            return Response(
+                {"error": "Ce quiz est en cours de préparation et n'est pas encore accessible."}, 
+                status=status.HTTP_403_FORBIDDEN
+            )
 
         # NOUVEAU - GATE 2.5 : Vérification de la fenêtre de planification
         if quiz.date_ouverture and current_time < quiz.date_ouverture:
