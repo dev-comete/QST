@@ -212,8 +212,17 @@ class AssignQuizToVagueAPIView(GenericAPIView):
             if created:
                 assigned_count += 1
                 
+        if quiz.status == 'draft':
+            message = (
+                f"Succès ! Le quiz '{quiz.titre}' a été assigné à {assigned_count} étudiant(s). "
+                f"ATTENTION : Ce quiz est encore en mode Brouillon. "
+                f"Les étudiants ne le verront que lorsque vous le passerez en 'Publié'."
+            )
+        else:
+            message = f"Succès ! Le quiz '{quiz.titre}' a été assigné et est maintenant visible pour {assigned_count} étudiant(s)."
+
         return Response({
-            "message": f"Succès ! Le quiz '{quiz.id}' a été assigné à {assigned_count} étudiant(s) de la vague {vague.id}."
+            "message": message
         }, status=status.HTTP_201_CREATED)
     
 class VagueListAPIView(ListAPIView):
