@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { VagueService } from '../api/vague.service';
 import '../styles/index.css';
 
 export default function VagueListPage() {
   const [vagues, setVagues] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchVagues();
@@ -41,9 +42,13 @@ export default function VagueListPage() {
             <h1 className="lms-pageheader__title">Vagues &amp; sessions</h1>
             <p className="lms-pageheader__subtitle">Planifiez et suivez les sessions de vos formations.</p>
           </div>
-          <Link to="/vagues/create" className="lms-btn lms-btn--primary">
+          <button
+            type="button"
+            className="lms-btn lms-btn--success"
+            onClick={() => navigate('/vagues/create')}
+          >
             + Nouvelle vague
-          </Link>
+          </button>
         </div>
 
         <div className="lms-tablewrap">

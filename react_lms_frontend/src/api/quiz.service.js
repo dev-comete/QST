@@ -12,5 +12,9 @@ export const QuizService = {
   createQuiz: async (quizData) => {
     const response = await apiClient.post('/quizzes/crud/quizzes/', quizData);
     return response.data;
-  }
+  },
+  updateStatus: async (quizId, newStatus) => {
+    const response = await apiClient.patch(`/quizzes/crud/quizzes/${quizId}/`, { status: newStatus });
+    return response.data;
+  },
 };

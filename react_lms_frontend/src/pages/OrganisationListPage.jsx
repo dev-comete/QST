@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { OrganisationService } from '../api/organisations.service'; 
 
 export default function OrganisationListPage() {
   const [organisations, setOrganisations] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchOrganisations();
@@ -43,9 +44,13 @@ export default function OrganisationListPage() {
               <h1 className="lms-pageheader__title">Gestion des Organisations</h1>
               <p className="lms-pageheader__subtitle">Gérez les écoles, entreprises ou centres de formation.</p>
             </div>
-            <Link to="/organisations/create" className="lms-btn lms-btn--primary">
+            <button
+              type="button"
+              className="lms-btn lms-btn--success"
+              onClick={() => navigate('/organisations/create')}
+            >
               + Nouvelle Organisation
-            </Link>
+            </button>
           </div>
 
           {loading ? (

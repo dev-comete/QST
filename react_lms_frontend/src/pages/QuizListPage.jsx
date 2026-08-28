@@ -26,7 +26,26 @@ const QuizListPage = () => {
     }
   };
 
-  // Petite fonction utilitaire pour formater la date proprement
+  // 🌟 NOUVEAU : Fonction pour basculer le statut
+  const handleToggleStatus = async (quiz) => {
+    const newStatus = quiz.status === 'published' ? 'draft' : 'published';
+    const actionText = newStatus === 'published' ? "publier ce quiz" : "remettre ce quiz en brouillon";
+
+    if (!window.confirm(`Voulez-vous vraiment ${actionText} ?`)) return;
+
+    try {
+      await QuizService.updateStatus(quiz.id, newStatus);
+      
+      // Mise à jour de l'état local sans recharger toute la page
+      setQuizzes(quizzes.map(q => q.id === quiz.id ? { ...q, status: newStatus } : q));
+      
+    } catch (err) {
+      // DRF renvoie les erreurs de validation sous forme d'objet: {"status": ["Message d'erreur"]}
+      const errorMsg = err.response?.data?.status?.[0] || err.response?.data?.detail || "Erreur lors de la modification du statut.";
+      alert(`Action refusée : ${errorMsg}`);
+    }
+  };
+
   const formatDate = (dateString) => {
     if (!dateString) return 'Date inconnue';
     return new Date(dateString).toLocaleDateString('fr-FR', {
@@ -66,9 +85,9 @@ const QuizListPage = () => {
         ) : (
           <div className="lms-grid lms-grid--3">
             {quizzes.map((quiz) => (
-              <div key={quiz.id} className="lms-tile">
-                <div>
-                  <div className="lms-tile__title">Quiz #{quiz.id}</div>
+              <div key={quiz.id} className="lms-tile" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                <div style={{ flex: 1 }}>
+                  <div className="lms-tile__title">{quiz.titre || `Quiz #${quiz.id}`}</div>
 
                   <p className="lms-tile__meta">
                     Statut :{' '}
@@ -76,10 +95,6 @@ const QuizListPage = () => {
                       <span className="lms-badge-dot" />
                       {quiz.status === 'published' ? 'Publié' : 'Brouillon'}
                     </span>
-                  </p>
-
-                  <p className="lms-tile__meta">
-                    Formation ID : <strong>{quiz.formation}</strong>
                   </p>
 
                   <p className="lms-tile__meta">
@@ -91,8 +106,21 @@ const QuizListPage = () => {
                   </p>
                 </div>
 
-                <div className="lms-tile__footer">
-                  <button className="lms-btn lms-btn--outline" style={{ flex: 1 }}>Paramètres</button>
+                {/* 🌟 FOOTER MIS À JOUR : Ajout du bouton principal de publication */}
+                <div className="lms-tile__footer" style={{ flexWrap: 'wrap', gap: 'var(--space-2)', marginTop: 'var(--space-4)' }}>
+                  
+                  {/* Bouton de statut (Prend toute la largeur en haut) */}
+                  <button
+                    className={`lms-btn ${quiz.status === 'published' ? 'lms-btn--outline' : 'lms-btn--success'}`}
+                    style={{ flex: '1 1 100%' }}
+                    onClick={() => handleToggleStatus(quiz)}
+                  >
+                    {quiz.status === 'published' ? '⬇Repasser en brouillon' : ' Publier'}
+                  </button>
+
+                  <button className="lms-btn lms-btn--outline" style={{ flex: 1 }}>
+                    Paramètres
+                  </button>
                   <button
                     className="lms-btn lms-btn--ghost"
                     style={{ flex: 1, border: '1px solid var(--color-border-strong)' }}
@@ -100,6 +128,7 @@ const QuizListPage = () => {
                   >
                     Questions
                   </button>
+
                 </div>
               </div>
             ))}
