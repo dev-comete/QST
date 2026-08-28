@@ -19,6 +19,7 @@ import QuestionFormPage from './pages/QuestionFormPage';
 import QuizListPage from './pages/QuizListPage';
 import QuizCreatePage from './pages/QuizCreatePage';
 import QuizAssignQuestionsPage from './pages/QuizAssignQuestionsPage';
+import QuizQuestionsPage from './pages/QuizQuestionsPage';
 
 import BaremeListPage from './pages/BaremeListPage';
 import BaremeFormPage from './pages/BaremeFormPage';
@@ -149,6 +150,15 @@ function App() {
               element={
                 <FormateurRoute>
                   <QuizAssignQuestionsPage />
+                </FormateurRoute>
+              } 
+            />
+
+            <Route 
+              path="/quizzes/:id/questions" 
+              element={
+                <FormateurRoute>
+                  <QuizQuestionsPage />
                 </FormateurRoute>
               } 
             />

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams , Link} from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { VagueService } from '../api/vague.service';
 import { UserService } from '../api/user.service';
 import { QuizService } from '../api/quiz.service';
@@ -7,6 +7,7 @@ import '../styles/index.css';
 
 export default function VagueDetailPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const [vague, setVague] = useState(null);
   const [apprenantsDisponibles, setApprenantsDisponibles] = useState([]);
@@ -136,9 +137,13 @@ export default function VagueDetailPage() {
           <div className="lms-headline-stat">
             {vague.etudiants.length} inscrit(s)
           </div>
-          <Link to={`/vagues/${vague.id}/analytics`} className="lms-btn lms-btn--primary">
-              Voir les statistiques
-            </Link>
+          <button
+            type="button"
+            className="lms-btn lms-btn--success"
+            onClick={() => navigate(`/vagues/${vague.id}/analytics`)}
+          >
+            Voir les statistiques
+          </button>
         </div>
 
         <div className="lms-grid lms-grid--sidebar">
