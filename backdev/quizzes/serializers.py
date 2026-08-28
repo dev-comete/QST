@@ -33,10 +33,17 @@ class QuizSerializer(serializers.ModelSerializer):
             quiz_deja_commence = self.instance.utilisateurquiz_set.filter(
                 heure_debut__isnull=False
             ).exists()
+            nouveau_statut = data.get('status', self.instance.status)
+
+            if nouveau_statut == 'published' and self.instance.status == 'draft':
+                # Si le quiz n'a aucune question assignée
+                if not self.instance.quizquestion_set.exists():
+                    raise serializers.ValidationError({
+                        "status": "Impossible de publier un quiz qui ne contient aucune question. Veuillez d'abord lui assigner des questions."
+                    })
 
             if quiz_deja_commence:
                 # Empêcher le retour à l'état de brouillon
-                nouveau_statut = data.get('status', self.instance.status)
                 if nouveau_statut == 'draft' and self.instance.status == 'published':
                     raise serializers.ValidationError({
                         "status": "Impossible de repasser ce quiz en brouillon : des apprenants ont déjà commencé leur évaluation."

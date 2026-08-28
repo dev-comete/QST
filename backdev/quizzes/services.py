@@ -173,6 +173,11 @@ def assign_questions_to_quiz(quiz, questions_choisies):
     tout en vérifiant l'intégrité métier des réponses (Corrigee).
     """
 
+    if quiz.status != 'draft':
+        raise ValidationError(
+            "Impossible d'ajouter des questions à un quiz qui n'est plus en brouillon (draft)."
+        )
+
 # 🚨 BARRIÈRE DE SÉCURITÉ : Vérifier si le quiz a déjà commencé
     quiz_deja_commence = UtilisateurQuiz.objects.filter(
         quiz=quiz, 
@@ -310,6 +315,9 @@ def remove_question_from_quiz(quiz_id: int, question_id: int, user):
     # 2. Vérification de propriété
     if not user.is_staff and quiz.formation.createur != user:
         raise PermissionDenied(detail="Accès refusé. Vous n'êtes pas propriétaire de cette formation.")
+
+    if quiz.status != 'draft':
+        raise ValidationError(detail="Impossible de retirer une question d'un quiz déjà publié.")
 
 # 3. VERROUILLAGE : Le quiz a-t-il déjà été commencé ?
     quiz_deja_commence = UtilisateurQuiz.objects.filter(
