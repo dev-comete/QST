@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import { QuizService } from '../api/quiz.service';
 import { FormationService } from '../api/formation.service';
 import '../styles/index.css';
 
 const QuizCreatePage = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
+  const isEditing = Boolean(id);
 
   // États pour le formulaire
   const [formData, setFormData] = useState({
@@ -18,6 +20,9 @@ const QuizCreatePage = () => {
   // États pour charger les formations dynamiquement
   const [formations, setFormations] = useState([]);
   const [isLoadingFormations, setIsLoadingFormations] = useState(true);
+
+  // État pour le chargement du quiz existant (mode modification)
+  const [isLoadingQuiz, setIsLoadingQuiz] = useState(isEditing);
 
   // États pour la soumission
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -41,6 +46,30 @@ const QuizCreatePage = () => {
     fetchFormations();
   }, []);
 
+  // En mode modification, charger les données du quiz à éditer
+  useEffect(() => {
+    if (!isEditing) return;
+
+    const fetchQuiz = async () => {
+      try {
+        const data = await QuizService.getQuizById(id);
+        setFormData({
+          titre: data.titre ?? '',
+          formation: data.formation ?? '',
+          duree: data.duree ?? '00:45:00',
+          status: data.status ?? 'draft'
+        });
+      } catch (err) {
+        console.error("Erreur lors de la récupération du quiz:", err);
+        setError("Impossible de charger ce quiz.");
+      } finally {
+        setIsLoadingQuiz(false);
+      }
+    };
+
+    fetchQuiz();
+  }, [id, isEditing]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -60,10 +89,14 @@ const QuizCreatePage = () => {
         formation: parseInt(formData.formation, 10)
       };
 
-      await QuizService.createQuiz(payload);
+      if (isEditing) {
+        await QuizService.updateQuiz(id, payload);
+      } else {
+        await QuizService.createQuiz(payload);
+      }
       navigate('/quizzes');
     } catch (err) {
-      setError(err.response?.data?.detail || 'Erreur lors de la création du quiz. Vérifiez les champs.');
+      setError(err.response?.data?.detail || `Erreur lors de ${isEditing ? 'la modification' : 'la création'} du quiz. Vérifiez les champs.`);
       console.error(err);
     } finally {
       setIsSubmitting(false);
@@ -74,14 +107,21 @@ const QuizCreatePage = () => {
     <div className="lms-scope lms-page lms-page--narrow">
       <div className="lms-container--md" style={{ width: '100%' }}>
         <div className="lms-header-row" style={{ marginBottom: 'var(--space-6)' }}>
-          <h1 className="lms-pageheader__title">Créer un nouveau quiz</h1>
+          <h1 className="lms-pageheader__title">{isEditing ? 'Modifier le quiz' : 'Créer un nouveau quiz'}</h1>
           <Link to="/quizzes" className="lms-btn lms-btn--outline">
             Retour
           </Link>
         </div>
 
+        {isLoadingQuiz ? (
+          <div className="lms-loading">
+            <span className="lms-spinner" />
+            Chargement du quiz…
+          </div>
+        ) : (
         <form onSubmit={handleSubmit} className="lms-card lms-card--pad-lg">
 
+          {/* Champ Titre */}
           <div className="lms-field">
             <label className="lms-label">Titre du quiz *</label>
             <input
@@ -90,7 +130,7 @@ const QuizCreatePage = () => {
               className="lms-input"
               value={formData.titre}
               onChange={handleChange}
-              placeholder="Ex: Évaluation finale - Module 1"
+              placeholder="Ex : Évaluation finale — Module React"
               required
             />
           </div>
@@ -147,9 +187,12 @@ const QuizCreatePage = () => {
           {error && <div className="lms-alert lms-alert--danger" style={{ marginBottom: 'var(--space-5)' }}>{error}</div>}
 
           <button type="submit" className="lms-btn lms-btn--success lms-btn--block" disabled={isSubmitting || isLoadingFormations}>
-            {isSubmitting ? 'Création en cours…' : 'Créer le quiz'}
+            {isSubmitting
+              ? (isEditing ? 'Enregistrement…' : 'Création en cours…')
+              : (isEditing ? 'Enregistrer les modifications' : 'Créer le quiz')}
           </button>
         </form>
+        )}
       </div>
     </div>
   );

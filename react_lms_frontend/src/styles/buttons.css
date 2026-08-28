@@ -107,3 +107,36 @@
   width: 2rem;
   height: 2rem;
 }
+
+/* Quiet icon-only action, e.g. a delete affordance in a card header.
+   Neutral at rest, shifts to the danger tint on hover/focus so intent
+   only becomes visible on interaction. */
+.lms-icon-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--color-slate-light);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background var(--duration-fast) var(--ease-standard),
+              color var(--duration-fast) var(--ease-standard);
+}
+
+.lms-icon-action:hover,
+.lms-icon-action:focus-visible {
+  background: var(--color-danger-light);
+  color: var(--color-danger-strong);
+}
+
+/* Same shape, but for non-destructive icon actions (e.g. edit) —
+   shifts to the brand tint instead of the danger tint on interaction. */
+.lms-icon-action--neutral:hover,
+.lms-icon-action--neutral:focus-visible {
+  background: var(--color-harbor-light);
+  color: var(--color-harbor-dark);
+}

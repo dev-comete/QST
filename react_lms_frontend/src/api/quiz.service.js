@@ -7,7 +7,10 @@ export const QuizService = {
     const response = await apiClient.get('/quizzes/crud/quizzes/'); 
     return response.data;
   },
-  
+  getQuizById: async (quizId) => {
+    const response = await apiClient.get(`/quizzes/crud/quizzes/${quizId}/`);
+    return response.data;
+  },
   // (Préparation pour la suite) Créer un nouveau quiz
   createQuiz: async (quizData) => {
     const response = await apiClient.post('/quizzes/crud/quizzes/', quizData);
@@ -17,8 +20,16 @@ export const QuizService = {
     const response = await apiClient.patch(`/quizzes/crud/quizzes/${quizId}/`, { status: newStatus });
     return response.data;
   },
+  updateQuiz: async (quizId, payload) => {
+    const response = await apiClient.patch(`/quizzes/crud/quizzes/${quizId}/`, payload);
+    return response.data;
+  },
   getAssignedQuestions: async (quizId) => {
-    // Vérifiez que l'URL correspond à votre urls.py
     const response = await apiClient.get(`/quizzes/${quizId}/questions/`);
-    return response.data;}
+    return response.data;},
+
+  deleteQuiz: async (quizId) => {
+    const response = await apiClient.delete(`/quizzes/crud/quizzes/${quizId}/`);
+    return response.data;
+  },
 };

@@ -37,6 +37,24 @@ class QuizViewSet(viewsets.ModelViewSet):
             return queryset.filter(formation__organisation=user.orga_principale)
             
         return queryset.none()
+    
+    def destroy(self, request, *args, **kwargs):
+        quiz = self.get_object()
+
+        # Vérifie si au moins un étudiant a déjà commencé ce quiz
+        quiz_deja_commence = quiz.utilisateurquiz_set.filter(
+            heure_debut__isnull=False
+        ).exists()
+
+        if quiz_deja_commence:
+            return Response(
+                {"error": "Impossible de supprimer ce quiz car des apprenants l'ont déjà commencé ou terminé. Si vous souhaitez bloquer son accès, modifiez sa 'Date de fermeture'."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Si tout va bien, on déclenche le Soft Delete (qui appellera le quiz.delete() de votre modèle)
+        quiz.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class QuestionViewSet(viewsets.ModelViewSet):
     serializer_class = QuestionSerializer

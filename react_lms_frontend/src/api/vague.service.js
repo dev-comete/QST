@@ -3,8 +3,8 @@ import apiClient from './client';
 
 export const VagueService = {
   // Récupérer toutes les vagues (avec leurs étudiants grâce à VagueListWithStudentsSerializer)
-  getAll: async () => {
-    const response = await apiClient.get('/formation/vagues/');
+  getAll: async (filters = {}) => {
+    const response = await apiClient.get('/formation/vagues/', { params: filters });
     return response.data;
   },
 
@@ -17,9 +17,12 @@ export const VagueService = {
     });
     return response.data;
   },
+  updateVague: async (vagueId, payload) => {
+    const response = await apiClient.patch(`/quizzes/crud/vagues/${vagueId}/`, payload);
+    return response.data;
+  },
 
   assignStudents: async (vagueId, studentIdsArray) => {
-    // On envoie 'etudiant_ids' (avec un 's') contenant le tableau d'IDs
     const response = await apiClient.post('/formation/vagues/assign-student/', {
       vague_id: vagueId,
       etudiant_ids: studentIdsArray

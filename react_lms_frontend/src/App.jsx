@@ -146,6 +146,15 @@ function App() {
             />
 
             <Route 
+              path="/quizzes/:id/edit" 
+              element={
+                <FormateurRoute>
+                  <QuizCreatePage />
+                </FormateurRoute>
+              } 
+            />
+
+            <Route 
               path="/quizzes/:id/assign" 
               element={
                 <FormateurRoute>
