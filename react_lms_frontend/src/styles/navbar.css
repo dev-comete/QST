@@ -87,6 +87,19 @@
   align-items: center;
   gap: var(--space-4);
   flex-shrink: 0;
+  position: relative;
+}
+
+.lms-navbar__user-button {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-sm);
+  color: #fff;
+  padding: 0.35rem 0.7rem;
+  cursor: pointer;
 }
 
 .lms-navbar__identity {
@@ -114,6 +127,7 @@
   font-size: var(--text-sm);
   color: #fff;
   line-height: 1.2;
+  text-align: left;
 }
 
 .lms-navbar__role {
@@ -124,6 +138,49 @@
   letter-spacing: 0.06em;
   color: rgba(255, 255, 255, 0.6);
   margin-top: 1px;
+}
+
+.lms-navbar__menu {
+  position: absolute;
+  top: calc(100% + 0.8rem);
+  right: 0;
+  width: min(430px, 82vw);
+  background: #fff;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  z-index: 60;
+  overflow: hidden;
+}
+
+.lms-navbar__menu-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-mist);
+}
+
+.lms-navbar__menu-tab {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--color-slate);
+  font-weight: 600;
+  padding: 0.9rem 1rem;
+  cursor: pointer;
+}
+
+.lms-navbar__menu-tab--active {
+  color: var(--color-harbor-darker);
+  background: #fff;
+  border-bottom: 2px solid var(--color-harbor-darker);
+}
+
+.lms-navbar__profile-panel,
+.lms-navbar__settings-panel {
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  margin: 0;
 }
 
 .lms-navbar__logout {

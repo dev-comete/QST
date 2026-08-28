@@ -14,6 +14,7 @@ from .views import (
 from .views_analytics import FormateurVagueAnalyticsAPIView , ApprenantBulletinAPIView
 from .views_pdf import ApprenantBulletinPDFAPIView
 from .views_corbeille import CorbeilleQuizAPIView, CorbeilleQuestionAPIView
+from .views_dashboard import FormateurDashboardMetricsAPIView
 
 from formations.views import FormationViewSet
 from accounts.views import UtilisateurViewSet, TypeUtilisateurViewSet, OrganisationViewSet
@@ -79,4 +80,7 @@ urlpatterns = [
     # Routes pour la restauration (POST avec l'ID pour restaurer)
     path('corbeille/quizzes/<int:quiz_id>/restaurer/', CorbeilleQuizAPIView.as_view(), name='restaurer-quiz'),
     path('corbeille/questions/<int:question_id>/restaurer/', CorbeilleQuestionAPIView.as_view(), name='restaurer-question'),
+
+    path('dashboard/metrics/', FormateurDashboardMetricsAPIView.as_view(), name='dashboard-metrics')
+
 ]

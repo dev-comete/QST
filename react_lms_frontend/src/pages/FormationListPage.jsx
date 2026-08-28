@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { FormationService } from '../api/formation.service';
 import '../styles/index.css';
 
 export default function FormationListPage() {
   const [formations, setFormations] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchFormations();
@@ -52,9 +53,12 @@ export default function FormationListPage() {
             <h1 className="lms-pageheader__title">Mes formations</h1>
             <p className="lms-pageheader__subtitle">Le catalogue que vous proposez à vos apprenants.</p>
           </div>
-          <Link to="/formations/create" className="lms-btn lms-btn--primary">
+          <button
+            className="lms-btn lms-btn--success"
+            onClick={() => navigate('/formations/create')}
+          >
             + Nouvelle formation
-          </Link>
+          </button>
         </div>
 
         {formations.length === 0 ? (

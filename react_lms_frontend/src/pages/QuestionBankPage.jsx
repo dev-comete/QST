@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { QuestionService } from '../api/question.service';
 import useDebounce from '../hooks/useDebounce';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import '../styles/index.css';
 
 const QuestionBankPage = () => {
@@ -14,6 +14,8 @@ const QuestionBankPage = () => {
   const [data, setData] = useState({ results: [], count: 0, next: null, previous: null });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const navigate = useNavigate();
 
   // Utilisation du hook debounce (attendre 500ms après la dernière frappe)
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
@@ -49,13 +51,13 @@ const QuestionBankPage = () => {
         <div className="lms-pageheader">
           <div>
             <h1 className="lms-pageheader__title">Banque de questions</h1>
-            <Link to="/banque-questions/create" className="lms-btn lms-btn--primary">
-              + Créer une question
-            </Link>
             <p className="lms-pageheader__subtitle">
               <span className="lms-num">{data.count}</span> question(s) trouvée(s)
             </p>
           </div>
+          <button className="lms-btn lms-btn--success" onClick={() => navigate('/banque-questions/create')}>
+            + Créer une question
+          </button>
         </div>
 
         {/* ZONE DE FILTRES */}

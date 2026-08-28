@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { UserService } from '../api/user.service';
 
 export default function UserListPage() {
   const [users, setUsers] = useState([]);
   const [roles, setRoles] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchData();
@@ -54,9 +55,13 @@ export default function UserListPage() {
               <h1 className="lms-pageheader__title">Gestion des Utilisateurs</h1>
               <p className="lms-pageheader__subtitle">Gérez les accès administrateurs, formateurs et apprenants.</p>
             </div>
-            <Link to="/users/create" className="lms-btn lms-btn--primary">
+            <button
+              type="button"
+              className="lms-btn lms-btn--success"
+              onClick={() => navigate('/users/create')}
+            >
               + Nouvel Utilisateur
-            </Link>
+            </button>
           </div>
 
           {/* État de chargement */}

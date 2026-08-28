@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { BaremeService } from '../api/bareme.service';
 import '../styles/index.css';
 
 export default function BaremeListPage() {
   const [baremes, setBaremes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchBaremes();
@@ -52,12 +53,13 @@ export default function BaremeListPage() {
             <h1 className="lms-pageheader__title">Gestion des barèmes</h1>
             <p className="lms-pageheader__subtitle">Les grilles de points réutilisables pour vos questions.</p>
           </div>
-          <Link
-            to="/baremes/create"
-            className="lms-btn lms-btn--primary"
+          <button
+            type="button"
+            className="lms-btn lms-btn--success"
+            onClick={() => navigate('/baremes/create')}
           >
             + Nouveau barème
-          </Link>
+          </button>
         </div>
 
         <div className="lms-tablewrap">
