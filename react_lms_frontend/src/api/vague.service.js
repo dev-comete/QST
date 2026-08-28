@@ -3,8 +3,8 @@ import apiClient from './client';
 
 export const VagueService = {
   // Récupérer toutes les vagues (avec leurs étudiants grâce à VagueListWithStudentsSerializer)
-  getAll: async () => {
-    const response = await apiClient.get('/formation/vagues/');
+  getAll: async (filters = {}) => {
+    const response = await apiClient.get('/formation/vagues/', { params: filters });
     return response.data;
   },
 

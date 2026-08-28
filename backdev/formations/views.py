@@ -244,4 +244,19 @@ class VagueListAPIView(ListAPIView):
         if not is_admin:
             queryset = queryset.filter(formation__createur=self.request.user)
             
-        return queryset
+        formation_id = self.request.query_params.get('formation')
+        mois = self.request.query_params.get('mois') # ex: '09' pour septembre
+        annee = self.request.query_params.get('annee') # ex: '2026'
+
+        if formation_id:
+            queryset = queryset.filter(formation_id=formation_id)
+            
+        if mois:
+            # Filtre les vagues qui commencent ce mois-là
+            queryset = queryset.filter(debut__month=mois)
+            
+        if annee:
+            queryset = queryset.filter(debut__year=annee)
+
+        # On trie toujours par date de début (les plus récentes en premier)
+        return queryset.order_by('-debut')

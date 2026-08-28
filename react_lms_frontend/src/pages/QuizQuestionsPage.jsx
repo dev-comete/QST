@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link , useNavigate} from 'react-router-dom';
 import { QuizService } from '../api/quiz.service';
 import '../styles/index.css';
 
@@ -32,6 +32,7 @@ export default function QuizQuestionsPage() {
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -75,9 +76,9 @@ export default function QuizQuestionsPage() {
             <Link to="/quizzes" className="lms-btn lms-btn--outline">
               Retour
             </Link>
-            <Link to={`/quizzes/${id}/assign`} className="lms-btn lms-btn--primary">
+            <button className="lms-btn lms-btn--primary" onClick={() =>  navigate(`/quizzes/${id}/assign`)}>
               + Assigner des questions
-            </Link>
+            </button>
           </div>
         </div>
 
