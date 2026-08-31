@@ -22,15 +22,15 @@ const Select = ({
 	handleChange
 }: SelectProps) => {
 
-    const styling = "border border-background rounded-md focus:outline focus:outline-primary cursor-pointer";
+    const styling = "border border-background bg-white p-2 rounded-md focus:outline focus:outline-primary cursor-pointer";
 	const selectId = id || name;
 
 	return (
 		<div className="flex flex-col gap-1 w-full text-left relative">
 			{label && (
-			<label className="text-sm font-medium text-text" htmlFor={selectId}>
-				{label}
-			</label>
+				<label className="text-md font-medium text-text" htmlFor={selectId}>
+					{label}
+				</label>
 			)}
 			<select
 				id={selectId}
@@ -41,7 +41,7 @@ const Select = ({
 				onChange={handleChange}
 			>
 			{selectionValue.map((selected) => (
-				<option key={selected.id} value={selected.value}>
+				<option key={selected.id} value={selected.value} className="text-md">
 				{selected.value}
 				</option>
 			))}

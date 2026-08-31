@@ -6,11 +6,12 @@ type TextType = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span' | 'captio
 type TextWeight = 'light' | 'normal' | 'bold';
 
 interface TextProps {
-	children: React.ReactNode;
-	textTag?: TextType;
-	weight?: TextWeight;
-	color?: ColorTheme;
-	isItalic?: boolean;
+	children: React.ReactNode
+	textTag?: TextType
+	weight?: TextWeight
+	color?: ColorTheme
+	isItalic?: boolean
+	className?: string
 }
 
 const textBase : Record<TextType, string> = {
@@ -50,13 +51,14 @@ const CustomText = ({
 	textTag : Tag = "p",
 	color = 'text',
 	weight = "normal",
-	isItalic
+	isItalic,
+	className
 }: TextProps) => {
 
 	if (textBase[Tag] === undefined)
 		return <p className="text-base">{children}</p>;
 	
-	const textStyling = `${textBase[Tag]} ${textWeight[weight]} ${textColor[color]} ${isItalic ? "italic" : null}`;
+	const textStyling = `${textBase[Tag]} ${textWeight[weight]} ${textColor[color]} ${isItalic ? "italic" : null} ${className}`;
 
 	return (
 		<Tag className={textStyling}>

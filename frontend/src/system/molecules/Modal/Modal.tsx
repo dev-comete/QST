@@ -5,7 +5,7 @@ import CustomText from "../../atoms/Text/CustomText";
 import Button from "../../atoms/Button/Button";
 import ActionButton from "../Buttons/ActionButton";
 import type { ColorTheme } from "../../../other/types/common";
-import { Children, useState } from "react";
+import { Children, useState, type ReactNode } from "react";
 import Title from "../LayoutElement/Title";
 import IconButton from "../Buttons/IconButton";
 
@@ -16,6 +16,7 @@ interface ModalProps {
 	children: React.ReactNode,
 	isOpen?: boolean;
 	closeModal?: () => void;
+	footer?: ReactNode
 }
 
 interface ConfirmModalProps {
@@ -67,9 +68,10 @@ const Modal = ({
 	title,
 	subtitle,
 	children,
-	bgColor = "background",
+	bgColor = "white",
 	isOpen,
-	closeModal
+	closeModal,
+	footer
 } : ModalProps) => {
 
 	const modalOverlayStyling = "fixed top-0 left-0 w-full h-full bg-black/90 z-100";
@@ -77,7 +79,10 @@ const Modal = ({
 	const checkModal = isOpen ? null : 'hidden';
 
 	const [ subIdx, setSubIdx ] = useState(0)
-	const subPage = Children.toArray(children);
+
+    const subPage = Children.toArray(children);
+
+	const currentChild = subPage[subIdx] ?? subPage[0] ?? null;
 
 	if (!isOpen)
 		return null;
@@ -86,11 +91,12 @@ const Modal = ({
 		<>
 			<div className={`${modalOverlayStyling} ${checkModal}`}></div>
 			<Paper
-				color={"white"}
+				color={bgColor}
 				position="fixed"
 				className="
 					rounded-xl
-					w-[50%] max-h-[85vh] h-[85vh]
+					max-w-[80%] max-h-[85vh]
+					min-w-[20%] min-h-[30vh]
 					top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
 					z-101
 					p-5
@@ -116,11 +122,10 @@ const Modal = ({
 							</Box>
 
 							<Box className="grow w-full overflow-y-auto min-h-0">
-								{subPage[subIdx]}
+								{currentChild}
 							</Box>
 						</Box>
 					</Box>
-
 					{ subtitle &&
 						<ModalNav 
 							subIdx={subIdx}
@@ -130,6 +135,11 @@ const Modal = ({
 						/>
 					}
 				</Box>
+				{footer && 
+					<Box direction="column" className="items-center">
+						{footer}
+					</Box>
+				}
 			</Paper>
 	</>
 )
@@ -143,20 +153,25 @@ const ConfirmModal = ({
 	isOpen
 }: ConfirmModalProps) => {
 	return (
-		<Modal bgColor={bgColor} isOpen={isOpen}>
+		<Modal
+			bgColor={bgColor}
+			isOpen={isOpen}
+			footer={
+				<Box className="w-full justify-between">
+					<ActionButton
+						btnColor="text"
+						action={closeModal} 
+					>Non</ActionButton>
+					<ActionButton
+						btnColor="primary"
+						action={() => { 
+							action() ; closeModal()
+						}} 
+					>Oui</ActionButton>
+				</Box>
+			}
+		>
 			<CustomText textTag="p">{content}</CustomText>
-			<Box>
-				<ActionButton
-					btnColor="secondary"
-					action={() => { 
-						action() ; closeModal()
-					}} 
-				>Oui</ActionButton>
-				<ActionButton
-					btnColor="secondary"
-					action={closeModal}
-				>Non</ActionButton>
-			</Box>
 		</Modal>
 	)
 }
@@ -169,9 +184,14 @@ const TextModal = ({
 	isOpen
 }: BasicModalProps) => {
 	return (
-		<Modal bgColor={bgColor} isOpen={isOpen}>
+		<Modal
+			bgColor={bgColor}
+			isOpen={isOpen}
+			footer={
+				<Box><Button action={action}>{btnContent}</Button></Box>
+			}
+		>
 			<CustomText textTag="p">{content}</CustomText>
-			<Box><Button action={action}>{btnContent}</Button></Box>
 		</Modal>
 	)
 }

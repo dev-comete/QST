@@ -1,4 +1,4 @@
-import type { quizAssignPayload, quizCreateType, quizType, studentQuizType } from "../types/quizType";
+import type { quizAssignPayload, quizCreateType, QuizSubmitPayload, quizType, studentQuizType } from "../types/quizType";
 import apiClient from "./apiClient";
 
 export const QuizService = {
@@ -26,13 +26,13 @@ export const QuizService = {
 		return response.data as studentQuizType[];
 	},
 
-	startEval: async (id: string) => {
+	startQuiz: async (id: string) => {
 		const url = '/quizzes/'+ id + '/take/'
 		const response = await apiClient.get(url);
 		return response.data;
 	},
 
-	submitEval: async ( data : quizCreateType) => {
+	submitQuiz: async ( data : QuizSubmitPayload) => {
 		const url = import.meta.env.VITE_EVAL_SUBMIT
 		const response = await apiClient.post(url, data);
 		return response.data;

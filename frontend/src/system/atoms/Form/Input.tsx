@@ -2,7 +2,7 @@ import type { ColorTheme } from "../../../other/types/common";
 
 interface InputProps {
 	label?: string;
-	type?: 'text' | 'password' | 'email' | 'search' | 'time' | 'checkbox' | 'date' | 'datetime-local';
+	type?: 'text' | 'password' | 'email' | 'search' | 'time' | 'checkbox' | 'date' | 'datetime-local' | 'radio';
 	id: string;
 	name: string;
 	textColor?: ColorTheme;
@@ -24,7 +24,7 @@ const Input = ({
 	className
 }: InputProps) => {
 
-	const basicStyle = "flex p-2 border border-background w-full items-center justify-center focus:outline focus:outline-primary"
+	const basicStyle = "flex p-2 rounded-xl border border-background bg-white w-full items-center justify-center focus:outline focus:outline-primary"
 
 	return (
 		<div className="flex flex-col w-full">

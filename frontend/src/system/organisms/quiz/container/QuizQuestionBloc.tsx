@@ -1,4 +1,5 @@
 import type { Question } from "../../../../other/types/quizType";
+import type { AnswersMap } from "../../../../other/types/quizType";
 import Box from "../../../atoms/Container/Box";
 import Paper from "../../../atoms/Container/Paper";
 import Input from "../../../atoms/Form/Input";
@@ -7,66 +8,81 @@ import CustomText from "../../../atoms/Text/CustomText";
 
 interface DisplayQuestionProps {
 	question: Question,
-	id: number
+	id: number,
+	isQCU: boolean
 }
 
-const DisplayQuestion = ({ question, id } : DisplayQuestionProps) => {
+const DisplayQuestion = ({ question, id, isQCU } : DisplayQuestionProps) => {
 	return (
-		<Paper>
-			<Box>
-				<Box>
-					<CustomText>{id}</CustomText>
-				</Box>
-				<CustomText>{question.enonce}</CustomText>
-			</Box>
-		</Paper>
+		<Box direction="column" className="items-start border-b border-background pb-2">
+			<CustomText textTag="h2" weight="bold" color="primary">{id}. {question.enonce}</CustomText>
+			<CustomText textTag="h6" isItalic={true}>{isQCU ? "Sélectionnez une seule réponse." : "Sélectionnez une ou plusieurs réponses."}</CustomText>
+		</Box>
 	)
 }
 
 interface SelectQuestionItemProps {
 	question : Question,
-	handleSelect: () => void,
-	id: number
+	handleSelect: (optionId: string | number, typeCode: 'QCU' | 'QCM') => void,
+	id: number,
+	answers?: AnswersMap,
+	isQCU: boolean
 }
 
-const SelectQuestionItem = ({ question, handleSelect} : SelectQuestionItemProps) => {
+const SelectQuestionItem = ({ question, handleSelect, answers = {}, isQCU } : SelectQuestionItemProps) => {
+
 	return (
-		<Paper className="p-5">
-			<Box direction="column" className="space-y-3 items-center">
-				{
-					question.options.map((r, index) => {
-						return (
-							<Box key={`${r.id} + ${index}`} className="space-x-5">
-								<Input type="checkbox" id="id" name="name" onChange={handleSelect}/>
-								<CustomText>{r.reponse}</CustomText>
-							</Box>
-						)
-					})
-				}
-			</Box>
-		</Paper>
+		<Box direction="column" className="space-y-3 items-start">
+			{
+				question.options.map((r, index) => {
+					const checked = (answers[String(question.question_id)] || []).includes(r.id);
+					return (
+						<Box key={`${r.id}-${index}`} className="items-center">
+							<Input
+								type={isQCU ? 'radio' : 'checkbox'}
+								id={`q-${question.question_id}-opt-${r.id}`}
+								name={`question_${question.question_id}`}
+								onChange={() => handleSelect(r.id, isQCU ? 'QCU' : 'QCM')}
+								checked={checked}
+							/>
+							<CustomText>{r.reponse}</CustomText>
+						</Box>
+					)
+				})
+			}
+		</Box>
 	)
 }
 
 interface QuizQuestionBlocProps {
-	questions: Question[]
+	questions: Question[],
+	answers?: AnswersMap,
+	onToggle?: (questionId: string | number, optionId: string | number, typeCode: 'QCU' | 'QCM') => void
 }
 
-const QuizQuestionBloc = ({ questions } : QuizQuestionBlocProps) => {
+const QuizQuestionBloc = ({ questions, answers = {}, onToggle } : QuizQuestionBlocProps) => {
+
 	return (
 		<Box direction="column" className="space-y-5 overflow-y-auto">
 			{
 				questions.map((q, index) => {
+					const isQCU = (q.type_question && ((q as any).type_question.code === 'QCU' || (q as any).type_question === 'QCU')) || false;
+
+					// console.log("QUESTION", q.type_question)
 					return (
-						<Box direction="column">
-							<DisplayQuestion question={q} id={index} />
-							<SelectQuestionItem
-								key={'question' + index + q.question_id}
-								question={q}
-								id={index}
-								handleSelect={() => console.log("go")}
-							/>
-						</Box>
+						<Paper className="p-5" key={`qbloc-${q.question_id}`}>
+							<Box direction="column" className="space-y-5"> 
+								<DisplayQuestion question={q} id={index + 1} isQCU={isQCU} />
+								<SelectQuestionItem
+									key={'question' + index + q.question_id}
+									question={q}
+									id={index}
+									isQCU={isQCU}
+									answers={answers}
+									handleSelect={(optionId: string | number, typeCode: 'QCU' | 'QCM') => onToggle && onToggle(q.question_id, optionId, typeCode)}
+								/>
+							</Box>
+						</Paper>
 					)
 				})
 			}

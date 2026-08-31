@@ -18,7 +18,7 @@ export const Table = <T,>({ columns, data, rowKey }: TableProps<T>) => {
     if (data.length === 0) {
         return (
             <div className="flex w-full items-center justify-center p-8 text-slate-400 bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
-                <CustomText textTag="caption" isItalic={true}>Pas encore de données...</CustomText>
+                <CustomText textTag="h6" isItalic={true}>Pas encore de données...</CustomText>
             </div>
         );
     }

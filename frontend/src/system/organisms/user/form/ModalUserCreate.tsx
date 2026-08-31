@@ -15,7 +15,7 @@ interface ModalUserCreateProps {
 }
 
 interface UserFormProps {
-	closeModal: () => void
+	closeModal: () => void,
 	listTypeUser: utilisateurType[]
 	listOrganisation: organisationType[]
 }
@@ -24,13 +24,16 @@ const UserForm = ({ closeModal, listTypeUser, listOrganisation } : UserFormProps
 
 	const { setUser, handleCreateUser } = useUser()
 
-
 	const selectedRole = getSelectData(listTypeUser, 'type_utilisateur')
 	const selectedOrganisation = getSelectData(listOrganisation, 'nom')
 
 	return (
 		<Box direction="column" className="items-center w-full">
-			<form id="userForm" onSubmit={(e) => {e.preventDefault() ; handleCreateUser()}}>
+			<form
+				id="userForm"
+				onSubmit={(e) => {e.preventDefault() ; handleCreateUser() ; closeModal()}}
+				className="flex flex-col space-y-3"
+			>
 				<Input 
 					id="username"
 					name="username"
@@ -64,7 +67,18 @@ const UserForm = ({ closeModal, listTypeUser, listOrganisation } : UserFormProps
 						return [String(selected.id ?? null)]
 					})}
 				/>
-				</form>
+			</form>
+		</Box>
+	)
+}
+
+const ModalUserCreate = ({ open, closeModal, listTypeUser, listOrganisation } : ModalUserCreateProps) => {
+	return (
+		<Modal
+			title="Création d'utilisateur"
+			isOpen={open}
+			closeModal={closeModal}
+			footer={
 				<Box>
 					<ActionButton
 						action={closeModal}
@@ -80,16 +94,7 @@ const UserForm = ({ closeModal, listTypeUser, listOrganisation } : UserFormProps
 						Créer
 					</ActionButton>
 				</Box>
-		</Box>
-	)
-}
-
-const ModalUserCreate = ({ open, closeModal, listTypeUser, listOrganisation } : ModalUserCreateProps) => {
-	return (
-		<Modal
-			title="Création d'utilisateur"
-			isOpen={open}
-			closeModal={closeModal}
+			}
 		>
 			<UserForm
 				closeModal={closeModal}

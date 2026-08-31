@@ -46,7 +46,7 @@ const Login = () => {
             <Box className="hidden md:block md:w-2/3 h-full relative">
                 <img 
                     src="/src/assets/illustration.jpg" 
-                    alt="Login background dynamic illustration" 
+                    alt="Login illustration" 
                     className="w-full h-full object-cover"
                 />
             </Box>

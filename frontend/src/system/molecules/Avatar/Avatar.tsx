@@ -9,11 +9,11 @@ const Avatar = () => {
     const username = authUser?.username ?? 'JohnDoe'
 
     return (
-        <Box className="rounded-xl p-5 bg-background w-fit items-center">
+        <Box className="rounded-xl p-5 border border-background w-3/4 items-center">
             <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center p-2">
                 {role.charAt(0).toUpperCase()}
             </div>
-            <CustomText textTag="h5">{username}</CustomText>
+            <CustomText textTag="h5" weight="bold" className="capitalize">{username}</CustomText>
         </Box>
     )
 }

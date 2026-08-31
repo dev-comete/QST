@@ -50,6 +50,11 @@ type QuizInfo = {
 
 type AnswersMap = Record<string, Array<number | string>>;
 
+type QuizSubmitPayload = {
+	quiz_id: string,
+	answers: AnswersMap[]
+}
+
 export type {
 	quizType,
 	quizCreateType,
@@ -58,5 +63,6 @@ export type {
 	QuizInfo,
 	AnswersMap,
 	Question,
-	Option
+	Option,
+	QuizSubmitPayload
 }

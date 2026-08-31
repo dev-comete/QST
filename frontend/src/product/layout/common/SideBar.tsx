@@ -12,9 +12,11 @@ const SideBar = ({ navList } : SideBarProps ) => {
 
 	return (
 		<div className="flex flex-col w-full bg-white min-h-screen items-center flex-1 pt-5 space-y-5">
-			<Logo />
-			<Avatar />
-			<nav className="flex flex-col flex-end w-full pl-5">
+			<div className="flex flex-col items-center flex-none w-full space-y-5 pb-5 pt-5">
+				<Logo />
+				<Avatar />
+			</div>
+			<nav className="flex flex-col flex-1 w-full pl-5 overflow-y-auto space-y-1">
 			{
 				navList.map((navItem, index) => {
 					const { label, link, icon } = navItem
@@ -31,7 +33,9 @@ const SideBar = ({ navList } : SideBarProps ) => {
 				})
 			}
 			</nav>
-			<LogoutBtn />
+			<div className="flex-none w-full mt-auto p-5 flex justify-center">
+				<LogoutBtn />
+			</div>
 		</div>
 	)
 }
