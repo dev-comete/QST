@@ -1,4 +1,4 @@
-import type { NavItem } from "../../../other/types/common";
+import type { NavItem } from "../../../other/types/navigation";
 import Avatar from "../../../system/molecules/Avatar/Avatar";
 import LogoutBtn from "../../../system/molecules/Buttons/LogoutBtn";
 import NavButton from "../../../system/molecules/Buttons/NavButton";

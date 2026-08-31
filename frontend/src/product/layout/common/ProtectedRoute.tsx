@@ -17,9 +17,10 @@ const ProtectedRoute = ({ allowedRole } : ProtectedRouteProps ) => {
 	if (authUser && location.pathname == "/login")
 	{ return <Navigate to="/" state={{ from: location }} replace />;}
 
-	const hasRole = allowedRole?.includes(authUser.role);
+	const userRole = (authUser.role || '').toString().toLowerCase();
+	const allowed = allowedRole?.map(r => r.toString().toLowerCase()) || [];
 
-	if (allowedRole && !hasRole) {
+	if (allowedRole && !allowed.includes(userRole)) {
 		return <Navigate to="/unauthorized" replace />;
 	}
 

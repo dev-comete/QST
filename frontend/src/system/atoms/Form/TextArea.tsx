@@ -28,7 +28,7 @@ const TextArea = ({
 	onChange
 }: TextArea) => {
 
-    const styling = "bg-background-900 p-2 w-full focus:outline-accent focus:outline-1 resize-none overflow-y-auto";
+    const styling = "bg-white border border-background p-2 w-full focus:outline-accent focus:outline-1 resize-none overflow-y-auto";
 			
 	return (
 		<div className="flex flex-col w-full">

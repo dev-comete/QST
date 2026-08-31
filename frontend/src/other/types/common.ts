@@ -36,18 +36,10 @@ type formationType = {
 
 type ColorTheme = 'background' | 'primary' | 'secondary' | 'accent' | 'success' | 'error' | 'warning' | 'text' | 'white' | 'disabled' | 'transparent';
 
-type NavItem = {
-    label: string;
-    link: string;
-	title?: string;
-	icon?: string
-};
-
 type Role = 'admin' | 'formateur' | 'apprenant' | 'rfq'
 
 export type {
 	ColorTheme,
-	NavItem,
 	Role,
 	authData,
 	formationType

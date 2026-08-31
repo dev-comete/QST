@@ -7,15 +7,15 @@ export const RootRedirect = () => {
 	if (!authUser)
 		return <Navigate to="/login" replace />;
 
-	console.log("Root redirection", authUser)
-
-	switch (authUser.role) {
+	const role = (authUser.role || '').toString().toLowerCase();
+	
+	switch (role) {
 		case 'admin':
 			return <Navigate to="/admin" replace />;
 		case 'formateur':
 			return <Navigate to="/formateur" replace />;
 		case 'apprenant':
-			return <Navigate to="/apprenant" replace />;
+			return <Navigate to="/mon_espace" replace />;
 		case 'rfq':
 			return <Navigate to="/home" replace />; // or another default for RFQ
 		default:

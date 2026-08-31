@@ -1,7 +1,5 @@
 import { createBrowserRouter, Navigate } from "react-router";
 import FormateurTemplate from "../../product/layout/role/FormateurTemplate";
-import QuestionManagement from "../../product/pages/formateur/question/QuestionManagement";
-import QuizManagement from "../../product/pages/formateur/quizz/QuizManagement";
 import Dashboard from "../../product/pages/formateur/Dashboard";
 import AdminTemplate from "../../product/layout/role/AdminTemplate";
 import ApprenantTemplate from "../../product/layout/role/ApprenantTemplate";
@@ -15,12 +13,8 @@ import AdminDashboard from "../../product/pages/admin/AdminDashboard";
 import ProtectedRoute from "../../product/layout/common/ProtectedRoute";
 import Unauthorized from "../../product/pages/common/Unauthorized";
 import { RootRedirect } from "../../product/layout/common/RootRedirect";
-import { QuestionCreateProvider } from "../../product/context/QuestionCreateProvider";
-import QuestionCreate from "../../product/pages/formateur/question/QuestionCreate";
-import QuizAssign from "../../product/pages/formateur/quizz/QuizAssign";
-import VagueAssign from "../../product/pages/formateur/vague/VagueAssign";
-import VagueManagement from "../../product/pages/formateur/vague/VagueManagement";
-import Revue from "../../product/pages/apprenant/Revue";
+import Review from "../../product/pages/apprenant/Review";
+import COMMON_CHILDREN from "./sharedChildren";
 
 export const router = createBrowserRouter([
 
@@ -34,10 +28,6 @@ export const router = createBrowserRouter([
 		children: [
 			{
 				path: '/home',
-				element: <Home />
-			},
-			{
-				path: '/',
 				element: <Home />
 			}
 		]
@@ -54,6 +44,7 @@ export const router = createBrowserRouter([
 					{ index: true, element: <Navigate to="gestion_utilisateurs" replace /> },
 					{ path: 'gestion_utilisateurs', element: <UserManagement /> },
 					{ path: 'tableau_de_bord', element: <AdminDashboard /> },
+					...COMMON_CHILDREN,
 				]
 			},
 		]
@@ -62,38 +53,57 @@ export const router = createBrowserRouter([
 	//Formateur routes
 	{
 		path: '/formateur',
-		element: <ProtectedRoute allowedRole={['admin', 'formateur']}/>,
+		element: <ProtectedRoute allowedRole={['formateur']}/>,
 		children: [
 			{ 
 				element: <FormateurTemplate />,
 				children: [
 					{ index: true, element: <Navigate to="gestion_vague" replace /> },
-					{ path: "gestion_vague", element: <VagueManagement /> },
-					{ path: ":id/assign_vague", element: <VagueAssign /> },
-					{ path: "gestion_question", element: <QuestionManagement /> },
-					{ path: "creation_question", element: <QuestionCreateProvider><QuestionCreate /></QuestionCreateProvider>},
-					{ path: "gestion_quiz", element: <QuizManagement /> },
-					{ path: ":id/assign_quiz", element: <QuizAssign /> },
+					...COMMON_CHILDREN,
 					{ path: "tableau_de_bord", element: <Dashboard /> },
 				],
 			}
 		]
 	},
 
-	//Apprenant routes
+	// Apprenant routes
 	{
-		path: "/",
-		element: <ProtectedRoute allowedRole={['admin', 'apprenant']}/>,
+		path: '/mon_espace',
+		element: <ProtectedRoute allowedRole={['apprenant']}/>,
 		children: [
-			{ 
+			{
 				element: <ApprenantTemplate />,
-				children: [
-					{ index: true, element: <Navigate to="planning" replace /> },
-					{ path: "planning", element: <EvaluationPlanning /> },
-					{ path: "bulletin", element: <Bulletin /> },
-					{ path: "quiz/:id/action", element: <Evaluation /> },
-					{ path: "quiz/:id/revue", element: <Revue /> }
-				],
+				children: [ { index: true, element: <EvaluationPlanning /> } ],
+			}
+		]
+	},
+	{
+		path: '/bulletin',
+		element: <ProtectedRoute allowedRole={['apprenant']}/>,
+		children: [
+			{
+				element: <ApprenantTemplate />,
+				children: [ { index: true, element: <Bulletin /> } ],
+			}
+		]
+	},
+	{
+		path: '/quiz/:id/action',
+		element: <ProtectedRoute allowedRole={['apprenant']}/>,
+		children: [
+			{
+				element: <ApprenantTemplate />,
+				children: [ { index: true, element: <Evaluation /> } ],
+			}
+		]
+	},
+	{
+		path: '/quiz/:id/revue',
+		element: <ProtectedRoute allowedRole={['apprenant']}/>,
+		children: [
+			{
+				element: <ApprenantTemplate />,
+				children: [ { index: true, element: <Review /> } ],
 			}
 		]
 	},

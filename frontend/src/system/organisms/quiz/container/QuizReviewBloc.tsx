@@ -38,13 +38,13 @@ const SelectQuestionItem = ({ question, handleSelect, answers = {}, isQCU } : Se
 	)
 }
 
-interface QuizQuestionBlocProps {
+interface QuizReviewBlocProps {
 	questions: Question[],
 	answers?: AnswersMap,
 	onToggle?: (questionId: string | number, optionId: string | number, typeCode: 'QCU' | 'QCM') => void
 }
 
-const QuizQuestionBloc = ({ questions, answers = {}, onToggle } : QuizQuestionBlocProps) => {
+const QuizReviewBloc = ({ questions, answers = {}, onToggle } : QuizReviewBlocProps) => {
 
 	return (
 		<Box direction="column" className="space-y-5 overflow-y-auto">
@@ -75,4 +75,4 @@ const QuizQuestionBloc = ({ questions, answers = {}, onToggle } : QuizQuestionBl
 	)
 }
 
-export default QuizQuestionBloc;
+export default QuizReviewBloc;

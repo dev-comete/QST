@@ -55,6 +55,33 @@ type QuizSubmitPayload = {
 	answers: AnswersMap[]
 }
 
+type Correction = {
+	question_id: number,
+		enonce: string,
+		points_obtenus: number,
+		vrai_ou_faux: boolean,
+		options: {
+			reponse_id: number,
+			texte: string,
+			est_correcte: boolean,
+			choisi_par_apprenant: boolean,
+			explication?: string
+		}
+}
+
+
+type QuizReview = {
+	quiz_id: string | number,
+	score_final: number,
+	corrections: {
+		question_id: number,
+		enonce: string,
+		points_obtenus: number,
+		vrai_ou_faux: boolean,
+		options: Correction[]
+	}[]
+}
+
 export type {
 	quizType,
 	quizCreateType,
@@ -64,5 +91,6 @@ export type {
 	AnswersMap,
 	Question,
 	Option,
-	QuizSubmitPayload
+	QuizSubmitPayload,
+	QuizReview
 }

@@ -1,4 +1,4 @@
-import type { NavItem } from "../../../other/types/common";
+import type { NavItem } from "../../../other/types/navigation";
 import SideBar from "./SideBar";
 import { Outlet } from "react-router";
 

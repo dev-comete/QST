@@ -1,4 +1,4 @@
-import type { ColorTheme, NavItem } from "./common";
+import type { ColorTheme } from "./common";
 import type { questionType } from "./questionType";
 
 const backgroundColor : Record<ColorTheme, string> = {
@@ -25,19 +25,9 @@ const initialQuestion : questionType = {
 const GENERAL_STALE_TIME = 1000 * 60 * 5
 const GENERAL_CACHE_TIME = 1000 * 60 * 10
 
-export interface SideBarConfig {
-	navItem: NavItem
-}
-
-// export const ROLE_CONFIGS: Record<string, SideBarConfig> = {
-// 	admin: {
-// 		navItem: 
-// 	}
-// }
-
 export {
 	backgroundColor,
 	initialQuestion,
 	GENERAL_CACHE_TIME,
-	GENERAL_STALE_TIME
+	GENERAL_STALE_TIME,
 }

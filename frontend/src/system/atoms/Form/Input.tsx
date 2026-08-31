@@ -37,6 +37,7 @@ const Input = ({
 				onChange={onChange}
 				step={step}
 				checked={checked}
+				autoComplete={type}
 			/>
 		</div>
 	)
