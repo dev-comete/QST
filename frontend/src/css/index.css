@@ -70,9 +70,24 @@
 /* States colors */
 
 
-/* States colors */
---color-success: #28A745;
+/* Success (#28a745) */
+--color-success-light: #d4f0da;
+--color-success: #28a745;
+--color-success-dark: #1e7e34;
+
+/* Error (#dc3545) */
+--color-error-light: #f8d7da;
 --color-error: #dc3545;
+--color-error-dark: #bd2130;
+
+/* Warning (#ffc107) */
+--color-warning-light: #fff3cd;
 --color-warning: #ffc107;
+--color-warning-dark: #d39e00;
+
+/* Disabled (#b8cce0) */
+--color-disabled-light: #eef4fa;
 --color-disabled: #b8cce0;
+--color-disabled-dark: #8ba2b8;
+
 }

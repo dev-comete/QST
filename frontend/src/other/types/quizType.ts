@@ -55,31 +55,27 @@ type QuizSubmitPayload = {
 	answers: AnswersMap[]
 }
 
+type CorrectionOption = {
+	reponse_id: number,
+	texte: string,
+	est_correct: boolean,
+	choisi_par_apprenant: boolean,
+	explication?: string
+}
+
 type Correction = {
 	question_id: number,
 	enonce: string,
 	points_obtenus: number,
 	vrai_ou_faux: boolean,
-	options: {
-		reponse_id: number,
-		texte: string,
-		est_correcte: boolean,
-		choisi_par_apprenant: boolean,
-		explication?: string
-	}
+	options: CorrectionOption[]
 }
 
 
 type QuizReview = {
 	quiz_id: string | number,
 	score_final: number,
-	corrections: {
-		question_id: number,
-		enonce: string,
-		points_obtenus: number,
-		vrai_ou_faux: boolean,
-		options: Correction[]
-	}[]
+	corrections: Correction[]
 }
 
 export type {
@@ -93,5 +89,6 @@ export type {
 	Option,
 	QuizSubmitPayload,
 	QuizReview,
-	Correction
+	Correction,
+	CorrectionOption
 }

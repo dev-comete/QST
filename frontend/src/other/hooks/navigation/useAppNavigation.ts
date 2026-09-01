@@ -10,10 +10,12 @@ import { useAuth } from "../auth/useAuth";
 	const navigateTo = (path: string) => {
 		const cleanPath = path.startsWith('/') ? path.slice(1) : path;
 
-		let rolePrefix = null
+		let rolePrefix
 
 		if (authUser?.role != 'apprenant')
 			rolePrefix = authUser?.role
+		else
+			rolePrefix = ''
 
 		navigate(`/${rolePrefix}/${cleanPath}`);
 	};

@@ -10,6 +10,7 @@ interface InputProps {
 	step?: number,
 	checked?: boolean,
 	className?: string
+	readOnly?: boolean
 }
 
 const Input = ({
@@ -21,7 +22,8 @@ const Input = ({
 	onChange,
 	step,
 	checked,
-	className
+	className,
+	readOnly
 }: InputProps) => {
 
 	const basicStyle = "flex p-2 rounded-xl border border-background bg-white w-full items-center justify-center focus:outline focus:outline-primary"
@@ -38,6 +40,7 @@ const Input = ({
 				step={step}
 				checked={checked}
 				autoComplete={type}
+				readOnly={readOnly}
 			/>
 		</div>
 	)
