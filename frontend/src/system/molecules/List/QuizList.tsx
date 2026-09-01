@@ -1,5 +1,5 @@
-import { useNavigate } from "react-router"
 import { formatDate } from "../../../other/helper/helper"
+import { useAppNavigation } from "../../../other/hooks/navigation/useAppNavigation"
 import useCreateQuiz from "../../../other/hooks/quiz/useCreateQuiz"
 import type { quizType } from "../../../other/types/quizType"
 import Box from "../../atoms/Container/Box"
@@ -9,7 +9,7 @@ import { Table, type Column } from "../../atoms/Table/Table"
 import IconButton from "../Buttons/IconButton"
 
 const ActionCell = ({ rowId } : {rowId : string | number | boolean }) => {
-    const navigate = useNavigate();
+    const { navigateTo } = useAppNavigation();
 
     return (
         <Box>
@@ -17,7 +17,7 @@ const ActionCell = ({ rowId } : {rowId : string | number | boolean }) => {
                 iconName="edit"
                 iconStyling="text-text hover:text-success"
                 action={() => {
-                    navigate(`/formateur/${rowId}/assign_quiz`);
+                    navigateTo(`${rowId}/assign_quiz`);
                 }}
             />
             <IconButton

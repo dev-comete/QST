@@ -1,4 +1,4 @@
-import type { Question } from "../../../../other/types/quizType";
+import type { Correction, Question } from "../../../../other/types/quizType";
 import type { AnswersMap } from "../../../../other/types/quizType";
 import Box from "../../../atoms/Container/Box";
 import Paper from "../../../atoms/Container/Paper";
@@ -39,12 +39,10 @@ const SelectQuestionItem = ({ question, handleSelect, answers = {}, isQCU } : Se
 }
 
 interface QuizReviewBlocProps {
-	questions: Question[],
-	answers?: AnswersMap,
-	onToggle?: (questionId: string | number, optionId: string | number, typeCode: 'QCU' | 'QCM') => void
+	correction: Correction,
 }
 
-const QuizReviewBloc = ({ questions, answers = {}, onToggle } : QuizReviewBlocProps) => {
+const QuizReviewBloc = ({ correction } : QuizReviewBlocProps) => {
 
 	return (
 		<Box direction="column" className="space-y-5 overflow-y-auto">

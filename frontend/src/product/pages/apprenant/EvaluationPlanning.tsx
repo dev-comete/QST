@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router';
 import { QuizService } from '../../../other/services/quizService';
 import type { studentQuizType } from '../../../other/types/quizType';
 import BodyLayout from '../../layout/common/BodyLayout';
@@ -12,7 +11,6 @@ export default function EvaluationPlanning() {
 	const [quizzes, setQuizzes] = useState<studentQuizType[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState('');
-	const navigate = useNavigate();
 
 	useEffect(() => {
 	const fetchDashboardData = async () => {

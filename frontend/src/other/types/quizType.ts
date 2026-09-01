@@ -57,16 +57,16 @@ type QuizSubmitPayload = {
 
 type Correction = {
 	question_id: number,
-		enonce: string,
-		points_obtenus: number,
-		vrai_ou_faux: boolean,
-		options: {
-			reponse_id: number,
-			texte: string,
-			est_correcte: boolean,
-			choisi_par_apprenant: boolean,
-			explication?: string
-		}
+	enonce: string,
+	points_obtenus: number,
+	vrai_ou_faux: boolean,
+	options: {
+		reponse_id: number,
+		texte: string,
+		est_correcte: boolean,
+		choisi_par_apprenant: boolean,
+		explication?: string
+	}
 }
 
 
@@ -92,5 +92,6 @@ export type {
 	Question,
 	Option,
 	QuizSubmitPayload,
-	QuizReview
+	QuizReview,
+	Correction
 }

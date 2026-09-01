@@ -1,15 +1,16 @@
 import { useState } from "react"
 import type { assignQuestionType } from "../../types/questionType"
-import { useNavigate, useParams } from "react-router"
+import { useParams } from "react-router"
 import { useMutation } from "@tanstack/react-query"
 import { QuizService } from "../../services/quizService"
+import { useAppNavigation } from "../navigation/useAppNavigation"
 
 const useAssignQuiz = () => {
 
 	const [ selectedQuestion, setSelectedQuestion ] = useState<assignQuestionType[]>([])
 
 	const { id } = useParams();
-	const navigate = useNavigate();
+	const { navigateTo} = useAppNavigation()
 
 	const { mutate, status } = useMutation({
 		mutationFn: QuizService.assignQuestion,
@@ -40,7 +41,7 @@ const useAssignQuiz = () => {
 		};
 
 		mutate(payload)
-		navigate(`/formateur/gestion_quiz`)
+		navigateTo(`gestion_quiz`)
 	}
 
 

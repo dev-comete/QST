@@ -11,7 +11,7 @@ const QuestionCreate = () => {
 	return (
 		<BodyLayout
 			title={"Création de question"}
-			linkBack="/formateur/gestion_question"
+			linkBack="gestion_question"
 		>
 			<Paper className="p-3">
 				<QuestionForm openRespForm={() => setResp(true)}/>

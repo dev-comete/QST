@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router';
+import { useParams } from 'react-router';
 import { QuizService } from '../../../other/services/quizService';
 import type { AnswersMap, Question, QuizInfo } from '../../../other/types/quizType';
 import Box from '../../../system/atoms/Container/Box';
@@ -11,10 +11,11 @@ import Loading from '../../../system/atoms/Loading/Loading';
 import FetchError from '../../../system/atoms/Loading/FetchError';
 import Paper from '../../../system/atoms/Container/Paper';
 import ConfirmActionButton from '../../../system/molecules/Buttons/ConfirmActionButton';
+import { useAppNavigation } from '../../../other/hooks/navigation/useAppNavigation';
 
 export default function Evaluation() {
 	const { id } = useParams();
-	const navigate = useNavigate();
+	const { navigateTo } = useAppNavigation();
   
 	const [quizInfo, setQuizInfo] = useState<QuizInfo | null>(null);
 	const [questions, setQuestions] = useState<Question[]>([]);
@@ -41,7 +42,7 @@ export default function Evaluation() {
 		try {
 			const response = await QuizService.submitQuiz({ quiz_id: id as string, answers: answersRef.current as AnswersMap[]});
 			alert(`Temps écoulé ! Quiz soumis automatiquement.\n\nScore : ${response.score_obtenu} points.`);
-			navigate('/');
+			navigateTo('/');
 		} catch (err: any) {
 			// console.error('[QUIZ DEBUG] Erreur dans forceSubmitTimeout:', err);
 			setError(err?.response?.data?.error || "Erreur lors de la soumission automatique.");
@@ -129,7 +130,7 @@ export default function Evaluation() {
 				answers: answersRef.current as AnswersMap[]
 			}));
 			alert(`Félicitations, quiz terminé !\n\nScore : ${response.score_obtenu} points.`);
-			navigate('/');
+			navigateTo('/');
 		} catch (err: any) {
 			// console.error('[QUIZ DEBUG] Erreur dans handleSubmitManually:', err);
 			setError(err?.response?.data?.error || "Erreur lors de la soumission du quiz.");

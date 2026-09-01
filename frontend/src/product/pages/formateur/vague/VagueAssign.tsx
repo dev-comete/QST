@@ -5,7 +5,7 @@ const VagueAssign = () => {
 	return (
 		<BodyLayout
 			title="Assignation de quiz et apprenants"
-			linkBack="/formateur/gestion_vague"
+			linkBack="gestion_vague"
 		>
 			<VagueAssignForm />
 		</BodyLayout>

@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router";
 import Box from "../../../atoms/Container/Box";
 import IconButton from "../../../molecules/Buttons/IconButton";
 import { Table, type Column } from "../../../atoms/Table/Table";
@@ -8,9 +7,10 @@ import FetchError from "../../../atoms/Loading/FetchError";
 import Loading from "../../../atoms/Loading/Loading";
 import { formatDate } from "../../../../other/helper/helper";
 import CustomText from "../../../atoms/Text/CustomText";
+import { useAppNavigation } from "../../../../other/hooks/navigation/useAppNavigation";
 
 const ActionCell = ({ rowId } : {rowId : unknown }) => {
-    const navigate = useNavigate();
+    const { navigateTo } = useAppNavigation();
 
     return (
         <Box>
@@ -18,7 +18,7 @@ const ActionCell = ({ rowId } : {rowId : unknown }) => {
                 iconName="edit"
                 iconStyling="text-text hover:text-success"
                 action={() => {
-                    navigate(`/formateur/${rowId}/assign_vague`);
+                    navigateTo(`${rowId}/assign_vague`);
                 }}
             />
             <IconButton

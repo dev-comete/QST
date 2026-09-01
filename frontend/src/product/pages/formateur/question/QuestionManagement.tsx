@@ -1,17 +1,18 @@
+import { useAppNavigation } from "../../../../other/hooks/navigation/useAppNavigation";
 import ActionButton from "../../../../system/molecules/Buttons/ActionButton";
 import QuestionList from "../../../../system/molecules/List/QuestionList";
 import BodyLayout from "../../../layout/common/BodyLayout";
-import { useNavigate } from "react-router";
 
 const QuestionManagement = () => {
-	const navigate = useNavigate()
+
+	const { navigateTo } = useAppNavigation()
 
     return (
         <BodyLayout
 			title={"Liste des questions"}
 			titleButton={
 				<ActionButton
-					action={() => navigate("/formateur/creation_question")}
+					action={() => navigateTo("creation_question")}
 				>{"+ Créer une question"}</ActionButton>
 			}
 		>
