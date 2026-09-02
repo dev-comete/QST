@@ -10,7 +10,7 @@ import { ScoreDisplay } from "../../../system/molecules/Display/ScoreDisplay";
 const Review = () => {
 
 	const { id : quizId } = useParams();
- 
+
 	const { review, status } = useReviewQuiz(quizId ?? '')
 
 	if (status == 'pending') return <Loading />
@@ -20,7 +20,7 @@ const Review = () => {
 	return (
 		<BodyLayout
 			title={`Résultat du quiz : ${review.quiz_id}`}
-			linkBack="/mon_espace"
+			defaultLinkBack={true}
 		>
 			<Box className='space-y-5 space-x-3 justify-between min-h-0'>
 				<Box direction="column" className="w-1/3">

@@ -25,20 +25,22 @@ const CorrectionItem = ({ item } : CorrectionItemProps) => {
 						>
 							<Box
 								className={`
-									items-center justify-start rounded-lg px-2 py-1
-									border ${opt.est_correct ? 'border-success bg-success-light' : 'border-error bg-error-light'}	
+									justify-start rounded-lg px-2 py-1
+									${opt.est_correct ? 'bg-success-light' : 'bg-error-light'}	
 								`}
 							>
-								<Input
-									type={'checkbox'}
-									id={`q-${item.question_id}-opt-${opt.reponse_id}`}
-									name={`correction_${item.question_id}`}
-									checked={opt.choisi_par_apprenant}
-									readOnly={true}
-								/>
+								<Box>
+									<Input
+										type={'checkbox'}
+										id={`q-${item.question_id}-opt-${opt.reponse_id}`}
+										name={`correction_${item.question_id}`}
+										checked={opt.choisi_par_apprenant}
+										readOnly={true}
+									/>
+								</Box>
 								<CustomText>{opt.texte}</CustomText>
 							</Box>
-							{opt.explication && <CustomText>Explication : {opt.explication}</CustomText>}
+							{opt.explication && <CustomText isItalic={true}>Explication : {opt.explication}</CustomText>}
 						</Box>
 					)
 				})

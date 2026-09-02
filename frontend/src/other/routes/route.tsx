@@ -5,7 +5,7 @@ import AdminTemplate from "../../product/layout/role/AdminTemplate";
 import ApprenantTemplate from "../../product/layout/role/ApprenantTemplate";
 import UserManagement from "../../product/pages/admin/UserManagement";
 import EvaluationPlanning from "../../product/pages/apprenant/EvaluationPlanning";
-import Bulletin from "../../product/pages/apprenant/Bulletin";
+import BulletinReview from "../../product/pages/apprenant/BulletinReview";
 import Evaluation from "../../product/pages/apprenant/Evaluation";
 import Home from "../../product/pages/common/Home";
 import Login from "../../product/pages/common/Login";
@@ -15,6 +15,7 @@ import Unauthorized from "../../product/pages/common/Unauthorized";
 import { RootRedirect } from "../../product/layout/common/RootRedirect";
 import Review from "../../product/pages/apprenant/Review";
 import COMMON_CHILDREN from "./sharedChildren";
+import Bulletin from "../../product/pages/apprenant/Bulletin";
 
 export const router = createBrowserRouter([
 
@@ -68,7 +69,7 @@ export const router = createBrowserRouter([
 
 	// Apprenant routes
 	{
-		path: '/mon_espace',
+		path: '/my_eval',
 		element: <ProtectedRoute allowedRole={['apprenant']}/>,
 		children: [
 			{
@@ -83,7 +84,7 @@ export const router = createBrowserRouter([
 		children: [
 			{
 				element: <ApprenantTemplate />,
-				children: [ { index: true, element: <Bulletin /> } ],
+				children: [ { index: true, element: <BulletinReview /> } ],
 			}
 		]
 	},
@@ -104,6 +105,16 @@ export const router = createBrowserRouter([
 			{
 				element: <ApprenantTemplate />,
 				children: [ { index: true, element: <Review /> } ],
+			}
+		]
+	},
+	{
+		path: '/vague/:id/bulletin',
+		element: <ProtectedRoute allowedRole={['apprenant']}/>,
+		children: [
+			{
+				element: <ApprenantTemplate />,
+				children: [ { index: true, element: <Bulletin /> } ],
 			}
 		]
 	},

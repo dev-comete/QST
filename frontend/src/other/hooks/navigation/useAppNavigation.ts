@@ -7,7 +7,13 @@ import { useAuth } from "../auth/useAuth";
 	const navigate = useNavigate();
 	const { authUser } = useAuth();
 
-	const navigateTo = (path: string) => {
+	const navigateTo = (path: string | -1) => {
+
+		if (path === -1) {
+			navigate(-1)
+			return 
+		}
+
 		const cleanPath = path.startsWith('/') ? path.slice(1) : path;
 
 		let rolePrefix

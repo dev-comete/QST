@@ -11,10 +11,11 @@ interface TableProps<T> {
 	columns: Column<T>[];
 	data: T[];
 	rowKey: keyof T;
+	title?: string
 }
 
 
-export const Table = <T,>({ columns, data, rowKey }: TableProps<T>) => {
+export const Table = <T,>({ columns, data, rowKey, title }: TableProps<T>) => {
     if (data.length === 0) {
         return (
             <div className="flex w-full items-center justify-center p-8 text-slate-400 bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
@@ -25,6 +26,7 @@ export const Table = <T,>({ columns, data, rowKey }: TableProps<T>) => {
 
     return (
         <div className="w-full overflow-hidden rounded-xl border border-slate-200/80 shadow-sm bg-white">
+			{title && <CustomText textTag="h2" weight="bold" className="text-center p-5 bg-transparent">{title}</CustomText>}
             <div className="overflow-x-auto">
                 <table className="w-full border-collapse text-left text-sm text-slate-700">
                     <thead>
@@ -40,7 +42,7 @@ export const Table = <T,>({ columns, data, rowKey }: TableProps<T>) => {
                         {data.map((row, idx) => (
                             <tr 
                                 key={`${String(row[rowKey])}-${idx}`} 
-                                className="transition-colors duration-150 ease-in-out hover:bg-slate-50/80"
+                                className="transition-colors duration-150 ease-in-out hover:bg-accent"
                             >
                                 {columns.map((col, colIndex) => {
                                     const rawValue = col.key in (row as object) 

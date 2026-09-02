@@ -32,8 +32,8 @@ const ROLE_CONFIGS: Record<string, SideBarConfig> = {
 
 	apprenant: {
 		navItem: [
-			{ label: 'Mon espace', link: '/mon_espace', title: 'Mon espace', icon: 'calendar' },
-			{ label: 'Mes bulletins de note', link: '/bulletin', title: 'Bulletin de notes', icon: 'book-open' },
+			{ label: 'Mes évaluations', link: '/my_eval', title: 'Mes évaluations', icon: 'calendar' },
+			{ label: 'Mes bulletins de note', link: '/bulletin', title: 'Bulletin de notes', icon: 'graduation-cap' },
 		]	
 	}
 }

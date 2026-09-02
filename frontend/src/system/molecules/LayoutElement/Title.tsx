@@ -8,22 +8,23 @@ interface TitleProps {
 	title: string,
 	sideButton?: ReactNode,
 	linkBack?: string
+	defaultLinkBack?: boolean
 }
 
-const BackButton = ({ link } : { link : string}) => {
+const BackButton = ({ link } : { link? : string}) => {
 
 	const { navigateTo } = useAppNavigation()
 
 	return (
 		<IconButton 
 			iconName="chevron-left"
-			action={() => navigateTo(link)}
+			action={() => navigateTo(link ? link : -1)}
 			btnStyling="rounded-full bg-white"
 		/>
 	)
 }
 
-const Title = ({ title, sideButton, linkBack } : TitleProps) => {
+const Title = ({ title, sideButton, linkBack, defaultLinkBack = false } : TitleProps) => {
 
 		if (linkBack && sideButton) {
 			return (
@@ -52,6 +53,7 @@ const Title = ({ title, sideButton, linkBack } : TitleProps) => {
 				<Box className={`flex items-center gap-3 w-full ${justifyClass}`}>
 					<Box className="flex items-center gap-3">
 						{linkBack && <BackButton link={linkBack} />}
+						{defaultLinkBack && <BackButton />}
 						<CustomText textTag="h1" weight="bold">{title}</CustomText>
 					</Box>
 					{sideButton && (

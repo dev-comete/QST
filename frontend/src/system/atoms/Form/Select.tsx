@@ -26,7 +26,7 @@ const Select = ({
 	const selectId = id || name;
 
 	return (
-		<div className="flex flex-col gap-1 w-full text-left relative">
+		<div className="relative flex flex-col gap-1 w-full text-left relative">
 			{label && (
 				<label className="text-md font-medium text-text" htmlFor={selectId}>
 					{label}

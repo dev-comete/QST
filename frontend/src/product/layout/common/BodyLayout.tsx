@@ -8,9 +8,10 @@ interface BodyLayoutProps {
 	children: ReactNode,
 	linkBack?: string,
 	footer?: ReactNode
+	defaultLinkBack?: boolean
 }
 
-const BodyLayout = ({ title, titleButton, children, linkBack, footer } : BodyLayoutProps) => {
+const BodyLayout = ({ title, titleButton, children, linkBack, footer, defaultLinkBack = false } : BodyLayoutProps) => {
     return (
         <Box direction="column" className="h-full min-h-0 w-full space-y-3">
 
@@ -19,6 +20,7 @@ const BodyLayout = ({ title, titleButton, children, linkBack, footer } : BodyLay
                     title={title}
                     sideButton={titleButton}
                     linkBack={linkBack}
+					defaultLinkBack={defaultLinkBack}
                 />
             </Box>
 

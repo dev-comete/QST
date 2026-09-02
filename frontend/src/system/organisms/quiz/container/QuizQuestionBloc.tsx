@@ -22,13 +22,15 @@ const SelectQuestionItem = ({ question, handleSelect, answers = {}, isQCU } : Se
 					const checked = (answers[String(question.question_id)] || []).includes(r.id);
 					return (
 						<Box key={`${r.id}-${index}`} className="items-center">
-							<Input
-								type={isQCU ? 'radio' : 'checkbox'}
-								id={`q-${question.question_id}-opt-${r.id}`}
-								name={`question_${question.question_id}`}
-								onChange={() => handleSelect(r.id, isQCU ? 'QCU' : 'QCM')}
-								checked={checked}
-							/>
+							<Box>
+								<Input
+									type={isQCU ? 'radio' : 'checkbox'}
+									id={`q-${question.question_id}-opt-${r.id}`}
+									name={`question_${question.question_id}`}
+									onChange={() => handleSelect(r.id, isQCU ? 'QCU' : 'QCM')}
+									checked={checked}
+								/>
+							</Box>
 							<CustomText>{r.reponse}</CustomText>
 						</Box>
 					)
