@@ -106,13 +106,13 @@ export default function StudentDashboardPage() {
                   </thead>
                   <tbody>
                     {quizzesAFaire.map(quiz => (
-                      <tr key={quiz.quiz_id}>
+                      <tr key={`${quiz.quiz_id}-${quiz.vague_id}`}>
                         <td className="lms-table__name">{quiz.formation_nom}</td>
                         <td>{quiz.quiz_titre || `Quiz #${quiz.quiz_id}`}</td>
                         <td style={{ textAlign: 'right' }}>
                           <button 
                             className="lms-btn lms-btn--primary lms-btn--sm"
-                            onClick={() => navigate(`/student/quizzes/${quiz.quiz_id}/take`)}
+                            onClick={() => navigate(`/student/quizzes/${quiz.quiz_id}/take?vague_id=${quiz.vague_id}`)}
                           >
                             Démarrer
                           </button>
@@ -148,7 +148,7 @@ export default function StudentDashboardPage() {
                   </thead>
                   <tbody>
                     {quizzesTermines.map(quiz => (
-                      <tr key={quiz.quiz_id}>
+                      <tr key={`${quiz.quiz_id}-${quiz.vague_id}`}>
                         <td className="lms-table__name">{quiz.formation_nom}</td>
                         <td>{quiz.quiz_titre || `Quiz #${quiz.quiz_id}`}</td>
                         <td>
@@ -157,7 +157,7 @@ export default function StudentDashboardPage() {
                         <td style={{ textAlign: 'right' }}>
                           <button 
                             className="lms-btn lms-btn--outline lms-btn--sm"
-                            onClick={() => navigate(`/student/quizzes/${quiz.quiz_id}/review`)}
+                            onClick={() => navigate(`/student/quizzes/${quiz.quiz_id}/review?vague_id=${quiz.vague_id}`)}
                           >
                             Voir la correction
                           </button>

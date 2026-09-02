@@ -1,19 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+// 🌟 1. On importe useSearchParams
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { StudentQuizService } from '../api/studentQuiz.service';
 
 export default function ReviewQuizPage() {
   const { id } = useParams();
   const navigate = useNavigate();
 
+  // 🌟 2. On récupère la vagueId depuis l'URL
+  const [searchParams] = useSearchParams();
+  const vagueId = searchParams.get('vague_id');
+
   const [reviewData, setReviewData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
+    // 🌟 Sécurité : on vérifie que la vague_id est bien présente
+    if (!vagueId) {
+      setError("Erreur : La session de formation (vague) est introuvable. Impossible de charger la correction.");
+      setLoading(false);
+      return;
+    }
+
     const fetchReviewData = async () => {
       try {
-        const data = await StudentQuizService.reviewQuiz(id);
+        // 🌟 3. On passe l'id ET la vagueId au service API
+        const data = await StudentQuizService.reviewQuiz(id, vagueId);
         setReviewData(data);
       } catch (err) {
         setError(err.response?.data?.error || "Impossible de charger la correction de ce quiz.");
@@ -23,7 +36,7 @@ export default function ReviewQuizPage() {
     };
 
     fetchReviewData();
-  }, [id]);
+  }, [id, vagueId]); // 🌟 4. On ajoute vagueId aux dépendances du useEffect
 
   if (loading) {
     return (
