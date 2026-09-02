@@ -41,10 +41,16 @@ export const useUser = ({ role }: UseUserProps = {}) => {
 		organisation: []
 	})
 
+	const queryClient = useQueryClient()
+
 	const { mutate : createUser, status : createStatus } = useMutation({
 		mutationFn: UserService.create,
 		onSuccess: (data) => {
 			console.log("User created", data)
+
+			queryClient.invalidateQueries({
+                queryKey: ['users_list'],
+            });
 		},
 		onError: (err) => {
 			console.error('User creation failed:', err);
