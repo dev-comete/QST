@@ -164,6 +164,7 @@ class Valiny(models.Model):
     question = models.ForeignKey('Question', on_delete=models.CASCADE)
 
     quiz = models.ForeignKey('Quiz', on_delete=models.CASCADE, null=True, blank=True)
+    vague = models.ForeignKey('formations.Vague', on_delete=models.CASCADE, null=True, blank=True)
     
     # M2M links the user's attempt to the predefined Reponse objects
     reponses_choisies = models.ManyToManyField(
