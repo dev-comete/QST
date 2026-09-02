@@ -39,6 +39,7 @@ def get_vague_analytics_service(vague_id: int, requesting_user) -> dict:
 
     etudiants_scores = UtilisateurQuiz.objects.filter(
         quiz__in=quizzes,
+        vague=vague,
         utilisateur_id__in=etudiants_ids,
         termine=True
     ).values(
@@ -61,6 +62,7 @@ def get_vague_analytics_service(vague_id: int, requesting_user) -> dict:
 
         tentatives = UtilisateurQuiz.objects.filter(
             quiz=quiz, 
+            vague=vague,
             utilisateur_id__in=etudiants_ids, 
             termine=True
         ).select_related('utilisateur')
@@ -77,7 +79,8 @@ def get_vague_analytics_service(vague_id: int, requesting_user) -> dict:
         # Identify the most failed question
         questions_du_quiz = QuizQuestion.objects.filter(quiz=quiz).values_list('question_id', flat=True)
         pire_question = Valiny.objects.filter(
-            question_id__in=questions_du_quiz,
+            quiz=quiz,                      
+            vague=vague,
             utilisateur_id__in=etudiants_ids,
             vrai_ou_faux=False
         ).values('question__enonce_question').annotate(
@@ -146,7 +149,7 @@ def get_apprenant_bulletin_service(vague_id: int, apprenant) -> dict:
     # 4. Optimisation : Récupérer toutes les tentatives de cet étudiant en UNE requête
     tentatives = {
         t.quiz_id: t 
-        for t in UtilisateurQuiz.objects.filter(utilisateur=apprenant, quiz__in=quizzes)
+        for t in UtilisateurQuiz.objects.filter(utilisateur=apprenant, quiz__in=quizzes, vague=vague)
     }
 
     bulletin_details = []
