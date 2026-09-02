@@ -95,6 +95,7 @@ class Bareme(models.Model):
 class UtilisateurQuiz(models.Model):
     utilisateur = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     quiz = models.ForeignKey('Quiz', on_delete=models.CASCADE)
+    vague = models.ForeignKey('formations.Vague', on_delete=models.CASCADE, null=True, blank=True)
     
     # We add these fields to track the final result
     score_obtenu = models.FloatField(default=0.0)
@@ -161,6 +162,9 @@ class QuestionBareme(models.Model):
 class Valiny(models.Model):
     utilisateur = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     question = models.ForeignKey('Question', on_delete=models.CASCADE)
+
+    quiz = models.ForeignKey('Quiz', on_delete=models.CASCADE, null=True, blank=True)
+    vague = models.ForeignKey('formations.Vague', on_delete=models.CASCADE, null=True, blank=True)
     
     # M2M links the user's attempt to the predefined Reponse objects
     reponses_choisies = models.ManyToManyField(

@@ -210,6 +210,7 @@ class SubmitQuizAPIView(APIView):
             quiz_attempt = submit_entire_quiz(
                 user=request.user,
                 quiz_id=data['quiz_id'],
+                vague_id=data['vague_id'],
                 quiz_payload=data['answers']
             )
             
@@ -235,6 +236,11 @@ class QuizReviewAPIView(APIView):
     permission_classes = [IsAuthenticated] # Add IsApprenant if applicable
 
     def get(self, request, quiz_id):
+
+        vague_id = request.query_params.get('vague_id')
+        if not vague_id:
+            return Response({"error": "L'ID de la vague est manquant dans l'URL."}, status=status.HTTP_400_BAD_REQUEST)
+        
         assignment = get_object_or_404(UtilisateurQuiz, quiz_id=quiz_id, utilisateur=request.user)
         
         if not assignment.termine:
@@ -245,7 +251,8 @@ class QuizReviewAPIView(APIView):
 
         valinys = Valiny.objects.filter(
             utilisateur=request.user, 
-            question__quizquestion__quiz_id=quiz_id
+            quiz_id=quiz_id,
+            vague_id=vague_id
         ).select_related('question').prefetch_related('reponses_choisies')
 
         corrections = []
@@ -367,11 +374,15 @@ class TakeQuizAPIView(APIView):
     permission_classes = [IsAuthenticated, IsApprenant]
 
     def get(self, request, quiz_id):
+        vague_id = request.query_params.get('vague_id')
+        if not vague_id:
+            return Response({"error": "L'ID de la vague est manquant dans l'URL."}, status=status.HTTP_400_BAD_REQUEST)
         # GATE 1 & 2: Get the assignment for THIS exact student and THIS exact quiz
         # If it doesn't exist, get_object_or_404 will automatically return a 404 Not Found.
         assignment = get_object_or_404(
             UtilisateurQuiz, 
             quiz_id=quiz_id, 
+            vague_id=vague_id,
             utilisateur=request.user
         )
 
