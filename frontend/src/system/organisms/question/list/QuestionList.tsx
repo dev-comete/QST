@@ -1,10 +1,10 @@
-import { useQuestion } from "../../../other/hooks/question/useQuestion"
-import type { bankQuestionType } from "../../../other/types/questionType"
-import Box from "../../atoms/Container/Box"
-import FetchError from "../../atoms/Loading/FetchError"
-import Loading from "../../atoms/Loading/Loading"
-import { Table, type Column } from "../../atoms/Table/Table"
-import IconButton from "../Buttons/IconButton"
+import { useQuestion } from "../../../../other/hooks/question/useQuestion"
+import type { bankQuestionType } from "../../../../other/types/questionType"
+import Box from "../../../atoms/Container/Box"
+import FetchError from "../../../atoms/Loading/FetchError"
+import Loading from "../../../atoms/Loading/Loading"
+import { Table, type Column } from "../../../atoms/Table/Table"
+import IconButton from "../../../molecules/Buttons/IconButton"
 
 const questionTabColumn: Column<bankQuestionType>[] = [
 	{

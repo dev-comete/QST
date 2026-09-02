@@ -1,9 +1,10 @@
 import { useNavigate } from "react-router";
-import Box from "../../atoms/Container/Box"
-import Table, { type Column } from "../../atoms/Table/Table"
-import IconButton from "../Buttons/IconButton";
-import type { BulletinVague } from "../../../other/types/bulletinType";
-import { formatDate } from "../../../other/helper/helper";
+import Box from "../../../atoms/Container/Box";
+import IconButton from "../../../molecules/Buttons/IconButton";
+import { Table, type Column } from "../../../atoms/Table/Table";
+import type { BulletinVague } from "../../../../other/types/bulletinType";
+import { formatDate } from "../../../../other/helper/helper";
+
 
 const ActionCell = ({ rowId } : {
 	rowId : string | number | boolean,

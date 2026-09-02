@@ -1,13 +1,13 @@
 import { useParams } from "react-router";
-import { useReviewQuiz } from "../../../other/hooks/quiz/useReviewQuiz";
-import Box from "../../../system/atoms/Container/Box";
-import CorrectionBloc, { CorrectionBlocNav } from "../../../system/organisms/quiz/container/CorrectionBloc";
-import BodyLayout from "../../layout/common/BodyLayout";
-import Loading from "../../../system/atoms/Loading/Loading";
-import FetchError from "../../../system/atoms/Loading/FetchError";
-import { ScoreDisplay } from "../../../system/molecules/Display/ScoreDisplay";
+import { useReviewQuiz } from "../../../../other/hooks/quiz/useReviewQuiz";
+import Box from "../../../../system/atoms/Container/Box";
+import CorrectionBloc, { CorrectionBlocNav } from "../../../../system/organisms/quiz/container/CorrectionBloc";
+import BodyLayout from "../../../layout/common/BodyLayout";
+import Loading from "../../../../system/atoms/Loading/Loading";
+import FetchError from "../../../../system/atoms/Loading/FetchError";
+import { ScoreDisplay } from "../../../../system/molecules/Display/ScoreDisplay";
 
-const Review = () => {
+const CorrectionReview = () => {
 
 	const { id : quizId } = useParams();
 
@@ -35,4 +35,4 @@ const Review = () => {
 	);
 }
 
-export default Review;
+export default CorrectionReview;

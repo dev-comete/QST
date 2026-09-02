@@ -1,13 +1,13 @@
-import type { studentQuizType } from "../../../other/types/quizType";
+import type { studentQuizType } from "../../../../other/types/quizType";
 
 interface StudentQuizListProps {
 	data: studentQuizType[],
 }
 
 import { useNavigate } from "react-router"
-import Box from "../../atoms/Container/Box"
-import { Table, type Column } from "../../atoms/Table/Table"
-import IconButton from "../Buttons/IconButton"
+import Box from "../../../atoms/Container/Box"
+import { Table, type Column } from "../../../atoms/Table/Table"
+import IconButton from "../../../molecules/Buttons/IconButton"
 
 const ActionCell = ({ rowId, variant } : {
 	rowId : string | number | boolean,
@@ -25,7 +25,7 @@ const ActionCell = ({ rowId, variant } : {
 					if (variant == 'terminé')
 						navigate(`/quiz/${rowId}/revue`)
 					else
-						navigate(`/quiz/${rowId}/action`)
+						navigate(`/quiz/${rowId}/take`)
                 }}
             />
         </Box>

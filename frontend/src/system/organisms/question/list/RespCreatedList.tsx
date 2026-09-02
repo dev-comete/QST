@@ -1,9 +1,9 @@
-import { useQuestionCreate } from "../../../other/hooks/question/useQuestionCreate"
-import type { respType } from "../../../other/types/questionType"
-import Box from "../../atoms/Container/Box"
-import Input from "../../atoms/Form/Input"
-import { Table, type Column } from "../../atoms/Table/Table"
-import IconButton from "../Buttons/IconButton"
+import { useQuestionCreate } from "../../../../other/hooks/question/useQuestionCreate"
+import type { respType } from "../../../../other/types/questionType"
+import Box from "../../../atoms/Container/Box"
+import Input from "../../../atoms/Form/Input"
+import { Table, type Column } from "../../../atoms/Table/Table"
+import IconButton from "../../../molecules/Buttons/IconButton"
 
 const getResponseColumns = (
     onToggleCorrect: (index: number, isChecked: boolean) => void

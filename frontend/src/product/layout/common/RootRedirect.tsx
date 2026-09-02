@@ -15,7 +15,7 @@ export const RootRedirect = () => {
 		case 'formateur':
 			return <Navigate to="/formateur" replace />;
 		case 'apprenant':
-			return <Navigate to="/mon_espace" replace />;
+			return <Navigate to="/my_eval" replace />;
 		case 'rfq':
 			return <Navigate to="/home" replace />; // or another default for RFQ
 		default:

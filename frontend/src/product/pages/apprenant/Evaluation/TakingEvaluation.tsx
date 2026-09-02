@@ -1,32 +1,32 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router';
-import { QuizService } from '../../../other/services/quizService';
-import type { AnswersMap, Question, QuizInfo } from '../../../other/types/quizType';
-import Box from '../../../system/atoms/Container/Box';
-import QuizQuestionBloc from '../../../system/organisms/quiz/container/QuizQuestionBloc';
-import BodyLayout from '../../layout/common/BodyLayout';
-import { QuizTimer } from '../../../system/organisms/quiz/layout/QuizTimer';
-import { parseDurationToMs } from '../../../other/helper/helper';
-import Loading from '../../../system/atoms/Loading/Loading';
-import FetchError from '../../../system/atoms/Loading/FetchError';
-import Paper from '../../../system/atoms/Container/Paper';
-import ConfirmActionButton from '../../../system/molecules/Buttons/ConfirmActionButton';
-import { useAppNavigation } from '../../../other/hooks/navigation/useAppNavigation';
+import { QuizService } from '../../../../other/services/quizService';
+import type { AnswersMap, Question, QuizInfo } from '../../../../other/types/quizType';
+import Box from '../../../../system/atoms/Container/Box';
+import QuizQuestionBloc from '../../../../system/organisms/quiz/container/QuizQuestionBloc';
+import BodyLayout from '../../../layout/common/BodyLayout';
+import { QuizTimer } from '../../../../system/organisms/quiz/layout/QuizTimer';
+import { parseDurationToMs } from '../../../../other/helper/helper';
+import Loading from '../../../../system/atoms/Loading/Loading';
+import FetchError from '../../../../system/atoms/Loading/FetchError';
+import Paper from '../../../../system/atoms/Container/Paper';
+import ConfirmActionButton from '../../../../system/molecules/Buttons/ConfirmActionButton';
+import { useAppNavigation } from '../../../../other/hooks/navigation/useAppNavigation';
 
-export default function Evaluation() {
+export default function TakingEvaluation() {
 	const { id } = useParams();
 	const { navigateTo } = useAppNavigation();
-  
+
 	const [quizInfo, setQuizInfo] = useState<QuizInfo | null>(null);
 	const [questions, setQuestions] = useState<Question[]>([]);
-  
+
 	const [answers, setAnswers] = useState<AnswersMap>({});
 	// 🌟 CORRECTION 2 : Un "Ref" pour toujours avoir accès aux dernières réponses dans le chronomètre
 	const answersRef = useRef({});
-  
+
 	// Met à jour la référence dès que answers change
 	useEffect(() => {
-	  answersRef.current = answers;
+		answersRef.current = answers;
 	}, [answers]);
 
 	const [loading, setLoading] = useState<boolean>(true);
@@ -51,11 +51,11 @@ export default function Evaluation() {
 	};
 
   // 1. Chargement des données du Quiz et Chronomètre
-  useEffect(() => {
-	let timerId : number; // 🌟 Pour pouvoir arrêter la boucle infinie
+	useEffect(() => {
+		let timerId : number; // 🌟 Pour pouvoir arrêter la boucle infinie
 
 		const fetchQuizData = async () => {
-	  try {
+			try {
 				const data = (await QuizService.startQuiz(id as string)) as QuizInfo;
 
 		setQuizInfo(data);

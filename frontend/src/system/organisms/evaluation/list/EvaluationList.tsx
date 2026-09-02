@@ -1,11 +1,11 @@
-import Box from "../../atoms/Container/Box"
-import Table, { type Column } from "../../atoms/Table/Table"
-import IconButton from "../Buttons/IconButton";
-import type { DetailQuiz } from "../../../other/types/bulletinType";
+import Box from "../../../atoms/Container/Box"
+import Table, { type Column } from "../../../atoms/Table/Table"
+import IconButton from "../../../molecules/Buttons/IconButton";
+import type { DetailQuiz } from "../../../../other/types/bulletinType";
 import { useNavigate } from "react-router";
 import { useMemo } from "react";
-import PercentBadge from "../Badge/PercentBadge";
-import StatusBadge from "../Badge/StatusBadge";
+import PercentBadge from "../../../molecules/Badge/PercentBadge";
+import StatusBadge from "../../../molecules/Badge/StatusBadge";
 
 const ActionCell = ({ rowId } : {
 	rowId : string | number | boolean,
@@ -16,7 +16,7 @@ const ActionCell = ({ rowId } : {
         <Box>
             <IconButton
                 iconName={"book"}
-                iconStyling="text-text hover:text-success"
+                iconStyling="text-text hover:text-primary"
                 action={() => {
 					navigate(`/quiz/${rowId}/revue`)
                 }}

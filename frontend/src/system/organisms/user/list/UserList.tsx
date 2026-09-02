@@ -1,11 +1,11 @@
-import Box from "../../atoms/Container/Box"
-import FetchError from "../../atoms/Loading/FetchError"
-import Loading from "../../atoms/Loading/Loading"
-import { Table, type Column } from "../../atoms/Table/Table"
-import IconButton, { IconConfirmActionButton } from "../Buttons/IconButton"
-import { useUser, useUserDel } from "../../../other/hooks/user/useUser"
-import type { userType } from "../../../other/types/userType"
-import CustomText from "../../atoms/Text/CustomText"
+import Box from "../../../atoms/Container/Box"
+import FetchError from "../../../atoms/Loading/FetchError"
+import Loading from "../../../atoms/Loading/Loading"
+import { Table, type Column } from "../../../atoms/Table/Table"
+import IconButton, { IconConfirmActionButton } from "../../../molecules/Buttons/IconButton"
+import { useUser, useUserDel } from "../../../../other/hooks/user/useUser"
+import type { userType } from "../../../../other/types/userType"
+import CustomText from "../../../atoms/Text/CustomText"
 
 const ActionCell = ({ rowId } : {rowId : string | number | boolean | string[] }) => {
 

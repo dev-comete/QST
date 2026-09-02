@@ -1,9 +1,9 @@
-import { useBulletin } from "../../../other/hooks/bulletin/useBulletin";
-import Box from "../../../system/atoms/Container/Box";
-import FetchError from "../../../system/atoms/Loading/FetchError";
-import Loading from "../../../system/atoms/Loading/Loading";
-import BulletinList from "../../../system/molecules/List/BulletinList";
-import BodyLayout from "../../layout/common/BodyLayout";
+import { useBulletin } from "../../../../other/hooks/bulletin/useBulletin";
+import Box from "../../../../system/atoms/Container/Box";
+import FetchError from "../../../../system/atoms/Loading/FetchError";
+import Loading from "../../../../system/atoms/Loading/Loading";
+import BulletinList from "../../../../system/organisms/bulletin/list/BulletinList";
+import BodyLayout from "../../../layout/common/BodyLayout";
 
 const BulletinReview = () => {
 

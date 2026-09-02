@@ -1,6 +1,6 @@
 import ActionButton from "../../../../system/molecules/Buttons/ActionButton";
-import QuizList from "../../../../system/molecules/List/QuizList";
 import ModalQuizCreate from "../../../../system/organisms/quiz/form/ModalQuizCreate";
+import QuizList from "../../../../system/organisms/quiz/list/QuizList";
 import BodyLayout from "../../../layout/common/BodyLayout";
 import { useState } from "react";
 

@@ -4,18 +4,18 @@ import Dashboard from "../../product/pages/formateur/Dashboard";
 import AdminTemplate from "../../product/layout/role/AdminTemplate";
 import ApprenantTemplate from "../../product/layout/role/ApprenantTemplate";
 import UserManagement from "../../product/pages/admin/UserManagement";
-import EvaluationPlanning from "../../product/pages/apprenant/EvaluationPlanning";
-import BulletinReview from "../../product/pages/apprenant/BulletinReview";
-import Evaluation from "../../product/pages/apprenant/Evaluation";
+import BulletinReview from "../../product/pages/apprenant/Bulletin/BulletinReview";
 import Home from "../../product/pages/common/Home";
 import Login from "../../product/pages/common/Login";
 import AdminDashboard from "../../product/pages/admin/AdminDashboard";
 import ProtectedRoute from "../../product/layout/common/ProtectedRoute";
 import Unauthorized from "../../product/pages/common/Unauthorized";
 import { RootRedirect } from "../../product/layout/common/RootRedirect";
-import Review from "../../product/pages/apprenant/Review";
+import CorrectionReview from "../../product/pages/apprenant/Evaluation/CorrectionReview";
 import COMMON_CHILDREN from "./sharedChildren";
-import Bulletin from "../../product/pages/apprenant/Bulletin";
+import Bulletin from "../../product/pages/apprenant/Bulletin/Bulletin";
+import MyEvaluations from "../../product/pages/apprenant/Evaluation/MyEvaluations";
+import TakingEvaluation from "../../product/pages/apprenant/Evaluation/TakingEvaluation";
 
 export const router = createBrowserRouter([
 
@@ -74,7 +74,7 @@ export const router = createBrowserRouter([
 		children: [
 			{
 				element: <ApprenantTemplate />,
-				children: [ { index: true, element: <EvaluationPlanning /> } ],
+				children: [ { index: true, element: <MyEvaluations /> } ],
 			}
 		]
 	},
@@ -89,12 +89,12 @@ export const router = createBrowserRouter([
 		]
 	},
 	{
-		path: '/quiz/:id/action',
+		path: '/quiz/:id/take',
 		element: <ProtectedRoute allowedRole={['apprenant']}/>,
 		children: [
 			{
 				element: <ApprenantTemplate />,
-				children: [ { index: true, element: <Evaluation /> } ],
+				children: [ { index: true, element: <TakingEvaluation /> } ],
 			}
 		]
 	},
@@ -104,7 +104,7 @@ export const router = createBrowserRouter([
 		children: [
 			{
 				element: <ApprenantTemplate />,
-				children: [ { index: true, element: <Review /> } ],
+				children: [ { index: true, element: <CorrectionReview /> } ],
 			}
 		]
 	},

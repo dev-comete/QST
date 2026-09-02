@@ -1,6 +1,6 @@
 import { useAppNavigation } from "../../../../other/hooks/navigation/useAppNavigation";
 import ActionButton from "../../../../system/molecules/Buttons/ActionButton";
-import QuestionList from "../../../../system/molecules/List/QuestionList";
+import QuestionList from "../../../../system/organisms/question/list/QuestionList";
 import BodyLayout from "../../../layout/common/BodyLayout";
 
 const QuestionManagement = () => {

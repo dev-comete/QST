@@ -1,12 +1,12 @@
 import { useParams } from "react-router";
-import { useBulletin } from "../../../other/hooks/bulletin/useBulletin";
-import Box from "../../../system/atoms/Container/Box";
-import Paper from "../../../system/atoms/Container/Paper";
-import CustomText from "../../../system/atoms/Text/CustomText";
-import EvaluationList from "../../../system/molecules/List/EvaluationList";
-import BodyLayout from "../../layout/common/BodyLayout";
-import Loading from "../../../system/atoms/Loading/Loading";
-import FetchError from "../../../system/atoms/Loading/FetchError";
+import { useBulletin } from "../../../../other/hooks/bulletin/useBulletin";
+import Box from "../../../../system/atoms/Container/Box";
+import Paper from "../../../../system/atoms/Container/Paper";
+import CustomText from "../../../../system/atoms/Text/CustomText";
+import EvaluationList from "../../../../system/organisms/evaluation/list/EvaluationList";
+import BodyLayout from "../../../layout/common/BodyLayout";
+import Loading from "../../../../system/atoms/Loading/Loading";
+import FetchError from "../../../../system/atoms/Loading/FetchError";
 
 const BulletinDisplay = ({ title, value, unit } : { 
 		title: string,

@@ -2,7 +2,7 @@ import { useState } from "react";
 import ActionButton from "../../../system/molecules/Buttons/ActionButton";
 import BodyLayout from "../../layout/common/BodyLayout";
 import ModalUserCreate from "../../../system/organisms/user/form/ModalUserCreate";
-import UserList from "../../../system/molecules/List/UserList";
+import UserList from "../../../system/organisms/user/list/UserList";
 import { useUser } from "../../../other/hooks/user/useUser";
 import Loading from "../../../system/atoms/Loading/Loading";
 import FetchError from "../../../system/atoms/Loading/FetchError";
