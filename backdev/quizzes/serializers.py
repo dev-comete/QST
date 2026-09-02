@@ -216,10 +216,11 @@ class StudentTodoQuizSerializer(serializers.ModelSerializer):
     date_fermeture = serializers.DateTimeField(source='quiz.date_fermeture', read_only=True)
 
     quiz_titre = serializers.CharField(source='quiz.titre', read_only=True)
+    vague_id = serializers.IntegerField(source='vague.id', read_only=True)
     
     class Meta:
         model = UtilisateurQuiz
-        fields = ['id', 'quiz', 'quiz_titre', 'formation_nom', 'duree', 'date_assignation', 'date_ouverture', 'date_fermeture','termine']
+        fields = ['id', 'quiz', 'quiz_titre', 'formation_nom', 'vague_id', 'duree', 'date_assignation', 'date_ouverture', 'date_fermeture','termine']
 
 class SubmitAnswerSerializer(serializers.Serializer):
     question_id = serializers.IntegerField()
@@ -234,6 +235,10 @@ class QuizSubmissionSerializer(serializers.Serializer):
     quiz_id = serializers.IntegerField(
         required=True, 
         help_text="L'ID du quiz que l'apprenant soumet."
+    )
+    vague_id = serializers.IntegerField(
+        required=True,
+        help_text="L'ID de la vague (session) pour laquelle ce quiz est soumis."
     )
     
     # This expects a dictionary where keys are Question IDs (strings in JSON) 
@@ -272,13 +277,15 @@ class ApprenantQuizListSerializer(serializers.ModelSerializer):
     quiz_id = serializers.IntegerField(source='quiz.id', read_only=True)
     quiz_titre = serializers.CharField(source='quiz.titre', read_only=True)
     formation_nom = serializers.CharField(source='quiz.formation.nom_formation', read_only=True)
+    vague_id = serializers.IntegerField(source='vague.id', read_only=True)
 
     class Meta:
         model = UtilisateurQuiz
         fields = [
             'quiz_id', 
             'quiz_titre', 
-            'formation_nom', 
+            'formation_nom',
+            'vague_id',
             'termine', 
             'score_obtenu'
         ]

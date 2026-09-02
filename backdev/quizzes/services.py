@@ -50,7 +50,7 @@ def submit_qcm_answer(user: User, question_id: int, submitted_reponse_ids: list[
 
     return valiny"""
 
-def _lock_and_validate_attempt(user, quiz_id: int):
+def _lock_and_validate_attempt(user, quiz_id: int, vague_id: int):
     """
     Locks the UtilisateurQuiz row and validates timing.
     Runs in its OWN transaction so that if we mark the attempt as
@@ -68,7 +68,7 @@ def _lock_and_validate_attempt(user, quiz_id: int):
             quiz_attempt = (
                 UtilisateurQuiz.objects
                 .select_for_update()
-                .get(quiz_id=quiz_id, utilisateur=user)
+                .get(quiz_id=quiz_id,vague_id=vague_id, utilisateur=user)
             )
         except UtilisateurQuiz.DoesNotExist:
             raise ValidationError(
@@ -100,12 +100,12 @@ def _lock_and_validate_attempt(user, quiz_id: int):
         return quiz, quiz_attempt, True  # True = still valid
 
 
-def submit_entire_quiz(user, quiz_id: int, quiz_payload: dict):
+def submit_entire_quiz(user, quiz_id: int, vague_id: int, quiz_payload: dict):
     """
     Évalue un quiz complet en vérifiant les assignations, le chronomètre,
     et en corrigeant les réponses.
     """
-    quiz, quiz_attempt, is_valid = _lock_and_validate_attempt(user, quiz_id)
+    quiz, quiz_attempt, is_valid = _lock_and_validate_attempt(user, quiz_id, vague_id)
 
     if not is_valid:
         # Puisque nous ne sommes plus dans le @transaction.atomic global, 
@@ -153,6 +153,8 @@ def submit_entire_quiz(user, quiz_id: int, quiz_payload: dict):
             valiny = Valiny.objects.create(
                 utilisateur=user,
                 question_id=question_id,
+                quiz_id=quiz_id,
+                vague_id=vague_id,
                 pts=points_earned,
                 vrai_ou_faux=is_correct
             )

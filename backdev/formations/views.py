@@ -157,6 +157,7 @@ class AssignStudentToVagueAPIView(GenericAPIView):
                         _, quiz_created = UtilisateurQuiz.objects.get_or_create(
                             utilisateur=student,
                             quiz=quiz,
+                            vague=vague,
                             defaults={
                                 'score_obtenu': 0.0,
                                 'termine': False
@@ -209,6 +210,7 @@ class AssignQuizToVagueAPIView(GenericAPIView):
             assignment, created = UtilisateurQuiz.objects.get_or_create(
                 utilisateur=enrollment.utilisateur,
                 quiz=quiz,
+                vague=vague,
                 defaults={
                     'score_obtenu': 0.0,
                     'termine': False
