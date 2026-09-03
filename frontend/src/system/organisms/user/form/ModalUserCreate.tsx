@@ -4,13 +4,14 @@ import type { organisationType, utilisateurType } from "../../../../other/types/
 import Box from "../../../atoms/Container/Box";
 import Input from "../../../atoms/Form/Input";
 import Select from "../../../atoms/Form/Select";
+import FetchError from "../../../atoms/Loading/FetchError";
+import Loading from "../../../atoms/Loading/Loading";
 import ActionButton from "../../../molecules/Buttons/ActionButton";
 import { Modal } from "../../../molecules/Modal/Modal";
 
 interface ModalUserCreateProps {
 	open: boolean;
 	closeModal: () => void,
-	listTypeUser: utilisateurType[]
 	listOrganisation: organisationType[]
 }
 
@@ -72,7 +73,16 @@ const UserForm = ({ closeModal, listTypeUser, listOrganisation } : UserFormProps
 	)
 }
 
-const ModalUserCreate = ({ open, closeModal, listTypeUser, listOrganisation } : ModalUserCreateProps) => {
+const ModalUserCreate = ({ open, closeModal, listOrganisation } : ModalUserCreateProps) => {
+
+	const { typeUserQuery } = useUser()
+	const { data: typeUsers, status : typeStatus } = typeUserQuery
+
+	if (typeStatus == 'pending')
+		return <Loading />
+	if (!typeUsers)
+		return <FetchError />
+
 	return (
 		<Modal
 			title="Création d'utilisateur"
@@ -98,7 +108,7 @@ const ModalUserCreate = ({ open, closeModal, listTypeUser, listOrganisation } : 
 		>
 			<UserForm
 				closeModal={closeModal}
-				listTypeUser={listTypeUser}
+				listTypeUser={typeUsers}
 				listOrganisation={listOrganisation}
 			/>
 		</Modal>

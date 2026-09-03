@@ -20,9 +20,15 @@ type organisationType = {
 	is_active: boolean
 }
 
+type OrganisationPayload = {
+	nom: string,
+	is_active: boolean
+}
+
 export type {
 	userType,
 	userPayload,
 	utilisateurType,
-	organisationType
+	organisationType,
+	OrganisationPayload
 }
