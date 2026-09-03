@@ -16,17 +16,9 @@ const useQuestion = () => {
 		gcTime: GENERAL_CACHE_TIME,
 	})
 
-	const baremeQuery = useQuery({
-		queryKey: ['bareme_list'],
-		queryFn: QuestionService.getBareme,
-		staleTime: GENERAL_STALE_TIME,
-		gcTime: GENERAL_CACHE_TIME,
-	}) 
-
 	return {
 		getAllQuestion,
 		questionTypeQuery,
-		baremeQuery
 	}
 }
 

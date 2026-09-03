@@ -1,5 +1,5 @@
 import { getSelectData, type SelectOption } from "../../../../other/helper/helper";
-import { useQuestion } from "../../../../other/hooks/question/useQuestion";
+import { useBareme } from "../../../../other/hooks/bareme/useBareme";
 import type { assignQuestionType } from "../../../../other/types/questionType";
 import Box from "../../../atoms/Container/Box";
 import Paper from "../../../atoms/Container/Paper";
@@ -39,7 +39,7 @@ const QuizQuestionItem = ({ numero, question, baremes_pts, onBaremeChange, onDel
 
 const QuizQuestionList = ({questions, setQuestion} : QuizAssignManipProps) => {
 
-	const { baremeQuery } = useQuestion()
+	const { baremeQuery } = useBareme()
 	const { data: baremes, status } = baremeQuery
 
 	if (status == 'pending')

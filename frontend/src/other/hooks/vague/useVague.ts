@@ -12,7 +12,7 @@ export const useVague = () => {
 		fin: null
 	})
 
-	const { formationListQuery } = useFormation()
+	const { formations } = useFormation()
 
 	const getAllVague = useQuery({
 		queryKey: ['vague_list'],
@@ -45,17 +45,18 @@ export const useVague = () => {
 	useEffect(() => {
 
 		const initQuestion = async () => {
-			if (formationListQuery.data?.[0]) {
-				setVague((prev) => ({
-					...prev,
-					formation_id: String(formationListQuery.data[0].id),
-				}));
-			}
+
+			if (!formations) return
+
+			setVague((prev) => ({
+				...prev,
+				formation_id: String(formations[0].id),
+			}));
 		}
 
 		initQuestion()
 
-	}, [formationListQuery.data]);
+	}, [formations]);
 
 	return {
 		vague,

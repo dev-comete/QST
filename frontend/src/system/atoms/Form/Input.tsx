@@ -2,7 +2,7 @@ import type { ColorTheme } from "../../../other/types/common";
 
 interface InputProps {
 	label?: string;
-	type?: 'text' | 'password' | 'email' | 'search' | 'time' | 'checkbox' | 'date' | 'datetime-local' | 'radio';
+	type?: 'text' | 'password' | 'email' | 'search' | 'time' | 'checkbox' | 'date' | 'datetime-local' | 'radio' | 'number';
 	id: string;
 	name: string;
 	textColor?: ColorTheme;
@@ -11,6 +11,10 @@ interface InputProps {
 	checked?: boolean,
 	className?: string
 	readOnly?: boolean
+	min?: string | number
+	max?: string | number
+	required?: boolean
+	value?: string | number
 }
 
 const Input = ({
@@ -23,7 +27,11 @@ const Input = ({
 	step,
 	checked,
 	className,
-	readOnly
+	readOnly,
+	min,
+	max,
+	required,
+	value
 }: InputProps) => {
 
 	const basicStyle = "flex p-2 rounded-xl border border-background bg-white w-full items-center justify-center focus:outline focus:outline-primary"
@@ -41,6 +49,10 @@ const Input = ({
 				checked={checked}
 				autoComplete={type}
 				readOnly={readOnly}
+				min={min}
+				max={max}
+				required={required}
+				value={value}
 			/>
 		</div>
 	)

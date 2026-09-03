@@ -12,10 +12,9 @@ import { Modal } from "../../../molecules/Modal/Modal";
 const ModalVagueCreate = ({ open, closeModal } : ModalsProps) => {
 	
 	const { setVague, handleCreateVague } = useVague()
-	const { formationListQuery } = useFormation()
-	const { data: formations, status } = formationListQuery
+	const { formations, formationsStatus } = useFormation()
 
-	if (status == 'pending')
+	if (formationsStatus == 'pending')
 		return <Loading />
 	if (!formations)
 		return <FetchError />

@@ -11,12 +11,12 @@ interface NavigationButtonProps {
 
 const NavigationBarButton = ({ title, isClicked, onClick } : NavigationButtonProps) => {
 
-	const baseStyle = 'flex justify-center w-full cursor-pointer hover:brightness-90 active:brightness-75 rounded-lg p-5'
+	const baseStyle = 'flex justify-center w-full cursor-pointer hover:brightness-90 active:brightness-75 rounded-lg p-3'
 
 	return (
 		<div
 			onClick={onClick}
-			className={`${baseStyle} ${isClicked ? 'bg-primary' : ''}`}
+			className={`${baseStyle} ${isClicked ? 'bg-text' : ''}`}
 		>
 			<CustomText weight='bold' color={`${isClicked ? 'white' : 'disabled'}`}>{title}</CustomText>
 		</div>

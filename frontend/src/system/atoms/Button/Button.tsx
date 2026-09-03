@@ -35,7 +35,7 @@ const Button = ({
         : "hover:opacity-85 active:opacity-95";
 
     const isDisable = disabled 
-        ? "disabled:opacity-50 disabled:pointer-events-none" 
+        ? "disabled:opacity-50 disabled:cursor-not-allowed" 
         : `cursor-pointer ${hoverEffect} transition-all duration-200`;
 
     return (

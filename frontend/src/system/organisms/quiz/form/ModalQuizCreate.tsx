@@ -17,16 +17,14 @@ interface ModalQuizCreateProps {
 const QuizForm = () => {
 	
 	const { handleQuizSubmit, setQuiz } = useCreateQuiz()
-	const { formationListQuery } = useFormation()
+	const { formations, formationsStatus } = useFormation()
 
 	const statusValue = [
 		{ id: 'draft', value: 'Brouillon' },
 		{ id: 'published', value: 'Publié' },
 	]
 
-	const { data: formations, status: formationStat } = formationListQuery
-
-	if (formationStat == 'pending')
+	if (formationsStatus == 'pending')
 		return <Loading />
 	
 	if (!formations)

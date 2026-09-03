@@ -5,21 +5,14 @@ import { QuestionService } from "../../other/services/questionService"
 import { useMutation } from "@tanstack/react-query"
 import { QuestionCreateContext } from "../../other/hooks/question/useQuestionCreate"
 import { useQuestion } from "../../other/hooks/question/useQuestion"
+import { useBareme } from "../../other/hooks/bareme/useBareme"
 
 export const QuestionCreateProvider = ({ children }: { children: ReactNode }) => {
 
 	const [ question, setQuestion ] = useState<questionType>(initialQuestion)
 
-	const { questionTypeQuery, baremeQuery } = useQuestion()
-	// const questionTypeQuery = useQuery({
-	// 	queryKey: ['question_type'],
-	// 	queryFn: QuestionService.getTypeQuestion
-	// })
-
-	// const baremeQuery = useQuery({
-	// 	queryKey: ['bareme'],
-	// 	queryFn: QuestionService.getBareme
-	// })
+	const { questionTypeQuery } = useQuestion()
+	const { baremeQuery } = useBareme()
 
 	const { mutate } = useMutation({
 		mutationFn: QuestionService.create,
@@ -41,13 +34,14 @@ export const QuestionCreateProvider = ({ children }: { children: ReactNode }) =>
 	useEffect(() => {
 
 		const initQuestion = async () => {
-			if (questionTypeQuery.data?.[0] && baremeQuery.data?.[0]) {
-				setQuestion((prev) => ({
-					...prev,
-					type_id: questionTypeQuery.data[0].id,
-					bareme_pts: baremeQuery.data[0].pts,
-				}));
-			}
+
+			if (!questionTypeQuery.data || !baremeQuery.data) return 
+
+			setQuestion((prev) => ({
+				...prev,
+				type_id: questionTypeQuery.data[0].id,
+				bareme_pts: baremeQuery.data[0].pts,
+			}));
 		}
 
 		initQuestion()

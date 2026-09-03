@@ -22,11 +22,11 @@ const Select = ({
 	handleChange
 }: SelectProps) => {
 
-    const styling = "border border-background bg-white p-2 rounded-md focus:outline focus:outline-primary cursor-pointer";
+    const styling = "relative border border-background bg-white p-2 rounded-md focus:outline focus:outline-primary cursor-pointer";
 	const selectId = id || name;
 
 	return (
-		<div className="relative flex flex-col gap-1 w-full text-left relative">
+		<div className="flex flex-col gap-1 w-full text-left">
 			{label && (
 				<label className="text-md font-medium text-text" htmlFor={selectId}>
 					{label}

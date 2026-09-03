@@ -13,7 +13,7 @@ const initQuiz = {
 const useCreateQuiz = () => {
 
 	const [quiz, setQuiz] = useState<quizCreateType>(initQuiz)
-	const { formationListQuery } = useFormation()
+	const { formations } = useFormation()
 
 	const { mutate, status } = useMutation({
 		mutationFn: QuizService.create,
@@ -37,18 +37,20 @@ const useCreateQuiz = () => {
 
 	useEffect(() => {
 
+		if (!formations) return
+
 		const initQuestion = async () => {
-			if (formationListQuery.data?.[0]) {
+			if (formations[0]) {
 				setQuiz((prev) => ({
 					...prev,
-					formation: String(formationListQuery.data[0].id),
+					formation: String(formations[0].id),
 				}));
 			}
 		}
 
 		initQuestion()
 
-	}, [formationListQuery.data]);
+	}, [formations]);
 
 	return {
 		status,

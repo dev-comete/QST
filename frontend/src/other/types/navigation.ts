@@ -12,19 +12,21 @@ export interface SideBarConfig {
 const ROLE_CONFIGS: Record<string, SideBarConfig> = {
 	admin: {
 		navItem: [
-			{ label: 'Gestion des utilisateurs', link: '/admin/gestion_utilisateurs', icon: 'users' },
-			{ label: 'Tableau de bord', link: '/admin/tableau_de_bord', icon:'chart-column' },
-			{ label: 'Gestion des vagues', link: '/admin/gestion_vague', icon: 'calendar-days' },
+			{ label: 'Utilisateurs', link: '/admin/gestion_utilisateurs', icon: 'users' },
+			{ label: 'Paramètres généraux', link: '/admin/parametre_general', icon:'sliders' },
 			{ label: 'Banque de questions', link: '/admin/gestion_question', icon: 'circle-question' },
-			{ label: 'Gestion des quiz', link: '/admin/gestion_quiz', icon:'file-pen' },
+			{ label: 'Quiz', link: '/admin/gestion_quiz', icon:'file-pen' },
+			{ label: 'Vagues', link: '/admin/gestion_vague', icon: 'calendar-days' },
+			{ label: 'Tableau de bord', link: '/admin/tableau_de_bord', icon:'chart-column' },
 		]
 	},
 
 	formateur: {
 		navItem: [
-			{ label: 'Gestion des vagues', link: '/formateur/gestion_vague', icon: 'calendar-days' },
+			{ label: 'Paramètres généraux', link: '/formateur/parametre_general', icon:'sliders' },
 			{ label: 'Banque de questions', link: '/formateur/gestion_question', icon: 'circle-question' },
-			{ label: 'Gestion des quiz', link: '/formateur/gestion_quiz', icon:'file-pen' },
+			{ label: 'Quiz', link: '/formateur/gestion_quiz', icon:'file-pen' },
+			{ label: 'Vagues', link: '/formateur/gestion_vague', icon: 'calendar-days' },
 			{ label: 'Tableau de bord', link: '/formateur/tableau_de_bord', icon:'chart-column' }
 		]
 	

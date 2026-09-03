@@ -1,4 +1,3 @@
-/* eslint-disable no-constant-binary-expression */
 import axios from 'axios';
 
 const apiClient = axios.create({
@@ -12,8 +11,7 @@ apiClient.interceptors.request.use(
 	(config) => {
 	const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
 	if (token) {
-		if (!config.headers) config.headers = {};
-		(config.headers as any).Authorization = `Bearer ${token}`;
+		config.headers.Authorization = `Bearer ${token}`;
 	}
 	return config;
 	},
