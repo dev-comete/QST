@@ -10,6 +10,11 @@ export const OrganisationService = {
 		return response.data;
 	},
 
+	update: async (id: string, data : OrganisationPayload) => {
+		const response = await apiClient.put(ORGANISATION_URL + id + '/', data);
+		return response.data;
+	},
+
 	delete: async (id: number) => {
 		const response = await apiClient.delete(ORGANISATION_URL + id + '/');
 		return response.data;
@@ -18,6 +23,11 @@ export const OrganisationService = {
 	list : async () => {
 		const response = await apiClient.get(ORGANISATION_URL);
 		return response.data as organisationType[];
+	},
+
+	info : async (id: string) => {
+		const response = await apiClient.get(ORGANISATION_URL + id);
+		return response.data as organisationType;
 	},
 
 }

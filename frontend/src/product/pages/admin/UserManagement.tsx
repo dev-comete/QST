@@ -10,16 +10,17 @@ import OrganisationList from "../../../system/organisms/user/list/OrganisationLi
 import Box from "../../../system/atoms/Container/Box";
 import Input from "../../../system/atoms/Form/Input";
 import Select from "../../../system/atoms/Form/Select";
-import { useOrganisation } from "../../../other/hooks/user/useOrganisation";
 import { formChangeHandler } from "../../../other/helper/helper";
+import { useCreateOrganisation, useOrganistion } from "../../../other/hooks/user/useOrganisation";
 
 const UserManagement = () => {
 	const [ open, setOpen ] = useState(false)
-	const { organisationQuery, organisation, setOrganisation, handleCreateOrganisation } = useOrganisation()
+	const { organisation, setOrganisation, handleCreateOrganisation } = useCreateOrganisation()
+	const { organisationQuery } = useOrganistion()
 	const { data: organisations, status : organisationStatus } = organisationQuery
 	const selectionValue = [
-		{ id: '0', value: 'actif'},
-		{ id: '1', value: 'inactif'}
+		{ id: '0', value: 'Actif'},
+		{ id: '1', value: 'Inactif'}
 	]
 
 	if (organisationStatus == 'pending')
@@ -55,8 +56,7 @@ const UserManagement = () => {
 									name={"is_active"}
 									selectionValue={selectionValue}
 									handleChange={formChangeHandler(setOrganisation, 'is_active', (value) => {
-										if (value == 'active') return true
-										return false
+										return value == 'Actif'
 									})}
 								/>
 							</Box>

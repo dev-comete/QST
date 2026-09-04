@@ -36,7 +36,6 @@ const ActionCell = ({
     );
 };
 
-// Function returning column configuration
 const getQuizTabColumns = (
     onEdit: (id: string | number | boolean | string[]) => void
 ): Column<userType>[] => [
@@ -57,6 +56,9 @@ const getQuizTabColumns = (
         key: "organisation",
         render: (value: string | number | string[] | null | undefined) => {
             const list = Array.isArray(value) ? value : []
+
+			if (list.length === 0) return <CustomText>Aucune</CustomText>
+
             return (
                 <Box>
                     {list.map((item, index) => <CustomText key={index}>{String(item)}</CustomText>)}
