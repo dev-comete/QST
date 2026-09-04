@@ -1,6 +1,7 @@
 import type React from "react";
 import { backgroundColor } from "../../../other/types/constant";
 import type { ColorTheme } from "../../../other/types/common";
+import Spinner from "../Loading/Spinner";
 
 interface ButtonProps {
     children?: React.ReactNode;
@@ -10,9 +11,10 @@ interface ButtonProps {
     paddingY?: number;
     isRounded?: boolean;
     disabled?: boolean;
-    action?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+    onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
     type?: 'submit' | 'reset' | 'button';
     form?: string;
+	isLoading?: boolean
 }
 
 const Button = ({
@@ -23,7 +25,8 @@ const Button = ({
     disabled = false,
     type = 'button',
     form,
-    action 
+    onClick: action,
+	isLoading
 }: ButtonProps) => {
 
     const roundParam = isRounded ? "rounded-lg" : "";
@@ -46,7 +49,7 @@ const Button = ({
             type={type}
             form={form}
         >
-            {children}
+            {isLoading ? <Spinner size='sm'/> : children}
         </button>
     );
 };

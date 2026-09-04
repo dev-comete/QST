@@ -8,7 +8,7 @@ const LogoutBtn = () => {
 
 	return (
 		<ActionButton
-			action={logout}
+			onClick={logout}
 		>
 			<FAIcon name="power-off"/> Déconnexion
 		</ActionButton>

@@ -33,7 +33,7 @@ const ConfirmActionButton = ({
 			}
 			<ActionButton
 				btnColor={btnColor}
-				action={() => setIsOpen(true)}
+				onClick={() => setIsOpen(true)}
 			>
 				{children}
 			</ActionButton>

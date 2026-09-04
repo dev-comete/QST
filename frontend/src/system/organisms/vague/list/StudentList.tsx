@@ -19,7 +19,7 @@ const StudentItem = ({ addStudentToAssign, item, disabled } : StudentItemProps) 
 			{
 				!disabled &&
 				<ActionButton
-					action={addStudentToAssign}
+					onClick={addStudentToAssign}
 					btnColor={"text"}
 					textColor="white"
 					disabled={disabled}

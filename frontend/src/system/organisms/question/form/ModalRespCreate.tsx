@@ -54,7 +54,7 @@ const RespForm = () => {
 				onChange={(e) => setExplication(e.target.value)}
 			/>
 			<ActionButton
-				action={(e) => addNewResponse(e)}
+				onClick={(e) => addNewResponse(e)}
 			>{"Créer"}</ActionButton>
 		</Box>
 	)

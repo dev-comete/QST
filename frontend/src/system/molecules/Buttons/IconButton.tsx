@@ -82,7 +82,7 @@ const IconButton = ({
 		<Button
 			color={btnColor}
 			className={`${btnStyling} cursor-pointer`}
-			action={action}
+			onClick={action}
 			disabled={disabled}
 			type={type}
 			form={form}

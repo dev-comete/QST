@@ -40,7 +40,7 @@ const GlobalItem = ({ disabled, onChange, onClick, children, name, type = 'text'
 					/>
 				</Box>
 				<ActionButton
-					action={onClick}
+					onClick={onClick}
 					disabled={disabled}
 				>+ Ajouter</ActionButton>
 			</Box>

@@ -34,7 +34,7 @@ const UserManagement = () => {
 				title={"Liste des utilisateurs"}
 				titleButton={
 					<ActionButton
-						action={() => setOpen(true)}
+						onClick={() => setOpen(true)}
 					>{"+ Créer un utilisateur"}</ActionButton>
 				}
 			>
@@ -62,7 +62,7 @@ const UserManagement = () => {
 								/>
 							</Box>
 							<ActionButton
-								action={handleCreateOrganisation}
+								onClick={handleCreateOrganisation}
 								disabled={organisation.nom.trim().length === 0}
 							>+ Ajouter</ActionButton>
 						</Box>

@@ -8,10 +8,11 @@ interface ActionButtonProps {
 	btnColor?: ColorTheme,
 	btnStyling?: string,
 	textColor?: ColorTheme,
-	action? : (event: React.MouseEvent<HTMLButtonElement>) => void,
+	onClick? : (event: React.MouseEvent<HTMLButtonElement>) => void,
 	disabled? : boolean,
 	type?: 'submit' | 'reset' | 'button',
 	form?: string
+	isLoading?: boolean
 }
 
 const ActionButton = ({
@@ -22,16 +23,18 @@ const ActionButton = ({
 	disabled = false,
 	type,
 	form,
-	action
+	onClick: action,
+	isLoading,
 } : ActionButtonProps) => {
 	return (
 		<Button
 			color={btnColor}
 			className={btnStyling}
-			action={action}
+			onClick={action}
 			disabled={disabled}
 			type={type}
 			form={form}
+			isLoading={isLoading}
 		>
 			<CustomText color={textColor} weight="bold">{children}</CustomText>
 		</Button>

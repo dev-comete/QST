@@ -26,7 +26,7 @@ const NavButton = ({ link, children, icon, className }: NavButtonProps) => {
 		<Button
 			className={btnStyling + " " + className}
 			color={btnColor}
-			action = { () => navigate(link) }
+			onClick = { () => navigate(link) }
 			isRounded={false}
 		>
 			<Box className="items-center pl-5">

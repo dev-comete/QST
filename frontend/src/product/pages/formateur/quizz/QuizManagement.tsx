@@ -13,7 +13,7 @@ const QuizManagement = () => {
 			title={"Liste des quiz"}
 			titleButton={
 				<ActionButton
-					action={(e) => { e.preventDefault(); setOpen(true)}}
+					onClick={(e) => { e.preventDefault(); setOpen(true)}}
 				>{"+ Créer un quiz "}</ActionButton>
 			}
 		>

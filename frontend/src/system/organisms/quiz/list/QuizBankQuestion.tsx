@@ -21,7 +21,7 @@ const QuestionItem = ({ addQuestionToAssign, item, disabled } : QuestionItemProp
 			{
 				!disabled &&
 				<ActionButton
-					action={addQuestionToAssign}
+					onClick={addQuestionToAssign}
 					btnColor={"text"}
 					textColor="white"
 					disabled={disabled}

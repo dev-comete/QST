@@ -22,7 +22,7 @@ const VagueAssignForm = () => {
 				<QuizVagueList setQuiz={setQuiz} />
 					<ActionButton
 						type="submit"
-						action={(e) => {e.preventDefault() ; handleAssignQuiz()}}
+						onClick={(e) => {e.preventDefault() ; handleAssignQuiz()}}
 						btnColor={quiz ? "success" : "disabled"}
 						textColor="white"
 						disabled={quiz == null}
@@ -41,7 +41,7 @@ const VagueAssignForm = () => {
 					<VagueStudentList />
 					<ActionButton
 						type="submit"
-						action={(e) => {e.preventDefault() ; handleAssignStudent()}}
+						onClick={(e) => {e.preventDefault() ; handleAssignStudent()}}
 						btnColor={students.length ? "success" : "disabled"}
 						textColor="white"
 						disabled={students.length == 0}

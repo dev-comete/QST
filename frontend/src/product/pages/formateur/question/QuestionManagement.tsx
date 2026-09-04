@@ -12,7 +12,7 @@ const QuestionManagement = () => {
 			title={"Liste des questions"}
 			titleButton={
 				<ActionButton
-					action={() => navigateTo("creation_question")}
+					onClick={() => navigateTo("creation_question")}
 				>{"+ Créer une question"}</ActionButton>
 			}
 		>

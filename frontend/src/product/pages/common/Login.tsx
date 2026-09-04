@@ -7,7 +7,7 @@ import ActionButton from "../../../system/molecules/Buttons/ActionButton";
 import Logo from "../../../system/molecules/Logo/Logo";
 
 const Login = () => {
-    const { handleSubmit } = useLogin();
+    const { handleSubmit, isPending } = useLogin();
 
     return (
         <Box className="flex h-screen w-full overflow-hidden">
@@ -34,7 +34,11 @@ const Login = () => {
                                     label="Mot de passe"
                                     className="w-full"
                                 />
-                                <ActionButton type="submit" btnStyling="w-full mt-2">
+                                <ActionButton
+									type="submit"
+									btnStyling="w-full mt-2"
+									isLoading={isPending}
+								>
                                     SE CONNECTER
                                 </ActionButton>
                             </Box>

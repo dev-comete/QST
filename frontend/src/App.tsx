@@ -1,16 +1,9 @@
 import { RouterProvider } from 'react-router/internal/react-server-client'
 import { router } from './other/routes/route'
 import { AuthProvider } from './product/context/AuthProvider'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-
-const queryClient = new QueryClient({
-	defaultOptions: {
-		queries: {
-		refetchOnWindowFocus: false,
-		retry: 1,
-		},
-	},
-});
+import { QueryClientProvider } from '@tanstack/react-query';
+import { ToastContainer } from 'react-toastify';
+import { queryClient } from './other/lib/queryClient';
 
 function App() {
 
@@ -19,6 +12,7 @@ function App() {
 			<AuthProvider>
 				<RouterProvider router={router} />
 			</AuthProvider>
+			<ToastContainer position="bottom-right" autoClose={3000} />
 		</QueryClientProvider>
 	)
 }

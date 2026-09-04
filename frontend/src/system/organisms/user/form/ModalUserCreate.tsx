@@ -91,7 +91,7 @@ const ModalUserCreate = ({ open, closeModal, listOrganisation } : ModalUserCreat
 			footer={
 				<Box>
 					<ActionButton
-						action={closeModal}
+						onClick={closeModal}
 					>
 						Annuler
 					</ActionButton>

@@ -160,11 +160,11 @@ const ConfirmModal = ({
 				<Box className="w-full justify-between">
 					<ActionButton
 						btnColor="text"
-						action={closeModal} 
+						onClick={closeModal} 
 					>Non</ActionButton>
 					<ActionButton
 						btnColor="primary"
-						action={() => { 
+						onClick={() => { 
 							action() ; closeModal()
 						}} 
 					>Oui</ActionButton>
@@ -188,7 +188,7 @@ const TextModal = ({
 			bgColor={bgColor}
 			isOpen={isOpen}
 			footer={
-				<Box><Button action={action}>{btnContent}</Button></Box>
+				<Box><Button onClick={action}>{btnContent}</Button></Box>
 			}
 		>
 			<CustomText textTag="p">{content}</CustomText>

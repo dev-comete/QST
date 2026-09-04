@@ -17,7 +17,7 @@ const Header = () => {
 			<Box className="justify-between items-center">
 				<Logo />
 				<ActionButton
-					action={logout}
+					onClick={logout}
 				>{"Déconnexion"}</ActionButton>
 			</Box>
 		</Paper>

@@ -13,7 +13,7 @@ const VagueManagement = () => {
 			title={"Liste des vagues"}
 			titleButton={
 				<ActionButton
-					action={(e) => { e.preventDefault(); setOpen(true)}}
+					onClick={(e) => { e.preventDefault(); setOpen(true)}}
 				>{"+ Créer une vague "}</ActionButton>
 			}
 		>

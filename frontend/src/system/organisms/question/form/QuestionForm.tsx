@@ -72,7 +72,7 @@ const QuestionForm = ({ openRespForm } : { openRespForm : () => void}) => {
 				title="Réponse"
 				sideButton={
 					<ActionButton
-						action={(e) => {e.preventDefault() ; openRespForm()}}
+						onClick={(e) => {e.preventDefault() ; openRespForm()}}
 					>{"+ Réponse"}</ActionButton>
 				}
 			/>
