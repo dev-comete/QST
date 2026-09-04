@@ -4,6 +4,7 @@ import { AuthProvider } from './product/context/AuthProvider'
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ToastContainer } from 'react-toastify';
 import { queryClient } from './other/lib/queryClient';
+import { TOAST_TIMER } from './other/types/constant';
 
 function App() {
 
@@ -12,7 +13,7 @@ function App() {
 			<AuthProvider>
 				<RouterProvider router={router} />
 			</AuthProvider>
-			<ToastContainer position="bottom-right" autoClose={3000} />
+			<ToastContainer position="bottom-right" autoClose={TOAST_TIMER} />
 		</QueryClientProvider>
 	)
 }

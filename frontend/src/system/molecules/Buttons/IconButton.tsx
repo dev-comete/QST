@@ -6,7 +6,7 @@ import { useState } from "react";
 import { ConfirmModal } from "../Modal/Modal";
 
 interface IconConfirmActionButtonProps {
-	action: () => void;
+	action: () => Promise<void>; // or () => Promise<unknown>
 	btnColor?: ColorTheme
 	btnStyling?: string,
 	textColor?: ColorTheme,
@@ -16,6 +16,7 @@ interface IconConfirmActionButtonProps {
 	iconName: string
 	iconStyling?: string
 	confirmText?: string
+	isLoading?: boolean
 }
 
 export const IconConfirmActionButton = ({
@@ -26,7 +27,8 @@ export const IconConfirmActionButton = ({
 	disabled,
 	type,
 	btnStyling,
-	confirmText = "Souhaitez-vous poursuivre ?"
+	confirmText = "Souhaitez-vous poursuivre ?",
+	isLoading,
 } : IconConfirmActionButtonProps) => {
 
 	const [ isOpen, setIsOpen ] = useState(false);
@@ -36,10 +38,11 @@ export const IconConfirmActionButton = ({
 			{	isOpen && 
 					<ConfirmModal
 						content={confirmText}
-						action={action}
+						onClick={action}
 						closeModal={() => setIsOpen(false)}
 						bgColor="white"
 						isOpen={isOpen}
+						isLoading={isLoading}
 					/>
 			}
 			<IconButton

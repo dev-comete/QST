@@ -25,9 +25,15 @@ const initialQuestion : questionType = {
 const GENERAL_STALE_TIME = 1000 * 60 * 5
 const GENERAL_CACHE_TIME = 1000 * 60 * 10
 
+const TOAST_TIMER = 1500
+
+const USERNAME_MIN = 5
+
 export {
 	backgroundColor,
 	initialQuestion,
 	GENERAL_CACHE_TIME,
 	GENERAL_STALE_TIME,
+	TOAST_TIMER,
+	USERNAME_MIN
 }

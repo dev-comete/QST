@@ -1,6 +1,6 @@
 import type { Dispatch, SetStateAction } from "react";
 import { formChangeHandler, getSelectData } from "../../../../other/helper/helper";
-import { useCreateUser } from "../../../../other/hooks/user/useUser";
+import { useUserUpdate } from "../../../../other/hooks/user/useUser";
 import type { organisationType, userPayload, utilisateurType } from "../../../../other/types/userType";
 import Box from "../../../atoms/Container/Box";
 import Input from "../../../atoms/Form/Input";
@@ -11,15 +11,16 @@ import ActionButton from "../../../molecules/Buttons/ActionButton";
 import { Modal } from "../../../molecules/Modal/Modal";
 import ErrorBloc from "../../../molecules/Container/ErrorBloc";
 
-interface UserFormProps {
+interface UserEditFormProps {
 	listTypeUser: utilisateurType[]
 	listOrganisation: organisationType[]
+	user: userPayload
 	setUser: Dispatch<SetStateAction<userPayload>>
 	handleSubmit: (e: React.SubmitEvent) => void
 	errors: { userError: string | null, emailError: string | null }
 }
 
-const UserForm = ({ handleSubmit, setUser, listTypeUser, listOrganisation, errors } : UserFormProps ) => {
+const UserEditForm = ({ handleSubmit, user, setUser, listTypeUser, listOrganisation, errors } : UserEditFormProps ) => {
 
 	const selectedRole = getSelectData(listTypeUser, 'type_utilisateur')
 	const selectedOrganisation = getSelectData(listOrganisation, 'nom')
@@ -37,6 +38,7 @@ const UserForm = ({ handleSubmit, setUser, listTypeUser, listOrganisation, error
 					label="Nom d'utilisateur"
 					onChange={formChangeHandler(setUser, 'username')}
 					required={true}
+					value={user.username}
 				/>
 				{errors.userError && <ErrorBloc message={errors.userError} />}
 				<Input 
@@ -46,6 +48,7 @@ const UserForm = ({ handleSubmit, setUser, listTypeUser, listOrganisation, error
 					type="email"
 					onChange={formChangeHandler(setUser, 'email')}
 					required={true}
+					value={user.email}
 				/>
 				{errors.emailError && <ErrorBloc message={errors.emailError} />}
 				<Select 
@@ -57,6 +60,10 @@ const UserForm = ({ handleSubmit, setUser, listTypeUser, listOrganisation, error
 						const selected = listTypeUser.find((q) => q.type_utilisateur === value) ?? listTypeUser[0]
 						return selected.id ?? null
 					})}
+					value={(() => {
+						const val = listTypeUser.find((q) => q.id === user.type_utilisateur) ?? listTypeUser[0];
+						return val.type_utilisateur;
+					})()}
 				/>
 				<Select 
 					id="organisation"
@@ -73,23 +80,24 @@ const UserForm = ({ handleSubmit, setUser, listTypeUser, listOrganisation, error
 	)
 }
 
-interface ModalUserCreateProps {
+interface ModalUserUpdateProps {
 	open: boolean;
 	closeModal: () => void,
 	listOrganisation: organisationType[],
+	id: string
 }
 
-const ModalUserCreate = ({ open, closeModal, listOrganisation } : ModalUserCreateProps) => {
-
+const ModalUserUpdate = ({ id, open, closeModal, listOrganisation } : ModalUserUpdateProps) => {
 	const {
 		typeUserQuery,
 		isPending,
-		handleCreateUser,
+		handleUpdateUser,
+		user,
 		setUser,
 		userError,
 		emailError,
 		resetError,
-	} = useCreateUser()
+	} = useUserUpdate(id)
 
 	const { data: typeUsers, status : typeStatus } = typeUserQuery
 
@@ -106,7 +114,7 @@ const ModalUserCreate = ({ open, closeModal, listOrganisation } : ModalUserCreat
 	const handleSubmit = async (e: React.SubmitEvent) => {
 		e.preventDefault()
 		try {
-			await handleCreateUser()
+			await handleUpdateUser()
 			handleOnCloseModal()
 		} catch (error) {
 			console.log("Error", error)
@@ -115,12 +123,13 @@ const ModalUserCreate = ({ open, closeModal, listOrganisation } : ModalUserCreat
 
 	return (
 		<Modal
-			title="Création d'utilisateur"
+			title="Modification de l'utilisateur"
 			isOpen={open}
 			closeModal={handleOnCloseModal}
 			footer={
 				<Box>
 					<ActionButton
+						btnColor="text"
 						onClick={handleOnCloseModal}
 					>
 						Annuler
@@ -132,12 +141,13 @@ const ModalUserCreate = ({ open, closeModal, listOrganisation } : ModalUserCreat
 						textColor="white"
 						isLoading={isPending}
 					>
-						Créer
+						Modifier
 					</ActionButton>
 				</Box>
 			}
 		>
-			<UserForm
+			<UserEditForm
+				user={user}
 				setUser={setUser}
 				listTypeUser={typeUsers}
 				listOrganisation={listOrganisation}
@@ -148,4 +158,4 @@ const ModalUserCreate = ({ open, closeModal, listOrganisation } : ModalUserCreat
 	)
 }
 
-export default ModalUserCreate;
+export default ModalUserUpdate;

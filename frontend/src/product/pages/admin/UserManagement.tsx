@@ -14,7 +14,6 @@ import { useOrganisation } from "../../../other/hooks/user/useOrganisation";
 import { formChangeHandler } from "../../../other/helper/helper";
 
 const UserManagement = () => {
-
 	const [ open, setOpen ] = useState(false)
 	const { organisationQuery, organisation, setOrganisation, handleCreateOrganisation } = useOrganisation()
 	const { data: organisations, status : organisationStatus } = organisationQuery
@@ -41,7 +40,7 @@ const UserManagement = () => {
 				<NavigationBar
 					titles={['Utilisateur', 'Organisation']}				
 				>
-					<UserList />
+					<UserList organisations={organisations}/>
 					<Box direction="column">
 						<Box className='w-full'>
 							<Box className='w-1/3'>

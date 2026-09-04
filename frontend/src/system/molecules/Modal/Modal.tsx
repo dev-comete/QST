@@ -21,16 +21,17 @@ interface ModalProps {
 
 interface ConfirmModalProps {
 	closeModal: () => void;
-	action: () => void;
-	content: string;
+	onClick: () => Promise<void>;
 	bgColor: ColorTheme;
 	isOpen: boolean;
+	isLoading?: boolean
+	content: string
 }
 
 interface BasicModalProps {
 	content: string;
 	btnContent: string;
-	action: () => void;
+	onClick: () => void;
 	bgColor: ColorTheme;
 	isOpen: boolean;
 }
@@ -147,11 +148,22 @@ const Modal = ({
 
 const ConfirmModal = ({
 	closeModal,
-	action,
+	onClick: action,
 	content,
 	bgColor = "white",
-	isOpen
+	isOpen,
+	isLoading,
 }: ConfirmModalProps) => {
+
+	const handleCloseModal = async () => {
+		try {
+			await action()
+			closeModal()
+		} catch (error) {
+			console.log("Error", error)
+		}
+	}
+
 	return (
 		<Modal
 			bgColor={bgColor}
@@ -164,9 +176,8 @@ const ConfirmModal = ({
 					>Non</ActionButton>
 					<ActionButton
 						btnColor="primary"
-						onClick={() => { 
-							action() ; closeModal()
-						}} 
+						onClick={handleCloseModal}
+						isLoading={isLoading}
 					>Oui</ActionButton>
 				</Box>
 			}
@@ -177,7 +188,7 @@ const ConfirmModal = ({
 }
 
 const TextModal = ({
-	action,
+	onClick: action,
 	content,
 	btnContent,
 	bgColor,

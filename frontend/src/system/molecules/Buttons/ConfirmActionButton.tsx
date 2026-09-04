@@ -1,21 +1,22 @@
-import type React from "react";
 import ActionButton from "./ActionButton";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { ConfirmModal } from "../Modal/Modal";
 import type { ColorTheme } from "../../../other/types/common";
 
 interface ConfirmActionButtonProps {
-	action: () => void //Send the action to the modal
-	children: React.ReactNode
+	action: () => Promise<void>
+	children: ReactNode
 	btnColor?: ColorTheme
 	confirmText?: string
+	isLoading?: boolean
 }
 
 const ConfirmActionButton = ({
 	action,
 	btnColor = 'primary',
 	children,
-	confirmText = "Souhaitez-vous poursuivre ?"
+	confirmText = "Souhaitez-vous poursuivre ?",
+	isLoading,
 } : ConfirmActionButtonProps) => {
 
 	const [ isOpen, setIsOpen ] = useState(false);
@@ -25,10 +26,11 @@ const ConfirmActionButton = ({
 			{	isOpen && 
 					<ConfirmModal
 						content={confirmText}
-						action={action}
+						onClick={action}
 						closeModal={() => setIsOpen(false)}
 						bgColor="white"
 						isOpen={isOpen}
+						isLoading={isLoading}
 					/>
 			}
 			<ActionButton
