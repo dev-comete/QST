@@ -97,7 +97,7 @@ const Modal = ({
 				className="
 					rounded-xl
 					max-w-[80%] max-h-[85vh]
-					min-w-[20%] min-h-[30vh]
+					min-w-[40%] min-h-[30vh]
 					top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
 					z-101
 					p-5

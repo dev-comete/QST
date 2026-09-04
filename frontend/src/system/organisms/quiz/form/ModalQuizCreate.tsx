@@ -69,7 +69,6 @@ const QuizForm = () => {
 				/>
 				<ActionButton
 					type="submit"
-					btnColor="secondary"
 					textColor="white"
 				>{"Créer"}</ActionButton>
 			</form>

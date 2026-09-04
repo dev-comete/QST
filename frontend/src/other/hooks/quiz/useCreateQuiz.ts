@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { QuizService } from "../../services/quizService";
 import { useEffect, useState } from "react";
 import type { quizCreateType } from "../../types/quizType";
@@ -30,11 +30,6 @@ const useCreateQuiz = () => {
 		mutate(quiz);
 	}
 
-	const getAllQuiz = useQuery({
-		queryKey: ['quiz_list'],
-		queryFn: QuizService.list
-	})
-
 	useEffect(() => {
 
 		if (!formations) return
@@ -57,7 +52,6 @@ const useCreateQuiz = () => {
 		handleQuizSubmit,
 		quiz,
 		setQuiz,
-		getAllQuiz
 	}
 }
 

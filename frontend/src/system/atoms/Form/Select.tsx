@@ -22,7 +22,7 @@ const Select = ({
 	handleChange
 }: SelectProps) => {
 
-    const styling = "relative border border-background bg-white p-2 rounded-md focus:outline focus:outline-primary cursor-pointer";
+	const styling = "relative w-full h-10 px-3 py-2 text-base text-text bg-white border border-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer ";	
 	const selectId = id || name;
 
 	return (
@@ -40,11 +40,11 @@ const Select = ({
 				className={styling}
 				onChange={handleChange}
 			>
-			{selectionValue.map((selected) => (
-				<option key={selected.id} value={selected.value} className="text-md">
-				{selected.value}
-				</option>
-			))}
+				{selectionValue.map((selected) => (
+					<option key={selected.id} value={selected.value}>
+					{selected.value}
+					</option>
+				))}
 			</select>
 		</div>
 	);

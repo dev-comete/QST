@@ -1,6 +1,6 @@
 import { formatDate } from "../../../../other/helper/helper";
 import { useAppNavigation } from "../../../../other/hooks/navigation/useAppNavigation";
-import useCreateQuiz from "../../../../other/hooks/quiz/useCreateQuiz";
+import useQuiz from "../../../../other/hooks/quiz/useQuiz";
 import type { quizType } from "../../../../other/types/quizType";
 import Box from "../../../atoms/Container/Box";
 import FetchError from "../../../atoms/Loading/FetchError";
@@ -61,7 +61,7 @@ const quizTabColumn: Column<quizType>[] = [
 // Todo : Transform formation(id) to formation(name) and render with new quizType
 const QuizList = () => {
 
-	const { getAllQuiz } = useCreateQuiz()
+	const { getAllQuiz } = useQuiz()
 	const { data: quizzes, status } = getAllQuiz
 
 	if (status == 'pending')

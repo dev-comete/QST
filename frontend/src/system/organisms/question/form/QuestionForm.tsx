@@ -34,6 +34,7 @@ const EnonceForm = () => {
 				label="Enoncé"
 				value={question.enonce_question}
 				onChange={formChangeHandler(setQuestion, 'enonce_question')}
+				required={true}
 			/>
 			<Select
 				id={"type"}
@@ -42,7 +43,8 @@ const EnonceForm = () => {
 				label="Type"
 				handleChange={formChangeHandler(setQuestion, 'type_id', (value) => {
 					const selected = selectionQuestionType.find((q) => q.value === value) ?? selectionQuestionType[0]
-					return Number(selected.id)
+					const realId = Number(selected.id)
+					return realId + 1
 				})}
 			/>
 			<Select
@@ -59,12 +61,17 @@ const EnonceForm = () => {
 
 const QuestionForm = ({ openRespForm } : { openRespForm : () => void}) => {
 
-	const { handleCreate } = useQuestionCreate()
+	const { question, handleCreate, isPending } = useQuestionCreate()
+
+	const handleSubmit = async(e: React.SubmitEvent) => {
+		e.preventDefault()
+		await handleCreate()
+	}
 
 	return (
 		<form
 			id="createQuestion"
-			onSubmit={handleCreate}
+			onSubmit={handleSubmit}
 			className="flex flex-col justify-center items-center gap-5 w-3/4 mx-auto"
 		>
 			<EnonceForm />
@@ -80,6 +87,8 @@ const QuestionForm = ({ openRespForm } : { openRespForm : () => void}) => {
 			<ActionButton
 				type="submit"
 				form="createQuestion"
+				disabled={question.enonce_question.length == 0 || question.options.length == 0}
+				isLoading={isPending}
 			>{"Créer question"}</ActionButton>
 		</form>
 	)

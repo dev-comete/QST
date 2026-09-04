@@ -19,12 +19,12 @@ const TextArea = ({
 	name,
 	value,
     placeholder,
-    rows = 1,
+    rows = 5,
     cols = 0,
     readonly = false,
     required = false,
     minLength = 5,
-    maxLength = 50,
+    maxLength = 1000,
 	onChange
 }: TextArea) => {
 

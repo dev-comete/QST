@@ -1,9 +1,9 @@
 import type { Dispatch, SetStateAction } from "react";
-import useCreateQuiz from "../../../../other/hooks/quiz/useCreateQuiz";
 import Loading from "../../../atoms/Loading/Loading";
 import FetchError from "../../../atoms/Loading/FetchError";
 import Select from "../../../atoms/Form/Select";
 import { getSelectData } from "../../../../other/helper/helper";
+import useQuiz from "../../../../other/hooks/quiz/useQuiz";
 
 interface QuizVagueListProps {
 	setQuiz: Dispatch<SetStateAction<number | null>>
@@ -11,7 +11,7 @@ interface QuizVagueListProps {
 
 const QuizVagueList = ({ setQuiz } : QuizVagueListProps) => {
 
-	const { getAllQuiz } = useCreateQuiz()
+	const { getAllQuiz } = useQuiz()
 
 	const { data, status } = getAllQuiz
 

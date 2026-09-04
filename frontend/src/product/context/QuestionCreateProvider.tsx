@@ -14,7 +14,7 @@ export const QuestionCreateProvider = ({ children }: { children: ReactNode }) =>
 	const { questionTypeQuery } = useQuestion()
 	const { baremeQuery } = useBareme()
 
-	const { mutate } = useMutation({
+	const createQuestion = useMutation({
 		mutationFn: QuestionService.create,
 		onSuccess: () => {
 			console.log("Success : question created")
@@ -24,18 +24,16 @@ export const QuestionCreateProvider = ({ children }: { children: ReactNode }) =>
 		},
 	});
 
-	const handleCreate = (e: React.SubmitEvent<HTMLFormElement>) => {
-		e.preventDefault()
-
-		//Check question validity here !!!!
-		mutate(question)
+	const handleCreate = async () => {
+		setQuestion(initialQuestion)
+		return await createQuestion.mutateAsync(question)
 	}
 
 	useEffect(() => {
 
 		const initQuestion = async () => {
 
-			if (!questionTypeQuery.data || !baremeQuery.data) return 
+			if (!questionTypeQuery.data?.length || !baremeQuery.data) return 
 
 			setQuestion((prev) => ({
 				...prev,
@@ -49,7 +47,7 @@ export const QuestionCreateProvider = ({ children }: { children: ReactNode }) =>
     }, [questionTypeQuery.data, baremeQuery.data]);
 
 	return (
-		<QuestionCreateContext.Provider value={{ question, setQuestion, handleCreate, baremeQuery, questionTypeQuery }}>
+		<QuestionCreateContext.Provider value={{ question, setQuestion, handleCreate, baremeQuery, questionTypeQuery, isPending : createQuestion.isPending }}>
 			{children}
 		</QuestionCreateContext.Provider>
 	)

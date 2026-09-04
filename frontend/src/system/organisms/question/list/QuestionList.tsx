@@ -13,18 +13,13 @@ const questionTabColumn: Column<bankQuestionType>[] = [
 	},
 	{
 		header: "Action",
-		key: 'action',
+		key: 'id',
 		render: () => (
 			<Box>
 				<IconButton
-					iconName="edit"
+					iconName="book"
 					iconStyling="text-text hover:text-success"
-					action={() => alert('Edition')}
-				/>
-				<IconButton
-					iconName="trash"
-					iconStyling="text-text hover:text-error"
-					action={() => alert('Suppression')}
+					action={() => alert('Réponses')}
 				/>
 			</Box>
 		)

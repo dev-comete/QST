@@ -21,6 +21,8 @@ const RespForm = () => {
 	const addNewResponse = (e: React.MouseEvent) => {
 		e.preventDefault()
 
+		if (!resp.length) return
+
 		const newOption: respType = {
 			reponse: resp,
 			est_correct: true,
@@ -55,6 +57,7 @@ const RespForm = () => {
 			/>
 			<ActionButton
 				onClick={(e) => addNewResponse(e)}
+				disabled={resp.length == 0}
 			>{"Créer"}</ActionButton>
 		</Box>
 	)

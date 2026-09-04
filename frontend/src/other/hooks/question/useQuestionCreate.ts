@@ -5,7 +5,8 @@ import { createContext, useContext, type Dispatch, type SetStateAction } from "r
 interface QuestionCreateContextType {
 	question: questionType,
 	setQuestion: Dispatch<SetStateAction<questionType>>;
-	handleCreate: (e: React.SubmitEvent<HTMLFormElement>) => void
+	handleCreate: () => void
+	isPending: boolean
 	baremeQuery: UseQueryResult<baremeType[], Error>
 	questionTypeQuery: UseQueryResult<questionIdType[], Error>
 }

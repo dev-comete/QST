@@ -6,7 +6,8 @@ import { Table, type Column } from "../../../atoms/Table/Table"
 import IconButton from "../../../molecules/Buttons/IconButton"
 
 const getResponseColumns = (
-    onToggleCorrect: (index: number, isChecked: boolean) => void
+    onToggleCorrect: (index: number, isChecked: boolean) => void,
+    onRemove: (index: number) => void
 ): Column<respType>[] => [
     {
         header: 'Sélection',
@@ -28,12 +29,12 @@ const getResponseColumns = (
     },
     {
         header: "Action",
-        key: 'action',
-        render: () => (
+        key: 'id',
+        render: (_value, _record, index) => (
             <IconButton
                 iconName="trash"
                 iconStyling="text-text hover:text-error"
-                action={() => alert('Suppression')}
+                action={() => typeof index === 'number' && onRemove(index)}
             />
         )
     }
@@ -42,6 +43,13 @@ const getResponseColumns = (
 const RespCreatedList = () => {
 
 	const { question, setQuestion } = useQuestionCreate()
+    
+    const handleRemove = (index: number) => {
+        setQuestion((prev) => ({
+            ...prev,
+            options: prev.options.filter((_, i) => i !== index)
+        }));
+    };
 	
 	const handleCheckboxChange = (index: number, isChecked: boolean) => {
 		setQuestion((prev) => ({
@@ -52,14 +60,14 @@ const RespCreatedList = () => {
 		}));
     };
 
-	const columns = getResponseColumns(handleCheckboxChange);
+    const columns = getResponseColumns(handleCheckboxChange, handleRemove);
 
 	return (
 		<Box direction="column" className="w-full items-center justify-center">
 			<Table 
 				columns={columns}
 				data={question.options}
-				rowKey={'est_correct'}
+				rowKey={'reponse'}
 			/>
 		</Box>
 	)
