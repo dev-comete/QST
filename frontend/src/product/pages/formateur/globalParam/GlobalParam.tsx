@@ -3,13 +3,13 @@ import Box from '../../../../system/atoms/Container/Box';
 import Loading from '../../../../system/atoms/Loading/Loading';
 import FetchError from '../../../../system/atoms/Loading/FetchError';
 import NavigationBar from '../../../../system/molecules/Navigation/NavigationBar';
-import FormationList from '../../../../system/organisms/globalParam/FormationList';
-import { useFormation } from '../../../../other/hooks/formation/useFormation';
-import BaremeList from '../../../../system/organisms/globalParam/BaremeList';
+import FormationList from '../../../../system/organisms/globalParam/list/FormationList';
+import { useCreateFormation, useFormation } from '../../../../other/hooks/formation/useFormation';
 import { useBareme } from '../../../../other/hooks/bareme/useBareme';
 import ActionButton from '../../../../system/molecules/Buttons/ActionButton';
 import Input from '../../../../system/atoms/Form/Input';
 import type { ReactNode } from 'react';
+import BaremeList from '../../../../system/organisms/globalParam/list/BaremeList';
 
 const GlobalItem = ({ disabled, onChange, onClick, children, name, type = 'text', min, max, step, value } : {
 	name: string,
@@ -23,6 +23,8 @@ const GlobalItem = ({ disabled, onChange, onClick, children, name, type = 'text'
 	step?: number
 	value: number | string | undefined
 }) => {
+
+	const buttonTitle = `+ Ajouter ${name === "formation" ? "formation" : "barème"}`
 
 	return (
 		<Box direction='column'>
@@ -42,7 +44,7 @@ const GlobalItem = ({ disabled, onChange, onClick, children, name, type = 'text'
 				<ActionButton
 					onClick={onClick}
 					disabled={disabled}
-				>+ Ajouter</ActionButton>
+				>{buttonTitle}</ActionButton>
 			</Box>
 			{children}
 		</Box>
@@ -50,7 +52,8 @@ const GlobalItem = ({ disabled, onChange, onClick, children, name, type = 'text'
 }
 
 export default function GlobalParam() {
-	const { formations, formationsStatus, formationInput, setFormationInput, handleCreateFormation } = useFormation()
+	const { formationInput, setFormationInput, handleCreateFormation } = useCreateFormation()
+	const { formations, formationsStatus } = useFormation()
 	const { baremeQuery, baremeInput, setBaremeInput, handleCreateBareme } = useBareme()
 	const { data: baremes, status: baremesStatus } = baremeQuery
 

@@ -1,5 +1,6 @@
 import { useQuestion } from "../../../../other/hooks/question/useQuestion";
 import type { assignQuestionType, bankQuestionType } from "../../../../other/types/questionType";
+import Box from "../../../atoms/Container/Box";
 import Paper from "../../../atoms/Container/Paper";
 import FetchError from "../../../atoms/Loading/FetchError";
 import Loading from "../../../atoms/Loading/Loading";
@@ -16,7 +17,7 @@ interface QuestionItemProps {
 
 const QuestionItem = ({ addQuestionToAssign, item, disabled } : QuestionItemProps) => {
 	return (
-		<Paper className="flex border border-background justify-between gap-3 items-center p-3">
+		<Paper className="flex border border-background justify-between gap-3 items-center p-3 w-full">
 			<CustomText>{item.enonce_question}</CustomText>
 			{
 				!disabled &&
@@ -34,8 +35,8 @@ const QuestionItem = ({ addQuestionToAssign, item, disabled } : QuestionItemProp
 
 const QuizBankQuestion = ({ questions, setQuestion } : QuizAssignManipProps) => {
 
-	const { getAllQuestion } = useQuestion()
-	const { data: bankQuestions, status } = getAllQuestion
+	const { list } = useQuestion()
+	const { data: bankQuestions, status } = list
 
 	const handleSelectQuestion = (selectedQuestion: assignQuestionType) => {
 		setQuestion((prev) => [...prev, selectedQuestion]);
@@ -47,7 +48,7 @@ const QuizBankQuestion = ({ questions, setQuestion } : QuizAssignManipProps) => 
 		return <FetchError />
 
 	return (
-		<>
+		<Box direction="column">
 			{
 				bankQuestions.map((item) => {
 					const isSelected = questions?.some((q) => q.id === item.id);
@@ -72,7 +73,7 @@ const QuizBankQuestion = ({ questions, setQuestion } : QuizAssignManipProps) => 
 						/>
 					)})
 			}
-		</>
+		</Box>
 	)
 }
 

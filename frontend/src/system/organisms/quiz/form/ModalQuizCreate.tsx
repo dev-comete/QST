@@ -14,9 +14,9 @@ interface ModalQuizCreateProps {
 	closeModal: () => void
 }
 
-const QuizForm = () => {
+const QuizForm = ({ closeModal } : { closeModal : () => void }) => {
 	
-	const { handleQuizSubmit, setQuiz } = useCreateQuiz()
+	const { handleQuizSubmit, setQuiz, isPending } = useCreateQuiz()
 	const { formations, formationsStatus } = useFormation()
 
 	const statusValue = [
@@ -32,13 +32,30 @@ const QuizForm = () => {
 
 	const selectedFormations = getSelectData(formations, 'nom_formation')
 
+	const handleSubmit = async (e: React.SubmitEvent) => {
+		e.preventDefault()
+		try {
+			await handleQuizSubmit()
+			closeModal()
+		} catch (error) {
+			console.log("Error", error)
+		}
+	}
+
 	return (
 		<Box direction="column" className="w-full items-center px-5 gap-10" >
 			<form
 				id="quizForm"
-				onSubmit={handleQuizSubmit}
+				onSubmit={handleSubmit}
 				className="flex flex-col gap-5 w-full items-center px-10"
 			>
+				<Input
+					id={"titre"}
+					name={"titre"}
+					label="Titre du quiz"
+					onChange={formChangeHandler(setQuiz, 'titre')}
+					required={true}
+				/>
 				<Select 
 					id="formation"
 					name="formation"
@@ -56,6 +73,7 @@ const QuizForm = () => {
 					type="time"
 					step={1}
 					onChange={formChangeHandler(setQuiz, 'duree')}
+					required={true}
 				/>
 				<Select 
 					id="status"
@@ -70,6 +88,7 @@ const QuizForm = () => {
 				<ActionButton
 					type="submit"
 					textColor="white"
+					isLoading={isPending}
 				>{"Créer"}</ActionButton>
 			</form>
 		</Box>
@@ -83,7 +102,7 @@ const ModalQuizCreate = ({ open, closeModal } : ModalQuizCreateProps) => {
 			isOpen={open}
 			closeModal={closeModal}
 		>
-			<QuizForm />
+			<QuizForm closeModal={closeModal}/>
 		</Modal>
 	)
 }

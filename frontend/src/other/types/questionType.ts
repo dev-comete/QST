@@ -22,15 +22,17 @@ type questionType = {
 	options: respType[]
 }
 
+type bankQuestionResp = {
+	id: number,
+	texte: string,
+	est_correct: boolean,
+	explication: string
+}
+
 type bankQuestionType = {
 	id: number,
 	enonce_question: string,
-	reponses: {
-		id: number,
-		texte: string,
-		est_correcte: boolean,
-		explication: string
-	}[]
+	reponses: bankQuestionResp[]
 }
 
 type assignQuestionType = {
@@ -46,5 +48,6 @@ export type {
 	questionIdType,
 	baremeType,
 	bankQuestionType,
-	assignQuestionType
+	assignQuestionType,
+	bankQuestionResp
 }

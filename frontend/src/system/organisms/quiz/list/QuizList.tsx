@@ -1,19 +1,46 @@
 import { formatDate } from "../../../../other/helper/helper";
 import { useAppNavigation } from "../../../../other/hooks/navigation/useAppNavigation";
-import useQuiz from "../../../../other/hooks/quiz/useQuiz";
+import { useQuiz, useQuizDel, useQuizUpdate } from "../../../../other/hooks/quiz/useQuiz";
 import type { quizType } from "../../../../other/types/quizType";
 import Box from "../../../atoms/Container/Box";
 import FetchError from "../../../atoms/Loading/FetchError";
 import Loading from "../../../atoms/Loading/Loading";
 import { Table, type Column } from "../../../atoms/Table/Table";
-import IconButton from "../../../molecules/Buttons/IconButton";
+import CustomText from "../../../atoms/Text/CustomText";
+import IconButton, { IconConfirmActionButton } from "../../../molecules/Buttons/IconButton";
 
 
-const ActionCell = ({ rowId } : {rowId : string | number | boolean }) => {
+const ActionCell = ({ rowId, row } : {
+	rowId : string | number | boolean,
+	row: quizType | null
+}) => {
     const { navigateTo } = useAppNavigation();
+	const { handleDelQuiz, isPending } = useQuizDel(Number(rowId))
+	const { handleUpdateStatus, isPending : updateIsPending } = useQuizUpdate(Number(rowId), row ? row.status : 'draft')
 
     return (
         <Box>
+			<IconConfirmActionButton
+                iconName={row && row.status === 'draft' ? 'arrow-up' : 'arrow-down'}
+                iconStyling="text-text hover:text-success"
+                action={handleUpdateStatus}
+				confirmText="Voulez-vous changer le status du quiz?"
+				isLoading={updateIsPending}
+            />
+			<IconButton
+                iconName="edit"
+                iconStyling="text-text hover:text-success"
+                action={() => {
+                    navigateTo(`${rowId}/assign_quiz`);
+                }}
+            />
+			<IconButton
+                iconName="eye"
+                iconStyling="text-text hover:text-success"
+                action={() => {
+                    navigateTo(`${rowId}/assign_quiz`);
+                }}
+            />
             <IconButton
                 iconName="edit"
                 iconStyling="text-text hover:text-success"
@@ -21,23 +48,34 @@ const ActionCell = ({ rowId } : {rowId : string | number | boolean }) => {
                     navigateTo(`${rowId}/assign_quiz`);
                 }}
             />
-            <IconButton
-                iconName="trash"
-                iconStyling="text-text hover:text-error"
-                action={() => alert('Suppression')}
-            />
+			<IconConfirmActionButton
+				iconName="trash"
+				iconStyling="text-text hover:text-error"
+				action={handleDelQuiz}
+				confirmText="Voulez-vous vraiment supprimer le quiz?"
+				isLoading={isPending}
+			/>
         </Box>
     );
 };
 
 const quizTabColumn: Column<quizType>[] = [
 	{
+		header: 'Titre',
+		key: "titre"
+	},
+	{
 		header: 'Formation',
 		key: "formation"
 	},
 	{
 		header: 'Statut',
-		key: "status"
+		key: "status",
+		render: (value) => (
+			<CustomText textTag="h6" className={`p-2 rounded-xl ${value === 'draft' ? 'bg-background' : 'bg-success-light'}` }>
+				{ value === 'draft' ? 'Brouillon' : 'Publié'}
+			</CustomText>
+		)
 	},
 	{
 		header: 'Durée',
@@ -51,8 +89,8 @@ const quizTabColumn: Column<quizType>[] = [
 	{
 		header: "Action",
 		key: 'id',
-		render: (value) => {
-			return <ActionCell rowId={value ? value : ''} />
+		render: (value, row) => {
+			return <ActionCell rowId={value ? value : ''} row={row ? row : null}/>
 		}
 		
 	}

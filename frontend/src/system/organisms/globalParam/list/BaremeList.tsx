@@ -1,8 +1,9 @@
-import { useDelBareme } from "../../../other/hooks/bareme/useBareme";
-import type { baremeType } from "../../../other/types/questionType";
-import Box from "../../atoms/Container/Box";
-import { Table, type Column } from "../../atoms/Table/Table";
-import IconButton from "../../molecules/Buttons/IconButton";
+import { useDelBareme } from "../../../../other/hooks/bareme/useBareme";
+import type { baremeType } from "../../../../other/types/questionType";
+import Box from "../../../atoms/Container/Box";
+import { Table, type Column } from "../../../atoms/Table/Table";
+import IconButton from "../../../molecules/Buttons/IconButton";
+
 
 const ActionCell = ({ rowId } : {rowId : number }) => {
 

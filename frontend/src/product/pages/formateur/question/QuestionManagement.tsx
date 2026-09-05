@@ -9,7 +9,7 @@ const QuestionManagement = () => {
 
     return (
         <BodyLayout
-			title={"Liste des questions"}
+			title={"Banque de questions"}
 			titleButton={
 				<ActionButton
 					onClick={() => navigateTo("creation_question")}

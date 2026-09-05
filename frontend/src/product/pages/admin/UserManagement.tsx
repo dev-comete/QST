@@ -63,7 +63,7 @@ const UserManagement = () => {
 							<ActionButton
 								onClick={handleCreateOrganisation}
 								disabled={organisation.nom.trim().length === 0}
-							>+ Ajouter</ActionButton>
+							>+ Ajouter organisation</ActionButton>
 						</Box>
 						<OrganisationList organisations={organisations}/>
 					</Box>

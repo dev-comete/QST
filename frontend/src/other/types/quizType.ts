@@ -1,5 +1,6 @@
 type quizType = {
 	id: number,
+	titre: string,
 	date_creation_quiz: string,
 	duree: string,
 	status: string,
@@ -19,7 +20,7 @@ type quizAssignPayload = {
 	questions_choisies: quizSelectedQuestion[]
 }
 
-type quizCreateType = Pick<quizType, 'duree' | 'formation' | 'status' >
+type quizCreateType = Pick<quizType, 'duree' | 'formation' | 'status' | 'titre' >
 
 type studentQuizType = {
 	quiz_id: number,

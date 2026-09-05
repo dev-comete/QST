@@ -5,7 +5,7 @@ const QuizAssign = () => {
 	return (
 		<BodyLayout
 			title="Assignation de questions"
-			linkBack="/formateur/gestion_quiz"
+			linkBack="/gestion_quiz"
 		>
 			<QuizAssignForm />
 		</BodyLayout>

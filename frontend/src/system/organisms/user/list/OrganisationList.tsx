@@ -9,7 +9,7 @@ import { useOrgDel } from "../../../../other/hooks/user/useOrganisation"
 
 const ActionCell = ({ rowId, onEdit } : { 
 	rowId: string | number | boolean | string[]
-	onEdit: (id: string | number | boolean | string[]) => void 
+	onEdit: (id: string | number | boolean | string[]) => void
 }) => {
 
 	const { handleDelOrg, isPending } = useOrgDel(Number(rowId))

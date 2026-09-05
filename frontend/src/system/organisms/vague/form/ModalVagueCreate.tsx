@@ -28,7 +28,7 @@ const ModalVagueCreate = ({ open, closeModal } : ModalsProps) => {
 			closeModal={closeModal}
 		>
 			<form
-				className="flex flex-col w-full p-5 justify-between items-center"
+				className="flex flex-col w-full p-5 justify-between items-center space-y-5"
 				onSubmit={handleCreateVague}
 			>
 				<Select 
@@ -59,8 +59,6 @@ const ModalVagueCreate = ({ open, closeModal } : ModalsProps) => {
 				/>
 				<ActionButton
 					type="submit"
-					btnColor="secondary"
-					textColor="white"
 					btnStyling="w-full"
 				>{"Créer"}</ActionButton>
 			</form>

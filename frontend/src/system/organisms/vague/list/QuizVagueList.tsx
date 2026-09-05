@@ -3,7 +3,7 @@ import Loading from "../../../atoms/Loading/Loading";
 import FetchError from "../../../atoms/Loading/FetchError";
 import Select from "../../../atoms/Form/Select";
 import { getSelectData } from "../../../../other/helper/helper";
-import useQuiz from "../../../../other/hooks/quiz/useQuiz";
+import { useQuiz } from "../../../../other/hooks/quiz/useQuiz";
 
 interface QuizVagueListProps {
 	setQuiz: Dispatch<SetStateAction<number | null>>

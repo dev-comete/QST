@@ -6,12 +6,14 @@ import QuestionCreate from "../../product/pages/formateur/question/QuestionCreat
 import QuizManagement from "../../product/pages/formateur/quizz/QuizManagement";
 import QuizAssign from "../../product/pages/formateur/quizz/QuizAssign";
 import GlobalParam from "../../product/pages/formateur/globalParam/GlobalParam";
+import QuestionDetailPage from "../../product/pages/formateur/question/QuestionDetailPage";
 
 const COMMON_CHILDREN = [
 	{ path: "gestion_vague", element: <VagueManagement /> },
 	{ path: ":id/assign_vague", element: <VagueAssign /> },
 	{ path: "gestion_question", element: <QuestionManagement /> },
 	{ path: "creation_question", element: <QuestionCreateProvider><QuestionCreate /></QuestionCreateProvider> },
+	{ path: ":id/question_detail", element: <QuestionDetailPage /> },
 	{ path: "parametre_general", element: <GlobalParam /> },
 	{ path: "gestion_quiz", element: <QuizManagement /> },
 	{ path: ":id/assign_quiz", element: <QuizAssign /> },

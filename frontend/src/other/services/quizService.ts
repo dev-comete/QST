@@ -1,17 +1,33 @@
 import type { quizAssignPayload, quizCreateType, QuizReview, QuizSubmitPayload, quizType, studentQuizType } from "../types/quizType";
 import apiClient from "./apiClient";
 
+const QUIZ_CRUD_URL = import.meta.env.VITE_CRUD_QUIZ
+
+
 export const QuizService = {
 	create : async ( data : quizCreateType) => {
-		const url = import.meta.env.VITE_CRUD_QUIZ
-		const response = await apiClient.post(url, data);
+		const response = await apiClient.post(QUIZ_CRUD_URL, data);
 		return response.data;
 	},
 
 	list: async () => {
-		const url = import.meta.env.VITE_CRUD_QUIZ
-		const response = await apiClient.get(url);
+		const response = await apiClient.get(QUIZ_CRUD_URL);
 		return response.data as quizType[];
+	},
+
+	delete: async (id: number) => {
+		const response = await apiClient.delete(QUIZ_CRUD_URL + id + '/');
+		return response.data;
+	},
+
+	info: async (id: number) => {
+		const response = await apiClient.get(QUIZ_CRUD_URL + id + '/');
+		return response.data as quizType;
+	},
+
+	updateStatus: async (id: number, status: string) => {
+		const response = await apiClient.patch(QUIZ_CRUD_URL + id + '/', {status});
+		return response.data;
 	},
 
 	assignQuestion: async(data : quizAssignPayload) => {

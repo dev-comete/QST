@@ -9,10 +9,7 @@ import type { organisationType, userType } from "../../../../other/types/userTyp
 import CustomText from "../../../atoms/Text/CustomText"
 import ModalUserUpdate from "../form/ModalUpdateUser"
 
-const ActionCell = ({ 
-    rowId, 
-    onEdit 
-}: { 
+const ActionCell = ({ rowId, onEdit }: { 
     rowId: string | number | boolean | string[]
     onEdit: (id: string | number | boolean | string[]) => void 
 }) => {
@@ -36,7 +33,7 @@ const ActionCell = ({
     );
 };
 
-const getQuizTabColumns = (
+const getUserTabColumn = (
     onEdit: (id: string | number | boolean | string[]) => void
 ): Column<userType>[] => [
     {
@@ -98,7 +95,7 @@ const UserList = ({ organisations } : UserListProps) => {
     return (
         <Box direction="column" className="w-full items-center justify-center">
             <Table 
-                columns={getQuizTabColumns(handleOpenEditModal)}
+                columns={getUserTabColumn(handleOpenEditModal)}
                 data={users}
                 rowKey={'id'}
             />
