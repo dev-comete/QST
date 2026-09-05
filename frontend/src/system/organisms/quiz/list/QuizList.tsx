@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { formatDate } from "../../../../other/helper/helper";
 import { useAppNavigation } from "../../../../other/hooks/navigation/useAppNavigation";
 import { useQuiz, useQuizDel, useQuizUpdate } from "../../../../other/hooks/quiz/useQuiz";
@@ -8,11 +9,12 @@ import Loading from "../../../atoms/Loading/Loading";
 import { Table, type Column } from "../../../atoms/Table/Table";
 import CustomText from "../../../atoms/Text/CustomText";
 import IconButton, { IconConfirmActionButton } from "../../../molecules/Buttons/IconButton";
+import ModalQuizUpdate from "../form/ModalQuizUpdate";
 
-
-const ActionCell = ({ rowId, row } : {
+const ActionCell = ({ rowId, row, onEdit } : {
 	rowId : string | number | boolean,
 	row: quizType | null
+	onEdit: (id: string | number | boolean | string[]) => void 
 }) => {
     const { navigateTo } = useAppNavigation();
 	const { handleDelQuiz, isPending } = useQuizDel(Number(rowId))
@@ -24,25 +26,25 @@ const ActionCell = ({ rowId, row } : {
                 iconName={row && row.status === 'draft' ? 'arrow-up' : 'arrow-down'}
                 iconStyling="text-text hover:text-success"
                 action={handleUpdateStatus}
-				confirmText="Voulez-vous changer le status du quiz?"
+				confirmText="Voulez-vous changer le statut du quiz?"
 				isLoading={updateIsPending}
             />
 			<IconButton
                 iconName="edit"
                 iconStyling="text-text hover:text-success"
                 action={() => {
-                    navigateTo(`${rowId}/assign_quiz`);
+                    onEdit(rowId)
                 }}
             />
 			<IconButton
                 iconName="eye"
                 iconStyling="text-text hover:text-success"
                 action={() => {
-                    navigateTo(`${rowId}/assign_quiz`);
+					navigateTo(`${rowId}/quiz_question_detail`)
                 }}
             />
             <IconButton
-                iconName="edit"
+                iconName="question"
                 iconStyling="text-text hover:text-success"
                 action={() => {
                     navigateTo(`${rowId}/assign_quiz`);
@@ -59,7 +61,9 @@ const ActionCell = ({ rowId, row } : {
     );
 };
 
-const quizTabColumn: Column<quizType>[] = [
+const getQuizTabColumn = (
+    onEdit: (id: string | number | boolean | string[]) => void
+): Column<quizType>[] => [
 	{
 		header: 'Titre',
 		key: "titre"
@@ -90,7 +94,7 @@ const quizTabColumn: Column<quizType>[] = [
 		header: "Action",
 		key: 'id',
 		render: (value, row) => {
-			return <ActionCell rowId={value ? value : ''} row={row ? row : null}/>
+			return <ActionCell rowId={value ? value : ''} row={row ? row : null} onEdit={onEdit}/>
 		}
 		
 	}
@@ -98,7 +102,8 @@ const quizTabColumn: Column<quizType>[] = [
 
 // Todo : Transform formation(id) to formation(name) and render with new quizType
 const QuizList = () => {
-
+	const [selectedUserId, setSelectedUserId] = useState<number>(0)
+	const [isModalOpen, setIsModalOpen] = useState(false)
 	const { getAllQuiz } = useQuiz()
 	const { data: quizzes, status } = getAllQuiz
 
@@ -107,13 +112,23 @@ const QuizList = () => {
 	
 	if (!quizzes)
 		return <FetchError />
+	
+	const handleOpenEditModal = (id: string | number | boolean | string[]) => {
+        setSelectedUserId(id as number)
+        setIsModalOpen(true)
+    }
 
 	return (
 		<Box direction="column" className="w-full items-center justify-center">
 			<Table 
-				columns={quizTabColumn}
+				columns={getQuizTabColumn(handleOpenEditModal)}
 				data={quizzes}
 				rowKey={'id'}
+			/>
+			<ModalQuizUpdate
+				open={isModalOpen}
+				closeModal={() => setIsModalOpen(false)}
+				id={selectedUserId}
 			/>
 		</Box>
 	)

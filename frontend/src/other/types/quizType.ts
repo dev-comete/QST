@@ -1,3 +1,5 @@
+import type { bankQuestionResp } from "./questionType"
+
 type quizType = {
 	id: number,
 	titre: string,
@@ -79,6 +81,18 @@ type QuizReview = {
 	corrections: Correction[]
 }
 
+type QuestionQuiz = {
+	id: number,
+	quiz_id: number,
+	question_id: number,
+	enonce_question: string,
+	type_id: number,
+	type_nom: string,
+	bareme_id: number,
+	points: number,
+	options: bankQuestionResp[]
+}
+
 export type {
 	quizType,
 	quizCreateType,
@@ -91,5 +105,6 @@ export type {
 	QuizSubmitPayload,
 	QuizReview,
 	Correction,
-	CorrectionOption
+	CorrectionOption,
+	QuestionQuiz
 }

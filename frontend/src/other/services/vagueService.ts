@@ -1,11 +1,17 @@
 import type { assignQuizPayload, assignStudentPayload, vaguePayload, vagueType } from "../types/vagueType";
 import apiClient from "./apiClient";
 
+const VAGUE_URL = import.meta.env.VITE_CREATE_VAGUE
+
 export const VagueService = {
 
 	create: async ( data : vaguePayload) => {
-		const url = import.meta.env.VITE_CREATE_VAGUE
-		const response = await apiClient.post(url, data);
+		const response = await apiClient.post(VAGUE_URL, data);
+		return response.data;
+	},
+
+	delete: async ( id: number) => {
+		const response = await apiClient.delete(VAGUE_URL + id + '/' );
 		return response.data;
 	},
 

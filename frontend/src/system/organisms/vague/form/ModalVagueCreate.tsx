@@ -1,6 +1,6 @@
 import { formChangeHandler, getSelectData } from "../../../../other/helper/helper";
 import { useFormation } from "../../../../other/hooks/formation/useFormation";
-import { useVague } from "../../../../other/hooks/vague/useVague";
+import { useVagueCreate } from "../../../../other/hooks/vague/useVague";
 import type { ModalsProps } from "../../../../other/types/common";
 import Input from "../../../atoms/Form/Input";
 import Select from "../../../atoms/Form/Select";
@@ -11,7 +11,7 @@ import { Modal } from "../../../molecules/Modal/Modal";
 
 const ModalVagueCreate = ({ open, closeModal } : ModalsProps) => {
 	
-	const { setVague, handleCreateVague } = useVague()
+	const { setVague, handleCreateVague, isPending } = useVagueCreate()
 	const { formations, formationsStatus } = useFormation()
 
 	if (formationsStatus == 'pending')
@@ -21,6 +21,16 @@ const ModalVagueCreate = ({ open, closeModal } : ModalsProps) => {
 	
 	const selectedFormation = getSelectData(formations, 'nom_formation')
 
+	const handleSubmit = async (e: React.SubmitEvent) => {
+		e.preventDefault()
+		try {
+			await handleCreateVague()
+			closeModal()
+		} catch (error) {
+			console.log("Error", error)
+		}
+	}
+
 	return (
 		<Modal
 			title="Création de vague"
@@ -29,7 +39,7 @@ const ModalVagueCreate = ({ open, closeModal } : ModalsProps) => {
 		>
 			<form
 				className="flex flex-col w-full p-5 justify-between items-center space-y-5"
-				onSubmit={handleCreateVague}
+				onSubmit={handleSubmit}
 			>
 				<Select 
 					id="formation"
@@ -40,6 +50,7 @@ const ModalVagueCreate = ({ open, closeModal } : ModalsProps) => {
 						const selected = selectedFormation.find((q) => q.value === value) ?? selectedFormation[0]
 						return selected.id
 					})}
+					required
 				/>
 				<Input
 					id={"debut"}
@@ -48,6 +59,7 @@ const ModalVagueCreate = ({ open, closeModal } : ModalsProps) => {
 					type="datetime-local"
 					step={60}
 					onChange={formChangeHandler(setVague, 'debut')}
+					required
 				/>
 				<Input
 					id={"debut"}
@@ -56,10 +68,12 @@ const ModalVagueCreate = ({ open, closeModal } : ModalsProps) => {
 					type="datetime-local"
 					step={60}
 					onChange={formChangeHandler(setVague, 'fin')}
+					required
 				/>
 				<ActionButton
 					type="submit"
 					btnStyling="w-full"
+					isLoading={isPending}
 				>{"Créer"}</ActionButton>
 			</form>
 		</Modal>

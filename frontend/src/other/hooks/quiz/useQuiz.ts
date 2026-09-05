@@ -1,5 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { QuizService } from "../../services/quizService";
+import { useEffect, useState } from "react";
+import { useFormation } from "../formation/useFormation";
+import type { quizCreateType } from "../../types/quizType";
 
 export const useQuizDel = (id: number) => {
 	const queryClient = useQueryClient()
@@ -24,15 +27,29 @@ export const useQuizDel = (id: number) => {
 	}
 }
 
-export const useQuiz = () => {
+export const useQuiz = (id ?: number) => {
 
 	const getAllQuiz = useQuery({
 		queryKey: ['quiz_list'],
 		queryFn: QuizService.list
 	})
 
+	const infoQuestionQuiz = useQuery({
+		queryKey: ['info_question_quiz', id],
+		queryFn: () => QuizService.listQuestion(id ? id : 0),
+		enabled: !!id
+	})
+
+	const infoQuiz = useQuery({
+		queryKey: ['info_quiz', id],
+		queryFn: () => QuizService.info(id ? id : 0),
+		enabled: !!id
+	})
+
 	return {
-		getAllQuiz
+		getAllQuiz,
+		infoQuestionQuiz,
+		infoQuiz
 	}
 }
 
@@ -58,5 +75,58 @@ export const useQuizUpdate = (id: number, status: string) => {
 	return {
 		handleUpdateStatus,
 		isPending: updateMutation.isPending
+	}
+}
+
+const initQuiz = {
+	titre: '',
+	formation: '',
+	duree: '00:00:00',
+	status: 'draft'
+}
+
+export const useQuizEdit = (id: number) => {
+
+	const [quiz, setQuiz] = useState<quizCreateType>(initQuiz)
+	const { formations } = useFormation()
+	const queryClient = useQueryClient()
+	const { infoQuiz } = useQuiz(id)
+	
+	const updateQuiz= useMutation({
+		mutationFn: ({ id, data }: { id: number; data: quizCreateType }) => QuizService.update(id, data),
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+                queryKey: ['quiz_list'],
+            });
+		},
+		onError: (err) => {
+			console.error('Quiz update failed:', err);
+		},
+	});
+
+	const handleQuizEdit = async () => {
+		return await updateQuiz.mutateAsync({id, data: quiz})
+	}
+
+	useEffect(() => {
+
+		if (!formations || !infoQuiz.data) return
+
+		const initQuiz = infoQuiz.data
+
+		setQuiz({
+			titre: initQuiz.titre,
+			formation: initQuiz.formation,
+			duree: initQuiz.duree,
+			status: initQuiz.status,
+		})
+
+	}, [formations, infoQuiz.data]);
+
+	return {
+		isPending : updateQuiz.isPending,
+		handleQuizEdit,
+		quiz,
+		setQuiz,
 	}
 }

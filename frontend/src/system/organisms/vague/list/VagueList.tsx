@@ -2,7 +2,7 @@ import Box from "../../../atoms/Container/Box";
 import IconButton from "../../../molecules/Buttons/IconButton";
 import { Table, type Column } from "../../../atoms/Table/Table";
 import type { vagueType } from "../../../../other/types/vagueType";
-import { useVague } from "../../../../other/hooks/vague/useVague";
+import { useVague, useVagueDel } from "../../../../other/hooks/vague/useVague";
 import FetchError from "../../../atoms/Loading/FetchError";
 import Loading from "../../../atoms/Loading/Loading";
 import { formatDate } from "../../../../other/helper/helper";
@@ -11,6 +11,8 @@ import { useAppNavigation } from "../../../../other/hooks/navigation/useAppNavig
 
 const ActionCell = ({ rowId } : {rowId : unknown }) => {
     const { navigateTo } = useAppNavigation();
+
+	const { handleDelVague } = useVagueDel(rowId as number)
 
     return (
         <Box>
@@ -24,7 +26,7 @@ const ActionCell = ({ rowId } : {rowId : unknown }) => {
             <IconButton
                 iconName="trash"
                 iconStyling="text-text hover:text-error"
-                action={() => alert('Suppression')}
+                action={handleDelVague}
             />
         </Box>
     );

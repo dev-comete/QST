@@ -99,8 +99,7 @@ const UserList = ({ organisations } : UserListProps) => {
                 data={users}
                 rowKey={'id'}
             />
-
-			<ModalUserUpdate 
+			<ModalUserUpdate
 				open={isModalOpen}
 				closeModal={() => setIsModalOpen(false)}
 				listOrganisation={organisations}
