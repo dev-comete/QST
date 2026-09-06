@@ -1,13 +1,13 @@
+import type { Dispatch, SetStateAction } from "react";
 import { useQuestion } from "../../../../other/hooks/question/useQuestion";
 import type { assignQuestionType, bankQuestionType } from "../../../../other/types/questionType";
+import type { QuestionQuiz } from "../../../../other/types/quizType";
 import Box from "../../../atoms/Container/Box";
 import Paper from "../../../atoms/Container/Paper";
 import FetchError from "../../../atoms/Loading/FetchError";
 import Loading from "../../../atoms/Loading/Loading";
 import CustomText from "../../../atoms/Text/CustomText";
 import ActionButton from "../../../molecules/Buttons/ActionButton";
-import type { QuizAssignManipProps } from "../form/QuizAssignForm";
-
 
 interface QuestionItemProps {
 	addQuestionToAssign: (e: React.MouseEvent<HTMLButtonElement>) => void,
@@ -32,8 +32,13 @@ const QuestionItem = ({ addQuestionToAssign, item, disabled } : QuestionItemProp
 	)
 }
 
+export interface QuizBankQuestionProps {
+	ownedQuestions: QuestionQuiz[]
+	questions: assignQuestionType[]
+	setQuestion: Dispatch<SetStateAction<assignQuestionType[]>>
+}
 
-const QuizBankQuestion = ({ questions, setQuestion } : QuizAssignManipProps) => {
+const QuizBankQuestion = ({ questions, setQuestion, ownedQuestions } : QuizBankQuestionProps) => {
 
 	const { list } = useQuestion()
 	const { data: bankQuestions, status } = list
@@ -51,7 +56,9 @@ const QuizBankQuestion = ({ questions, setQuestion } : QuizAssignManipProps) => 
 		<Box direction="column">
 			{
 				bankQuestions.map((item) => {
-					const isSelected = questions?.some((q) => q.id === item.id);
+					const isSelected = 
+						questions?.some((q) => q.id === item.id) || 
+						ownedQuestions?.some((q) => q.question_id === item.id);
 
 					return (
 						<QuestionItem

@@ -1,52 +1,37 @@
-import { getSelectData, type SelectOption } from "../../../../other/helper/helper";
-import { useBareme } from "../../../../other/hooks/bareme/useBareme";
+import type { Dispatch, SetStateAction } from "react";
 import type { assignQuestionType } from "../../../../other/types/questionType";
 import Box from "../../../atoms/Container/Box";
 import Paper from "../../../atoms/Container/Paper";
-import Select from "../../../atoms/Form/Select";
-import FetchError from "../../../atoms/Loading/FetchError";
-import Loading from "../../../atoms/Loading/Loading";
 import CustomText from "../../../atoms/Text/CustomText";
 import IconButton from "../../../molecules/Buttons/IconButton";
-import type { QuizAssignManipProps } from "../form/QuizAssignForm";
+import BaremeInput from "../../globalParam/input/BaremeInput";
 
 interface QuizQuestionItemProps {
 	numero: number,
 	question : assignQuestionType,
-	baremes_pts: SelectOption[],
 	onBaremeChange: (value: string) => void;
     onDelete: () => void;
 }
 
-const QuizQuestionItem = ({ numero, question, baremes_pts, onBaremeChange, onDelete } : QuizQuestionItemProps) => {
+const QuizQuestionItem = ({ numero, question, onBaremeChange, onDelete } : QuizQuestionItemProps) => {
 
 	return (
 		<Paper className="flex flex-col w-full p-3 rounded-xl border border-background">
 			<IconButton action={onDelete} iconName="circle-xmark" btnStyling="self-end"/>
 			<Box direction="column">
 				<CustomText>{`${numero}. ${question.texte_enonce}`}</CustomText>
-				<Select 
-					id={"type"}
-					name={"type"}
-					selectionValue={baremes_pts}
-					label="Barème"
-					handleChange={(e: any) => onBaremeChange(e.target.value)}
-				/>
+				<BaremeInput onBaremeChange={onBaremeChange} />
 			</Box>
 		</Paper>
 	)
 }
 
-const QuizQuestionList = ({questions, setQuestion} : QuizAssignManipProps) => {
+interface QuizQuestionListProps {
+	questions: assignQuestionType[]
+	setQuestion: Dispatch<SetStateAction<assignQuestionType[]>>
+}
 
-	const { baremeQuery } = useBareme()
-	const { data: baremes, status } = baremeQuery
-
-	if (status == 'pending')
-		return <Loading />
-	
-	if (!baremes)
-		return <FetchError />
+const QuizQuestionList = ({questions, setQuestion} : QuizQuestionListProps) => {
 
     const handleDeleteQuestion = (indexToDelete: number) => {
         setQuestion(questions.filter((_, index) => index !== indexToDelete));
@@ -75,7 +60,6 @@ const QuizQuestionList = ({questions, setQuestion} : QuizAssignManipProps) => {
 								key={index + item.texte_enonce}
 								numero={index + 1}
 								question={item}
-								baremes_pts={getSelectData(baremes, 'pts')}
 								onBaremeChange={(newValue : string) => handleBaremeChange(index, newValue)}
 								onDelete={() => handleDeleteQuestion(index)}
 							/>

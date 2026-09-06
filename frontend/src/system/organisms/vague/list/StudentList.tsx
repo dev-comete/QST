@@ -3,39 +3,40 @@ import { useUser } from "../../../../other/hooks/user/useUser";
 import Paper from "../../../atoms/Container/Paper";
 import FetchError from "../../../atoms/Loading/FetchError";
 import Loading from "../../../atoms/Loading/Loading";
+import Input from "../../../atoms/Form/Input";
 import CustomText from "../../../atoms/Text/CustomText";
-import ActionButton from "../../../molecules/Buttons/ActionButton";
+import type { etudiantType } from "../../../../other/types/vagueType";
+import type { userType } from "../../../../other/types/userType";
 
 interface StudentItemProps {
-	addStudentToAssign: (e: React.MouseEvent<HTMLButtonElement>) => void,
-	item: number,
-	disabled: boolean
+	addStudentToAssign: (id: number) => void,
+	item: userType,
 }
 
-const StudentItem = ({ addStudentToAssign, item, disabled } : StudentItemProps) => {
+const StudentItem = ({ addStudentToAssign, item } : StudentItemProps) => {
+
 	return (
 		<Paper className="flex justify-between gap-3 items-center p-3 border border-background">
-			<CustomText>{item}</CustomText>
-			{
-				!disabled &&
-				<ActionButton
-					onClick={addStudentToAssign}
-					btnColor={"text"}
-					textColor="white"
-					disabled={disabled}
-				>Ajouter</ActionButton>
-			}
+			<Input
+				id={`check + ${item}`}
+				name={`check + ${item}`}
+                type="checkbox"
+                // checked={Boolean(value)}
+                onChange={() => addStudentToAssign(item.id)}
+                className="cursor-pointer h-4 w-4 rounded"
+            />
+			<CustomText>{item.username}</CustomText>
 		</Paper>
 	)
 }
 
 interface StudentListProps {
-	students: number[]
+	ownedStudents: etudiantType[]
 	setStudents: Dispatch<SetStateAction<number[]>>
 }
 
 
-const StudentList = ({ students, setStudents } : StudentListProps) => {
+const StudentList = ({ ownedStudents, setStudents } : StudentListProps) => {
 
 	const { getUserQuery } = useUser({ role: 'apprenant'})
 	const { data: studentList, status } = getUserQuery
@@ -48,25 +49,23 @@ const StudentList = ({ students, setStudents } : StudentListProps) => {
 		return <Loading />
 	if (!studentList)
 		return <FetchError />
+	
+	const studentNotSubsribed = studentList.filter(
+		(apprenant) => !ownedStudents.some((e) => e.etudiant_id === apprenant.id)
+	);
 
 	return (
 		<>
 			{
-				studentList.map((item) => {
-					const isSelected = students?.some((q) => q === item.id);
+				studentNotSubsribed.map((item) => {
 
-					return (
-						<StudentItem
-							key={item.id}
-							item={item.id}
-							disabled={isSelected}
-							addStudentToAssign={(e) => {
-									e.preventDefault()
-									handleSelectQuestion(item.id)
-								}
-							}
-						/>
-					)})
+				return (
+					<StudentItem
+						key={item.id}
+						item={item}
+						addStudentToAssign={handleSelectQuestion}
+					/>
+				)})
 			}
 		</>
 	)

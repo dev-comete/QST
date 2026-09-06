@@ -8,22 +8,21 @@ import RespCreatedList from "../list/RespCreatedList";
 import { formChangeHandler, getSelectData } from "../../../../other/helper/helper";
 import Loading from "../../../atoms/Loading/Loading";
 import FetchError from "../../../atoms/Loading/FetchError";
+import BaremeInput from "../../globalParam/input/BaremeInput";
 
 
 const EnonceForm = () => {
 
-	const { question, setQuestion, questionTypeQuery, baremeQuery  } = useQuestionCreate();
+	const { question, setQuestion, questionTypeQuery  } = useQuestionCreate();
 	const { data : questionType, status : questionTypeStatus } = questionTypeQuery
-	const { data : bareme, status : baremeStatus } = baremeQuery
 
-	if (questionTypeStatus == 'pending' || baremeStatus == 'pending')
+	if (questionTypeStatus == 'pending')
 		return <Loading />
 	
-	if (!questionType || !bareme)
+	if (!questionType)
 		return <FetchError />
 
 	const selectionQuestionType = getSelectData(questionType, 'code')
-	const selectionBareme = getSelectData(bareme, 'pts')
 
 	return (
 		<Box direction="column" className="w-full px-5">
@@ -47,13 +46,7 @@ const EnonceForm = () => {
 					return realId + 1
 				})}
 			/>
-			<Select
-				id={"bareme"}
-				name={"bareme"}
-				selectionValue={selectionBareme}
-				label="Barème"
-				handleChange={formChangeHandler(setQuestion, 'bareme_pts')}
-			/>
+			<BaremeInput onBaremeChange={(e) => formChangeHandler(setQuestion, 'bareme_pts')} />
 		</Box>
 	)
 }

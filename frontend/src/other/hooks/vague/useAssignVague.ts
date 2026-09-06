@@ -1,48 +1,53 @@
 import { useState } from "react"
-import { useParams } from "react-router";
-import { useMutation } from "@tanstack/react-query";
+// import { useParams } from "react-router";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { VagueService } from "../../services/vagueService";
 
-export const useAssignVague = () => {
+
+// Issue with init quiz !!! before any selection
+
+export const useAssignVague = (vagueId: number) => {
 	
 	const [ students, setStudents] = useState<number[]>([])
 	const [ quiz, setQuiz ] = useState<number | null>(null)
 	
-	const { id : vagueId } = useParams();
+	// const { id : vagueId } = useParams();
 
-	const { mutate : studentAssignation, status : studentStatus } = useMutation({
+	const queryClient = useQueryClient()
+
+	const assignStudent = useMutation({
 		mutationFn: VagueService.assignStudent,
-		onSuccess: (data) => {
-			console.log("Student assignated", data)
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+                queryKey: ['vague_list'],
+            });
+			setStudents([])
 		},
 		onError: (err) => {
 			console.error('Student assignation error:', err);
 		},
 	});
 
-	const handleAssignStudent = () => {
+	const handleAssignStudent = async () => {
 
-		if (!vagueId) return
-	
 		const payload = {
 			vague_id: Number(vagueId),
 			etudiant_ids: students
 		}
-
-		studentAssignation(payload)
+		return await assignStudent.mutateAsync(payload)
 	}
 
-	const { mutate : quizAssignation, status : quizStatus } = useMutation({
+	const assignQuiz = useMutation({
 		mutationFn: VagueService.assignQuiz,
-		onSuccess: (data) => {
-			console.log("Quiz assignated", data)
+		onSuccess: () => {
+			setQuiz(null)
 		},
 		onError: (err) => {
 			console.error('Quiz assignation error:', err);
 		},
 	});
 
-	const handleAssignQuiz = () => {
+	const handleAssignQuiz = async () => {
 
 		if (!quiz) return
 	
@@ -51,16 +56,16 @@ export const useAssignVague = () => {
 			quiz_id: quiz
 		}
 
-		quizAssignation(payload)
+		return await assignQuiz.mutateAsync(payload)
 	}
 	
 	return {
 		students,
 		setStudents,
-		studentStatus,
+		isAssignStudPending: assignStudent.isPending,
+		isAssignQuizPending: assignQuiz.isPending,
 		quiz,
 		setQuiz,
-		quizStatus,
 		handleAssignStudent,
 		handleAssignQuiz
 	}

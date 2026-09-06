@@ -1,17 +1,15 @@
-import type { Dispatch, SetStateAction } from "react";
 import useAssignQuiz from "../../../../other/hooks/quiz/useAssignQuiz";
-import type { assignQuestionType } from "../../../../other/types/questionType";
 import ActionButton from "../../../molecules/Buttons/ActionButton";
 import QuizBankQuestion from "../list/QuizBankQuestion";
 import QuizQuestionList from "../list/QuizQuestionList";
 import AssignBloc from "../container/AssignBloc";
+import type { QuestionQuiz } from "../../../../other/types/quizType";
 
-export interface QuizAssignManipProps {
-	questions: assignQuestionType[]
-	setQuestion: Dispatch<SetStateAction<assignQuestionType[]>>
+interface QuizAssignManipProps {
+	ownedQuestions: QuestionQuiz[]
 }
 
-const QuizAssignForm = () => {
+const QuizAssignForm = ({ ownedQuestions } : QuizAssignManipProps) => {
 
 	const { 
 		selectedQuestion,
@@ -23,6 +21,7 @@ const QuizAssignForm = () => {
 		<form className="flex justify-center gap-10 w-full">
 			<AssignBloc title="Banque de questions">
 				<QuizBankQuestion
+					ownedQuestions={ownedQuestions}
 					questions={selectedQuestion}
 					setQuestion={setSelectedQuestion}
 				/>

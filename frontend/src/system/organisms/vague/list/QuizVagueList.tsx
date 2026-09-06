@@ -4,6 +4,7 @@ import FetchError from "../../../atoms/Loading/FetchError";
 import Select from "../../../atoms/Form/Select";
 import { getSelectData } from "../../../../other/helper/helper";
 import { useQuiz } from "../../../../other/hooks/quiz/useQuiz";
+import Box from "../../../atoms/Container/Box";
 
 interface QuizVagueListProps {
 	setQuiz: Dispatch<SetStateAction<number | null>>
@@ -21,13 +22,20 @@ const QuizVagueList = ({ setQuiz } : QuizVagueListProps) => {
 		return <FetchError />
 
 	return (
-		<Select 
-			id={"type"}
-			name={"type"}
-			selectionValue={getSelectData(data, 'id')}
-			label="Barème"
-			handleChange={(e: any) => setQuiz(e.target.value)}
-		/>
+		<Box className="w-full">
+			<Select 
+				id={"type"}
+				name={"type"}
+				selectionValue={getSelectData(data, 'titre')}
+				label="Sélection de quiz"
+				handleChange={(e) => {
+					const quizName = e.target.value
+					const selectedQuiz = data.find((q) => q.titre == quizName)
+					console.log("Selected quiz", selectedQuiz)
+					setQuiz(Number(selectedQuiz?.id))
+				}}
+			/>
+		</Box>
 	)
 }
 

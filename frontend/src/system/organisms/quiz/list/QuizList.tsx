@@ -37,17 +37,10 @@ const ActionCell = ({ rowId, row, onEdit } : {
                 }}
             />
 			<IconButton
-                iconName="eye"
-                iconStyling="text-text hover:text-success"
-                action={() => {
-					navigateTo(`${rowId}/quiz_question_detail`)
-                }}
-            />
-            <IconButton
                 iconName="question"
                 iconStyling="text-text hover:text-success"
                 action={() => {
-                    navigateTo(`${rowId}/assign_quiz`);
+					navigateTo(`${rowId}/quiz_questions`)
                 }}
             />
 			<IconConfirmActionButton

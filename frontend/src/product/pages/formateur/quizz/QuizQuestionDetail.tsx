@@ -1,12 +1,8 @@
-import { useParams } from "react-router";
-import BodyLayout from "../../../layout/common/BodyLayout";
-import { useQuiz } from "../../../../other/hooks/quiz/useQuiz";
-import Loading from "../../../../system/atoms/Loading/Loading";
-import FetchError from "../../../../system/atoms/Loading/FetchError";
 import Box from "../../../../system/atoms/Container/Box";
 import Paper from "../../../../system/atoms/Container/Paper";
 import CustomText from "../../../../system/atoms/Text/CustomText";
 import type { bankQuestionResp } from "../../../../other/types/questionType";
+import type { QuestionQuiz } from "../../../../other/types/quizType";
 
 interface OptionItemProps {
 	id: number,
@@ -43,25 +39,16 @@ const OptionItem = ({ item } : OptionItemProps) => {
 	)
 }
 
-const QuizQuestionDetail = () => {
+interface QuizQuestionDetailProps {
+	questions : QuestionQuiz[]
+}
 
-	const { id } = useParams()
-
-	const { infoQuestionQuiz } = useQuiz(Number(id))
-	const { data : questions, isPending } = infoQuestionQuiz
-
-	if (isPending) return <Loading />
-
-	if (!questions) return  <FetchError />
+const QuizQuestionDetail = ({ questions } : QuizQuestionDetailProps) => {
 
 	return (
-		<BodyLayout
-			title={"Détails du quiz "}
-			defaultLinkBack={true}
-		>
-
+		<>
 			{ questions.length == 0
-				? <CustomText className="w-full text-center">Aucune question n'est assignée au quiz</CustomText>
+				? <CustomText className="w-full text-center">Veuillez assigner des questions au quiz</CustomText>
 				: <Box direction="column" className="space-y-5 overflow-y-auto w-full">
 				{
 					questions.map((item, index) => {
@@ -106,7 +93,7 @@ const QuizQuestionDetail = () => {
 				}
 			</Box>
 		}
-		</BodyLayout>
+		</>
 	)
 }
 

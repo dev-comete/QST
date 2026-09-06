@@ -67,7 +67,7 @@ const QuizForm = ({ closeModal, id } : { closeModal : () => void, id: number }) 
 						const selected = formations.find((q) => q.nom_formation === value) ?? formations[0]
 						return String(selected.id)
 					})}
-					value={quiz.formation}
+					value={selectedFormations.find((q) => q.value == quiz.formation)?.value}
 				/>
 				<Input
 					id={"duree"}

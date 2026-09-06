@@ -53,6 +53,7 @@ export const useBareme = () => {
 			pts: baremeInput ? baremeInput : 0
 		}
 		mutate(payload)
+		setBaremeInput(undefined)
 	}
 
 	const baremeQuery = useQuery({

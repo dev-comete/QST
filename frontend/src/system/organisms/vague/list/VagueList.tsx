@@ -7,10 +7,14 @@ import FetchError from "../../../atoms/Loading/FetchError";
 import Loading from "../../../atoms/Loading/Loading";
 import { formatDate } from "../../../../other/helper/helper";
 import CustomText from "../../../atoms/Text/CustomText";
-import { useAppNavigation } from "../../../../other/hooks/navigation/useAppNavigation";
+import { useState, type Dispatch, type SetStateAction } from "react";
+import VagueAssign from "../../../../product/pages/formateur/vague/VagueAssign";
 
-const ActionCell = ({ rowId } : {rowId : unknown }) => {
-    const { navigateTo } = useAppNavigation();
+const ActionCell = ({ rowId, setSelectedId }: { 
+    rowId: string | number | boolean | string[]
+	onEdit?: (id: string | number | boolean | string[]) => void
+	setSelectedId: Dispatch<SetStateAction<number | null>>
+}) => {   
 
 	const { handleDelVague } = useVagueDel(rowId as number)
 
@@ -19,9 +23,7 @@ const ActionCell = ({ rowId } : {rowId : unknown }) => {
             <IconButton
                 iconName="edit"
                 iconStyling="text-text hover:text-success"
-                action={() => {
-                    navigateTo(`${rowId}/assign_vague`);
-                }}
+                action={() => setSelectedId(Number(rowId))}
             />
             <IconButton
                 iconName="trash"
@@ -32,7 +34,9 @@ const ActionCell = ({ rowId } : {rowId : unknown }) => {
     );
 };
 
-const vagueTabColumn: Column<vagueType>[] = [
+const getVagueTabColumn = (
+	setSelectedId: Dispatch<SetStateAction<number | null>>
+) : Column<vagueType>[] => [
 	{
 		header: 'Formation',
 		key: "formation_nom"
@@ -59,8 +63,8 @@ const vagueTabColumn: Column<vagueType>[] = [
 	{
 		header: "Action",
 		key: 'id',
-		render: (value) => {
-			return <ActionCell rowId={value ? value : ''} />
+		render: (_value, _row, index) => {
+			return <ActionCell rowId={index ? index : 0} setSelectedId={setSelectedId}/>
 		}
 		
 	}
@@ -70,6 +74,7 @@ const VagueList = () => {
 
 	const { getAllVague } = useVague()
 	const { data: vagues, status } = getAllVague
+	const [ selectedId, setSelectedId ] = useState<number | null>(null)
 
 	if (status == 'pending')
 		return <Loading />
@@ -79,11 +84,20 @@ const VagueList = () => {
 
 	return (
 		<Box direction="column" className="w-full items-center justify-center">
-			<Table 
-				columns={vagueTabColumn}
+		{selectedId === null && <Table 
+				columns={getVagueTabColumn(setSelectedId)}
 				data={vagues}
 				rowKey={'id'}
 			/>
+		}
+		{
+			selectedId != null && 
+			<VagueAssign
+				ownedStudents={vagues[selectedId].etudiants}
+				setSelectedId={setSelectedId}
+				vagueId={vagues[selectedId].id}
+			/>
+		}
 		</Box>
 	)
 }
