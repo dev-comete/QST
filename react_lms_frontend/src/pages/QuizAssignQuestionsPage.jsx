@@ -3,20 +3,25 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 
 import { QuestionService } from '../api/question.service';
 import { AssignmentService } from '../api/assignement.service';
+import { QuizService } from '../api/quiz.service';
 import useDebounce from '../hooks/useDebounce';
 import '../styles/index.css';
+import { notify } from '../lib/notify';
 
 const QuizAssignQuestionsPage = () => {
   const { id: quizId } = useParams();
   const navigate = useNavigate();
 
-  // État pour les questions de la banque
+  // IDs des questions déjà assignées au quiz
+  const [assignedQuestionIds, setAssignedQuestionIds] = useState([]);
+
+  // Questions de la banque (déjà filtrées côté backend via exclude_quiz)
   const [bankQuestions, setBankQuestions] = useState([]);
 
-  // État pour les questions sélectionnées (Panier)
+  // Questions sélectionnées (panier)
   const [selectedQuestions, setSelectedQuestions] = useState([]);
 
-  // États pour la recherche dans la banque
+  // Recherche
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
@@ -24,22 +29,42 @@ const QuizAssignQuestionsPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
-  // 1. Charger la banque au montage
+  // 1. Charger les questions déjà assignées, puis la banque, au montage
   useEffect(() => {
-    fetchBankQuestions();
+    fetchAssignedQuestions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // 2. Recharger la banque de questions si on fait une recherche
+  // 2. Recharger la banque quand la recherche change OU quand on connait enfin
+  //    les questions assignées (pour que exclude_quiz soit envoyé dès le 1er appel utile)
   useEffect(() => {
     fetchBankQuestions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedSearchTerm]);
+  }, [debouncedSearchTerm, assignedQuestionIds]);
+
+  const fetchAssignedQuestions = async () => {
+    try {
+      // 🔧 FIX : la méthode s'appelle getAssignedQuestions, pas getQuizQuestions
+      // (QuizService.getQuizQuestions n'existe pas -> l'appel plantait silencieusement
+      // et assignedQuestionIds restait toujours à [])
+      const data = await QuizService.getAssignedQuestions(quizId);
+
+      const items = data.results || data;
+      const ids = items.map(item => parseInt(item.question_id, 10));
+
+      setAssignedQuestionIds(ids);
+    } catch (err) {
+      console.error("Impossible de charger les questions déjà assignées", err);
+      setAssignedQuestionIds([]);
+    }
+  };
 
   const fetchBankQuestions = async () => {
     setLoading(true);
     try {
-      const data = await QuestionService.getBankQuestions(debouncedSearchTerm, '', 1);
+      // 🆕 On envoie quizId au backend pour qu'il exclue déjà les questions assignées
+      // (voir QuestionBankSearchAPIView côté Django : param exclude_quiz)
+      const data = await QuestionService.getBankQuestions(debouncedSearchTerm, '', 1, quizId);
       setBankQuestions(data.results || data);
     } catch (err) {
       console.error(err);
@@ -48,27 +73,23 @@ const QuizAssignQuestionsPage = () => {
     }
   };
 
-  // 3. Ajouter une question à la sélection
   const handleAddQuestion = (question) => {
-    // Éviter les doublons
     if (selectedQuestions.find(q => q.question_id === question.id)) return;
 
     setSelectedQuestions([
       ...selectedQuestions,
       {
         question_id: question.id,
-        texte_enonce: question.enonce_question, // Pour l'affichage uniquement
-        bareme_pts: '' // L'utilisateur tapera directement les points
+        texte_enonce: question.enonce_question,
+        bareme_pts: ''
       }
     ]);
   };
 
-  // 4. Retirer une question de la sélection
   const handleRemoveQuestion = (questionId) => {
     setSelectedQuestions(selectedQuestions.filter(q => q.question_id !== questionId));
   };
 
-  // 5. Mettre à jour les points d'une question sélectionnée
   const handleQuestionParamChange = (questionId, value) => {
     const updatedList = selectedQuestions.map(q => {
       if (q.question_id === questionId) {
@@ -79,11 +100,9 @@ const QuizAssignQuestionsPage = () => {
     setSelectedQuestions(updatedList);
   };
 
-  // 6. Soumettre le payload final
   const handleSubmit = async () => {
-    // Validation : Vérifier que toutes les questions ont un barème valide (supérieur à 0)
     const isValid = selectedQuestions.every(q => q.bareme_pts !== '' && parseFloat(q.bareme_pts) > 0);
-    
+
     if (!isValid) {
       setError("Veuillez saisir un barème valide (points) pour toutes les questions choisies.");
       return;
@@ -92,19 +111,18 @@ const QuizAssignQuestionsPage = () => {
     setIsSubmitting(true);
     setError(null);
 
-    // Préparation du Payload mis à jour
     const payload = {
       quiz_id: parseInt(quizId),
       questions_choisies: selectedQuestions.map(q => ({
         question_id: q.question_id,
-        bareme_pts: parseFloat(q.bareme_pts) // Le backend accepte maintenant directement les points !
+        bareme_pts: parseFloat(q.bareme_pts)
       }))
     };
 
     try {
       await AssignmentService.assignQuestions(payload);
-      alert("Questions assignées avec succès !");
-      navigate('/quizzes');
+      notify({ type: 'success', message: 'Questions assignées avec succès !' });
+      navigate(`/quizzes/${quizId}/questions`);
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.error || "Erreur lors de l'assignation des questions.");
@@ -112,6 +130,13 @@ const QuizAssignQuestionsPage = () => {
       setIsSubmitting(false);
     }
   };
+
+  // 🛡️ Garde-fou côté client : au cas où le backend ne serait pas encore
+  // à jour avec exclude_quiz, ou si assignedQuestionIds vient de se rafraîchir
+  // avant que bankQuestions ne soit re-fetché.
+  const availableQuestions = bankQuestions.filter(q =>
+    !assignedQuestionIds.includes(parseInt(q.id, 10))
+  );
 
   return (
     <div className="lms-scope lms-page">
@@ -143,21 +168,27 @@ const QuizAssignQuestionsPage = () => {
               <div className="lms-loading"><span className="lms-spinner" />Chargement…</div>
             ) : (
               <div className="lms-picker" style={{ maxHeight: '400px', overflowY: 'auto' }}>
-                {bankQuestions.map(q => {
-                  const isAdded = selectedQuestions.find(sq => sq.question_id === q.id);
-                  return (
-                    <div key={q.id} className="lms-picker-item" style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--space-3)', borderBottom: '1px solid var(--color-border)' }}>
-                      <span className="lms-picker-item__text" style={{ flex: 1, paddingRight: 'var(--space-3)' }}>{q.enonce_question}</span>
-                      <button
-                        onClick={() => handleAddQuestion(q)}
-                        disabled={isAdded}
-                        className={`lms-btn lms-btn--sm ${isAdded ? 'lms-btn--ghost' : 'lms-btn--success'}`}
-                      >
-                        {isAdded ? 'Ajouté' : 'Ajouter'}
-                      </button>
-                    </div>
-                  );
-                })}
+                {availableQuestions.length === 0 ? (
+                  <div style={{ padding: 'var(--space-4)', textAlign: 'center', color: 'var(--color-text-muted)' }}>
+                    Toutes les questions disponibles sont déjà dans le quiz, ou aucun résultat pour votre recherche.
+                  </div>
+                ) : (
+                  availableQuestions.map(q => {
+                    const isAdded = selectedQuestions.find(sq => sq.question_id === q.id);
+                    return (
+                      <div key={q.id} className="lms-picker-item" style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--space-3)', borderBottom: '1px solid var(--color-border)' }}>
+                        <span className="lms-picker-item__text" style={{ flex: 1, paddingRight: 'var(--space-3)' }}>{q.enonce_question}</span>
+                        <button
+                          onClick={() => handleAddQuestion(q)}
+                          disabled={isAdded}
+                          className={`lms-btn lms-btn--sm ${isAdded ? 'lms-btn--ghost' : 'lms-btn--success'}`}
+                        >
+                          {isAdded ? 'Dans le panier' : 'Sélectionner'}
+                        </button>
+                      </div>
+                    );
+                  })
+                )}
               </div>
             )}
           </div>
@@ -179,8 +210,8 @@ const QuizAssignQuestionsPage = () => {
 
                     <div className="lms-selected-item__head" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--space-3)' }}>
                       <strong className="lms-selected-item__title">{index + 1}. {q.texte_enonce}</strong>
-                      <button 
-                        onClick={() => handleRemoveQuestion(q.question_id)} 
+                      <button
+                        onClick={() => handleRemoveQuestion(q.question_id)}
                         className="lms-btn lms-btn--ghost lms-btn--sm"
                         style={{ color: 'var(--color-danger)', padding: '4px 8px' }}
                       >
@@ -189,7 +220,6 @@ const QuizAssignQuestionsPage = () => {
                     </div>
 
                     <div className="lms-selected-item__row">
-                      {/* 🌟 NOUVEAU : Input numérique pour le barème au lieu du select */}
                       <div className="lms-selected-item__field" style={{ width: '50%' }}>
                         <label className="lms-label">Points *</label>
                         <input

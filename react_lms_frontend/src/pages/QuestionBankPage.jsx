@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { QuestionService } from '../api/question.service';
 import useDebounce from '../hooks/useDebounce';
 import { useNavigate } from 'react-router-dom';
+import { notify, confirm } from '../lib/notify';
 import '../styles/index.css';
 
 // 🌟 ICÔNES
@@ -21,6 +22,14 @@ const IconRestore = (props) => (
   </svg>
 );
 
+// 🌟 NOUVELLE ICÔNE : Édition
+const IconEdit = (props) => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M12 20h9" />
+    <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+  </svg>
+);
+
 const QuestionBankPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [typeCode, setTypeCode] = useState('');
@@ -30,7 +39,6 @@ const QuestionBankPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   
-  // 🌟 ÉTAT MODE CORBEILLE
   const [showTrash, setShowTrash] = useState(false);
 
   const navigate = useNavigate();
@@ -49,7 +57,6 @@ const QuestionBankPage = () => {
     setLoading(true);
     setError(null);
     try {
-      // 🌟 REQUÊTE DYNAMIQUE SELON LE MODE
       const response = showTrash 
         ? await QuestionService.getTrashQuestions(debouncedSearchTerm, typeCode, page)
         : await QuestionService.getBankQuestions(debouncedSearchTerm, typeCode, page);
@@ -62,15 +69,27 @@ const QuestionBankPage = () => {
     }
   };
 
-  // 🌟 FONCTION DE RESTAURATION
   const handleRestoreQuestion = async (questionId) => {
-    if (!window.confirm("Voulez-vous restaurer cette question ?")) return;
+    const confirmed = await confirm("Voulez-vous restaurer cette question ?");
+    if (!confirmed) return;
     try {
       await QuestionService.restoreQuestion(questionId);
-      // Rafraîchir la liste après restauration
       fetchQuestions();
     } catch (err) {
-      alert("Erreur lors de la restauration de la question.");
+      notify({ type: 'error', message: 'Erreur lors de la restauration de la question.' });
+    }
+  };
+
+  const handleDeleteQuestion = async (questionId) => {
+    const confirmed = await confirm("Voulez-vous placer cette question dans la corbeille ?");
+    if (!confirmed) return;
+    try {
+      await QuestionService.deleteQuestion(questionId); 
+      fetchQuestions(); // Met à jour la liste si succès
+    } catch (err) {
+      // 🌟 CORRECTION : On affiche le message d'erreur précis renvoyé par Django !
+      const errorMsg = err.response?.data?.error || "Erreur lors de la suppression de la question.";
+      notify({ type: 'error', message: errorMsg });
     }
   };
 
@@ -155,14 +174,32 @@ const QuestionBankPage = () => {
                       {question.enonce_question}
                     </h4>
                     
-                    {/* 🌟 BOUTON RESTAURER EN MODE CORBEILLE */}
-                    {showTrash && (
+                    {showTrash ? (
                       <button 
                         className="lms-btn lms-btn--success lms-btn--sm"
                         onClick={() => handleRestoreQuestion(question.id)}
                       >
                         <IconRestore style={{ marginRight: '6px' }} /> Restaurer
                       </button>
+                    ) : (
+                      <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
+                        {/* 🌟 NOUVEAU : Boutons Modifier et Supprimer */}
+                        <button 
+                          className="lms-icon-action lms-icon-action--neutral"
+                          onClick={() => navigate(`/banque-questions/${question.id}/edit`)}
+                          title="Modifier cette question"
+                        >
+                          <IconEdit />
+                        </button>
+                        
+                        <button 
+                          className="lms-icon-action"
+                          onClick={() => handleDeleteQuestion(question.id)}
+                          title="Mettre à la corbeille"
+                        >
+                          <IconTrash />
+                        </button>
+                      </div>
                     )}
                   </div>
 

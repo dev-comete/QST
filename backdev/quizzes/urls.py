@@ -8,7 +8,7 @@ from .views import (
     SubmitQuizAPIView , AssignStudentAPIView, MyTodoQuizzesAPIView , AssignQuestionsAPIView , TypeQuestionViewSet, 
     BaremeViewSet, 
     QuestionTypeQuestionViewSet, 
-    QuestionBaremeViewSet , CreateFullQuestionAPIView , QuizQuestionViewSet , ApprenantQuizListAPIView , TakeQuizAPIView , QuizReviewAPIView , QuestionBankSearchAPIView, RemoveQuestionFromQuizAPIView , QuizAssignedQuestionsListAPIView
+    QuestionBaremeViewSet , CreateFullQuestionAPIView , QuizQuestionViewSet , ApprenantQuizListAPIView , TakeQuizAPIView , QuizReviewAPIView , QuestionBankSearchAPIView, RemoveQuestionFromQuizAPIView , QuizAssignedQuestionsListAPIView , QuestionDetailAPIView
 )
 
 from .views_analytics import FormateurVagueAnalyticsAPIView , ApprenantBulletinAPIView
@@ -49,6 +49,8 @@ urlpatterns = [
     path('mes-quiz/', ApprenantQuizListAPIView.as_view(), name='mes-quiz'),
 
     path('assign-questions/', AssignQuestionsAPIView.as_view(), name='api-assign-questions'),
+
+    path('banque-questions/<int:question_id>/', QuestionDetailAPIView.as_view(), name='question-detail'),
 
     path('assign-student/', AssignStudentAPIView.as_view(), name='api-assign-quiz'),
 

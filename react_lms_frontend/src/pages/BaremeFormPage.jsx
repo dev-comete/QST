@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { BaremeService } from '../api/bareme.service';
 import '../styles/index.css';
+import { notify } from '../lib/notify';
 
 export default function BaremeFormPage() {
   const navigate = useNavigate();
@@ -36,7 +37,7 @@ export default function BaremeFormPage() {
       navigate('/baremes');
     } catch (error) {
       console.error("Erreur lors de l'enregistrement", error);
-      alert("Une erreur est survenue.");
+      notify({ type: 'error', message: 'Une erreur est survenue.' });
     }
   };
 

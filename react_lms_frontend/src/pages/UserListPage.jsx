@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { UserService } from '../api/user.service';
+import { confirm, notify } from '../lib/notify';
 
 export default function UserListPage() {
   const [users, setUsers] = useState([]);
@@ -28,15 +29,15 @@ export default function UserListPage() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Voulez-vous vraiment supprimer cet utilisateur ?")) {
+    const confirmed = await confirm("Voulez-vous vraiment supprimer cet utilisateur ?");
+    if (!confirmed) return;
       try {
         await UserService.delete(id);
         setUsers(users.filter(u => u.id !== id));
       } catch (error) {
         console.error("Erreur lors de la suppression", error);
-        alert("Erreur lors de la suppression.");
+        notify({ type: 'error', message: 'Erreur lors de la suppression.' });
       }
-    }
   };
 
   const getRoleName = (roleId) => {

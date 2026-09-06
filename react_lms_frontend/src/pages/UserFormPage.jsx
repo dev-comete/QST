@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { UserService } from '../api/user.service';
+import { notify } from '../lib/notify';
 
 export default function UserFormPage() {
   const navigate = useNavigate();
@@ -73,7 +74,7 @@ export default function UserFormPage() {
       navigate('/users');
     } catch (error) {
       console.error("Erreur d'enregistrement", error);
-      alert("Erreur lors de la sauvegarde.");
+      notify({ type: 'error', message: 'Erreur lors de la sauvegarde.' });
     }
   };
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { QuizService } from '../api/quiz.service';
 import '../styles/index.css';
+import { confirm, notify } from '../lib/notify';
 
 const IconTrash = (props) => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
@@ -76,38 +77,41 @@ const QuizListPage = () => {
     const newStatus = quiz.status === 'published' ? 'draft' : 'published';
     const actionText = newStatus === 'published' ? "publier ce quiz" : "remettre ce quiz en brouillon";
 
-    if (!window.confirm(`Voulez-vous vraiment ${actionText} ?`)) return;
+    const confirmed = await confirm(`Voulez-vous vraiment ${actionText} ?`);
+    if (!confirmed) return;
 
     try {
       await QuizService.updateStatus(quiz.id, newStatus);
       setQuizzes(quizzes.map(q => q.id === quiz.id ? { ...q, status: newStatus } : q));
     } catch (err) {
       const errorMsg = err.response?.data?.status?.[0] || err.response?.data?.detail || "Erreur lors de la modification du statut.";
-      alert(`Action refusée : ${errorMsg}`);
+      notify({ type: 'error', message: `Action refusée : ${errorMsg}` });
     }
   };
 
   const handleDeleteQuiz = async (quiz) => {
-    if (!window.confirm(`Êtes-vous sûr de vouloir supprimer le quiz "${quiz.titre || `Quiz #${quiz.id}`}" ?`)) return;
+    const confirmed = await confirm(`Êtes-vous sûr de vouloir supprimer le quiz "${quiz.titre || `Quiz #${quiz.id}`}" ?`);
+    if (!confirmed) return;
 
     try {
       await QuizService.deleteQuiz(quiz.id);
       setQuizzes(quizzes.filter(q => q.id !== quiz.id));
     } catch (err) {
       const errorMsg = err.response?.data?.error || "Erreur lors de la suppression.";
-      alert(`Action refusée : ${errorMsg}`);
+      notify({ type: 'error', message: `Action refusée : ${errorMsg}` });
     }
   };
 
   // 🌟 NOUVELLE FONCTION : Restaurer
   const handleRestoreQuiz = async (quiz) => {
-    if (!window.confirm(`Voulez-vous restaurer le quiz "${quiz.titre || `Quiz #${quiz.id}`}" ?`)) return;
+    const confirmed = await confirm(`Voulez-vous restaurer le quiz "${quiz.titre || `Quiz #${quiz.id}`}" ?`);
+    if (!confirmed) return;
     try {
       await QuizService.restoreQuiz(quiz.id);
       // On le retire de la vue corbeille
       setQuizzes(quizzes.filter(q => q.id !== quiz.id));
     } catch (err) {
-      alert("Erreur lors de la restauration.");
+      notify({ type: 'error', message: 'Erreur lors de la restauration.' });
     }
   };
 

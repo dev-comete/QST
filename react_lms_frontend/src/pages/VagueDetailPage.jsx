@@ -4,6 +4,7 @@ import { VagueService } from '../api/vague.service';
 import { UserService } from '../api/user.service';
 import { QuizService } from '../api/quiz.service';
 import '../styles/index.css';
+import { notify } from '../lib/notify';
 
 export default function VagueDetailPage() {
   const { id } = useParams();
@@ -69,12 +70,12 @@ export default function VagueDetailPage() {
     try {
       // Assurez-vous que votre VagueService expose bien cette méthode qui envoie 'etudiant_ids'
       const response = await VagueService.assignStudents(id, selectedApprenantIds);
-      alert(response.message);
+      notify({ type: 'success', message: response.message });
       fetchData(); // Rafraîchir la liste
       setSelectedApprenantIds([]); // Vider la sélection
     } catch (error) {
       console.error("Erreur lors de l'inscription", error);
-      alert(error.response?.data?.error || "Erreur lors de l'assignation");
+      notify({ type: 'error', message: error.response?.data?.error || "Erreur lors de l'assignation" });
     }
   };
 
@@ -84,12 +85,12 @@ export default function VagueDetailPage() {
 
     try {
       const response = await VagueService.assignQuiz(id, selectedQuizId);
-      alert(response.message);
+      notify({ type: 'success', message: response.message });
       setSelectedQuizId('');
     } catch (error) {
       console.error("Erreur d'assignation du quiz", error);
       const errorMsg = error.response?.data?.non_field_errors?.[0] || error.response?.data?.error || "Impossible d'assigner ce quiz.";
-      alert(errorMsg);
+      notify({ type: 'error', message: errorMsg });
     }
   };
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 // 🌟 1. On importe useSearchParams
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom'; 
 import { StudentQuizService } from '../api/studentQuiz.service';
+import { notify, confirm } from '../lib/notify';
 
 const parseDurationToMs = (durationStr) => {
   if (durationStr === null || durationStr === undefined || durationStr === '') {
@@ -146,7 +147,7 @@ export default function TakeQuizPage() {
       };
       // On envoie le payload complet au lieu de juste (id, answers)
       const response = await StudentQuizService.submitQuiz(payload);
-      alert(`Temps écoulé ! Quiz soumis automatiquement.\n\nScore : ${response.score_obtenu} points.`);
+      notify({ type: 'info', message: `Temps écoulé ! Quiz soumis automatiquement.\n\nScore : ${response.score_obtenu} points.` });
       navigate('/student/dashboard');
     } catch (err) {
       setError(err.response?.data?.error || "Erreur lors de la soumission automatique.");
@@ -174,7 +175,7 @@ export default function TakeQuizPage() {
   const handleSubmitManually = async () => {
     if (submitting) return;
 
-    const isConfirmed = window.confirm("Êtes-vous sûr de vouloir soumettre vos réponses ? Cette action est définitive.");
+    const isConfirmed = await confirm("Êtes-vous sûr de vouloir soumettre vos réponses ? Cette action est définitive.");
     if (!isConfirmed) return;
 
     setSubmitting(true);
@@ -186,7 +187,7 @@ export default function TakeQuizPage() {
       };
       
       const response = await StudentQuizService.submitQuiz(payload);
-      alert(`Félicitations, quiz terminé !\n\nScore : ${response.score_obtenu} points.`);
+      notify({ type: 'success', message: `Félicitations, quiz terminé !\n\nScore : ${response.score_obtenu} points.` });
       navigate('/student/dashboard');
     } catch (err) {
       setError(err.response?.data?.error || "Erreur lors de la soumission du quiz.");
