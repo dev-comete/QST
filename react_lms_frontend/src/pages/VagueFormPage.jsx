@@ -7,6 +7,7 @@ import { FormationService } from '../api/formation.service';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import '../styles/index.css';
+import { notify } from '../lib/notify';
 
 export default function VagueFormPage() {
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ export default function VagueFormPage() {
 
     // Vérification de sécurité côté front
     if (!formData.debut || !formData.fin) {
-      alert("Veuillez sélectionner les dates de début et de fin.");
+      notify({ type: 'error', message: 'Veuillez sélectionner les dates de début et de fin.' });
       return;
     }
 
@@ -47,7 +48,7 @@ export default function VagueFormPage() {
       navigate('/vagues');
     } catch (error) {
       console.error("Erreur", error);
-      alert(error.response?.data?.fin || "Vérifiez que la date de fin est après la date de début.");
+      notify({ type: 'error', message: error.response?.data?.fin || "Vérifiez que la date de fin est après la date de début." });
     }
   };
 

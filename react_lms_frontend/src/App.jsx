@@ -125,6 +125,15 @@ function App() {
                 </FormateurRoute>
               } 
             />
+
+            <Route 
+              path="/banque-questions/:id/edit" 
+              element={
+                <FormateurRoute>
+                  <QuestionFormPage />
+                </FormateurRoute>
+              } 
+            />
             
               <Route 
                 path="/quizzes" 

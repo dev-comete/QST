@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { FormationService } from '../api/formation.service';
 import '../styles/index.css';
+import { confirm, notify } from '../lib/notify';
 
 export default function FormationListPage() {
   const [formations, setFormations] = useState([]);
@@ -24,15 +25,16 @@ export default function FormationListPage() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Supprimer cette formation définitivement ?")) {
+    const confirmed = await confirm("Supprimer cette formation définitivement ?");
+    if (!confirmed) return;
       try {
         await FormationService.delete(id);
         setFormations(formations.filter(f => f.id !== id));
       } catch (error) {
         console.error("Erreur suppression", error);
+        notify({ type: 'error', message: 'Erreur lors de la suppression de la formation.' });
       }
-    }
-  };
+    };
 
   if (loading) {
     return (

@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom'; // 🌟 NOUVEAU: useParams
 import { QuestionService } from '../api/question.service';
 import { AssignmentService } from '../api/assignement.service'; 
 import '../styles/index.css';
+import { notify } from '../lib/notify';
 
 export default function QuestionFormPage() {
   const navigate = useNavigate();
+  const { id } = useParams(); // 🌟 S'il y a un ID, on est en mode ÉDITION
+  const isEditMode = Boolean(id);
 
   // États des listes déroulantes
   const [types, setTypes] = useState([]);
@@ -14,8 +17,8 @@ export default function QuestionFormPage() {
   const [formData, setFormData] = useState({
     enonce_question: '',
     type_id: '',
-    bareme_pts: 1.0,
-    dossier_id: '' // Optionnel, si vous implémentez les dossiers plus tard
+    bareme_pts: 1.0, 
+    dossier_id: '' 
   });
 
   // État des options (réponses)
@@ -33,14 +36,44 @@ export default function QuestionFormPage() {
       try {
         const typesData = await AssignmentService.getTypes();
         setTypes(typesData);
+
+        // 🌟 CHARGEMENT SI ON EST EN MODE ÉDITION
+        if (isEditMode) {
+          const questionData = await QuestionService.getQuestionById(id);
+          
+          // Retrouver l'ID du type pour que le menu déroulant affiche la bonne valeur
+          const matchedType = typesData.find(t => 
+            t.type_nom === questionData.type_nom || 
+            t.type_question === questionData.type_nom ||
+            t.type_utilisateur === questionData.type_nom
+          );
+
+          setFormData({
+            enonce_question: questionData.enonce_question,
+            type_id: matchedType ? matchedType.id : '',
+            bareme_pts: 1.0 // Par défaut car la banque n'a pas de barème natif
+          });
+
+          // Remplir les options avec les données de la base
+          if (questionData.reponses && questionData.reponses.length > 0) {
+            setOptions(questionData.reponses.map(rep => ({
+              id: rep.id, // ID réel de la DB
+              reponse: rep.texte, // Le front utilise 'reponse'
+              est_correct: rep.est_correct,
+              explication: rep.explication || ''
+            })));
+          } else {
+            setOptions([]); // Cas d'une question ouverte
+          }
+        }
       } catch (err) {
-        setError("Impossible de charger les types de questions.");
+        setError("Impossible de charger les données.");
       } finally {
         setLoading(false);
       }
     };
     fetchInitialData();
-  }, []);
+  }, [id, isEditMode]);
 
   // -- GESTION DU FORMULAIRE DE BASE --
   const handleChange = (e) => {
@@ -71,10 +104,8 @@ export default function QuestionFormPage() {
   const handleCorrectToggle = (id) => {
     setOptions(prev => prev.map(opt => {
       if (selectedTypeCode === 'QCU') {
-        // En QCU, une seule bonne réponse possible : on désélectionne les autres
         return { ...opt, est_correct: opt.id === id };
       } else {
-        // En QCM, on inverse juste la valeur cliquée
         if (opt.id === id) return { ...opt, est_correct: !opt.est_correct };
         return opt;
       }
@@ -87,7 +118,6 @@ export default function QuestionFormPage() {
     setError('');
     setSubmitting(true);
 
-    // Validation front-end rapide
     if (selectedTypeCode !== 'OUV' && options.length < 2) {
       setError("Il faut au moins 2 options de réponse pour un QCM/QCU.");
       setSubmitting(false);
@@ -107,25 +137,38 @@ export default function QuestionFormPage() {
     }
 
     try {
-      // Préparation du payload exact attendu par CreateFullQuestionSerializer
-      const payload = {
-        enonce_question: formData.enonce_question,
-        type_id: parseInt(formData.type_id),
-        bareme_pts: parseFloat(formData.bareme_pts),
-        options: selectedTypeCode === 'OUV' ? [] : options.map(o => ({
-          reponse: o.reponse,
-          est_correct: o.est_correct,
-          explication: o.explication
-        }))
-      };
-
-      // Appel à votre endpoint (assurez-vous d'avoir la méthode dans QuestionService)
-      await QuestionService.createFullQuestion(payload);
+      if (isEditMode) {
+        // 🌟 PAYLOAD POUR LA MISE À JOUR (PUT)
+        const updatePayload = {
+          enonce_question: formData.enonce_question,
+          options: selectedTypeCode === 'OUV' ? [] : options.map(o => ({
+            id: o.id.toString().length > 10 ? null : o.id, // Si c'est un timestamp Date.now(), on envoie null pour que le backend le crée
+            texte: o.reponse, // Le backend attend 'texte'
+            est_correct: o.est_correct,
+            explication: o.explication
+          }))
+        };
+        await QuestionService.updateQuestion(id, updatePayload);
+        notify({ type: 'success', message: 'Question modifiée avec succès !' });
+      } else {
+        // 🌟 PAYLOAD POUR LA CRÉATION (POST)
+        const createPayload = {
+          enonce_question: formData.enonce_question,
+          type_id: parseInt(formData.type_id),
+          bareme_pts: parseFloat(formData.bareme_pts),
+          options: selectedTypeCode === 'OUV' ? [] : options.map(o => ({
+            reponse: o.reponse,
+            est_correct: o.est_correct,
+            explication: o.explication
+          }))
+        };
+        await QuestionService.createFullQuestion(createPayload);
+        notify({ type: 'success', message: 'Question créée avec succès !' });
+      }
       
-      alert("Question créée avec succès !");
-      navigate('/banque-questions'); // Retour à la banque
+      navigate('/banque-questions');
     } catch (err) {
-      setError(err.response?.data?.error || "Erreur lors de la création de la question.");
+      setError(err.response?.data?.error || "Erreur lors de la sauvegarde de la question.");
     } finally {
       setSubmitting(false);
     }
@@ -138,7 +181,9 @@ export default function QuestionFormPage() {
       <div className="lms-container lms-container--md">
         
         <div className="lms-header-row" style={{ marginBottom: 'var(--space-6)' }}>
-          <h1 className="lms-pageheader__title">Créer une Question</h1>
+          <h1 className="lms-pageheader__title">
+            {isEditMode ? 'Modifier la Question' : 'Créer une Question'}
+          </h1>
           <button onClick={() => navigate('/banque-questions')} className="lms-btn lms-btn--outline">
             Annuler
           </button>
@@ -173,6 +218,7 @@ export default function QuestionFormPage() {
                   value={formData.type_id} 
                   onChange={handleChange} 
                   required 
+                  disabled={isEditMode} // 🌟 BLOQUÉ EN MODE ÉDITION
                   className="lms-select"
                 >
                   <option value="" disabled>-- Choisir un type --</option>
@@ -180,25 +226,33 @@ export default function QuestionFormPage() {
                     <option key={t.id} value={t.id}>{t.type_utilisateur || t.type_question}</option>
                   ))}
                 </select>
+                {isEditMode && (
+                  <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', marginTop: '4px' }}>
+                    Le type ne peut pas être modifié.
+                  </p>
+                )}
               </div>
 
-              <div className="lms-field">
-                <label className="lms-label">Barème (Points) *</label>
-                <input 
-                  type="number" 
-                  name="bareme_pts" 
-                  value={formData.bareme_pts} 
-                  onChange={handleChange} 
-                  required 
-                  min="0.1" 
-                  step="0.1"
-                  className="lms-input" 
-                />
-              </div>
+              {/* Le barème n'est pas modifiable depuis la banque en mode édition (il appartient au quiz) */}
+              {!isEditMode && (
+                <div className="lms-field">
+                  <label className="lms-label">Barème (Points) par défaut *</label>
+                  <input 
+                    type="number" 
+                    name="bareme_pts" 
+                    value={formData.bareme_pts} 
+                    onChange={handleChange} 
+                    required 
+                    min="0.1" 
+                    step="0.1"
+                    className="lms-input" 
+                  />
+                </div>
+              )}
             </div>
           </div>
 
-          {/* BLOC 2 : GESTION DES OPTIONS (Désactivé si question ouverte) */}
+          {/* BLOC 2 : GESTION DES OPTIONS */}
           {selectedTypeCode && selectedTypeCode !== 'OUV' && (
             <div className="lms-card lms-card--pad-lg">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-4)' }}>
@@ -216,7 +270,6 @@ export default function QuestionFormPage() {
                 {options.map((opt, index) => (
                   <div key={opt.id} style={{ display: 'flex', gap: 'var(--space-4)', alignItems: 'flex-start', padding: 'var(--space-4)', backgroundColor: opt.est_correct ? 'rgba(16, 185, 129, 0.05)' : 'var(--color-surface-hover)', border: opt.est_correct ? '1px solid var(--color-success)' : '1px solid var(--color-border)', borderRadius: 'var(--radius-md)' }}>
                     
-                    {/* Checkbox / Radio pour "est_correct" */}
                     <div style={{ paddingTop: 'var(--space-2)' }}>
                       <input 
                         type={selectedTypeCode === 'QCU' ? "radio" : "checkbox"} 
@@ -254,16 +307,15 @@ export default function QuestionFormPage() {
             </div>
           )}
 
-          {/* MESSAGE POUR QUESTION OUVERTE */}
           {selectedTypeCode === 'OUV' && (
             <div className="lms-alert lms-alert--info">
-              Les questions ouvertes ne nécessitent pas de propositions de réponses. La correction sera effectuée manuellement par le formateur.
+              Les questions ouvertes ne nécessitent pas de propositions de réponses.
             </div>
           )}
 
           <div style={{ textAlign: 'right', marginTop: 'var(--space-2)' }}>
             <button type="submit" disabled={submitting} className="lms-btn lms-btn--primary lms-btn--lg">
-              {submitting ? 'Création en cours...' : 'Sauvegarder la question'}
+              {submitting ? 'Sauvegarde en cours...' : (isEditMode ? 'Enregistrer les modifications' : 'Créer la question')}
             </button>
           </div>
 

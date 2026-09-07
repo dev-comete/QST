@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status , viewsets , generics
 from rest_framework.permissions import IsAuthenticated , IsAdminUser
 from rest_framework.generics import ListAPIView , GenericAPIView
+from django.db import transaction
 
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
@@ -441,6 +442,7 @@ class QuestionBankSearchAPIView(APIView):
     def get(self, request):
         search_term = request.query_params.get('search', '').strip()
         type_code = request.query_params.get('type', '').strip()
+        exclude_quiz_id = request.query_params.get('exclude_quiz', '').strip()
 
         user = request.user
         if user.is_staff or user.is_superuser:
@@ -456,6 +458,12 @@ class QuestionBankSearchAPIView(APIView):
             queryset = queryset.filter(enonce_question__icontains=search_term)
         if type_code:
             queryset = queryset.filter(questiontypequestion__type_question__code__iexact=type_code)
+
+        if exclude_quiz_id:
+            assigned_ids = QuizQuestion.objects.filter(
+                quiz_id=exclude_quiz_id
+            ).values_list('question_id', flat=True)
+            queryset = queryset.exclude(id__in=assigned_ids)
 
         paginator = QuestionBankPagination()
         paginated_queryset = paginator.paginate_queryset(queryset.distinct(), request)
@@ -496,3 +504,94 @@ class QuizAssignedQuestionsListAPIView(ListAPIView):
             'type_question', 
             'bareme'
         ).order_by('id') # Vous pouvez trier par ID ou date d'ajout
+
+class QuestionDetailAPIView(APIView):
+    # permission_classes = [IsFormateurOrAdminOrReadOnly]
+
+    def get(self, request, question_id):
+        question = get_object_or_404(Question.all_objects, id=question_id)
+        serializer = QuestionBankSerializer(question)
+        return Response(serializer.data)
+
+    def delete(self, request, question_id):
+        question = get_object_or_404(Question.objects, id=question_id)
+        user = request.user
+
+        # 1. Vérification de l'organisation
+        if not (user.is_staff or user.is_superuser):
+            if question.organisation != user.orga_principale:
+                return Response(
+                    {"error": "Accès refusé. Cette question n'appartient pas à votre organisation."},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+        # 2. Vérification d'utilisation dans des quiz
+        quizzes_lies = QuizQuestion.objects.filter(question=question, quiz__is_active=True)
+        if quizzes_lies.exists():
+            return Response(
+                {"error": "Impossible de mettre à la corbeille : cette question est actuellement assignée à un ou plusieurs quiz. Veuillez l'en retirer d'abord."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # 3. Soft Delete
+        question.delete()
+        
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @transaction.atomic
+    def put(self, request, question_id):
+        question = get_object_or_404(Question.all_objects, id=question_id)
+        data = request.data
+
+        # 1. Vérification : des étudiants ont-ils déjà répondu ?
+        a_deja_des_reponses = Valiny.objects.filter(question=question).exists()
+        
+        # 2. Mise à jour de l'énoncé (Autorisé)
+        if 'enonce_question' in data:
+            question.enonce_question = data['enonce_question']
+            question.save(update_fields=['enonce_question'])
+
+        # 3. Synchronisation des options (Autorisé)
+        if 'options' in data:
+            options_data = data['options']
+            
+            existing_corrigee_ids = list(Corrigee.objects.filter(question=question).values_list('id', flat=True))
+            updated_corrigee_ids = []
+
+            for opt in options_data:
+                corrigee_id = opt.get('id')
+                
+                if corrigee_id and corrigee_id in existing_corrigee_ids:
+                    # A. MISE À JOUR
+                    c = Corrigee.objects.get(id=corrigee_id)
+                    c.reponse.reponse = opt.get('texte', c.reponse.reponse)
+                    c.reponse.save(update_fields=['reponse'])
+                    
+                    c.est_correct = opt.get('est_correct', c.est_correct)
+                    c.explication = opt.get('explication', c.explication)
+                    c.save(update_fields=['est_correct', 'explication'])
+                    
+                    updated_corrigee_ids.append(corrigee_id)
+                else:
+                    # B. CRÉATION (nouvelle option ajoutée à une question existante)
+                    nouvelle_reponse = Reponse.objects.create(reponse=opt.get('texte', ''))
+                    nouveau_corrigee = Corrigee.objects.create(
+                        question=question,
+                        reponse=nouvelle_reponse,
+                        est_correct=opt.get('est_correct', False),
+                        explication=opt.get('explication', '')
+                    )
+                    updated_corrigee_ids.append(nouveau_corrigee.id)
+
+            # C. SUPPRESSION des options qui ont été retirées
+            for cid in existing_corrigee_ids:
+                if cid not in updated_corrigee_ids:
+                    if a_deja_des_reponses:
+                        return Response(
+                            {"error": "Impossible de supprimer une option car des étudiants ont déjà répondu à cette question. Vous pouvez seulement modifier son texte."},
+                            status=status.HTTP_400_BAD_REQUEST
+                        )
+                    else:
+                        Corrigee.objects.filter(id=cid).delete()
+
+        return Response({"message": "Question mise à jour avec succès."}, status=status.HTTP_200_OK)

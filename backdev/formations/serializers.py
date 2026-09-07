@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from .models import Formation, Vague, UtilisateurVague
-from quizzes.models import Quiz
+from .models import Formation, Vague, UtilisateurVague 
+from quizzes.models import Quiz, UtilisateurQuiz
 from accounts.models import Utilisateur 
 
 class FormationSerializer(serializers.ModelSerializer):
@@ -88,8 +88,25 @@ class VagueListWithStudentsSerializer(serializers.ModelSerializer):
     # We use '_set' because it is the default reverse relation name in Django 
     # if you didn't set a related_name on the UtilisateurVague model.
     etudiants = VagueStudentSerializer(source='utilisateurvague_set', many=True, read_only=True)
+    quiz_assignes_ids = serializers.SerializerMethodField()
+    quizzes_assignes = serializers.SerializerMethodField()
 
     class Meta:
         model = Vague
-        fields = ['id', 'formation_nom', 'debut', 'fin', 'etudiants']
-    
+        fields = ['id', 'formation_nom', 'debut', 'fin', 'etudiants' , 'quiz_assignes_ids', 'quizzes_assignes']
+
+    def get_quiz_assignes_ids(self, obj):
+        # On cherche tous les UtilisateurQuiz liés à cette vague, et on extrait juste les IDs des quiz
+        return UtilisateurQuiz.objects.filter(vague=obj).values_list('quiz_id', flat=True).distinct()
+
+    def get_quizzes_assignes(self, obj):
+        quiz_ids = UtilisateurQuiz.objects.filter(vague=obj).values_list('quiz_id', flat=True).distinct()
+        quizzes = Quiz.objects.filter(id__in=quiz_ids)
+        
+        return [
+            {
+                "id": q.id,
+                "titre": q.titre or f"Quiz #{q.id}",
+                "status": q.status
+            } for q in quizzes
+        ]

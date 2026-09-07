@@ -8,6 +8,9 @@ const PublicRoute = ({ children }) => {
   const { user } = useAuth();
   
   if (user) {
+    if (user.role === 'apprenant') {
+      return <Navigate to="/student/dashboard" replace />;
+    }
     // Si l'utilisateur est connecté, on le force à aller sur le dashboard
     return <Navigate to="/dashboard" replace />;
   }

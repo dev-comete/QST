@@ -4,6 +4,7 @@ import { VagueService } from '../api/vague.service';
 import { UserService } from '../api/user.service';
 import { QuizService } from '../api/quiz.service';
 import '../styles/index.css';
+import { notify } from '../lib/notify';
 
 export default function VagueDetailPage() {
   const { id } = useParams();
@@ -69,12 +70,12 @@ export default function VagueDetailPage() {
     try {
       // Assurez-vous que votre VagueService expose bien cette méthode qui envoie 'etudiant_ids'
       const response = await VagueService.assignStudents(id, selectedApprenantIds);
-      alert(response.message);
+      notify({ type: 'success', message: response.message });
       fetchData(); // Rafraîchir la liste
       setSelectedApprenantIds([]); // Vider la sélection
     } catch (error) {
       console.error("Erreur lors de l'inscription", error);
-      alert(error.response?.data?.error || "Erreur lors de l'assignation");
+      notify({ type: 'error', message: error.response?.data?.error || "Erreur lors de l'assignation" });
     }
   };
 
@@ -84,12 +85,12 @@ export default function VagueDetailPage() {
 
     try {
       const response = await VagueService.assignQuiz(id, selectedQuizId);
-      alert(response.message);
+      notify({ type: 'success', message: response.message });
       setSelectedQuizId('');
     } catch (error) {
       console.error("Erreur d'assignation du quiz", error);
       const errorMsg = error.response?.data?.non_field_errors?.[0] || error.response?.data?.error || "Impossible d'assigner ce quiz.";
-      alert(errorMsg);
+      notify({ type: 'error', message: errorMsg });
     }
   };
 
@@ -120,6 +121,10 @@ export default function VagueDetailPage() {
   // 🌟 BONUS UX : On filtre les apprenants pour ne pas afficher ceux qui sont déjà dans la vague
   const apprenantsNonInscrits = apprenantsDisponibles.filter(
     (apprenant) => !vague.etudiants.some((e) => e.etudiant_id === apprenant.id)
+  );
+
+  const quizzesNonAssignes = quizzesDisponibles.filter(
+    (quiz) => !(vague.quiz_assignes_ids || []).includes(quiz.id)
   );
 
   return (
@@ -214,7 +219,12 @@ export default function VagueDetailPage() {
                   required
                 >
                   <option value="">-- Choisir un quiz --</option>
-                  {quizzesDisponibles.map(quiz => (
+
+                  {quizzesNonAssignes.length === 0 && (
+                    <option value="" disabled>Tous les quiz ont déjà été assignés</option>
+                  )}
+
+                  {quizzesNonAssignes.map(quiz => (
                     // 🌟 MIS À JOUR : On utilise le nouveau champ `titre` !
                     <option key={quiz.id} value={quiz.id}>
                       {quiz.titre || `Quiz #${quiz.id}`} {quiz.status === 'draft' ? '(Brouillon)' : ''}
@@ -230,35 +240,78 @@ export default function VagueDetailPage() {
           </div>
 
           {/* Colonne de droite : Liste des inscrits */}
-          <div className="lms-card lms-card--flush">
-            <div style={{ padding: 'var(--space-5) var(--space-5) 0' }}>
-              <div className="lms-card__title">Étudiants inscrits dans la session</div>
+          <div className="lms-stack">
+            <div className="lms-card lms-card--flush">
+              <div style={{ padding: 'var(--space-5) var(--space-5) 0' }}>
+                <div className="lms-card__title">Étudiants inscrits dans la session</div>
+              </div>
+
+              <table className="lms-table" style={{ marginTop: 'var(--space-3)' }}>
+                <thead>
+                  <tr>
+                    <th>Nom d'utilisateur</th>
+                    <th>Email</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {vague.etudiants.length === 0 ? (
+                    <tr>
+                      <td colSpan="2" className="lms-table__empty">
+                        Aucun étudiant inscrit dans cette vague pour le moment.
+                      </td>
+                    </tr>
+                  ) : (
+                    vague.etudiants.map(etudiant => (
+                      <tr key={etudiant.etudiant_id}>
+                        <td className="lms-table__name">{etudiant.username}</td>
+                        <td>{etudiant.email}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
             </div>
 
-            <table className="lms-table" style={{ marginTop: 'var(--space-3)' }}>
-              <thead>
-                <tr>
-                  <th>Nom d'utilisateur</th>
-                  <th>Email</th>
-                </tr>
-              </thead>
-              <tbody>
-                {vague.etudiants.length === 0 ? (
+
+            <div className="lms-card lms-card--flush">
+              <div style={{ padding: 'var(--space-5) var(--space-5) 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div className="lms-card__title">Quiz assignés à cette session</div>
+                <span className="lms-badge lms-badge--success">
+                  {vague.quizzes_assignes?.length || 0} quiz
+                </span>
+              </div>
+
+              <table className="lms-table" style={{ marginTop: 'var(--space-3)' }}>
+                <thead>
                   <tr>
-                    <td colSpan="2" className="lms-table__empty">
-                      Aucun étudiant inscrit dans cette vague pour le moment.
-                    </td>
+                    <th>Titre du quiz</th>
+                    <th>Statut du modèle</th>
                   </tr>
-                ) : (
-                  vague.etudiants.map(etudiant => (
-                    <tr key={etudiant.etudiant_id}>
-                      <td className="lms-table__name">{etudiant.username}</td>
-                      <td>{etudiant.email}</td>
+                </thead>
+                <tbody>
+                  {!vague.quizzes_assignes || vague.quizzes_assignes.length === 0 ? (
+                    <tr>
+                      <td colSpan="2" className="lms-table__empty">
+                        Aucun quiz n'a encore été assigné à cette classe.
+                      </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  ) : (
+                    vague.quizzes_assignes.map(quiz => (
+                      <tr key={quiz.id}>
+                        <td className="lms-table__name">{quiz.titre}</td>
+                        <td>
+                          <span className={`lms-badge ${quiz.status === 'published' ? 'lms-badge--success' : 'lms-badge--warning'}`}>
+                            <span className="lms-badge-dot" />
+                            {quiz.status === 'published' ? 'Publié' : 'Brouillon'}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+            
           </div>
 
         </div>
