@@ -21,6 +21,19 @@ GET /<int:quiz_id>/review/
 |---|---|---|
 | `quiz_id` | `int` | ID of the quiz to review |
 
+## Query Parameters
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `vague_id` | `int` | ✅ | ID of the vague under which this quiz was assigned. Used to isolate the student's response data for this exact quiz attempt context. |
+
+### Example Request
+
+```http
+GET /quizzes/12/review/?vague_id=3
+Authorization: Bearer <your_token_here>
+```
+
 ## Authentication & Permissions
 
 - Requires a valid authenticated user (`IsAuthenticated`).
@@ -36,7 +49,9 @@ Returned when the quiz is completed and review data is available.
 ```json
 {
   "quiz_id": 12,
+  "vague_id": 3,
   "score_final": 8.5,
+  "score_possible": 10.0,
   "corrections": [
     {
       "question_id": 45,
@@ -69,7 +84,9 @@ Returned when the quiz is completed and review data is available.
 | Field | Type | Description |
 |---|---|---|
 | `quiz_id` | `int` | ID of the reviewed quiz |
+| `vague_id` | `int` | ID of the vague in which this quiz was taken |
 | `score_final` | `number` | Final score obtained by the user (`assignment.score_obtenu`) |
+| `score_possible` | `number` | Total points available for all questions in this quiz |
 | `corrections` | `array` | List of corrected questions (see below) |
 
 **`corrections[]` item:**
