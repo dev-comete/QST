@@ -207,7 +207,8 @@ def get_apprenant_bulletin_service(vague_id: int, apprenant) -> dict:
             "id": apprenant.id,
             "nom": apprenant.last_name,
             "prenom": apprenant.first_name,
-            "username": apprenant.username
+            "username": apprenant.username, 
+            "email": apprenant.email
         },
         "vague": {
             "id": vague.id,
