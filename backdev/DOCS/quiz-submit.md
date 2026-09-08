@@ -29,12 +29,14 @@ Authorization: Bearer <your_token_here>
 | Field | Type | Required | Description |
 | :--- | :--- | :---: | :--- |
 | `quiz_id` | `integer` | ✅ | ID of the quiz being submitted. |
+| `vague_id` | `integer` | ✅ | ID of the vague under which this quiz was assigned. Used to isolate the submission context. |
 | `answers` | `object` | ✅ | Dictionary keyed by Question ID (string), each value a list of submitted Reponse IDs. |
 
 ### Example Request Body
 ```json
 {
   "quiz_id": 1,
+  "vague_id": 5,
   "answers": {
     "10": [2, 3],
     "11": [5],

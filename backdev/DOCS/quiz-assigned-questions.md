@@ -1,78 +1,169 @@
-## QuizAssignedQuestionsListAPIView
+# Quiz Assigned Questions API
 
-Description
----------------
-Retourne la liste détaillée de toutes les questions assignées à un quiz spécifique. Cette vue est utilisée principalement par les formateurs / administrateurs pour voir le contenu d'un quiz (questions, type, barème, options et éventuelles explications).
+Returns a detailed list of all questions assigned to a specific quiz, including their full question text, all answer options with correctness flags, explanations, and point values. This endpoint is typically consumed by formateurs during quiz review or editing phases.
 
-Endpoint
----------------
-- URL: `/<quiz_id>/questions/` (route app `quizzes`, name: `quiz-assigned-questions`)
-- Method: `GET`
+---
 
-Permissions
----------------
-- `IsFormateurOrAdminOrReadOnly` (par défaut restreint aux formateurs ou administrateurs selon la logique personnalisée). Adapté selon vos besoins.
+## Endpoint Overview
 
-URL Parameters
----------------
-- `quiz_id` (int) — Identifiant du quiz dont on veut lister les questions.
+- **URL:** `/quizzes/<int:quiz_id>/questions/`
+- **Method:** `GET`
+- **Permissions:** `IsFormateurOrAdminOrReadOnly`
+- **Authentication:** Required (JWT or Session Token)
 
-Response Schema
----------------
-La vue utilise le serializer `QuizQuestionSerializer`. Chaque élément de la liste contient les champs suivants:
+### Description
 
-- `id` : integer — ID interne du lien `QuizQuestion`.
-- `quiz_id` : integer — ID du quiz.
-- `question_id` : integer — ID de la question dans la banque.
-- `enonce_question` : string — L'énoncé textuel de la question.
-- `type_id` : integer — ID du type de question.
-- `type_nom` : string — Nom lisible du type de question (ex: QCM, ouverte).
-- `bareme_id` : integer — ID du barème associé à la question.
-- `points` : float — Nombre de points attribués à la question.
-- `options` : array — Liste des options/choix associés (vide pour les questions ouvertes). Chaque option contient:
-  - `reponse_id`: integer — ID de la `Reponse` liée.
-  - `texte`: string — Texte de l'option.
-  - `est_correct`: boolean — Indique si l'option est correcte (visible aux formateurs/admins).
-  - `explication`: string — Explication affichée lors de la correction.
+This endpoint retrieves all questions linked to a quiz via `QuizQuestion` records, including full question details and all their answer options. This is useful for:
 
-Example Request
----------------
-GET /api/quizzes/42/questions/
+- Formateurs reviewing the questions they've assembled into a quiz
+- Formateurs previewing what students will see (minus student-specific data like answers submitted)
+- Admins auditing quiz content
 
-Example Response (200)
----------------
+---
+
+## Request Parameters
+
+### URL Path Parameters
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :---: | :--- |
+| `quiz_id` | `integer` | ✅ | ID of the quiz whose questions should be retrieved. |
+
+### Query Parameters
+
+| Parameter | Type | Required | Description |
+| :--- | :--- | :---: | :--- |
+| `page` | `integer` | ❌ | Page number for pagination (if applicable). |
+| `page_size` | `integer` | ❌ | Number of items per page (if applicable). |
+
+### Example Request
+
+```http
+GET /quizzes/5/questions/
+Authorization: Bearer <your_token_here>
+```
+
+---
+
+## Success Response
+
+### Status: `200 OK`
+
+```json
 [
   {
-    "id": 12,
-    "quiz_id": 42,
-    "question_id": 7,
-    "enonce_question": "Quelle est la capitale de la France ?",
-    "type_id": 2,
-    "type_nom": "QCM",
-    "bareme_id": 3,
-    "points": 2.5,
+    "id": 23,
+    "quiz_id": 5,
+    "question_id": 45,
+    "enonce": "Quelle est la capitale de la France ?",
+    "bareme_pts": 2.5,
+    "type_code": "QCU",
     "options": [
       {
-        "reponse_id": 21,
+        "id": 101,
         "texte": "Paris",
         "est_correct": true,
-        "explication": "Paris est la capitale depuis des siècles."
+        "explication": "Paris est la capitale et plus grande ville de France."
       },
       {
-        "reponse_id": 22,
+        "id": 102,
         "texte": "Lyon",
         "est_correct": false,
-        "explication": "Lyon n'est pas la capitale."
+        "explication": "Lyon est la deuxième ville, mais pas la capitale."
+      },
+      {
+        "id": 103,
+        "texte": "Marseille",
+        "est_correct": false,
+        "explication": "Marseille est un port important mais n'est pas la capitale."
+      }
+    ]
+  },
+  {
+    "id": 24,
+    "quiz_id": 5,
+    "question_id": 46,
+    "enonce": "Quel est le plus grand océan du monde ?",
+    "bareme_pts": 3.0,
+    "type_code": "QCU",
+    "options": [
+      {
+        "id": 104,
+        "texte": "Océan Pacifique",
+        "est_correct": true,
+        "explication": "Le Pacifique couvre environ 165 millions de km²."
+      },
+      {
+        "id": 105,
+        "texte": "Océan Atlantique",
+        "est_correct": false,
+        "explication": "L'Atlantique est le deuxième plus grand océan."
       }
     ]
   }
 ]
+```
 
-Errors
----------------
-- `403 Forbidden` — Si l'utilisateur n'a pas les permissions nécessaires.
-- `404 Not Found` — Si la route ou le préfixe API n'existe pas (selon configuration) ; la vue en elle-même retourne une liste vide si aucun `QuizQuestion` n'est trouvé pour l'`quiz_id` fourni.
+#### Response Fields (Array of Questions)
 
-Notes
----------------
-- Le serializer `QuizQuestionSerializer` construit la liste `options` en interrogeant la table `Corrigee` et fournit un aperçu complet destiné aux formateurs (incluant `est_correct` et `explication`). Pour l'affichage côté apprenant, utilisez `StudentQuizQuestionSerializer` qui masque `est_correct`.
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `id` | `integer` | ID of the `QuizQuestion` link record. |
+| `quiz_id` | `integer` | ID of the quiz. |
+| `question_id` | `integer` | ID of the underlying `Question` in the bank. |
+| `enonce` | `string` | Full question text. |
+| `bareme_pts` | `number` | Points awarded for this question in this quiz context. |
+| `type_code` | `string` | Type code of the question (e.g., `"QCU"`, `"QCM"`, `"OUV"`). |
+| `options` | `array` | All answer options for this question (see below). |
+
+**`options[]` item:**
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `id` | `integer` | ID of the `Reponse` (answer option). |
+| `texte` | `string` | Text of the answer option. |
+| `est_correct` | `boolean` | Whether this option is marked as correct in the answer key. |
+| `explication` | `string \| null` | Explanation shown to students after submission (can be null). |
+
+---
+
+## Pagination
+
+If pagination is enabled, the response may wrap results in a paginated envelope:
+
+```json
+{
+  "count": 12,
+  "next": "http://localhost:8000/quizzes/5/questions/?page=2",
+  "previous": null,
+  "results": [
+    { ... }
+  ]
+}
+```
+
+---
+
+## Possible Errors
+
+### ❌ 404 Not Found
+
+Returned when the `quiz_id` does not correspond to an existing quiz:
+
+```json
+{
+  "detail": "Not found."
+}
+```
+
+### ❌ 403 Forbidden
+
+Returned if permission checks prevent the user from viewing this quiz (should be rare since permission is `IsFormateurOrAdminOrReadOnly`).
+
+---
+
+## Related Endpoints
+
+- [Assign Questions API](./question-assign.md) — add questions to a quiz.
+- [Remove Question from Quiz API](./remove-question-from-quiz.md) — delete a question from a quiz.
+- [Quiz Review API](./quiz-review.md) — student view of quiz corrections (after submission).
