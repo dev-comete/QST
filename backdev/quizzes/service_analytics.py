@@ -89,6 +89,7 @@ def get_vague_analytics_service(vague_id: int, requesting_user) -> dict:
 
         quizzes_data.append({
             "quiz_id": quiz.id,
+            "quiz_titre": quiz.titre,
             "status": quiz.status,
             "points_maximum": quiz_max_pts,
             "taux_participation_pct": round(participation_rate, 1),
@@ -109,6 +110,7 @@ def get_vague_analytics_service(vague_id: int, requesting_user) -> dict:
     return {
         "vague": {
             "id": vague.id,
+            "vague_nom": vague.nom_vague,
             "formation": vague.formation.nom_formation,
             "total_inscrits": total_etudiants
         },

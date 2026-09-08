@@ -51,7 +51,7 @@ export default function VagueAnalyticsPage() {
         <div className="lms-header-row" style={{ marginBottom: 'var(--space-6)' }}>
           <div>
             <p className="lms-eyebrow" style={{ marginBottom: 'var(--space-2)' }}>Statistiques de la Session</p>
-            <h1 className="lms-pageheader__title">{data.vague.formation}</h1>
+            <h1 className="lms-pageheader__title">{data.vague.formation} - {data.vague.vague_nom}</h1>
             <p className="lms-pageheader__subtitle">{data.vague.total_inscrits} apprenant(s) inscrit(s)</p>
           </div>
           <Link to={`/vagues/${id}`} className="lms-btn lms-btn--outline">Gérer la vague</Link>
@@ -84,7 +84,7 @@ export default function VagueAnalyticsPage() {
           {data.statistiques_par_quiz.map((q) => (
             <div key={q.quiz_id} className="lms-card lms-card--pad-lg">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-4)' }}>
-                <h3 className="lms-card__title" style={{ margin: 0 }}>Quiz #{q.quiz_id}</h3>
+                <h3 className="lms-card__title" style={{ margin: 0 }}>{q.quiz_titre}</h3>
                 <span className="lms-badge" style={{ backgroundColor: 'var(--color-surface-hover)', padding: '4px 12px', borderRadius: '12px' }}>
                   Participation : {q.taux_participation_pct}%
                 </span>
