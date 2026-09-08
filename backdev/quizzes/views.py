@@ -461,12 +461,18 @@ class QuestionBankSearchAPIView(APIView):
         exclude_quiz_id = request.query_params.get('exclude_quiz', '').strip()
 
         user = request.user
+
+        base_queryset = Question.objects.prefetch_related(
+            'corrigee_set__reponse',
+            'questionbareme_set__bareme'
+        )
+
         if user.is_staff or user.is_superuser:
             # L'admin fouille partout
-            queryset = Question.objects.prefetch_related('corrigee_set__reponse').all().order_by('-id')
+            queryset = base_queryset.all().order_by('-id')
         else:
             # Le formateur fouille uniquement dans son organisation
-            queryset = Question.objects.prefetch_related('corrigee_set__reponse').filter(
+            queryset = base_queryset.filter(
                 organisation=user.orga_principale
             ).order_by('-id')
 

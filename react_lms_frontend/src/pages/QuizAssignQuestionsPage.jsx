@@ -44,14 +44,9 @@ const QuizAssignQuestionsPage = () => {
 
   const fetchAssignedQuestions = async () => {
     try {
-      // 🔧 FIX : la méthode s'appelle getAssignedQuestions, pas getQuizQuestions
-      // (QuizService.getQuizQuestions n'existe pas -> l'appel plantait silencieusement
-      // et assignedQuestionIds restait toujours à [])
       const data = await QuizService.getAssignedQuestions(quizId);
-
       const items = data.results || data;
       const ids = items.map(item => parseInt(item.question_id, 10));
-
       setAssignedQuestionIds(ids);
     } catch (err) {
       console.error("Impossible de charger les questions déjà assignées", err);
@@ -62,8 +57,6 @@ const QuizAssignQuestionsPage = () => {
   const fetchBankQuestions = async () => {
     setLoading(true);
     try {
-      // 🆕 On envoie quizId au backend pour qu'il exclue déjà les questions assignées
-      // (voir QuestionBankSearchAPIView côté Django : param exclude_quiz)
       const data = await QuestionService.getBankQuestions(debouncedSearchTerm, '', 1, quizId);
       setBankQuestions(data.results || data);
     } catch (err) {
@@ -81,7 +74,8 @@ const QuizAssignQuestionsPage = () => {
       {
         question_id: question.id,
         texte_enonce: question.enonce_question,
-        bareme_pts: ''
+        // 🌟 NOUVEAU : On pré-remplit l'input avec le barème initial du backend !
+        bareme_pts: question.bareme_pts ? question.bareme_pts.toString() : ''
       }
     ]);
   };
@@ -131,9 +125,6 @@ const QuizAssignQuestionsPage = () => {
     }
   };
 
-  // 🛡️ Garde-fou côté client : au cas où le backend ne serait pas encore
-  // à jour avec exclude_quiz, ou si assignedQuestionIds vient de se rafraîchir
-  // avant que bankQuestions ne soit re-fetché.
   const availableQuestions = bankQuestions.filter(q =>
     !assignedQuestionIds.includes(parseInt(q.id, 10))
   );
@@ -176,8 +167,18 @@ const QuizAssignQuestionsPage = () => {
                   availableQuestions.map(q => {
                     const isAdded = selectedQuestions.find(sq => sq.question_id === q.id);
                     return (
-                      <div key={q.id} className="lms-picker-item" style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--space-3)', borderBottom: '1px solid var(--color-border)' }}>
-                        <span className="lms-picker-item__text" style={{ flex: 1, paddingRight: 'var(--space-3)' }}>{q.enonce_question}</span>
+                      <div key={q.id} className="lms-picker-item" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 'var(--space-3)', borderBottom: '1px solid var(--color-border)' }}>
+                        <div style={{ flex: 1, paddingRight: 'var(--space-3)' }}>
+                          <span className="lms-picker-item__text" style={{ display: 'block' }}>{q.enonce_question}</span>
+                          
+                          {/* 🌟 NOUVEAU : On affiche le barème par défaut visuellement */}
+                          {q.bareme_pts > 0 && (
+                            <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-slate)', marginTop: '4px', display: 'inline-block' }}>
+                              Défaut : <strong>{q.bareme_pts} pts</strong>
+                            </span>
+                          )}
+                        </div>
+                        
                         <button
                           onClick={() => handleAddQuestion(q)}
                           disabled={isAdded}
