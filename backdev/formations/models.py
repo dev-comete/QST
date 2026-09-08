@@ -23,6 +23,7 @@ class Formation(models.Model):
         return self.nom_formation
 
 class Vague(models.Model):
+    nom_vague = models.CharField(max_length=255, default="Nouvelle Session")
     formation = models.ForeignKey(Formation, on_delete=models.CASCADE)
     debut = models.DateTimeField()
     fin = models.DateTimeField()

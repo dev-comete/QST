@@ -77,7 +77,7 @@ export default function ReviewQuizPage() {
           <div style={{ display: 'inline-block', padding: 'var(--space-4) var(--space-6)', backgroundColor: 'var(--color-surface-hover)', borderRadius: 'var(--radius-lg)' }}>
             <div style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)', textTransform: 'uppercase' }}>Score Final</div>
             <div style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--color-success)' }}>
-              {reviewData.score_final} <span style={{ fontSize: '1.25rem', color: 'var(--color-text-muted)', fontWeight: 500 }}>pts</span>
+              {reviewData.score_final}/{reviewData.score_possible} <span style={{ fontSize: '1.25rem', color: 'var(--color-text-muted)', fontWeight: 500 }}>pts</span>
             </div>
           </div>
         </div>

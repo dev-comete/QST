@@ -1,3 +1,4 @@
+from django.db.models.aggregates import Sum
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status , viewsets , generics
@@ -174,9 +175,17 @@ class CreateFullQuestionAPIView(APIView):
                 status=status.HTTP_201_CREATED
             )
             
-        except ValidationError as e:
-            # Handle business logic exceptions gracefully
-            error_message = e.detail[0] if isinstance(e.detail, list) else e.detail
+        except Exception as e:
+            if hasattr(e, 'detail'):
+                # Erreur DRF (ex: serializers.ValidationError)
+                error_message = e.detail[0] if isinstance(e.detail, list) else e.detail
+            elif hasattr(e, 'messages'):
+                # Erreur Core Django (ex: django.core.exceptions.ValidationError)
+                error_message = e.messages[0]
+            else:
+                # Autre type d'erreur générique (ex: KeyError, ValueError)
+                error_message = str(e)
+                
             return Response({"error": error_message}, status=status.HTTP_400_BAD_REQUEST)
 
 class MyTodoQuizzesAPIView(generics.ListAPIView):
@@ -242,13 +251,18 @@ class QuizReviewAPIView(APIView):
         if not vague_id:
             return Response({"error": "L'ID de la vague est manquant dans l'URL."}, status=status.HTTP_400_BAD_REQUEST)
         
-        assignment = get_object_or_404(UtilisateurQuiz, quiz_id=quiz_id, utilisateur=request.user)
+        assignment = get_object_or_404(UtilisateurQuiz, quiz_id=quiz_id, vague_id=vague_id, utilisateur=request.user)
         
         if not assignment.termine:
             return Response(
                 {"error": "Vous ne pouvez pas voir la correction d'un quiz non terminé."}, 
                 status=status.HTTP_403_FORBIDDEN
             )
+        total_possible = QuizQuestion.objects.filter(
+            quiz_id=quiz_id
+        ).aggregate(
+            total=Sum('bareme__pts')
+        )['total'] or 0.0
 
         valinys = Valiny.objects.filter(
             utilisateur=request.user, 
@@ -284,7 +298,9 @@ class QuizReviewAPIView(APIView):
 
         return Response({
             "quiz_id": quiz_id,
+            "vague_id": vague_id,
             "score_final": assignment.score_obtenu,
+            "score_possible": total_possible,
             "corrections": corrections
         }, status=status.HTTP_200_OK)
 

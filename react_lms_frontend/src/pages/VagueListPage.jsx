@@ -177,6 +177,7 @@ export default function VagueListPage() {
               <thead>
                 <tr>
                   <th>ID</th>
+                  <th>Session (Nom)</th>
                   <th>Formation</th>
                   <th>Date de début</th>
                   <th>Date de fin</th>
@@ -195,6 +196,9 @@ export default function VagueListPage() {
                   vagues.map((vague) => (
                     <tr key={vague.id}>
                       <td className="lms-table__id">#{vague.id}</td>
+                      <td className="lms-table__id">
+                        <strong>{vague.nom_vague}</strong> 
+                      </td>
                       <td className="lms-table__name">{vague.formation_nom}</td>
                       <td>{new Date(vague.debut).toLocaleDateString()}</td>
                       <td>{new Date(vague.fin).toLocaleDateString()}</td>
@@ -204,6 +208,9 @@ export default function VagueListPage() {
                         </span>
                       </td>
                       <td>
+                        <Link to={`/vagues/${vague.id}/edit`} className="lms-btn lms-btn--outline lms-btn--sm">
+                            Modifier
+                          </Link>
                         <Link to={`/vagues/${vague.id}`} className="lms-btn lms-btn--link-text lms-btn--sm">
                           Gérer les inscriptions
                         </Link>

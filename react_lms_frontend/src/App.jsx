@@ -245,6 +245,15 @@ function App() {
             />
 
             <Route 
+              path="/vagues/:id/edit" 
+              element={
+                <FormateurRoute>
+                  <VagueFormPage />
+                </FormateurRoute>
+              } 
+            />
+
+            <Route 
               path="/vagues" 
               element={
                 <FormateurRoute>
