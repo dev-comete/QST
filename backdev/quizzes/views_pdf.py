@@ -24,7 +24,7 @@ class ApprenantBulletinPDFAPIView(APIView):
             
             if pdf_response:
                 # 3. Forcer le téléchargement du fichier pour le navigateur
-                filename = f"Bulletin_{request.user.last_name}_{bulletin_data['vague']['formation']}.pdf"
+                filename = f"Bulletin_{request.user.username}_{bulletin_data['vague']['vague_nom']}.pdf"
                 pdf_response['Content-Disposition'] = f'attachment; filename="{filename}"'
                 return pdf_response
                 

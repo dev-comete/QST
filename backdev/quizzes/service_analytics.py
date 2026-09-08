@@ -160,6 +160,8 @@ def get_apprenant_bulletin_service(vague_id: int, apprenant) -> dict:
     total_possible_vague = 0.0
     quizzes_termines = 0
 
+    contient_brouillon = False
+
     # 4. Construction du bulletin
     for tentative in tentatives:
         quiz = tentative.quiz
@@ -185,6 +187,8 @@ def get_apprenant_bulletin_service(vague_id: int, apprenant) -> dict:
             titre_affiche = "Évaluation à venir (Non publiée)"
 
         is_published = (quiz.status == 'published')
+        if not is_published:
+            contient_brouillon = True
 
         bulletin_details.append({
             "quiz_id": quiz.id,
@@ -212,7 +216,7 @@ def get_apprenant_bulletin_service(vague_id: int, apprenant) -> dict:
         },
         "resume_global": {
             "total_score_obtenu": round(total_obtenu_vague, 2),
-            "total_score_possible": round(total_possible_vague, 2) if is_published else "?",
+            "total_score_possible": "?" if contient_brouillon else round(total_possible_vague, 2),
             "moyenne_generale_pct": moyenne_generale_pct,
             "progression": f"{quizzes_termines}/{total_quizzes} quiz terminés"
         },
