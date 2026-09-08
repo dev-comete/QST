@@ -152,10 +152,16 @@ class CorrigeeApercuSerializer(serializers.ModelSerializer):
 
 class QuestionBankSerializer(serializers.ModelSerializer):
     reponses = CorrigeeApercuSerializer(source='corrigee_set', many=True, read_only=True)
+    bareme_pts = serializers.SerializerMethodField()
 
     class Meta:
         model = Question
-        fields = ['id', 'enonce_question', 'reponses']
+        fields = ['id', 'enonce_question', 'bareme_pts', 'reponses']
+    def get_bareme_pts(self, obj):
+        premier_bareme = obj.questionbareme_set.first()
+        if premier_bareme and premier_bareme.bareme:
+            return float(premier_bareme.bareme.pts)
+        return 0.0
 
 class QuestionChoiceSerializer(serializers.Serializer):
     """
