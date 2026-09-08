@@ -45,5 +45,12 @@ export const StudentQuizService = {
     // Ajustez l'URL selon votre urls.py
     const response = await apiClient.get(`quizzes/bulletin/vague/${vagueId}/`);
     return response.data;
+  }, 
+
+  downloadBulletinPDF: async (vagueId) => {
+    const response = await apiClient.get(`quizzes/bulletin/vague/${vagueId}/pdf/`, {
+      responseType: 'blob', 
+    });
+    return response;
   }
 };
