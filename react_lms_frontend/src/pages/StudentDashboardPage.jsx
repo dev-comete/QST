@@ -70,8 +70,8 @@ export default function StudentDashboardPage() {
               <div className="lms-grid lms-grid--3" style={{ padding: 'var(--space-4)', gap: 'var(--space-4)' }}>
                 {vagues.map(vague => (
                   <div key={vague.vague_id} className="lms-card lms-card--pad-lg" style={{ backgroundColor: 'var(--color-surface-hover)', border: '1px solid var(--color-border)', boxShadow: 'none' }}>
-                    <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', marginBottom: 'var(--space-2)' }}>Session de formation</div>
-                    <h3 className="lms-card__title" style={{ fontSize: 'var(--text-md)', marginBottom: 'var(--space-4)' }}>{vague.formation_nom}</h3>
+                    <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', marginBottom: 'var(--space-2)' }}>{vague.formation_nom}</div>
+                    <h3 className="lms-card__title" style={{ fontSize: 'var(--text-md)', marginBottom: 'var(--space-4)' }}>{vague.nom_vague}</h3>
                     <button 
                       className="lms-btn lms-btn--outline lms-btn--block"
                       onClick={() => navigate(`/student/vagues/${vague.vague_id}/bulletin`)}

@@ -23,6 +23,47 @@ class VagueViewSet(viewsets.ModelViewSet):
     serializer_class = VagueSerializer
     permission_classes = [IsFormateurOrAdminOrReadOnly]
 
+    def update(self, request, *args, **kwargs):
+        vague = self.get_object()
+        
+        # request.data est parfois immuable (QueryDict), on en fait une copie modifiable
+        data = request.data.copy() if hasattr(request.data, 'copy') else request.data
+
+        # 1. SÉCURITÉ : Propriétaire
+        is_admin = request.user.is_staff or request.user.is_superuser
+        if not is_admin and vague.formation.createur != request.user:
+            return Response({"error": "Accès refusé."}, status=status.HTTP_403_FORBIDDEN)
+
+        # 2. SÉCURITÉ : Changement de formation bloqué
+        nouveau_formation_id = data.get('formation', vague.formation.id)
+        if str(nouveau_formation_id) != str(vague.formation.id):
+            if UtilisateurVague.objects.filter(vague=vague).exists():
+                return Response({
+                    "error": "Impossible de changer la formation d'une vague contenant des inscrits."
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+        # 3. 🌟 SÉCURITÉ : Bloquer la Date de Début si des quiz ont commencé
+        a_commence_quiz = UtilisateurQuiz.objects.filter(vague=vague, heure_debut__isnull=False).exists()
+        if a_commence_quiz and 'debut' in data:
+            # On retire silencieusement la nouvelle date de début pour conserver l'ancienne
+            del data['debut']
+
+        # On utilise "partial=True" pour permettre la sauvegarde même si on a retiré des champs
+        serializer = self.get_serializer(vague, data=data, partial=True)
+        serializer.is_valid(raise_exception=True)
+
+        # 4. SÉCURITÉ : Cohérence des dates finales
+        debut_final = serializer.validated_data.get('debut', vague.debut)
+        fin_final = serializer.validated_data.get('fin', vague.fin)
+        
+        if debut_final >= fin_final:
+            return Response({
+                "error": "La date de fin doit être strictement ultérieure à la date de début."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        self.perform_update(serializer)
+        return Response(serializer.data)
+
 class FormationViewSet(viewsets.ModelViewSet):
     queryset = Formation.objects.all()
     serializer_class = FormationSerializer
@@ -52,7 +93,8 @@ class CreateVagueAPIView(GenericAPIView):
         
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            
+
+        nom_vague = serializer.validated_data['nom_vague']
         formation = serializer.validated_data['formation_id'] 
         debut = serializer.validated_data['debut']
         fin = serializer.validated_data['fin']
@@ -67,6 +109,7 @@ class CreateVagueAPIView(GenericAPIView):
             
         # Create the Vague with the new date range
         vague = Vague.objects.create(
+            nom_vague=nom_vague,
             formation=formation, 
             debut=debut,
             fin=fin
@@ -94,6 +137,7 @@ class MesVaguesAPIView(APIView):
         for inscription in inscriptions:
             data.append({
                 "vague_id": inscription.vague.id,
+                "nom_vague": inscription.vague.nom_vague,
                 "formation_nom": inscription.vague.formation.nom_formation,
                 "debut": inscription.vague.debut,
                 "fin": inscription.vague.fin

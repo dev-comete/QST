@@ -40,8 +40,8 @@ export default function StudentBulletinPage() {
         <div className="lms-card lms-card--pad-lg" style={{ marginBottom: 'var(--space-6)', borderTop: '4px solid var(--color-primary)' }}>
           <div style={{ textAlign: 'center', marginBottom: 'var(--space-5)' }}>
             <p className="lms-eyebrow">Bulletin de Notes Officiel</p>
-            <h1 className="lms-pageheader__title" style={{ margin: 'var(--space-2) 0' }}>{bulletin.vague.formation}</h1>
-            <p style={{ color: 'var(--color-text-muted)' }}>Apprenant : <strong>{bulletin.apprenant.prenom} {bulletin.apprenant.nom}</strong></p>
+            <h1 className="lms-pageheader__title" style={{ margin: 'var(--space-2) 0' }}>{bulletin.vague.formation} - {bulletin.vague.vague_nom}</h1>
+            <p style={{ color: 'var(--color-text-muted)' }}>Apprenant : <strong>{bulletin.apprenant.username} </strong></p>
           </div>
 
           <div className="lms-grid lms-grid--3" style={{ textAlign: 'center', backgroundColor: 'var(--color-surface-hover)', borderRadius: 'var(--radius-md)', padding: 'var(--space-4)' }}>
@@ -84,7 +84,7 @@ export default function StudentBulletinPage() {
               <tbody>
                 {bulletin.details_quizzes.map((quiz) => (
                   <tr key={quiz.quiz_id}>
-                    <td className="lms-table__name">Quiz #{quiz.quiz_id}</td>
+                    <td className="lms-table__name">{quiz.quiz_titre}</td>
                     <td>
                       <span style={{ 
                         fontSize: 'var(--text-xs)', padding: '2px 8px', borderRadius: '12px', fontWeight: 600,

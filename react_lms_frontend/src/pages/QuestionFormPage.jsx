@@ -290,11 +290,12 @@ export default function QuestionFormPage() {
                       />
                       <input 
                         type="text" 
-                        placeholder="Explication (affichée lors de la correction) - Optionnel" 
+                        placeholder="Explication (affichée lors de la correction)" 
                         value={opt.explication}
                         onChange={(e) => handleOptionChange(opt.id, 'explication', e.target.value)}
                         className="lms-input"
                         style={{ fontSize: 'var(--text-sm)' }}
+                        required={opt.est_correct} // L'explication est obligatoire si l'option est correcte  
                       />
                     </div>
 

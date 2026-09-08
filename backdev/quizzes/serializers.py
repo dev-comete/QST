@@ -195,6 +195,18 @@ class ReponseOptionSerializer(serializers.Serializer):
         help_text="Explication affichée pour ce choix spécifique lors de la correction."
     )
 
+    def validate(self, data):
+        est_correct = data.get('est_correct', False)
+        explication = data.get('explication', '').strip()
+
+        # Si l'option est cochée comme "bonne réponse", l'explication devient obligatoire
+        if est_correct and not explication:
+            raise serializers.ValidationError({
+                "explication": "Vous devez fournir une explication pour la bonne réponse."
+            })
+            
+        return data
+
 class CreateFullQuestionSerializer(serializers.Serializer):
     enonce_question = serializers.CharField()
     type_id = serializers.IntegerField(required=True)

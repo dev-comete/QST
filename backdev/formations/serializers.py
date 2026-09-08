@@ -11,11 +11,18 @@ class FormationSerializer(serializers.ModelSerializer):
         read_only_fields = ['createur']
 
 class VagueSerializer(serializers.ModelSerializer):
+    a_des_evaluations_en_cours = serializers.SerializerMethodField()
+
     class Meta:
         model = Vague
         fields = '__all__'
 
+    def get_a_des_evaluations_en_cours(self, obj):
+        # Vérifie si au moins un étudiant a commencé un quiz dans cette vague
+        return UtilisateurQuiz.objects.filter(vague=obj, heure_debut__isnull=False).exists()
+
 class CreateVagueSerializer(serializers.Serializer):
+    nom_vague = serializers.CharField(max_length=255)
     formation_id = serializers.PrimaryKeyRelatedField(
         queryset=Formation.objects.all()
     )
@@ -93,7 +100,7 @@ class VagueListWithStudentsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Vague
-        fields = ['id', 'formation_nom', 'debut', 'fin', 'etudiants' , 'quiz_assignes_ids', 'quizzes_assignes']
+        fields = ['id', 'nom_vague', 'formation_nom', 'debut', 'fin', 'etudiants' , 'quiz_assignes_ids', 'quizzes_assignes']
 
     def get_quiz_assignes_ids(self, obj):
         # On cherche tous les UtilisateurQuiz liés à cette vague, et on extrait juste les IDs des quiz
