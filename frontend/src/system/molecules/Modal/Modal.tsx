@@ -95,13 +95,13 @@ const Modal = ({
 				color={bgColor}
 				position="fixed"
 				className="
-					rounded-xl
-					max-w-[80%] max-h-[85vh]
-					min-w-[40%] min-h-[30vh]
-					top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
-					z-101
-					p-5
-					flex flex-col
+						rounded-xl
+						max-w-[80%] min-w-[25%]
+						max-h-[85vh]
+						top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
+						z-101
+						p-5
+						flex flex-col
 					"
 			>
 				<Box direction="column" className="justify-between h-full w-full min-h-0">
@@ -116,7 +116,7 @@ const Modal = ({
 							}
 						</div>
 
-						<Box direction="column" className="justify-between items-center p-3 grow min-h-0">
+						<Box direction="column" className="justify-between items-center grow min-h-0">
 							<Box direction="column" className="flex-none w-full mb-3">
 								{ title && <Title title={title} /> }
 								{ subtitle && <CustomText textTag="h3">{subtitle[subIdx]}</CustomText>}
@@ -137,7 +137,7 @@ const Modal = ({
 					}
 				</Box>
 				{footer && 
-					<Box direction="column" className="items-center">
+					<Box direction="column" className="items-center mt-5">
 						{footer}
 					</Box>
 				}

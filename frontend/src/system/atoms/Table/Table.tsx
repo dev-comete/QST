@@ -76,7 +76,7 @@ export const Table = <T,>({
                                             : undefined;
 
                                     return (
-                                        <td key={colIndex} className="px-6 py-4 text-center align-middle font-normal">
+                                        <td key={colIndex} className="px-6 py-4 text-center align-middle font-normal text-text">
                                             <div className="flex w-full items-center justify-center">
                                                 {col.render
                                                     ? col.render(rawValue, row, idx)

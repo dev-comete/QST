@@ -22,31 +22,29 @@ const OrgEditForm = ({ handleSubmit, organisation, setOrganisation } : OrgEditFo
 	]
 
 	return (
-		<Box direction="column" className="items-center w-full">
-			<form
-				id="orgEditForm"
-				className="flex flex-col space-y-3"
-				onSubmit={handleSubmit}
-			>
-				<Input 
-					id="name"
-					name="name"
-					label="Nom de l'organisation"
-					onChange={formChangeHandler(setOrganisation, 'nom')}
-					required={true}
-					value={organisation.nom}
-				/>
-				<Select
-					id={"is_active"}
-					name={"is_active"}
-					selectionValue={selectionValue}
-					handleChange={formChangeHandler(setOrganisation, 'is_active', (value) => {
-						return value == 'Actif'
-					})}
-					value={organisation.is_active == true ? selectionValue[0].value : selectionValue[1].value}
-				/>
-			</form>
-		</Box>
+		<form
+			id="orgEditForm"
+			className="flex flex-col space-y-5 justify-center w-[80%] m-auto"
+			onSubmit={handleSubmit}
+		>
+			<Input 
+				id="name"
+				name="name"
+				label="Nom de l'organisation"
+				onChange={formChangeHandler(setOrganisation, 'nom')}
+				required={true}
+				value={organisation.nom}
+			/>
+			<Select
+				id={"is_active"}
+				name={"is_active"}
+				selectionValue={selectionValue}
+				handleChange={formChangeHandler(setOrganisation, 'is_active', (value) => {
+					return value == 'Actif'
+				})}
+				value={organisation.is_active == true ? selectionValue[0].value : selectionValue[1].value}
+			/>
+		</form>
 	)
 }
 
@@ -97,6 +95,7 @@ const ModalOrgUpdate = ({ id, open, closeModal } : ModalOrgUpdateProps) => {
 						btnColor="primary"
 						textColor="white"
 						isLoading={isPending}
+						disabled={organisation.nom.length == 0}
 					>
 						Modifier
 					</ActionButton>

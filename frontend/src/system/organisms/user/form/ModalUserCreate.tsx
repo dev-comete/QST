@@ -10,6 +10,7 @@ import Loading from "../../../atoms/Loading/Loading";
 import ActionButton from "../../../molecules/Buttons/ActionButton";
 import { Modal } from "../../../molecules/Modal/Modal";
 import ErrorBloc from "../../../molecules/Container/ErrorBloc";
+import OrganisationForm from "./OrganisationForm";
 
 interface UserFormProps {
 	listTypeUser: utilisateurType[]
@@ -22,54 +23,42 @@ interface UserFormProps {
 const UserForm = ({ handleSubmit, setUser, listTypeUser, listOrganisation, errors } : UserFormProps ) => {
 
 	const selectedRole = getSelectData(listTypeUser, 'type_utilisateur')
-	const selectedOrganisation = getSelectData(listOrganisation, 'nom')
 
 	return (
-		<Box direction="column" className="items-center w-full">
-			<form
-				id="userForm"
-				className="flex flex-col space-y-3"
-				onSubmit={handleSubmit}
-			>
-				<Input 
-					id="username"
-					name="username"
-					label="Nom d'utilisateur"
-					onChange={formChangeHandler(setUser, 'username')}
-					required={true}
-				/>
-				{errors.userError && <ErrorBloc message={errors.userError} />}
-				<Input 
-					id="email"
-					name="email"
-					label="Addresse email"
-					type="email"
-					onChange={formChangeHandler(setUser, 'email')}
-					required={true}
-				/>
-				{errors.emailError && <ErrorBloc message={errors.emailError} />}
-				<Select 
-					id="role"
-					name="role"
-					label="Rôle"
-					selectionValue={selectedRole}
-					handleChange={formChangeHandler(setUser, 'type_utilisateur', (value) => {
-						const selected = listTypeUser.find((q) => q.type_utilisateur === value) ?? listTypeUser[0]
-						return selected.id ?? null
-					})}
-				/>
-				<Select 
-					id="organisation"
-					name="organisation"
-					label="Organisation"
-					selectionValue={selectedOrganisation}
-					handleChange={formChangeHandler(setUser, 'organisation', (value) => {
-						const selected = listOrganisation.find((q) => q.nom === value) ?? listOrganisation[0]
-						return [String(selected.id ?? null)]
-					})}
-				/>
-			</form>
-		</Box>
+		<form
+			id="userForm"
+			className="flex flex-col space-y-5 justify-center w-[80%] m-auto"
+			onSubmit={handleSubmit}
+		>
+			<Input 
+				id="username"
+				name="username"
+				label="Nom d'utilisateur"
+				onChange={formChangeHandler(setUser, 'username')}
+				required={true}
+			/>
+			{errors.userError && <ErrorBloc message={errors.userError} />}
+			<Input 
+				id="email"
+				name="email"
+				label="Addresse email"
+				type="email"
+				onChange={formChangeHandler(setUser, 'email')}
+				required={true}
+			/>
+			{errors.emailError && <ErrorBloc message={errors.emailError} />}
+			<Select 
+				id="role"
+				name="role"
+				label="Rôle"
+				selectionValue={selectedRole}
+				handleChange={formChangeHandler(setUser, 'type_utilisateur', (value) => {
+					const selected = listTypeUser.find((q) => q.type_utilisateur === value) ?? listTypeUser[0]
+					return selected.id ?? null
+				})}
+			/>
+			<OrganisationForm listOrganisation={listOrganisation} setUser={setUser}/>
+		</form>
 	)
 }
 
@@ -105,12 +94,8 @@ const ModalUserCreate = ({ open, closeModal, listOrganisation } : ModalUserCreat
 
 	const handleSubmit = async (e: React.SubmitEvent) => {
 		e.preventDefault()
-		try {
-			await handleCreateUser()
-			handleOnCloseModal()
-		} catch (error) {
-			console.log("Error", error)
-		}
+		await handleCreateUser()
+		handleOnCloseModal()
 	}
 
 	return (

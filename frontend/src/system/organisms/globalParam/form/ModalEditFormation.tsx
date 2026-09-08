@@ -16,22 +16,20 @@ interface FormationEditFormProps {
 const FormationEditForm = ({ handleSubmit, formation, setFormation } : FormationEditFormProps ) => {
 
 	return (
-		<Box direction="column" className="items-center w-full">
-			<form
-				id="formEditForm"
-				className="flex flex-col space-y-3"
-				onSubmit={handleSubmit}
-			>
-				<Input 
-					id="nom_formation"
-					name="nom_formation"
-					label="Nom de la formation"
-					onChange={formChangeHandler(setFormation, 'nom_formation')}
-					required={true}
-					value={formation.nom_formation}
-				/>
-			</form>
-		</Box>
+		<form
+			id="formEditForm"
+			className="flex flex-col space-y-5 justify-center w-[80%] m-auto"
+			onSubmit={handleSubmit}
+		>
+			<Input 
+				id="nom_formation"
+				name="nom_formation"
+				label="Nom de la formation"
+				onChange={formChangeHandler(setFormation, 'nom_formation')}
+				required={true}
+				value={formation.nom_formation}
+			/>
+		</form>
 	)
 }
 
@@ -65,7 +63,7 @@ const ModalEditFormation = ({ open, closeModal, id } : ModalEditFormationProps) 
 
 	return (
 		<Modal
-			title="Modification de l'utilisateur"
+			title="Modification de la formation"
 			isOpen={open}
 			closeModal={handleOnCloseModal}
 			footer={
@@ -82,6 +80,7 @@ const ModalEditFormation = ({ open, closeModal, id } : ModalEditFormationProps) 
 						btnColor="primary"
 						textColor="white"
 						isLoading={isPending}
+						disabled={formation.nom_formation.length == 0}
 					>
 						Modifier
 					</ActionButton>

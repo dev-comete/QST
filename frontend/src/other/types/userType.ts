@@ -3,7 +3,7 @@ type userType = {
 	username: string,
 	email: string,
 	type_utilisateur: number | null,
-	organisation: string[]
+	organisation: number[]
 }
 
 type userPayload = Omit<userType, 'id'>

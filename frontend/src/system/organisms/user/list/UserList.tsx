@@ -5,7 +5,7 @@ import Loading from "../../../atoms/Loading/Loading"
 import { Table, type Column } from "../../../atoms/Table/Table"
 import IconButton, { IconConfirmActionButton } from "../../../molecules/Buttons/IconButton"
 import { useUser, useUserDel } from "../../../../other/hooks/user/useUser"
-import type { organisationType, userType } from "../../../../other/types/userType"
+import type { organisationType, userType, utilisateurType } from "../../../../other/types/userType"
 import CustomText from "../../../atoms/Text/CustomText"
 import ModalUserUpdate from "../form/ModalUpdateUser"
 
@@ -34,7 +34,9 @@ const ActionCell = ({ rowId, onEdit }: {
 };
 
 const getUserTabColumn = (
-    onEdit: (id: string | number | boolean | string[]) => void
+    onEdit: (id: string | number | boolean | string[]) => void,
+	listOrganisation: organisationType[],
+	listType: utilisateurType[]
 ): Column<userType>[] => [
     {
         header: 'Nom',
@@ -46,19 +48,27 @@ const getUserTabColumn = (
     },
     {
         header: 'Type',
-        key: "type_utilisateur"
+        key: "type_utilisateur",
+		render: (value) => {
+			const role = listType.find((t) => t.id === value)
+			return <CustomText textTag="h4">{role?.type_utilisateur}</CustomText>
+		}
     },
     {
         header: 'Organisation',
         key: "organisation",
-        render: (value: string | number | string[] | null | undefined) => {
+        render: (value: string | number | number[] | string[] | null | undefined) => {
             const list = Array.isArray(value) ? value : []
 
-			if (list.length === 0) return <CustomText>Aucune</CustomText>
+			if (list.length === 0) return <CustomText textTag="h5">Aucune</CustomText>
 
             return (
                 <Box>
-                    {list.map((item, index) => <CustomText key={index}>{String(item)}</CustomText>)}
+                    {
+						list.map((item, index) =>{
+							const found = listOrganisation.find((org) => org.id === item)
+						return <CustomText textTag="h4" key={index}>{found?.nom}</CustomText>
+					})}
                 </Box>
             )
         }
@@ -67,7 +77,7 @@ const getUserTabColumn = (
         header: "Action",
         key: 'id',
         render: (value) => {
-            return <ActionCell rowId={value ? value : ''} onEdit={onEdit} />
+            return <ActionCell rowId={Number(value)} onEdit={onEdit} />
         }
     }
 ]
@@ -79,23 +89,30 @@ interface UserListProps {
 const UserList = ({ organisations } : UserListProps) => {
     const [selectedUserId, setSelectedUserId] = useState<string>('')
     const [isModalOpen, setIsModalOpen] = useState(false)
+	
+    const { getUserQuery, getUserTypeQuery } = useUser({})
+    const { data: users, status } = getUserQuery
+	const { data: types, status : typeStatus } = getUserTypeQuery
 
-    const handleOpenEditModal = (id: string | number | boolean | string[]) => {
-        setSelectedUserId(id as string)
+    if (status === 'pending' || typeStatus == 'pending') 
+		return <Loading />
+    
+    if (!users || !types)
+		return <FetchError />
+
+	const handleOpenEditModal = (id: string | number | boolean | string[]) => {
+		setSelectedUserId(id as string)
         setIsModalOpen(true)
     }
-
-    const { getUserQuery } = useUser({})
-    const { data: users, status } = getUserQuery
-
-    if (status === 'pending') return <Loading />
-    
-    if (!users) return <FetchError />
 
     return (
         <Box direction="column" className="w-full items-center justify-center">
             <Table 
-                columns={getUserTabColumn(handleOpenEditModal)}
+                columns={getUserTabColumn(
+                    handleOpenEditModal,
+                    organisations,
+					types
+                )}
                 data={users}
                 rowKey={'id'}
             />

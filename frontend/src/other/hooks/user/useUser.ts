@@ -78,6 +78,11 @@ export const useUser = ({ role, id } : UseUserProps) => {
 		queryFn: () => UserService.list(role ? { role } : undefined),
 	});
 
+	const getUserTypeQuery = useQuery({
+		queryKey: ['type_list', role ?? 'all'],
+		queryFn: () => UserService.type(),
+	});
+
 	const userInfoQuery = useQuery({
 		queryKey: ['user_info', id],
 		queryFn: () => UserService.info({ id: id ?? ''}),
@@ -86,7 +91,8 @@ export const useUser = ({ role, id } : UseUserProps) => {
 
 	return {
 		getUserQuery,
-		userInfoQuery
+		userInfoQuery,
+		getUserTypeQuery
 	}
 }
 
@@ -96,12 +102,11 @@ export const useUserDel = (id: string) => {
 
 	const deleteMutation = useMutation({
 		mutationFn: UserService.delete,
-		onSuccess: (data) => {
-			console.log("User deleted", data)
+		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ['users_list'] })
 		},
 		onError: (err) => {
-			console.error('User creation failed:', err);
+			console.error('User deletion failed:', err);
 		},
 	});
 

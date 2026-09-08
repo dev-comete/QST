@@ -82,7 +82,7 @@ export const useVagueCreate = () => {
 
 			setVague((prev) => ({
 				...prev,
-				formation_id: String(formations[0].id),
+				formation_id: formations.length === 0 ? '' : String(formations[0].id),
 			}));
 		}
 

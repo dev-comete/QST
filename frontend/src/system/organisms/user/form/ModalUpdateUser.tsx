@@ -10,6 +10,7 @@ import Loading from "../../../atoms/Loading/Loading";
 import ActionButton from "../../../molecules/Buttons/ActionButton";
 import { Modal } from "../../../molecules/Modal/Modal";
 import ErrorBloc from "../../../molecules/Container/ErrorBloc";
+import OrganisationForm from "./OrganisationForm";
 
 interface UserEditFormProps {
 	listTypeUser: utilisateurType[]
@@ -23,60 +24,52 @@ interface UserEditFormProps {
 const UserEditForm = ({ handleSubmit, user, setUser, listTypeUser, listOrganisation, errors } : UserEditFormProps ) => {
 
 	const selectedRole = getSelectData(listTypeUser, 'type_utilisateur')
-	const selectedOrganisation = getSelectData(listOrganisation, 'nom')
 
 	return (
-		<Box direction="column" className="items-center w-full">
-			<form
-				id="userForm"
-				className="flex flex-col space-y-3"
-				onSubmit={handleSubmit}
-			>
-				<Input 
-					id="username"
-					name="username"
-					label="Nom d'utilisateur"
-					onChange={formChangeHandler(setUser, 'username')}
-					required={true}
-					value={user.username}
-				/>
-				{errors.userError && <ErrorBloc message={errors.userError} />}
-				<Input 
-					id="email"
-					name="email"
-					label="Addresse email"
-					type="email"
-					onChange={formChangeHandler(setUser, 'email')}
-					required={true}
-					value={user.email}
-				/>
-				{errors.emailError && <ErrorBloc message={errors.emailError} />}
-				<Select 
-					id="role"
-					name="role"
-					label="Rôle"
-					selectionValue={selectedRole}
-					handleChange={formChangeHandler(setUser, 'type_utilisateur', (value) => {
-						const selected = listTypeUser.find((q) => q.type_utilisateur === value) ?? listTypeUser[0]
-						return selected.id ?? null
-					})}
-					value={(() => {
-						const val = listTypeUser.find((q) => q.id === user.type_utilisateur) ?? listTypeUser[0];
-						return val.type_utilisateur;
-					})()}
-				/>
-				<Select 
-					id="organisation"
-					name="organisation"
-					label="Organisation"
-					selectionValue={selectedOrganisation}
-					handleChange={formChangeHandler(setUser, 'organisation', (value) => {
-						const selected = listOrganisation.find((q) => q.nom === value) ?? listOrganisation[0]
-						return [String(selected.id ?? null)]
-					})}
-				/>
-			</form>
-		</Box>
+		<form
+			id="userEditForm"
+			className="flex flex-col space-y-5 justify-center w-[80%] m-auto"
+			onSubmit={handleSubmit}
+		>
+			<Input 
+				id="username"
+				name="username"
+				label="Nom d'utilisateur"
+				onChange={formChangeHandler(setUser, 'username')}
+				required={true}
+				value={user.username}
+			/>
+			{errors.userError && <ErrorBloc message={errors.userError} />}
+			<Input 
+				id="email"
+				name="email"
+				label="Addresse email"
+				type="email"
+				onChange={formChangeHandler(setUser, 'email')}
+				required={true}
+				value={user.email}
+			/>
+			{errors.emailError && <ErrorBloc message={errors.emailError} />}
+			<Select 
+				id="role"
+				name="role"
+				label="Rôle"
+				selectionValue={selectedRole}
+				handleChange={formChangeHandler(setUser, 'type_utilisateur', (value) => {
+					const selected = listTypeUser.find((q) => q.type_utilisateur === value) ?? listTypeUser[0]
+					return selected.id ?? null
+				})}
+				value={(() => {
+					const val = listTypeUser.find((q) => q.id === user.type_utilisateur) ?? listTypeUser[0];
+					return val.type_utilisateur;
+				})()}
+			/>
+			<OrganisationForm
+				listOrganisation={listOrganisation}
+				user={user}
+				setUser={setUser}
+			/>
+		</form>
 	)
 }
 
@@ -136,7 +129,7 @@ const ModalUserUpdate = ({ id, open, closeModal, listOrganisation } : ModalUserU
 					</ActionButton>
 					<ActionButton
 						type="submit"
-						form="userForm"
+						form="userEditForm"
 						btnColor="primary"
 						textColor="white"
 						isLoading={isPending}
