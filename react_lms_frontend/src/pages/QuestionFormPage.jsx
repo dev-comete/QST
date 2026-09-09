@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom'; // 🌟 NOUVEAU: useParams
+import { useNavigate, useParams } from 'react-router-dom';
 import { QuestionService } from '../api/question.service';
-import { AssignmentService } from '../api/assignement.service'; 
+import { AssignmentService } from '../api/assignement.service';
+import { AiService } from '../api/ia.service'; // 🌟 Import du service IA
 import '../styles/index.css';
 import { notify } from '../lib/notify';
 
 export default function QuestionFormPage() {
   const navigate = useNavigate();
-  const { id } = useParams(); // 🌟 S'il y a un ID, on est en mode ÉDITION
+  const { id } = useParams();
   const isEditMode = Boolean(id);
 
   // États des listes déroulantes
@@ -30,6 +31,9 @@ export default function QuestionFormPage() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  
+  // 🌟 État pour le chargement de l'IA
+  const [isAiLoading, setIsAiLoading] = useState(false);
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -37,11 +41,9 @@ export default function QuestionFormPage() {
         const typesData = await AssignmentService.getTypes();
         setTypes(typesData);
 
-        // 🌟 CHARGEMENT SI ON EST EN MODE ÉDITION
         if (isEditMode) {
           const questionData = await QuestionService.getQuestionById(id);
           
-          // Retrouver l'ID du type pour que le menu déroulant affiche la bonne valeur
           const matchedType = typesData.find(t => 
             t.type_nom === questionData.type_nom || 
             t.type_question === questionData.type_nom ||
@@ -51,19 +53,18 @@ export default function QuestionFormPage() {
           setFormData({
             enonce_question: questionData.enonce_question,
             type_id: matchedType ? matchedType.id : '',
-            bareme_pts: 1.0 // Par défaut car la banque n'a pas de barème natif
+            bareme_pts: 1.0 
           });
 
-          // Remplir les options avec les données de la base
           if (questionData.reponses && questionData.reponses.length > 0) {
             setOptions(questionData.reponses.map(rep => ({
-              id: rep.id, // ID réel de la DB
-              reponse: rep.texte, // Le front utilise 'reponse'
+              id: rep.id,
+              reponse: rep.texte, 
               est_correct: rep.est_correct,
               explication: rep.explication || ''
             })));
           } else {
-            setOptions([]); // Cas d'une question ouverte
+            setOptions([]); 
           }
         }
       } catch (err) {
@@ -75,17 +76,14 @@ export default function QuestionFormPage() {
     fetchInitialData();
   }, [id, isEditMode]);
 
-  // -- GESTION DU FORMULAIRE DE BASE --
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  // Récupérer le code système du type sélectionné (ex: "QCU", "QCM", "OUV")
   const selectedTypeObj = types.find(t => t.id === parseInt(formData.type_id));
   const selectedTypeCode = selectedTypeObj ? selectedTypeObj.code.toUpperCase() : '';
 
-  // -- GESTION DES OPTIONS DYNAMIQUES --
   const handleAddOption = () => {
     setOptions(prev => [...prev, { id: Date.now(), reponse: '', est_correct: false, explication: '' }]);
   };
@@ -112,7 +110,64 @@ export default function QuestionFormPage() {
     }));
   };
 
-  // -- SOUMISSION --
+  const handleSuggestDistractors = async () => {
+    if (!formData.enonce_question.trim()) {
+      notify({ type: 'warning', message: "Veuillez d'abord saisir l'énoncé de la question." });
+      return;
+    }
+
+    // 1. On récupère TOUTES les bonnes réponses saisies et cochées (via filter, et non plus find)
+    const correctAnswers = options.filter(opt => opt.est_correct && opt.reponse.trim() !== '');
+    
+    if (correctAnswers.length === 0) {
+      notify({ type: 'warning', message: "Veuillez d'abord saisir et cocher au moins une bonne réponse." });
+      return;
+    }
+
+    // 2. On assemble toutes les bonnes réponses pour que l'IA connaisse tout le contexte
+    // Ex: "Option 1 | Option 2"
+    const bonnesReponsesTexte = correctAnswers.map(a => a.reponse).join(' | ');
+
+    setIsAiLoading(true);
+    try {
+      // 3. On envoie toutes les bonnes réponses combinées à l'API
+      const suggestions = await AiService.generateDistractors(formData.enonce_question, bonnesReponsesTexte);
+      
+      setOptions(prevOptions => {
+        let updatedOptions = [...prevOptions];
+        let suggestionsToPlace = [...suggestions]; 
+
+        // 4. On remplace uniquement les fausses réponses (les vraies sont protégées)
+        updatedOptions = updatedOptions.map(opt => {
+          if (!opt.est_correct && suggestionsToPlace.length > 0) {
+            const nextSuggestion = suggestionsToPlace.shift(); 
+            return { ...opt, reponse: nextSuggestion };
+          }
+          return opt;
+        });
+
+        // 5. On ajoute le reste si nécessaire
+        const extraOptions = suggestionsToPlace.map((sugg, index) => ({
+          id: Date.now() + index + 100, 
+          reponse: sugg,
+          est_correct: false,
+          explication: ''
+        }));
+
+        return [...updatedOptions, ...extraOptions];
+      });
+
+      notify({ type: 'success', message: 'Distracteurs générés et mis à jour avec succès !' });
+      
+    } catch (err) {
+      console.error(err);
+      const errorMsg = err.response?.data?.error || "Erreur lors de la génération par l'IA. Veuillez réessayer.";
+      notify({ type: 'error', message: errorMsg });
+    } finally {
+      setIsAiLoading(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -138,12 +193,11 @@ export default function QuestionFormPage() {
 
     try {
       if (isEditMode) {
-        // 🌟 PAYLOAD POUR LA MISE À JOUR (PUT)
         const updatePayload = {
           enonce_question: formData.enonce_question,
           options: selectedTypeCode === 'OUV' ? [] : options.map(o => ({
-            id: o.id.toString().length > 10 ? null : o.id, // Si c'est un timestamp Date.now(), on envoie null pour que le backend le crée
-            texte: o.reponse, // Le backend attend 'texte'
+            id: o.id.toString().length > 10 ? null : o.id, 
+            texte: o.reponse, 
             est_correct: o.est_correct,
             explication: o.explication
           }))
@@ -151,7 +205,6 @@ export default function QuestionFormPage() {
         await QuestionService.updateQuestion(id, updatePayload);
         notify({ type: 'success', message: 'Question modifiée avec succès !' });
       } else {
-        // 🌟 PAYLOAD POUR LA CRÉATION (POST)
         const createPayload = {
           enonce_question: formData.enonce_question,
           type_id: parseInt(formData.type_id),
@@ -193,7 +246,6 @@ export default function QuestionFormPage() {
 
         <form onSubmit={handleSubmit} className="lms-stack" style={{ gap: 'var(--space-6)' }}>
           
-          {/* BLOC 1 : INFORMATIONS DE BASE */}
           <div className="lms-card lms-card--pad-lg">
             <h3 className="lms-card__title" style={{ marginBottom: 'var(--space-4)' }}>Informations générales</h3>
             
@@ -218,7 +270,7 @@ export default function QuestionFormPage() {
                   value={formData.type_id} 
                   onChange={handleChange} 
                   required 
-                  disabled={isEditMode} // 🌟 BLOQUÉ EN MODE ÉDITION
+                  disabled={isEditMode}
                   className="lms-select"
                 >
                   <option value="" disabled>-- Choisir un type --</option>
@@ -233,7 +285,6 @@ export default function QuestionFormPage() {
                 )}
               </div>
 
-              {/* Le barème n'est pas modifiable depuis la banque en mode édition (il appartient au quiz) */}
               {!isEditMode && (
                 <div className="lms-field">
                   <label className="lms-label">Barème (Points) par défaut *</label>
@@ -252,18 +303,31 @@ export default function QuestionFormPage() {
             </div>
           </div>
 
-          {/* BLOC 2 : GESTION DES OPTIONS */}
           {selectedTypeCode && selectedTypeCode !== 'OUV' && (
             <div className="lms-card lms-card--pad-lg">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-4)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-4)', flexWrap: 'wrap', gap: '10px' }}>
                 <h3 className="lms-card__title" style={{ margin: 0 }}>Options de réponse</h3>
-                <button type="button" onClick={handleAddOption} className="lms-btn lms-btn--sm lms-btn--outline">
-                  + Ajouter une option
-                </button>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  
+                  {/* 🌟 NOUVEAU BOUTON IA */}
+                  <button 
+                    type="button" 
+                    onClick={handleSuggestDistractors} 
+                    disabled={isAiLoading}
+                    className="lms-btn lms-btn--sm lms-btn--outline"
+                    style={{ backgroundColor: 'var(--color-surface-hover)', borderColor: 'var(--color-border)' }}
+                  >
+                    {isAiLoading ? '✨ Génération...' : '✨ Suggérer avec l\'IA'}
+                  </button>
+
+                  <button type="button" onClick={handleAddOption} className="lms-btn lms-btn--sm lms-btn--outline">
+                    + Ajouter une option
+                  </button>
+                </div>
               </div>
               
               <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)', marginBottom: 'var(--space-4)' }}>
-                Cochez {selectedTypeCode === 'QCU' ? "la seule" : "les"} réponse(s) correcte(s) pour générer le corrigé automatique.
+                Cochez {selectedTypeCode === 'QCU' ? "la seule" : "les"} réponse(s) correcte(s) pour générer le corrigé automatique. (Saisissez d'abord une bonne réponse avant de solliciter l'IA).
               </p>
 
               <div className="lms-stack" style={{ gap: 'var(--space-4)' }}>
@@ -295,7 +359,7 @@ export default function QuestionFormPage() {
                         onChange={(e) => handleOptionChange(opt.id, 'explication', e.target.value)}
                         className="lms-input"
                         style={{ fontSize: 'var(--text-sm)' }}
-                        required={opt.est_correct} // L'explication est obligatoire si l'option est correcte  
+                        required={opt.est_correct} 
                       />
                     </div>
 

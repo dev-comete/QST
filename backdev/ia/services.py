@@ -31,9 +31,6 @@ def tester_connexion_gemini():
             return f"Erreur détaillée : {str(e)}"
 
 def generer_distracteurs_qcm(enonce: str, bonne_reponse: str) -> list:
-    """
-    Génère 3 distracteurs pour une question donnée et retourne une liste Python.
-    """
     prompt = DISTRACTOR_PROMPT.format(enonce=enonce, bonne_reponse=bonne_reponse)
     
     try:
@@ -45,11 +42,12 @@ def generer_distracteurs_qcm(enonce: str, bonne_reponse: str) -> list:
             ),
         )
         
-        # Transformation de la chaîne JSON en liste Python
         distracteurs = json.loads(response.text)
         return distracteurs
         
     except json.JSONDecodeError:
-        return ["Erreur: L'IA n'a pas renvoyé un JSON valide", "Veuillez réessayer", "Format inattendu"]
+        # On lève une erreur claire au lieu de renvoyer un faux tableau
+        raise ValueError("Le format renvoyé par l'IA n'est pas valide.")
     except Exception as e:
-        return [f"Erreur technique: {str(e)}", "Erreur 2", "Erreur 3"]
+        # On fait remonter l'erreur 503 de Google
+        raise Exception(f"Erreur de l'API IA : {str(e)}")
