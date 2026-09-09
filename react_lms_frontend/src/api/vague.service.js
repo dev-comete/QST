@@ -9,8 +9,9 @@ export const VagueService = {
   },
 
   // Créer une nouvelle vague (CreateVagueAPIView)
-  create: async (formationId, debut, fin) => {
+  create: async (nom_vague, formationId, debut, fin) => {
     const response = await apiClient.post('/formation/vagues/create/', {
+      nom_vague: nom_vague,
       formation_id: formationId,
       debut: debut,
       fin: fin
@@ -44,4 +45,18 @@ export const VagueService = {
       const response = await apiClient.get(`/quizzes/analytics/vague/${vagueId}/`);
       return response.data;
     },
+
+  getById: async (id) => {
+    const response = await apiClient.get(`quizzes/crud/vagues/${id}/`);
+    return response.data;
+  },
+
+  update: async (id, formation_id, debut, fin) => {
+    const response = await apiClient.put(`/quizzes/crud/vagues/${id}/`, {
+      formation: formation_id,
+      debut: debut,
+      fin: fin
+    });
+    return response.data;
+  },
   };

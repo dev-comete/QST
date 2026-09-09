@@ -1,0 +1,164 @@
+/* ==========================================================================
+   Notifications — toasts and the confirm dialog.
+   Same ledger surfaces and harbor/semantic palette as the rest of the app.
+   ========================================================================== */
+
+.lms-toast-stack {
+  position: fixed;
+  top: var(--space-5);
+  right: var(--space-5);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-3);
+  pointer-events: none;
+}
+
+.lms-toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  min-width: 280px;
+  max-width: 380px;
+  background: var(--color-paper);
+  border: 1px solid var(--color-border);
+  border-left: 3px solid var(--color-slate-light);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-4);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--color-ink-soft);
+  animation: lms-toast-in var(--duration-base) var(--ease-standard);
+}
+
+.lms-toast--success {
+  border-left-color: var(--color-success);
+}
+
+.lms-toast--error {
+  border-left-color: var(--color-danger);
+}
+
+.lms-toast--info {
+  border-left-color: var(--color-info);
+}
+
+.lms-toast__icon {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.lms-toast--success .lms-toast__icon {
+  color: var(--color-success-strong);
+}
+
+.lms-toast--error .lms-toast__icon {
+  color: var(--color-danger-strong);
+}
+
+.lms-toast--info .lms-toast__icon {
+  color: var(--color-info);
+}
+
+.lms-toast__message {
+  flex: 1;
+  line-height: 1.5;
+}
+
+.lms-toast__close {
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  color: var(--color-slate-light);
+  cursor: pointer;
+  padding: 2px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  transition: background var(--duration-fast) var(--ease-standard),
+              color var(--duration-fast) var(--ease-standard);
+}
+
+.lms-toast__close:hover {
+  background: var(--color-mist-strong);
+  color: var(--color-ink);
+}
+
+@keyframes lms-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Confirm dialog */
+
+.lms-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 42, 51, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: var(--space-5);
+  animation: lms-fade-in var(--duration-base) var(--ease-standard);
+}
+
+@keyframes lms-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.lms-modal {
+  width: 100%;
+  max-width: 440px;
+  background: var(--color-paper);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-6);
+  animation: lms-modal-in var(--duration-base) var(--ease-standard);
+}
+
+@keyframes lms-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.lms-modal__icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: var(--color-warning-light);
+  color: var(--color-warning);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-4);
+}
+
+.lms-modal__message {
+  font-size: var(--text-base);
+  color: var(--color-ink-soft);
+  line-height: 1.55;
+  margin-bottom: var(--space-6);
+}
+
+.lms-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}

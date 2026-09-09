@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 // Remplacez par votre vrai service API
 import { AuthService } from '../api/auth.service'; 
+import { notify } from '../lib/notify';
 
 export default function SetPasswordPage() {
   const { uid, token } = useParams();
@@ -32,7 +33,7 @@ export default function SetPasswordPage() {
         new_password: passwords.new_password
       });
       
-      alert("Votre compte est activé ! Vous pouvez vous connecter.");
+      notify({ type: 'success', message: 'Votre compte est activé ! Vous pouvez vous connecter.' });
       navigate('/login');
     } catch (err) {
       setError("Le lien est invalide ou a expiré.");

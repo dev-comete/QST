@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { OrganisationService } from '../api/organisations.service'; 
+import { confirm, notify } from '../lib/notify';
 
 export default function OrganisationListPage() {
   const [organisations, setOrganisations] = useState([]);
@@ -23,16 +24,17 @@ export default function OrganisationListPage() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Êtes-vous sûr de vouloir supprimer cette organisation ? Tous les utilisateurs associés perdront leur lien avec celle-ci.")) {
+    const confirmed = await confirm("Êtes-vous sûr de vouloir supprimer cette organisation ? Tous les utilisateurs associés perdront leur lien avec celle-ci.");
+    if (!confirmed) return;
       try {
         await OrganisationService.delete(id);
         setOrganisations(organisations.filter(org => org.id !== id));
       } catch (error) {
         console.error("Erreur lors de la suppression", error);
-        alert("Erreur lors de la suppression.");
+        notify({ type: 'error', message: 'Erreur lors de la suppression.' });
       }
-    }
-  };
+    };
+  
 
   return (
     <div className="lms-scope">

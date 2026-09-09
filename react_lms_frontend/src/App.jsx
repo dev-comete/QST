@@ -125,6 +125,15 @@ function App() {
                 </FormateurRoute>
               } 
             />
+
+            <Route 
+              path="/banque-questions/:id/edit" 
+              element={
+                <FormateurRoute>
+                  <QuestionFormPage />
+                </FormateurRoute>
+              } 
+            />
             
               <Route 
                 path="/quizzes" 
@@ -228,6 +237,15 @@ function App() {
 
             <Route 
               path="/vagues/create" 
+              element={
+                <FormateurRoute>
+                  <VagueFormPage />
+                </FormateurRoute>
+              } 
+            />
+
+            <Route 
+              path="/vagues/:id/edit" 
               element={
                 <FormateurRoute>
                   <VagueFormPage />

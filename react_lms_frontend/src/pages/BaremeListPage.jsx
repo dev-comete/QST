@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { confirm, notify } from '../lib/notify';
 import { BaremeService } from '../api/bareme.service';
 import '../styles/index.css';
 
@@ -24,14 +25,15 @@ export default function BaremeListPage() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Êtes-vous sûr de vouloir supprimer ce barème ?")) {
+    const confirmed = await confirm("Êtes-vous sûr de vouloir supprimer ce barème ?");
+    if (!confirmed) return;
       try {
         await BaremeService.delete(id);
         setBaremes(baremes.filter(b => b.id !== id));
       } catch (error) {
         console.error("Erreur lors de la suppression", error);
+        notify({ type: 'error', message: 'Erreur lors de la suppression du barème.' });
       }
-    }
   };
 
   if (loading) {

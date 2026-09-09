@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FormationService } from '../api/formation.service';
 import '../styles/index.css';
+import { notify } from '../lib/notify';
 
 export default function FormationFormPage() {
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ export default function FormationFormPage() {
       navigate('/formations');
     } catch (error) {
       console.error("Erreur", error);
-      alert("Erreur lors de l'enregistrement.");
+      notify({ type: 'error', message: 'Erreur lors de l\'enregistrement.' });
     }
   };
 

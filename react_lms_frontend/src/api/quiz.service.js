@@ -32,4 +32,13 @@ export const QuizService = {
     const response = await apiClient.delete(`/quizzes/crud/quizzes/${quizId}/`);
     return response.data;
   },
+
+  getTrashQuizzes: async () => {
+    const response = await apiClient.get('quizzes/corbeille/quizzes/');
+    return response.data;
+  },
+  restoreQuiz: async (quizId) => {
+    const response = await apiClient.post(`quizzes/corbeille/quizzes/${quizId}/restaurer/`);
+    return response.data;
+  },
 };

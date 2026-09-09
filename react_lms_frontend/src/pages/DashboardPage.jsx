@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { Navigate } from 'react-router-dom';
 import { DashboardService } from '../api/dashboard.service';
 import '../styles/index.css';
 
 const DashboardPage = () => {
   const { user } = useAuth();
+
+  // SÉCURITÉ : Si c'est un apprenant, on le renvoie dans son espace instantanément
+  if (user?.role === 'apprenant') {
+    return <Navigate to="/student/dashboard" replace />;
+  }
   
   const [metrics, setMetrics] = useState({
     stats: [],

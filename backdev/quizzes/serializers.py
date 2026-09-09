@@ -152,10 +152,16 @@ class CorrigeeApercuSerializer(serializers.ModelSerializer):
 
 class QuestionBankSerializer(serializers.ModelSerializer):
     reponses = CorrigeeApercuSerializer(source='corrigee_set', many=True, read_only=True)
+    bareme_pts = serializers.SerializerMethodField()
 
     class Meta:
         model = Question
-        fields = ['id', 'enonce_question', 'reponses']
+        fields = ['id', 'enonce_question', 'bareme_pts', 'reponses']
+    def get_bareme_pts(self, obj):
+        premier_bareme = obj.questionbareme_set.first()
+        if premier_bareme and premier_bareme.bareme:
+            return float(premier_bareme.bareme.pts)
+        return 0.0
 
 class QuestionChoiceSerializer(serializers.Serializer):
     """
@@ -194,6 +200,18 @@ class ReponseOptionSerializer(serializers.Serializer):
         required=False,
         help_text="Explication affichée pour ce choix spécifique lors de la correction."
     )
+
+    def validate(self, data):
+        est_correct = data.get('est_correct', False)
+        explication = data.get('explication', '').strip()
+
+        # Si l'option est cochée comme "bonne réponse", l'explication devient obligatoire
+        if est_correct and not explication:
+            raise serializers.ValidationError({
+                "explication": "Vous devez fournir une explication pour la bonne réponse."
+            })
+            
+        return data
 
 class CreateFullQuestionSerializer(serializers.Serializer):
     enonce_question = serializers.CharField()

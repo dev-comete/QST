@@ -30,16 +30,26 @@ def get_dashboard_metrics_service(user):
     total_quiz_actifs = quizzes.filter(status='published').count()
     total_questions = questions.filter(is_active=True).count()
 
-    tentatives = UtilisateurQuiz.objects.filter(quiz__in=quizzes, termine=True)
+    tentatives = UtilisateurQuiz.objects.filter(quiz__in=quizzes, termine=True).select_related('quiz')
     taux_reussite = "0%"
     
     if tentatives.exists():
-        points_obtenus = tentatives.aggregate(Sum('score_obtenu'))['score_obtenu__sum'] or 0
-        quiz_ids = tentatives.values_list('quiz_id', flat=True).distinct()
-        points_max_total = QuizQuestion.objects.filter(quiz_id__in=quiz_ids).aggregate(Sum('bareme__pts'))['bareme__pts__sum'] or 1
+        # 🌟 CORRECTION DU CALCUL : Calcul précis point par point
+        quiz_ids = set(t.quiz_id for t in tentatives)
         
-        moyenne_pct = (points_obtenus / (points_max_total * tentatives.count())) * 100
-        taux_reussite = f"{round(moyenne_pct)}%"
+        quiz_max_pts = dict(
+            QuizQuestion.objects.filter(quiz_id__in=quiz_ids)
+            .values('quiz_id')
+            .annotate(total=Sum('bareme__pts'))
+            .values_list('quiz_id', 'total')
+        )
+        
+        points_max_total = sum(float(quiz_max_pts.get(t.quiz_id, 0.0)) for t in tentatives)
+        points_obtenus = sum(float(t.score_obtenu) for t in tentatives)
+        
+        if points_max_total > 0:
+            moyenne_pct = (points_obtenus / points_max_total) * 100
+            taux_reussite = f"{round(moyenne_pct)}%"
 
     stats = [
         {"label": "Formations", "value": str(total_formations), "change": "Actives", "tone": "harbor"},
@@ -70,11 +80,11 @@ def get_dashboard_metrics_service(user):
     upcoming_sessions = []
     for v in vagues.filter(debut__gte=now()).order_by('debut')[:3]:
         upcoming_sessions.append({
-            "name": v.formation.nom_formation,
-            "date": v.debut.strftime("%d %b %Y") 
+            "name": v.nom_vague, # 🌟 NOUVEAU : On utilise le nom de la vague
+            "formation_nom": v.formation.nom_formation, # On garde l'info au cas où le front en a besoin
+            "date": v.debut.strftime("%d/%m/%Y") # Format plus standard
         })
 
-    # On retourne un dictionnaire Python standard (snake_case)
     return {
         "stats": stats,
         "recent_quizzes": recent_quizzes,
