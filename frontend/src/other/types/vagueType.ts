@@ -11,6 +11,12 @@ type vagueType = {
 	debut: string | null,
 	fin: string | null,
 	etudiants: etudiantType[]
+	quiz_assignes_ids: number[]
+	quizzes_assignes: {
+		id: number,
+		titre: string,
+		status: string
+	}
 }
 
 type vaguePayload = {
