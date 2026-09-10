@@ -296,6 +296,7 @@ class ApprenantQuizListSerializer(serializers.ModelSerializer):
     quiz_titre = serializers.CharField(source='quiz.titre', read_only=True)
     formation_nom = serializers.CharField(source='quiz.formation.nom_formation', read_only=True)
     vague_id = serializers.IntegerField(source='vague.id', read_only=True)
+    vague_nom = serializers.CharField(source='vague.nom_vague', read_only=True)
 
     class Meta:
         model = UtilisateurQuiz
@@ -304,6 +305,7 @@ class ApprenantQuizListSerializer(serializers.ModelSerializer):
             'quiz_titre', 
             'formation_nom',
             'vague_id',
+            'vague_nom',
             'termine', 
             'score_obtenu'
         ]
@@ -324,6 +326,7 @@ class StudentOptionSerializer(serializers.ModelSerializer):
 class StudentQuizQuestionSerializer(serializers.ModelSerializer):
     question_id = serializers.IntegerField(source='question.id', read_only=True)
     enonce = serializers.CharField(source='question.enonce_question', read_only=True)
+    type_question = serializers.CharField(source='type_question.code', read_only=True)
     options = serializers.SerializerMethodField()
 
     class Meta:

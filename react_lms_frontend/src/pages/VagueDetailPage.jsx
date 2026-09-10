@@ -134,7 +134,7 @@ export default function VagueDetailPage() {
         <div className="lms-card lms-card--pad-lg lms-header-row" style={{ marginBottom: 'var(--space-6)' }}>
           <div>
             <p className="lms-eyebrow" style={{ marginBottom: 'var(--space-2)' }}>Session</p>
-            <h1 className="lms-pageheader__title">{vague.formation_nom}</h1>
+            <h1 className="lms-pageheader__title">{vague.vague_nom} - {vague.formation_nom}</h1>
             <p className="lms-pageheader__subtitle">
               Du {new Date(vague.debut).toLocaleDateString()} au {new Date(vague.fin).toLocaleDateString()}
             </p>

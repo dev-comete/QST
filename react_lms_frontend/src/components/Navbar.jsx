@@ -111,7 +111,7 @@ const Navbar = () => {
         >
           <span className="lms-navbar__avatar">{initials}</span>
           <span className="lms-navbar__name">
-            {user?.first_name} {user?.last_name}
+            {user?.email}
             <span className="lms-navbar__role">{user?.role}</span>
           </span>
         </button>
