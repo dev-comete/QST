@@ -12,7 +12,7 @@ export const useCreateUser = () => {
 		username: '',
 		email: '',
 		type_utilisateur: null,
-		organisation: []
+		projets: []
 	})
 
 	const [ userError, setUserError ] = useState<string | null>(null)
@@ -131,7 +131,7 @@ export const useUserUpdate = (id: string) => {
 		username: '',
 		email: '',
 		type_utilisateur: null,
-		organisation: []
+		projets: []
 	})
 	const [ userError, setUserError ] = useState<string | null>(null)
 	const [ emailError, setEmailError ] = useState<string | null>(null)

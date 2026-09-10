@@ -1,53 +1,53 @@
 import type { Dispatch, SetStateAction } from "react";
-import type { organisationType, userPayload } from "../../../../other/types/userType";
+import type { projectType, userPayload } from "../../../../other/types/userType";
 import Box from "../../../atoms/Container/Box";
 import CustomText from "../../../atoms/Text/CustomText";
 import Input from "../../../atoms/Form/Input";
 
-interface OrganisationFormProps {
-	listOrganisation: organisationType[],
+interface ProjectFormProps {
+	listProject: projectType[],
 	user?: userPayload,
 	setUser: Dispatch<SetStateAction<userPayload>>
 }
 
-const OrganisationForm = ({ listOrganisation, setUser, user } : OrganisationFormProps) => {
+const ProjetForm = ({ listProject, setUser, user } : ProjectFormProps) => {
 	return (
 		<Box direction="column" className="max-h-[50%] gap-2">
-			<CustomText>Organisations assignées</CustomText>
+			<CustomText>Projets assignés</CustomText>
 			{
-				listOrganisation.length === 0
+				listProject.length === 0
 				? <CustomText 
 					className="border border-background p-2"
 					textTag="h5"
 					isItalic
-					>Il n'y a aucune organisation, veuillez en créer</CustomText>
+					>Il n'y a aucun projet, veuillez en créer</CustomText>
 				: <Box direction="column" className="overflow-y-auto border border-background p-2">
 				{
-					listOrganisation.map((org) => {
+					listProject.map((proj) => {
 						return (
 							<Box className="justify-star w-fit">
 								<Input
-									id={`check + ${org.id}`}
-									name={`check + ${org.nom}`}
+									id={`check + ${proj.id}`}
+									name={`check + ${proj.nom}`}
 									type="checkbox"
-									checked={user && user.organisation?.includes(org.id)}
+									checked={user && user.projets?.includes(proj.id)}
 									onChange={(e) => {
 										const checked = (e.target as HTMLInputElement).checked;
 										setUser((prev) => {
-											const currentOrgs = (prev.organisation ?? []).filter((v): v is number => typeof v === 'number' && !isNaN(v));
+											const currentOrgs = (prev.projets ?? []).filter((v): v is number => typeof v === 'number' && !isNaN(v));
 											if (checked) {
-												if (!currentOrgs.includes(org.id)) {
-													return { ...prev, organisation: [...currentOrgs, org.id] };
+												if (!currentOrgs.includes(proj.id)) {
+													return { ...prev, projets: [...currentOrgs, proj.id] };
 												}
 												return prev;
 											} else {
-												return { ...prev, organisation: currentOrgs.filter((item) => item !== org.id) };
+												return { ...prev, projets: currentOrgs.filter((item) => item !== proj.id) };
 											}
 										});
 									}}
 									className="cursor-pointer h-4 w-4 rounded"
 								/>
-								<CustomText>{org.nom}</CustomText>
+								<CustomText>{proj.nom}</CustomText>
 							</Box>
 						)
 					})
@@ -58,4 +58,4 @@ const OrganisationForm = ({ listOrganisation, setUser, user } : OrganisationForm
 	)
 }
 
-export default OrganisationForm;
+export default ProjetForm;

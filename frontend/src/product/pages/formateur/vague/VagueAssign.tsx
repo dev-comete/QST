@@ -9,6 +9,10 @@ import AssignBloc from "../../../../system/organisms/quiz/container/AssignBloc";
 import QuizVagueList from "../../../../system/organisms/vague/list/QuizVagueList";
 import StudentList from "../../../../system/organisms/vague/list/StudentList";
 import VagueStudentList from "../../../../system/organisms/vague/list/VagueStudentList";
+import CustomText from "../../../../system/atoms/Text/CustomText";
+import { useUser } from "../../../../other/hooks/user/useUser";
+import FetchError from "../../../../system/atoms/Loading/FetchError";
+import Loading from "../../../../system/atoms/Loading/Loading";
 
 interface VagueAssignProps {
 	vagueId: number
@@ -23,6 +27,17 @@ const VagueAssign = ({ vagueId, ownedStudents, setSelectedId } : VagueAssignProp
 		students, setStudents, isAssignStudPending, handleAssignStudent
 	} = useAssignVague(vagueId)
 
+	const { getUserQuery } = useUser({ role: 'apprenant'})
+	const { data: studentList, status } = getUserQuery
+
+	if (status == 'pending') return <Loading />
+
+	if (!studentList) return <FetchError />
+
+	const studentNotSubsribed = studentList.filter(
+		(apprenant) => !ownedStudents.some((e) => e.etudiant_id === apprenant.id)
+	);
+
 	return (
 		<Box direction="column" className="space-y-5 w-full">
 			<ActionButton
@@ -32,7 +47,7 @@ const VagueAssign = ({ vagueId, ownedStudents, setSelectedId } : VagueAssignProp
 			<NavigationBar
 				titles={['Quiz', 'Etudiants']}				
 			>
-				<Paper className="p-5 flex flex-col space-y-5 items-center">
+				<Paper className="flex items-end justify-center p-5 gap-3">
 					<QuizVagueList setQuiz={setQuiz} />
 					<ActionButton
 						type="submit"
@@ -47,22 +62,29 @@ const VagueAssign = ({ vagueId, ownedStudents, setSelectedId } : VagueAssignProp
 				</Paper>
 				<Box>
 					<AssignBloc title="Liste des étudiants">
-						<StudentList
-							ownedStudents={ownedStudents}
-							setStudents={setStudents}
-						/>
-						<ActionButton
-							type="submit"
-							onClick={(e) => {e.preventDefault() ; console.log("clicked"); handleAssignStudent()}}
-							btnColor={students.length ? "success" : "disabled"}
-							textColor="white"
-							disabled={students.length == 0}
-							isLoading={isAssignStudPending}
-						>
-							Assigner les étudiants
-						</ActionButton>
+						{
+							studentNotSubsribed.length === 0
+							?	<CustomText>Tous les étudiants sont inscrits dans la vague</CustomText>
+							: 	
+								<>
+									<StudentList
+										studentList={studentNotSubsribed}
+										setStudents={setStudents}
+									/>
+									<ActionButton
+										type="submit"
+										onClick={(e) => {e.preventDefault() ; handleAssignStudent()}}
+										btnColor={students.length ? "success" : "disabled"}
+										textColor="white"
+										disabled={students.length == 0}
+										isLoading={isAssignStudPending}
+									>
+										Assigner les étudiants
+									</ActionButton>
+								</>
+						}
 					</AssignBloc>
-					<AssignBloc title="Etudiants inscrits dans la vague">
+					<AssignBloc title="Liste des étudiants inscrits">
 						<VagueStudentList ownedStudents={ownedStudents}/>
 					</AssignBloc>
 				</Box>

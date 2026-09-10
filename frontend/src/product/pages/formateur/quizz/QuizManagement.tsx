@@ -10,7 +10,7 @@ const QuizManagement = () => {
 
 	return (
 		<BodyLayout
-			title={"Liste des quiz"}
+			title={"Gestion des quiz"}
 			titleButton={
 				<ActionButton
 					onClick={(e) => { e.preventDefault(); setOpen(true)}}

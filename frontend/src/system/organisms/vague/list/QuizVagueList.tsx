@@ -22,7 +22,7 @@ const QuizVagueList = ({ setQuiz } : QuizVagueListProps) => {
 		return <FetchError />
 
 	return (
-		<Box className="w-full">
+		<Box className="min-w-1/4">
 			<Select 
 				id={"type"}
 				name={"type"}

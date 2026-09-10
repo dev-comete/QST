@@ -1,18 +1,18 @@
 import Box from "../../../atoms/Container/Box"
 import { Table, type Column } from "../../../atoms/Table/Table"
 import IconButton, { IconConfirmActionButton } from "../../../molecules/Buttons/IconButton"
-import type { organisationType } from "../../../../other/types/userType"
+import type { projectType } from "../../../../other/types/userType"
 import { formatDate } from "../../../../other/helper/helper"
-import ModalOrgUpdate from "../form/ModalUpdateOrganisation"
+import ModalProjectEdit from "../form/ModalEditProject"
 import { useState } from "react"
-import { useOrgDel } from "../../../../other/hooks/user/useOrganisation"
+import { useProjectDel } from "../../../../other/hooks/user/useProject"
 
 const ActionCell = ({ rowId, onEdit } : { 
 	rowId: string | number | boolean | string[]
 	onEdit: (id: string | number | boolean | string[]) => void
 }) => {
 
-	const { handleDelOrg, isPending } = useOrgDel(Number(rowId))
+	const { handleDelProject, isPending } = useProjectDel(Number(rowId))
 
     return (
         <Box>
@@ -24,7 +24,7 @@ const ActionCell = ({ rowId, onEdit } : {
             <IconConfirmActionButton
                 iconName="trash"
                 iconStyling="text-text hover:text-error"
-                action={handleDelOrg}
+                action={handleDelProject}
 				confirmText="Voulez-vous vraiment supprimer l'organisation?"
 				isLoading={isPending}
             />
@@ -34,7 +34,7 @@ const ActionCell = ({ rowId, onEdit } : {
 
 const getOrgTabColumn = (
     onEdit: (id: string | number | boolean | string[]) => void
-): Column<organisationType>[] => [
+): Column<projectType>[] => [
 	{
 		header: 'Nom',
 		key: "nom"
@@ -59,7 +59,7 @@ const getOrgTabColumn = (
 	}
 ]
 
-const OrganisationList = ({ organisations } : { organisations : organisationType[]}) => {
+const ProjectList = ({ organisations } : { organisations : projectType[]}) => {
 
 	const [selectedId, setSelectedId] = useState<string>('')
 	const [isModalOpen, setIsModalOpen] = useState(false)
@@ -76,7 +76,7 @@ const OrganisationList = ({ organisations } : { organisations : organisationType
 				data={organisations}
 				rowKey={'id'}
 			/>
-			<ModalOrgUpdate 
+			<ModalProjectEdit 
 				id={selectedId}
 				open={isModalOpen}
 				closeModal={() => setIsModalOpen(false)}
@@ -85,4 +85,4 @@ const OrganisationList = ({ organisations } : { organisations : organisationType
 	)
 }
 
-export default OrganisationList;
+export default ProjectList;

@@ -1,7 +1,7 @@
 import type { Dispatch, SetStateAction } from "react";
 import { formChangeHandler, getSelectData } from "../../../../other/helper/helper";
 import { useCreateUser } from "../../../../other/hooks/user/useUser";
-import type { organisationType, userPayload, utilisateurType } from "../../../../other/types/userType";
+import type { projectType, userPayload, utilisateurType } from "../../../../other/types/userType";
 import Box from "../../../atoms/Container/Box";
 import Input from "../../../atoms/Form/Input";
 import Select from "../../../atoms/Form/Select";
@@ -10,17 +10,17 @@ import Loading from "../../../atoms/Loading/Loading";
 import ActionButton from "../../../molecules/Buttons/ActionButton";
 import { Modal } from "../../../molecules/Modal/Modal";
 import ErrorBloc from "../../../molecules/Container/ErrorBloc";
-import OrganisationForm from "./OrganisationForm";
+import ProjetForm from "./ProjetForm";
 
 interface UserFormProps {
 	listTypeUser: utilisateurType[]
-	listOrganisation: organisationType[]
+	listProject: projectType[]
 	setUser: Dispatch<SetStateAction<userPayload>>
 	handleSubmit: (e: React.SubmitEvent) => void
 	errors: { userError: string | null, emailError: string | null }
 }
 
-const UserForm = ({ handleSubmit, setUser, listTypeUser, listOrganisation, errors } : UserFormProps ) => {
+const UserForm = ({ handleSubmit, setUser, listTypeUser, listProject, errors } : UserFormProps ) => {
 
 	const selectedRole = getSelectData(listTypeUser, 'type_utilisateur')
 
@@ -57,7 +57,7 @@ const UserForm = ({ handleSubmit, setUser, listTypeUser, listOrganisation, error
 					return selected.id ?? null
 				})}
 			/>
-			<OrganisationForm listOrganisation={listOrganisation} setUser={setUser}/>
+			<ProjetForm listProject={listProject} setUser={setUser}/>
 		</form>
 	)
 }
@@ -65,10 +65,10 @@ const UserForm = ({ handleSubmit, setUser, listTypeUser, listOrganisation, error
 interface ModalUserCreateProps {
 	open: boolean;
 	closeModal: () => void,
-	listOrganisation: organisationType[],
+	listProject: projectType[],
 }
 
-const ModalUserCreate = ({ open, closeModal, listOrganisation } : ModalUserCreateProps) => {
+const ModalUserCreate = ({ open, closeModal, listProject } : ModalUserCreateProps) => {
 
 	const {
 		userTypes,
@@ -124,7 +124,7 @@ const ModalUserCreate = ({ open, closeModal, listOrganisation } : ModalUserCreat
 			<UserForm
 				setUser={setUser}
 				listTypeUser={userTypes}
-				listOrganisation={listOrganisation}
+				listProject={listProject}
 				handleSubmit={handleSubmit}
 				errors={{ userError, emailError }}
 			/>

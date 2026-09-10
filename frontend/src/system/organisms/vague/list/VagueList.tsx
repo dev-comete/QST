@@ -51,7 +51,7 @@ const getVagueTabColumn = (
 		key: 'etudiants',
 		render: (value) => {
 			const count = Array.isArray(value) ? value.length : 0;
-			return <CustomText>{`${count} apprenant${count > 0 ? 's' : ''}`}</CustomText>
+			return <CustomText textTag="h4">{`${count} apprenant${count > 0 ? 's' : ''}`}</CustomText>
 		}
 		
 	},

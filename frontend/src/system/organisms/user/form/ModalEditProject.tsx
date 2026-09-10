@@ -1,20 +1,20 @@
 import type { Dispatch, SetStateAction } from "react";
 import { formChangeHandler } from "../../../../other/helper/helper";
-import type { OrganisationPayload } from "../../../../other/types/userType";
+import type { ProjectPayload } from "../../../../other/types/userType";
 import Box from "../../../atoms/Container/Box";
 import Input from "../../../atoms/Form/Input";
 import Select from "../../../atoms/Form/Select";
 import ActionButton from "../../../molecules/Buttons/ActionButton";
 import { Modal } from "../../../molecules/Modal/Modal";
-import { useEditOrganisation } from "../../../../other/hooks/user/useOrganisation";
+import { useEditProject } from "../../../../other/hooks/user/useProject";
 
-interface OrgEditFormProps {
-	organisation: OrganisationPayload
-	setOrganisation: Dispatch<SetStateAction<OrganisationPayload>>
+interface ProjectEditFormProps {
+	project: ProjectPayload
+	setProject: Dispatch<SetStateAction<ProjectPayload>>
 	handleSubmit: (e: React.SubmitEvent) => void
 }
 
-const OrgEditForm = ({ handleSubmit, organisation, setOrganisation } : OrgEditFormProps ) => {
+const ProjectEditForm = ({ handleSubmit, project, setProject } : ProjectEditFormProps ) => {
 
 	const selectionValue = [
 		{ id: '0', value: 'Actif'},
@@ -23,44 +23,44 @@ const OrgEditForm = ({ handleSubmit, organisation, setOrganisation } : OrgEditFo
 
 	return (
 		<form
-			id="orgEditForm"
+			id="ProjectEditForm"
 			className="flex flex-col space-y-5 justify-center w-[80%] m-auto"
 			onSubmit={handleSubmit}
 		>
 			<Input 
 				id="name"
 				name="name"
-				label="Nom de l'organisation"
-				onChange={formChangeHandler(setOrganisation, 'nom')}
+				label="Nom de l'Project"
+				onChange={formChangeHandler(setProject, 'nom')}
 				required={true}
-				value={organisation.nom}
+				value={project.nom}
 			/>
 			<Select
 				id={"is_active"}
 				name={"is_active"}
 				selectionValue={selectionValue}
-				handleChange={formChangeHandler(setOrganisation, 'is_active', (value) => {
+				handleChange={formChangeHandler(setProject, 'is_active', (value) => {
 					return value == 'Actif'
 				})}
-				value={organisation.is_active == true ? selectionValue[0].value : selectionValue[1].value}
+				value={project.is_active == true ? selectionValue[0].value : selectionValue[1].value}
 			/>
 		</form>
 	)
 }
 
-interface ModalOrgUpdateProps {
+interface ModalProjectEditProps {
 	open: boolean;
 	closeModal: () => void,
 	id: string
 }
 
-const ModalOrgUpdate = ({ id, open, closeModal } : ModalOrgUpdateProps) => {
+const ModalProjectEdit = ({ id, open, closeModal } : ModalProjectEditProps) => {
 	const {
-		organisation,
-		setOrganisation,
+		project,
+		setProject,
 		isPending,
-		handleEditOrganisation,
-	} = useEditOrganisation(id)
+		handleEditProject,
+	} = useEditProject(id)
 
 	const handleOnCloseModal = () => {
 		closeModal()
@@ -69,7 +69,7 @@ const ModalOrgUpdate = ({ id, open, closeModal } : ModalOrgUpdateProps) => {
 	const handleSubmit = async (e: React.SubmitEvent) => {
 		e.preventDefault()
 		try {
-			await handleEditOrganisation()
+			await handleEditProject()
 			handleOnCloseModal()
 		} catch (error) {
 			console.log("Error", error)
@@ -78,7 +78,7 @@ const ModalOrgUpdate = ({ id, open, closeModal } : ModalOrgUpdateProps) => {
 
 	return (
 		<Modal
-			title="Modification de l'organisation"
+			title="Modification de l'Project"
 			isOpen={open}
 			closeModal={handleOnCloseModal}
 			footer={
@@ -91,24 +91,24 @@ const ModalOrgUpdate = ({ id, open, closeModal } : ModalOrgUpdateProps) => {
 					</ActionButton>
 					<ActionButton
 						type="submit"
-						form="orgEditForm"
+						form="ProjectEditForm"
 						btnColor="primary"
 						textColor="white"
 						isLoading={isPending}
-						disabled={organisation.nom.length == 0}
+						disabled={project.nom.length == 0}
 					>
 						Modifier
 					</ActionButton>
 				</Box>
 			}
 		>
-			<OrgEditForm
-				organisation={organisation}
-				setOrganisation={setOrganisation}
+			<ProjectEditForm
+				project={project}
+				setProject={setProject}
 				handleSubmit={handleSubmit}
 			/>
 		</Modal>
 	)
 }
 
-export default ModalOrgUpdate;
+export default ModalProjectEdit;

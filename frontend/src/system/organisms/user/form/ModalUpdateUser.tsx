@@ -1,7 +1,7 @@
 import type { Dispatch, SetStateAction } from "react";
 import { formChangeHandler, getSelectData } from "../../../../other/helper/helper";
 import { useUserUpdate } from "../../../../other/hooks/user/useUser";
-import type { organisationType, userPayload, utilisateurType } from "../../../../other/types/userType";
+import type { projectType, userPayload, utilisateurType } from "../../../../other/types/userType";
 import Box from "../../../atoms/Container/Box";
 import Input from "../../../atoms/Form/Input";
 import Select from "../../../atoms/Form/Select";
@@ -10,18 +10,18 @@ import Loading from "../../../atoms/Loading/Loading";
 import ActionButton from "../../../molecules/Buttons/ActionButton";
 import { Modal } from "../../../molecules/Modal/Modal";
 import ErrorBloc from "../../../molecules/Container/ErrorBloc";
-import OrganisationForm from "./OrganisationForm";
+import ProjetForm from "./ProjetForm";
 
 interface UserEditFormProps {
 	listTypeUser: utilisateurType[]
-	listOrganisation: organisationType[]
+	listProject: projectType[]
 	user: userPayload
 	setUser: Dispatch<SetStateAction<userPayload>>
 	handleSubmit: (e: React.SubmitEvent) => void
 	errors: { userError: string | null, emailError: string | null }
 }
 
-const UserEditForm = ({ handleSubmit, user, setUser, listTypeUser, listOrganisation, errors } : UserEditFormProps ) => {
+const UserEditForm = ({ handleSubmit, user, setUser, listTypeUser, listProject, errors } : UserEditFormProps ) => {
 
 	const selectedRole = getSelectData(listTypeUser, 'type_utilisateur')
 
@@ -64,8 +64,8 @@ const UserEditForm = ({ handleSubmit, user, setUser, listTypeUser, listOrganisat
 					return val.type_utilisateur;
 				})()}
 			/>
-			<OrganisationForm
-				listOrganisation={listOrganisation}
+			<ProjetForm
+				listProject={listProject}
 				user={user}
 				setUser={setUser}
 			/>
@@ -76,11 +76,11 @@ const UserEditForm = ({ handleSubmit, user, setUser, listTypeUser, listOrganisat
 interface ModalUserUpdateProps {
 	open: boolean;
 	closeModal: () => void,
-	listOrganisation: organisationType[],
+	listProject: projectType[],
 	id: string
 }
 
-const ModalUserUpdate = ({ id, open, closeModal, listOrganisation } : ModalUserUpdateProps) => {
+const ModalUserUpdate = ({ id, open, closeModal, listProject } : ModalUserUpdateProps) => {
 	const {
 		userTypes,
 		userTypePending,
@@ -142,7 +142,7 @@ const ModalUserUpdate = ({ id, open, closeModal, listOrganisation } : ModalUserU
 				user={user}
 				setUser={setUser}
 				listTypeUser={userTypes}
-				listOrganisation={listOrganisation}
+				listProject={listProject}
 				handleSubmit={handleSubmit}
 				errors={{ userError, emailError }}
 			/>

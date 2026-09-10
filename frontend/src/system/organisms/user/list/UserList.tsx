@@ -5,7 +5,7 @@ import Loading from "../../../atoms/Loading/Loading"
 import { Table, type Column } from "../../../atoms/Table/Table"
 import IconButton, { IconConfirmActionButton } from "../../../molecules/Buttons/IconButton"
 import { useTypeUser, useUser, useUserDel } from "../../../../other/hooks/user/useUser"
-import type { organisationType, userType, utilisateurType } from "../../../../other/types/userType"
+import type { projectType, userType, utilisateurType } from "../../../../other/types/userType"
 import CustomText from "../../../atoms/Text/CustomText"
 import ModalUserUpdate from "../form/ModalUpdateUser"
 
@@ -35,7 +35,7 @@ const ActionCell = ({ rowId, onEdit }: {
 
 const getUserTabColumn = (
     onEdit: (id: string | number | boolean | string[]) => void,
-	listOrganisation: organisationType[],
+	listProject: projectType[],
 	listType: utilisateurType[]
 ): Column<userType>[] => [
     {
@@ -66,7 +66,7 @@ const getUserTabColumn = (
                 <Box>
                     {
 						list.map((item, index) =>{
-							const found = listOrganisation.find((org) => org.id === item)
+							const found = listProject.find((org) => org.id === item)
 						return <CustomText textTag="h4" key={index}>{found?.nom}</CustomText>
 					})}
                 </Box>
@@ -83,10 +83,10 @@ const getUserTabColumn = (
 ]
 
 interface UserListProps {
-	organisations: organisationType[]
+	projects: projectType[]
 }
 
-const UserList = ({ organisations } : UserListProps) => {
+const UserList = ({ projects } : UserListProps) => {
     const [selectedUserId, setSelectedUserId] = useState<string>('')
     const [isModalOpen, setIsModalOpen] = useState(false)
 	
@@ -110,7 +110,7 @@ const UserList = ({ organisations } : UserListProps) => {
             <Table 
                 columns={getUserTabColumn(
                     handleOpenEditModal,
-                    organisations,
+                    projects,
 					userTypes
                 )}
                 data={users}
@@ -119,7 +119,7 @@ const UserList = ({ organisations } : UserListProps) => {
 			<ModalUserUpdate
 				open={isModalOpen}
 				closeModal={() => setIsModalOpen(false)}
-				listOrganisation={organisations}
+				listProject={projects}
 				id={selectedUserId}
 			/>
         </Box>

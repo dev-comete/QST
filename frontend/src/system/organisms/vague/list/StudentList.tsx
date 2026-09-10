@@ -1,11 +1,7 @@
 import type { Dispatch, SetStateAction } from "react";
-import { useUser } from "../../../../other/hooks/user/useUser";
 import Paper from "../../../atoms/Container/Paper";
-import FetchError from "../../../atoms/Loading/FetchError";
-import Loading from "../../../atoms/Loading/Loading";
 import Input from "../../../atoms/Form/Input";
 import CustomText from "../../../atoms/Text/CustomText";
-import type { etudiantType } from "../../../../other/types/vagueType";
 import type { userType } from "../../../../other/types/userType";
 import Box from "../../../atoms/Container/Box";
 
@@ -34,33 +30,21 @@ const StudentItem = ({ addStudentToAssign, item } : StudentItemProps) => {
 }
 
 interface StudentListProps {
-	ownedStudents: etudiantType[]
+	studentList: userType[]
 	setStudents: Dispatch<SetStateAction<number[]>>
 }
 
 
-const StudentList = ({ ownedStudents, setStudents } : StudentListProps) => {
-
-	const { getUserQuery } = useUser({ role: 'apprenant'})
-	const { data: studentList, status } = getUserQuery
+const StudentList = ({ studentList, setStudents } : StudentListProps) => {
 
 	const handleSelectQuestion = (newId: number) => {
 		setStudents((prev) => [...prev, newId]);
 	};
 
-	if (status == 'pending')
-		return <Loading />
-	if (!studentList)
-		return <FetchError />
-	
-	const studentNotSubsribed = studentList.filter(
-		(apprenant) => !ownedStudents.some((e) => e.etudiant_id === apprenant.id)
-	);
-
 	return (
-		<Box className="w-full">
+		<Box direction="column" className="w-full">
 			{
-				studentNotSubsribed.map((item) => {
+				studentList.map((item) => {
 
 				return (
 					<StudentItem

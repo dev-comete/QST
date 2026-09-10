@@ -10,7 +10,7 @@ const VagueManagement = () => {
 
 	return (
 		<BodyLayout
-			title={"Liste des vagues"}
+			title={"Gestion des vagues"}
 			titleButton={
 				<ActionButton
 					onClick={(e) => { e.preventDefault(); setOpen(true)}}
