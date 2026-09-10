@@ -4,7 +4,7 @@ import FetchError from "../../../atoms/Loading/FetchError"
 import Loading from "../../../atoms/Loading/Loading"
 import { Table, type Column } from "../../../atoms/Table/Table"
 import IconButton, { IconConfirmActionButton } from "../../../molecules/Buttons/IconButton"
-import { useUser, useUserDel } from "../../../../other/hooks/user/useUser"
+import { useTypeUser, useUser, useUserDel } from "../../../../other/hooks/user/useUser"
 import type { organisationType, userType, utilisateurType } from "../../../../other/types/userType"
 import CustomText from "../../../atoms/Text/CustomText"
 import ModalUserUpdate from "../form/ModalUpdateUser"
@@ -90,14 +90,14 @@ const UserList = ({ organisations } : UserListProps) => {
     const [selectedUserId, setSelectedUserId] = useState<string>('')
     const [isModalOpen, setIsModalOpen] = useState(false)
 	
-    const { getUserQuery, getUserTypeQuery } = useUser({})
+    const { getUserQuery } = useUser({})
     const { data: users, status } = getUserQuery
-	const { data: types, status : typeStatus } = getUserTypeQuery
+	const { userTypes, userTypePending } = useTypeUser()
 
-    if (status === 'pending' || typeStatus == 'pending') 
+    if (status === 'pending' || userTypePending) 
 		return <Loading />
     
-    if (!users || !types)
+    if (!users || !userTypes)
 		return <FetchError />
 
 	const handleOpenEditModal = (id: string | number | boolean | string[]) => {
@@ -111,7 +111,7 @@ const UserList = ({ organisations } : UserListProps) => {
                 columns={getUserTabColumn(
                     handleOpenEditModal,
                     organisations,
-					types
+					userTypes
                 )}
                 data={users}
                 rowKey={'id'}

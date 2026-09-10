@@ -42,10 +42,7 @@ export const useCreateUser = () => {
 		},
 	});
 
-	const typeUserQuery = useQuery({
-		queryKey: ['utilisateur_type_list'],
-		queryFn: UserService.type
-	})
+	const { userTypes, userTypePending } = useTypeUser()
 
 	const handleCreateUser = async () => {
 		resetError()
@@ -54,7 +51,8 @@ export const useCreateUser = () => {
 
 	return {
 		handleCreateUser,
-		typeUserQuery,
+		userTypes,
+		userTypePending,
 		isPending: createUser.isPending,
 		user,
 		setUser,
@@ -63,6 +61,18 @@ export const useCreateUser = () => {
 		emailError,
 		setEmailError,
 		resetError
+	}
+}
+
+export const useTypeUser = () => {
+	const { data : userTypes, isPending : userTypePending}= useQuery({
+		queryKey: ['type_list'],
+		queryFn: () => UserService.type(),
+	});
+
+	return {
+		userTypes,
+		userTypePending
 	}
 }
 
@@ -78,21 +88,14 @@ export const useUser = ({ role, id } : UseUserProps) => {
 		queryFn: () => UserService.list(role ? { role } : undefined),
 	});
 
-	const getUserTypeQuery = useQuery({
-		queryKey: ['type_list', role ?? 'all'],
-		queryFn: () => UserService.type(),
-	});
-
 	const userInfoQuery = useQuery({
 		queryKey: ['user_info', id],
 		queryFn: () => UserService.info({ id: id ?? ''}),
-		enabled: !!id
 	})
 
 	return {
 		getUserQuery,
 		userInfoQuery,
-		getUserTypeQuery
 	}
 }
 
@@ -162,10 +165,7 @@ export const useUserUpdate = (id: string) => {
 		},
 	});
 
-	const typeUserQuery = useQuery({
-		queryKey: ['utilisateur_type_list'],
-		queryFn: UserService.type
-	})
+	const { userTypes, userTypePending } = useTypeUser()
 
 	const handleUpdateUser = async () => {
 		resetError()
@@ -174,7 +174,8 @@ export const useUserUpdate = (id: string) => {
 
 	return {
 		handleUpdateUser,
-		typeUserQuery,
+		userTypes,
+		userTypePending,
 		isPending: updateUser.isPending,
 		user,
 		setUser,

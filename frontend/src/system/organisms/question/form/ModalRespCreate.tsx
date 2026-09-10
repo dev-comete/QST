@@ -12,7 +12,7 @@ interface ModalRespCreateProps {
 	setOpen: () => void
 }
 
-const RespForm = () => {
+const RespForm = ({ closeModal } : { closeModal : () => void }) => {
 	
 	const [ resp, setResp ] = useState("")
 	const [ explication, setExplication ] = useState("")
@@ -33,6 +33,7 @@ const RespForm = () => {
 		...prev,
 		options: [...prev.options, newOption],
 		}));
+
 	}
 
 	return (
@@ -56,7 +57,10 @@ const RespForm = () => {
 				onChange={(e) => setExplication(e.target.value)}
 			/>
 			<ActionButton
-				onClick={(e) => addNewResponse(e)}
+				onClick={(e) => {
+					addNewResponse(e);
+					closeModal()
+				}}
 				disabled={resp.length == 0}
 			>{"Créer"}</ActionButton>
 		</Box>
@@ -70,7 +74,7 @@ const ModalRespCreate = ({ open, setOpen } : ModalRespCreateProps) => {
 			isOpen={open}
 			closeModal={setOpen}
 		>
-			<RespForm />
+			<RespForm closeModal={() => setOpen()} />
 		</Modal>
 	)
 }

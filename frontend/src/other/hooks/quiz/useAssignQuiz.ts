@@ -14,8 +14,8 @@ const useAssignQuiz = () => {
 
 	const { mutate, status } = useMutation({
 		mutationFn: QuizService.assignQuestion,
-		onSuccess: (data) => {
-			console.log("Quiz created", data)
+		onSuccess: () => {
+			setSelectedQuestion([])
 		},
 		onError: (err) => {
 			console.error('Quiz creation failed:', err);

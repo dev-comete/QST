@@ -7,6 +7,7 @@ import Input from "../../../atoms/Form/Input";
 import CustomText from "../../../atoms/Text/CustomText";
 import type { etudiantType } from "../../../../other/types/vagueType";
 import type { userType } from "../../../../other/types/userType";
+import Box from "../../../atoms/Container/Box";
 
 interface StudentItemProps {
 	addStudentToAssign: (id: number) => void,
@@ -16,15 +17,17 @@ interface StudentItemProps {
 const StudentItem = ({ addStudentToAssign, item } : StudentItemProps) => {
 
 	return (
-		<Paper className="flex justify-between gap-3 items-center p-3 border border-background">
-			<Input
-				id={`check + ${item}`}
-				name={`check + ${item}`}
-                type="checkbox"
-                // checked={Boolean(value)}
-                onChange={() => addStudentToAssign(item.id)}
-                className="cursor-pointer h-4 w-4 rounded"
-            />
+		<Paper className="flex justify-between gap-3 items-center p-3 border border-background w-full justify-start">
+			<Box>
+				<Input
+					id={`check + ${item}`}
+					name={`check + ${item}`}
+					type="checkbox"
+					// checked={Boolean(value)}
+					onChange={() => addStudentToAssign(item.id)}
+					className="cursor-pointer h-4 w-4 rounded"
+				/>
+			</Box>
 			<CustomText>{item.username}</CustomText>
 		</Paper>
 	)
@@ -55,7 +58,7 @@ const StudentList = ({ ownedStudents, setStudents } : StudentListProps) => {
 	);
 
 	return (
-		<>
+		<Box className="w-full">
 			{
 				studentNotSubsribed.map((item) => {
 
@@ -67,7 +70,7 @@ const StudentList = ({ ownedStudents, setStudents } : StudentListProps) => {
 					/>
 				)})
 			}
-		</>
+		</Box>
 	)
 }
 

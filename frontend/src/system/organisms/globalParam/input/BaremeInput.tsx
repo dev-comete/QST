@@ -1,8 +1,9 @@
+import { useEffect } from "react";
 import { getSelectData } from "../../../../other/helper/helper";
 import { useBareme } from "../../../../other/hooks/bareme/useBareme";
 import Input from "../../../atoms/Form/Input";
+import LabelInput from "../../../atoms/Form/LabelInput";
 import Select from "../../../atoms/Form/Select";
-import CustomText from "../../../atoms/Text/CustomText";
 import ActionButton from "../../../molecules/Buttons/ActionButton";
 
 interface BaremeInputProps {
@@ -13,14 +14,24 @@ const BaremeInput = ({ onBaremeChange } : BaremeInputProps) => {
 
 	const { baremeQuery, baremeInput, setBaremeInput, handleCreateBareme } = useBareme()
 	const { data: baremes } = baremeQuery
-
-	if (!baremes) return null
 		
-	const baremes_pts = getSelectData(baremes, 'pts')
+    useEffect(() => {
+        if (baremes && baremes.length > 0) {
+            const formatted = getSelectData(baremes, 'pts');
+            if (formatted.length > 0) {
+                const defaultValue = formatted[0].value ?? formatted[0]; 
+                onBaremeChange(defaultValue);
+            }
+        }
+    }, [baremes, onBaremeChange]);
+
+    if (!baremes) return null;
+
+    const baremes_pts = getSelectData(baremes, 'pts');
 
 	return (
 		<div className="flex flex-col gap-2">
-			<CustomText weight="bold">Configuration de barème</CustomText>
+			<LabelInput label={'Configuration de barème'} />
 			<div className="flex gap-2 items-start w-full">
 				<div className="flex gap-1 w-full">
 					<Input

@@ -1,8 +1,10 @@
 import { useQuestionCreate } from "../../../../other/hooks/question/useQuestionCreate"
 import type { respType } from "../../../../other/types/questionType"
 import Box from "../../../atoms/Container/Box"
+import Info from "../../../atoms/Form/Info"
 import Input from "../../../atoms/Form/Input"
 import { Table, type Column } from "../../../atoms/Table/Table"
+import CustomText from "../../../atoms/Text/CustomText"
 import IconButton from "../../../molecules/Buttons/IconButton"
 
 const getResponseColumns = (
@@ -26,6 +28,10 @@ const getResponseColumns = (
     {
         header: "Réponse",
         key: "reponse"
+    },
+	{
+        header: "Explication",
+        key: "explication"
     },
     {
         header: "Action",
@@ -64,6 +70,7 @@ const RespCreatedList = () => {
 
 	return (
 		<Box direction="column" className="w-full items-center justify-center">
+			<Info info="Veuillez créer au moins deux réponses, les réponses vraies doivent avoir une explication"/>
 			<Table 
 				columns={columns}
 				data={question.options}

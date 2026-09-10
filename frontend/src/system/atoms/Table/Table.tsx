@@ -17,6 +17,7 @@ interface TableProps<T> {
     count?: number;
     setCount?: (count: number) => void;
     totalCount?: number;
+	emptyTitle?: string
 }
 
 export const Table = <T,>({
@@ -24,6 +25,7 @@ export const Table = <T,>({
     data,
     rowKey,
     title,
+	emptyTitle = 'Pas encore de données...',
     // page,
     // setPage,
     // count,
@@ -38,7 +40,7 @@ export const Table = <T,>({
         return (
             <div className="flex w-full items-center justify-center p-8 bg-white rounded-xl">
                 <CustomText textTag="h6" isItalic={true}>
-                    Pas encore de données...
+                    {emptyTitle}
                 </CustomText>
             </div>
         );

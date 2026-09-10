@@ -1,4 +1,5 @@
 import type { ColorTheme } from "../../../other/types/common";
+import LabelInput from "./LabelInput";
 
 interface InputProps {
 	label?: string;
@@ -15,6 +16,7 @@ interface InputProps {
 	max?: string | number
 	required?: boolean
 	value?: string | number
+	htmlFor?: string
 }
 
 const Input = ({
@@ -22,7 +24,6 @@ const Input = ({
 	type = 'text',
 	id,
 	name,
-	textColor='text',
 	onChange,
 	step,
 	checked,
@@ -31,14 +32,15 @@ const Input = ({
 	min,
 	max,
 	required,
-	value
+	value,
+	htmlFor
 }: InputProps) => {
 
 	const basicStyle = "flex p-2 rounded-xl border border-background bg-white w-full items-center justify-center focus:outline focus:outline-primary"
 
 	return (
 		<div className="flex flex-col w-full">
-			<label htmlFor={name} className={`text-${textColor}`}>{label}</label>
+			{ label && <LabelInput label={label} htmlFor={htmlFor}/> }
 			<input
 				type={type}
 				id={id}

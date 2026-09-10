@@ -82,7 +82,8 @@ interface ModalUserUpdateProps {
 
 const ModalUserUpdate = ({ id, open, closeModal, listOrganisation } : ModalUserUpdateProps) => {
 	const {
-		typeUserQuery,
+		userTypes,
+		userTypePending,
 		isPending,
 		handleUpdateUser,
 		user,
@@ -92,11 +93,9 @@ const ModalUserUpdate = ({ id, open, closeModal, listOrganisation } : ModalUserU
 		resetError,
 	} = useUserUpdate(id)
 
-	const { data: typeUsers, status : typeStatus } = typeUserQuery
-
-	if (typeStatus == 'pending')
+	if (userTypePending)
 		return <Loading />
-	if (!typeUsers)
+	if (!userTypes)
 		return <FetchError />
 
 	const handleOnCloseModal = () => {
@@ -142,7 +141,7 @@ const ModalUserUpdate = ({ id, open, closeModal, listOrganisation } : ModalUserU
 			<UserEditForm
 				user={user}
 				setUser={setUser}
-				listTypeUser={typeUsers}
+				listTypeUser={userTypes}
 				listOrganisation={listOrganisation}
 				handleSubmit={handleSubmit}
 				errors={{ userError, emailError }}

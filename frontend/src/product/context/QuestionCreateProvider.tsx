@@ -17,15 +17,15 @@ export const QuestionCreateProvider = ({ children }: { children: ReactNode }) =>
 	const createQuestion = useMutation({
 		mutationFn: QuestionService.create,
 		onSuccess: () => {
-			console.log("Success : question created")
+			setQuestion(initialQuestion)
 		},
 		onError: (err) => {
-			console.error('Error: question creation failed:', err);
+			console.log("Erreur", err)
 		},
 	});
 
 	const handleCreate = async () => {
-		setQuestion(initialQuestion)
+		
 		return await createQuestion.mutateAsync(question)
 	}
 

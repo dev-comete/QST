@@ -25,7 +25,7 @@ const EnonceForm = () => {
 	const selectionQuestionType = getSelectData(questionType, 'code')
 
 	return (
-		<Box direction="column" className="w-full px-5">
+		<Box direction="column" className="w-full px-5 space-y-5">
 			<Title title="Enoncé" />
 			<TextArea
 				id={"enonce"}
@@ -65,11 +65,11 @@ const QuestionForm = ({ openRespForm } : { openRespForm : () => void}) => {
 		<form
 			id="createQuestion"
 			onSubmit={handleSubmit}
-			className="flex flex-col justify-center items-center gap-5 w-3/4 mx-auto"
+			className="flex flex-col justify-center items-center w-3/4 mx-auto space-y-5"
 		>
 			<EnonceForm />
 			<Title
-				title="Réponse"
+				title="Réponses"
 				sideButton={
 					<ActionButton
 						onClick={(e) => {e.preventDefault() ; openRespForm()}}
@@ -80,7 +80,7 @@ const QuestionForm = ({ openRespForm } : { openRespForm : () => void}) => {
 			<ActionButton
 				type="submit"
 				form="createQuestion"
-				disabled={question.enonce_question.length == 0 || question.options.length == 0}
+				disabled={question.enonce_question.length == 0 || question.options.length < 2}
 				isLoading={isPending}
 			>{"Créer question"}</ActionButton>
 		</form>

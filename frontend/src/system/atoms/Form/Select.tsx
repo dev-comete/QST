@@ -1,4 +1,5 @@
 import type { ChangeEvent } from "react";
+import LabelInput from "./LabelInput";
 
 interface SelectProps {
     id: string;
@@ -27,11 +28,7 @@ const Select = ({
 
 	return (
 		<div className="flex flex-col gap-1 w-full text-left">
-			{label && (
-				<label className="text-md font-medium text-text" htmlFor={selectId}>
-					{label}
-				</label>
-			)}
+			{ label && <LabelInput label={label} htmlFor={selectId}/> }
 			<select
 				id={selectId}
 				name={name}

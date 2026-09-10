@@ -2,7 +2,7 @@ import Box from "../../../atoms/Container/Box";
 import IconButton from "../../../molecules/Buttons/IconButton";
 import { Table, type Column } from "../../../atoms/Table/Table";
 import type { vagueType } from "../../../../other/types/vagueType";
-import { useVague, useVagueDel } from "../../../../other/hooks/vague/useVague";
+import { useVague } from "../../../../other/hooks/vague/useVague";
 import FetchError from "../../../atoms/Loading/FetchError";
 import Loading from "../../../atoms/Loading/Loading";
 import { formatDate } from "../../../../other/helper/helper";
@@ -16,7 +16,7 @@ const ActionCell = ({ rowId, setSelectedId }: {
 	setSelectedId: Dispatch<SetStateAction<number | null>>
 }) => {   
 
-	const { handleDelVague } = useVagueDel(rowId as number)
+	// const { handleDelVague } = useVagueDel(rowId as number)
 
     return (
         <Box>
@@ -24,11 +24,6 @@ const ActionCell = ({ rowId, setSelectedId }: {
                 iconName="edit"
                 iconStyling="text-text hover:text-success"
                 action={() => setSelectedId(Number(rowId))}
-            />
-            <IconButton
-                iconName="trash"
-                iconStyling="text-text hover:text-error"
-                action={handleDelVague}
             />
         </Box>
     );

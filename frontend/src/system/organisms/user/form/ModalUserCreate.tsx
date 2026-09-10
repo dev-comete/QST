@@ -71,7 +71,8 @@ interface ModalUserCreateProps {
 const ModalUserCreate = ({ open, closeModal, listOrganisation } : ModalUserCreateProps) => {
 
 	const {
-		typeUserQuery,
+		userTypes,
+		userTypePending,
 		isPending,
 		handleCreateUser,
 		setUser,
@@ -80,11 +81,9 @@ const ModalUserCreate = ({ open, closeModal, listOrganisation } : ModalUserCreat
 		resetError,
 	} = useCreateUser()
 
-	const { data: typeUsers, status : typeStatus } = typeUserQuery
-
-	if (typeStatus == 'pending')
+	if (userTypePending)
 		return <Loading />
-	if (!typeUsers)
+	if (!userTypes)
 		return <FetchError />
 
 	const handleOnCloseModal = () => {
@@ -124,7 +123,7 @@ const ModalUserCreate = ({ open, closeModal, listOrganisation } : ModalUserCreat
 		>
 			<UserForm
 				setUser={setUser}
-				listTypeUser={typeUsers}
+				listTypeUser={userTypes}
 				listOrganisation={listOrganisation}
 				handleSubmit={handleSubmit}
 				errors={{ userError, emailError }}

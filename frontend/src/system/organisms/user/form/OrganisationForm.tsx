@@ -30,7 +30,7 @@ const OrganisationForm = ({ listOrganisation, setUser, user } : OrganisationForm
 									id={`check + ${org.id}`}
 									name={`check + ${org.nom}`}
 									type="checkbox"
-									checked={user && user.organisation.includes(org.id)}
+									checked={user && user.organisation?.includes(org.id)}
 									onChange={(e) => {
 										const checked = (e.target as HTMLInputElement).checked;
 										setUser((prev) => {

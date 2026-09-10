@@ -1,3 +1,5 @@
+import LabelInput from "./LabelInput";
+
 interface TextArea {
     id: string;
 	name: string;
@@ -32,7 +34,7 @@ const TextArea = ({
 			
 	return (
 		<div className="flex flex-col w-full">
-			{label && <label className="text-text" htmlFor={name}>{label}</label>}
+		{ label && <LabelInput label={label} htmlFor={name}/> }
 			<textarea
                 placeholder={placeholder}
 				id={id}
