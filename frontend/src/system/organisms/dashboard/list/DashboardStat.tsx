@@ -1,6 +1,6 @@
 import type { StatMetric } from "../../../../other/types/dashboardType"
 import Box from "../../../atoms/Container/Box"
-import DashboardCard from "./DashboardCard"
+import DashboardCard from "../container/DashboardCard"
 
 interface DashboardStatProps {
 	stats: StatMetric[]

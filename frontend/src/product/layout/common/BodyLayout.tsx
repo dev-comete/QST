@@ -1,17 +1,27 @@
 import Title from "../../../system/molecules/LayoutElement/Title";
 import Box from "../../../system/atoms/Container/Box";
 import type { ReactNode } from "react";
+import CustomText from "../../../system/atoms/Text/CustomText";
 
 interface BodyLayoutProps {
-	title: string,
-	titleButton?: ReactNode,
-	children: ReactNode,
-	linkBack?: string,
+	title: string
+	titleButton?: ReactNode
+	children: ReactNode
+	linkBack?: string
 	footer?: ReactNode
 	defaultLinkBack?: boolean
+	info?: string
 }
 
-const BodyLayout = ({ title, titleButton, children, linkBack, footer, defaultLinkBack = false } : BodyLayoutProps) => {
+const BodyLayout = ({
+	title,
+	titleButton,
+	children,
+	linkBack,
+	footer,
+	defaultLinkBack = false,
+	info
+} : BodyLayoutProps) => {
     return (
         <Box direction="column" className="h-full min-h-0 w-full space-y-3">
 
@@ -21,6 +31,7 @@ const BodyLayout = ({ title, titleButton, children, linkBack, footer, defaultLin
                     sideButton={titleButton}
                     linkBack={linkBack}
 					defaultLinkBack={defaultLinkBack}
+					info={info}
                 />
             </Box>
 

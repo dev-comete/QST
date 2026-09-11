@@ -4,7 +4,7 @@ import FetchError from "../../../system/atoms/Loading/FetchError"
 import Loading from "../../../system/atoms/Loading/Loading"
 import DashboardBloc from "../../../system/organisms/dashboard/container/DashboardBloc"
 import { RecentQuizItem, SessionsItem } from "../../../system/organisms/dashboard/container/DashboardItems"
-import { DashboardStat } from "../../../system/organisms/dashboard/container/DashboardStat"
+import { DashboardStat } from "../../../system/organisms/dashboard/list/DashboardStat"
 import BodyLayout from "../../layout/common/BodyLayout"
 
 const Dashboard = () => {

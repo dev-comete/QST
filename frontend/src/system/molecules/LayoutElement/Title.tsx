@@ -9,6 +9,7 @@ interface TitleProps {
 	sideButton?: ReactNode,
 	linkBack?: string
 	defaultLinkBack?: boolean
+	info?: string
 }
 
 const BackButton = ({ link } : { link? : string}) => {
@@ -24,11 +25,11 @@ const BackButton = ({ link } : { link? : string}) => {
 	)
 }
 
-const Title = ({ title, sideButton, linkBack, defaultLinkBack = false } : TitleProps) => {
+const Title = ({ title, sideButton, linkBack, defaultLinkBack = false, info } : TitleProps) => {
 
 		if (linkBack && sideButton) {
 			return (
-				<Box className="w-full border-b border-text pb-2">
+				<Box className="flex flex-col w-full border-b border-text pb-2">
 					<Box className="grid grid-cols-3 items-center w-full">
 						<Box className="justify-start">
 							<BackButton link={linkBack} />
@@ -40,6 +41,7 @@ const Title = ({ title, sideButton, linkBack, defaultLinkBack = false } : TitleP
 							{sideButton}
 						</Box>
 					</Box>
+					{ info && <CustomText textTag="caption">{info}</CustomText>}
 				</Box>
 			);
 		}
@@ -49,7 +51,7 @@ const Title = ({ title, sideButton, linkBack, defaultLinkBack = false } : TitleP
 			: "justify-between";
 	
 		return (
-			<Box className="w-full border-b border-text pb-2">
+			<Box className="flex flex-col w-full border-b border-text pb-2">
 				<Box className={`flex items-center gap-3 w-full ${justifyClass}`}>
 					<Box className="flex items-center gap-3">
 						{linkBack && <BackButton link={linkBack} />}
@@ -62,6 +64,7 @@ const Title = ({ title, sideButton, linkBack, defaultLinkBack = false } : TitleP
 						</Box>
 					)}
 				</Box>
+				{ info && <CustomText textTag="caption">{info}</CustomText>}
 			</Box>
 		);
 }

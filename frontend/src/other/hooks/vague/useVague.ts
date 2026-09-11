@@ -41,6 +41,7 @@ export const useVague = () => {
 export const useVagueCreate = () => {
 
 	const [ vague, setVague ] = useState<vaguePayload>({
+		nom_vague: '',
 		formation_id: '1',
 		debut: null,
 		fin: null

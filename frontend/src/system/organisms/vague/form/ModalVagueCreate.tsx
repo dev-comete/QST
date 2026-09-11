@@ -41,6 +41,13 @@ const ModalVagueCreate = ({ open, closeModal } : ModalsProps) => {
 				className="flex flex-col w-full p-5 justify-between items-center space-y-5"
 				onSubmit={handleSubmit}
 			>
+				<Input
+					id={"nom_vague"}
+					name={"nom_vague"}
+					label="Nom de la vague"
+					onChange={formChangeHandler(setVague, 'nom_vague')}
+					required
+				/>
 				<Select 
 					id="formation"
 					name="formation"

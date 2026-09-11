@@ -22,6 +22,7 @@ type vagueType = {
 }
 
 type vaguePayload = {
+	nom_vague: string,
 	formation_id: string,
 	debut: string | null,
 	fin: string | null

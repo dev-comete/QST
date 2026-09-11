@@ -40,6 +40,10 @@ const getVagueTabColumn = (
     onEdit: (id: string | number | boolean | string[]) => void,
 ) : Column<vagueType>[] => [
 	{
+		header: 'Nom',
+		key: "nom_vague"
+	},
+	{
 		header: 'Formation',
 		key: "formation_nom"
 	},
@@ -77,7 +81,7 @@ const VagueList = () => {
 	const { getAllVague } = useVague()
 	const { data: vagues, status } = getAllVague
 	const [isModalOpen, setIsModalOpen] = useState(false)
-	const [selectedUserId, setSelectedUserId] = useState<string>('')
+	const [selectedVagueId, setSelectedVagueId] = useState<string>('')
 
 	if (status == 'pending')
 		return <Loading />
@@ -86,7 +90,7 @@ const VagueList = () => {
 		return <FetchError />
 
 	const handleOpenEditModal = (id: string | number | boolean | string[]) => {
-		setSelectedUserId(id as string)
+		setSelectedVagueId(id as string)
         setIsModalOpen(true)
     }
 
@@ -100,7 +104,7 @@ const VagueList = () => {
 			<ModalVagueEdit
 				open={isModalOpen}
 				closeModal={() => setIsModalOpen(false)}
-				id={selectedUserId}
+				id={selectedVagueId}
 			/>
 		</Box>
 	)
