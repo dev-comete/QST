@@ -27,14 +27,21 @@ export const useVagueDel = (id: number) => {
 	}
 }
 
-export const useVague = () => {
+export const useVague = (id ?: string) => {
 	const getAllVague = useQuery({
 		queryKey: ['vague_list'],
-		queryFn: VagueService.getAllVague,
+		queryFn: VagueService.list,
+	})
+
+	const infoVagueQuery = useQuery({
+		queryKey: ['question_info', id],
+		queryFn: () => VagueService.info(id ? id : ''),
+		enabled: !!id
 	})
 
 	return {
 		getAllVague,
+		infoVagueQuery
 	}
 }
 
@@ -98,6 +105,66 @@ export const useVagueCreate = () => {
 		isPending: createVague.isPending,
 	}
 }
+
+export const useVagueEdit = (id: string) => {
+
+	const [ vague, setVague ] = useState<vaguePayload>({
+		nom_vague: '',
+		formation_id: '1',
+		debut: null,
+		fin: null
+	})
+	const { formations } = useFormation()
+	const queryClient = useQueryClient()
+	const { infoVagueQuery } = useVague(id)
+
+	const editVague = useMutation({
+		mutationFn: VagueService.create,
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+                queryKey: ['vague_list'],
+            });
+		},
+		onError: (err) => {
+			console.error('Vague creation failed:', err);
+		},
+	});
+
+	const handleVagueEdit = async () => {
+		const payload = {
+			...vague,
+			debut: vague.debut ,
+			fin: vague.fin ,
+		}
+
+		return await editVague.mutateAsync(payload)
+	}
+
+	useEffect(() => {
+
+		const initQuestion = async () => {
+			
+			if (!formations || !infoVagueQuery.data) return
+
+			const initVague = infoVagueQuery.data
+			setVague({
+				nom_vague: initVague.,
+				formation_id: 
+			});
+		}
+
+		initQuestion()
+
+	}, [formations, infoVagueQuery.data]);
+
+	return {
+		vague,
+		setVague,
+		handleVagueEdit,
+		isPending: editVague.isPending,
+	}
+}
+
 
 export const useVagueStat = (id: string) => {
 	const { data, isPending } = useQuery({

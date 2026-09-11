@@ -15,7 +15,7 @@ export const VagueService = {
 		return response.data;
 	},
 
-	getAllVague: async () => {
+	list: async () => {
 		const url = import.meta.env.VITE_LIST_VAGUE
 		const response = await apiClient.get(url);
 		return response.data as vagueType[];
@@ -37,5 +37,11 @@ export const VagueService = {
 		const url = import.meta.env.VITE_VAGUE_STAT
 		const response = await apiClient.get(url + id + '/');
 		return response.data as vagueStat;
+	},
+
+	info: async (id: string) => {
+		const url = import.meta.env.VITE_LIST_VAGUE
+		const response = await apiClient.get(url + id + '/');
+		return response.data as vagueType;
 	},
 }
