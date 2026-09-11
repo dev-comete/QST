@@ -7,30 +7,37 @@ import FetchError from "../../../atoms/Loading/FetchError";
 import Loading from "../../../atoms/Loading/Loading";
 import { formatDate } from "../../../../other/helper/helper";
 import CustomText from "../../../atoms/Text/CustomText";
-import { useState, type Dispatch, type SetStateAction } from "react";
-import VagueAssign from "../../../../product/pages/formateur/vague/VagueAssign";
+import { useAppNavigation } from "../../../../other/hooks/navigation/useAppNavigation";
+import { useState } from "react";
+import ModalVagueEdit from "../form/ModalVagueEdit";
 
-const ActionCell = ({ rowId, setSelectedId }: { 
+const ActionCell = ({ rowId, onEdit }: { 
     rowId: string | number | boolean | string[]
-	onEdit?: (id: string | number | boolean | string[]) => void
-	setSelectedId: Dispatch<SetStateAction<number | null>>
+	onEdit: (id: string | number | boolean | string[]) => void
 }) => {   
 
 	// const { handleDelVague } = useVagueDel(rowId as number)
 
+	const { navigateTo } = useAppNavigation()
+
     return (
         <Box>
-            <IconButton
+			<IconButton
                 iconName="edit"
                 iconStyling="text-text hover:text-success"
-                action={() => setSelectedId(Number(rowId))}
+                action={() => onEdit(rowId)}
+            />
+            <IconButton
+                iconName="layer-group"
+                iconStyling="text-text hover:text-success"
+                action={() => navigateTo('vagues/' + rowId)}
             />
         </Box>
     );
 };
 
 const getVagueTabColumn = (
-	setSelectedId: Dispatch<SetStateAction<number | null>>
+    onEdit: (id: string | number | boolean | string[]) => void,
 ) : Column<vagueType>[] => [
 	{
 		header: 'Formation',
@@ -58,8 +65,8 @@ const getVagueTabColumn = (
 	{
 		header: "Action",
 		key: 'id',
-		render: (_value, _row, index) => {
-			return <ActionCell rowId={index ? index : 0} setSelectedId={setSelectedId}/>
+		render: (value) => {
+			return <ActionCell rowId={String(value)} onEdit={onEdit} />
 		}
 		
 	}
@@ -69,7 +76,8 @@ const VagueList = () => {
 
 	const { getAllVague } = useVague()
 	const { data: vagues, status } = getAllVague
-	const [ selectedId, setSelectedId ] = useState<number | null>(null)
+	const [isModalOpen, setIsModalOpen] = useState(false)
+	const [selectedUserId, setSelectedUserId] = useState<string>('')
 
 	if (status == 'pending')
 		return <Loading />
@@ -77,22 +85,23 @@ const VagueList = () => {
 	if (!vagues)
 		return <FetchError />
 
+	const handleOpenEditModal = (id: string | number | boolean | string[]) => {
+		setSelectedUserId(id as string)
+        setIsModalOpen(true)
+    }
+
 	return (
 		<Box direction="column" className="w-full items-center justify-center">
-		{selectedId === null && <Table 
-				columns={getVagueTabColumn(setSelectedId)}
+			<Table 
+				columns={getVagueTabColumn(handleOpenEditModal)}
 				data={vagues}
 				rowKey={'id'}
 			/>
-		}
-		{
-			selectedId != null && 
-			<VagueAssign
-				ownedStudents={vagues[selectedId].etudiants}
-				setSelectedId={setSelectedId}
-				vagueId={vagues[selectedId].id}
+			<ModalVagueEdit
+				open={isModalOpen}
+				closeModal={() => setIsModalOpen(false)}
+				id={selectedUserId}
 			/>
-		}
 		</Box>
 	)
 }

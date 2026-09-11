@@ -19,6 +19,7 @@ const VagueStudentList = ({ ownedStudents} : { ownedStudents : etudiantType[]}) 
 			columns={ownedStudentColumn}
 			data={ownedStudents}
 			rowKey={'etudiant_id'}
+			emptyTitle="Veuillez assigner des étudiants à la session"
 		/>
 	)
 }

@@ -18,7 +18,7 @@ const QuizAssignForm = ({ ownedQuestions } : QuizAssignManipProps) => {
 	} = useAssignQuiz()
 
 	return (
-		<form className="flex justify-center gap-10 w-full">
+		<form className="flex justify-center space-x-5 w-full">
 			<AssignBloc title="Banque de questions">
 				<QuizBankQuestion
 					ownedQuestions={ownedQuestions}

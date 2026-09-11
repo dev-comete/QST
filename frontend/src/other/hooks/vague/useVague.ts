@@ -97,3 +97,15 @@ export const useVagueCreate = () => {
 		isPending: createVague.isPending,
 	}
 }
+
+export const useVagueStat = (id: string) => {
+	const { data, isPending } = useQuery({
+		queryKey: ['vague_stat', id],
+		queryFn: () => VagueService.statistic(id),
+	})
+
+	return {
+		data,
+		isPending
+	}
+}

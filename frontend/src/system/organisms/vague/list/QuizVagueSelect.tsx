@@ -10,7 +10,7 @@ interface QuizVagueListProps {
 	setQuiz: Dispatch<SetStateAction<number | null>>
 }
 
-const QuizVagueList = ({ setQuiz } : QuizVagueListProps) => {
+const QuizVagueSelect = ({ setQuiz } : QuizVagueListProps) => {
 
 	const { getAllQuiz } = useQuiz()
 
@@ -22,7 +22,7 @@ const QuizVagueList = ({ setQuiz } : QuizVagueListProps) => {
 		return <FetchError />
 
 	return (
-		<Box className="min-w-1/4">
+		<Box className="w-full">
 			<Select 
 				id={"type"}
 				name={"type"}
@@ -31,7 +31,6 @@ const QuizVagueList = ({ setQuiz } : QuizVagueListProps) => {
 				handleChange={(e) => {
 					const quizName = e.target.value
 					const selectedQuiz = data.find((q) => q.titre == quizName)
-					console.log("Selected quiz", selectedQuiz)
 					setQuiz(Number(selectedQuiz?.id))
 				}}
 			/>
@@ -39,4 +38,4 @@ const QuizVagueList = ({ setQuiz } : QuizVagueListProps) => {
 	)
 }
 
-export default QuizVagueList;
+export default QuizVagueSelect;

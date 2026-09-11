@@ -47,14 +47,14 @@ export const Table = <T,>({
     }
 
     return (
-        <div className="w-full overflow-hidden rounded-xl border border-slate-200/80 shadow-sm bg-white">
+        <div className="w-full rounded-xl border border-slate-200/80 shadow-sm bg-white">
             {title && (
                 <CustomText textTag="h2" weight="bold" className="text-center p-5 bg-transparent">
                     {title}
                 </CustomText>
             )}
 
-            <div className="overflow-x-auto">
+            <div className="w-full">
                 <table className="w-full border-collapse text-left text-sm text-slate-700">
                     <thead>
                         <tr className="border-b border-slate-200 bg-secondary text-xs font-semibold uppercase tracking-wider text-slate-500">

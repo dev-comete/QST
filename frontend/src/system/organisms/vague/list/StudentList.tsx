@@ -19,7 +19,6 @@ const StudentItem = ({ addStudentToAssign, item } : StudentItemProps) => {
 					id={`check + ${item}`}
 					name={`check + ${item}`}
 					type="checkbox"
-					// checked={Boolean(value)}
 					onChange={() => addStudentToAssign(item.id)}
 					className="cursor-pointer h-4 w-4 rounded"
 				/>

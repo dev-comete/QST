@@ -7,9 +7,9 @@ import Box from "../../../atoms/Container/Box";
 import FetchError from "../../../atoms/Loading/FetchError";
 import Loading from "../../../atoms/Loading/Loading";
 import { Table, type Column } from "../../../atoms/Table/Table";
-import CustomText from "../../../atoms/Text/CustomText";
 import IconButton, { IconConfirmActionButton } from "../../../molecules/Buttons/IconButton";
 import ModalQuizUpdate from "../form/ModalQuizUpdate";
+import StatusTag from "../tag/StatusTag";
 
 const ActionCell = ({ rowId, row, onEdit } : {
 	rowId : string | number | boolean,
@@ -68,11 +68,7 @@ const getQuizTabColumn = (
 	{
 		header: 'Statut',
 		key: "status",
-		render: (value) => (
-			<CustomText textTag="h6" className={`p-2 rounded-xl ${value === 'draft' ? 'bg-background' : 'bg-success-light'}` }>
-				{ value === 'draft' ? 'Brouillon' : 'Publié'}
-			</CustomText>
-		)
+		render: (value) => <StatusTag status={String(value)}/>
 	},
 	{
 		header: 'Durée',
