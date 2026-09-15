@@ -105,7 +105,7 @@ class UtilisateurQuiz(models.Model):
     heure_debut = models.DateTimeField(null=True, blank=True, help_text="Heure à laquelle l'étudiant a commencé le quiz")
 
     class Meta:
-        unique_together = ('quiz', 'utilisateur')
+        unique_together = ('quiz', 'utilisateur', 'vague')
 
     def __str__(self):
         return f"{self.utilisateur.username} - {self.quiz.id} - Score: {self.score_obtenu}"

@@ -99,6 +99,7 @@ export default function StudentDashboardPage() {
                 <table className="lms-table">
                   <thead>
                     <tr>
+                      <th>Vague</th>
                       <th>Formation</th>
                       <th>Titre du Quiz</th>
                       <th style={{ textAlign: 'right' }}>Action</th>
@@ -107,7 +108,12 @@ export default function StudentDashboardPage() {
                   <tbody>
                     {quizzesAFaire.map(quiz => (
                       <tr key={`${quiz.quiz_id}-${quiz.vague_id}`}>
-                        <td className="lms-table__name">{quiz.formation_nom}</td>
+                        <td>
+                           <span className="lms-table__name">
+                             {quiz.vague_nom || `Vague #${quiz.vague_id}`}
+                           </span>
+                        </td>
+                        <td className="lms-badge lms-badge--info">{quiz.formation_nom}</td>
                         <td>{quiz.quiz_titre || `Quiz #${quiz.quiz_id}`}</td>
                         <td style={{ textAlign: 'right' }}>
                           <button 
@@ -140,19 +146,25 @@ export default function StudentDashboardPage() {
                 <table className="lms-table">
                   <thead>
                     <tr>
-                      <th>Formation</th>
                       <th>Titre du Quiz</th>
+                      <th>Formation</th>
                       <th>Score Obtenu</th>
+                      <th>Vague</th>
                       <th style={{ textAlign: 'right' }}>Action</th>
                     </tr>
                   </thead>
                   <tbody>
                     {quizzesTermines.map(quiz => (
                       <tr key={`${quiz.quiz_id}-${quiz.vague_id}`}>
-                        <td className="lms-table__name">{quiz.formation_nom}</td>
                         <td>{quiz.quiz_titre || `Quiz #${quiz.quiz_id}`}</td>
+                        <td className="lms-table__name">{quiz.formation_nom}</td>
                         <td>
                           <strong>{quiz.score_obtenu} pts</strong>
+                        </td>
+                        <td>
+                          <span className="lms-badge lms-badge--info">
+                            {quiz.vague_nom || `Vague #${quiz.vague_id}`}
+                          </span>
                         </td>
                         <td style={{ textAlign: 'right' }}>
                           <button 
