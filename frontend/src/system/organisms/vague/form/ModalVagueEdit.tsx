@@ -1,7 +1,7 @@
-import { formChangeHandler, getSelectData } from "../../../../other/helper/helper";
+import { formatDateForInput, formChangeHandler } from "../../../../other/helper/helper";
 import { useFormation } from "../../../../other/hooks/formation/useFormation";
+import { useVagueEdit } from "../../../../other/hooks/vague/useVague";
 import Input from "../../../atoms/Form/Input";
-import Select from "../../../atoms/Form/Select";
 import FetchError from "../../../atoms/Loading/FetchError";
 import Loading from "../../../atoms/Loading/Loading";
 import ActionButton from "../../../molecules/Buttons/ActionButton";
@@ -15,20 +15,18 @@ interface ModalVagueEditProps {
 
 const ModalVagueEdit = ({ open, closeModal, id } : ModalVagueEditProps) => {
 	
-	const { setVague, handleCreateVague, isPending } = useVagueEdit(id)
+	const { vague, setVague, handleVagueEdit, isPending } = useVagueEdit(id)
 	const { formations, formationsStatus } = useFormation()
 
 	if (formationsStatus == 'pending')
 		return <Loading />
 	if (!formations)
 		return <FetchError />
-	
-	const selectedFormation = getSelectData(formations, 'nom_formation')
 
 	const handleSubmit = async (e: React.SubmitEvent) => {
 		e.preventDefault()
 		try {
-			await handleCreateVague()
+			await handleVagueEdit()
 			closeModal()
 		} catch (error) {
 			console.log("Error", error)
@@ -37,7 +35,7 @@ const ModalVagueEdit = ({ open, closeModal, id } : ModalVagueEditProps) => {
 
 	return (
 		<Modal
-			title="Création de vague"
+			title="Modification vague"
 			isOpen={open}
 			closeModal={closeModal}
 		>
@@ -51,17 +49,14 @@ const ModalVagueEdit = ({ open, closeModal, id } : ModalVagueEditProps) => {
 					label="Nom de la vague"
 					onChange={formChangeHandler(setVague, 'nom_vague')}
 					required
+					value={vague.nom_vague ?? ''}
 				/>
-				<Select 
-					id="formation"
-					name="formation"
+				<Input
+					id={"formation"}
+					name={"formation"}
 					label="Formation"
-					selectionValue={selectedFormation}
-					handleChange={formChangeHandler(setVague, 'formation_id', (value) => {
-						const selected = formations.find((q) => q.nom_formation === value) ?? selectedFormation[0]
-						return String(selected.id)
-					})}
-					required
+					value={formations.find((q) => q.id == vague.formation_id)?.nom_formation}
+					readOnly
 				/>
 				<Input
 					id={"debut"}
@@ -71,21 +66,23 @@ const ModalVagueEdit = ({ open, closeModal, id } : ModalVagueEditProps) => {
 					step={60}
 					onChange={formChangeHandler(setVague, 'debut')}
 					required
+					value={formatDateForInput(vague.debut ?? '')}
 				/>
 				<Input
-					id={"debut"}
-					name={"debut"}
-					label="Date de début"
+					id={"fin"}
+					name={"fin"}
+					label="Date de fin"
 					type="datetime-local"
 					step={60}
 					onChange={formChangeHandler(setVague, 'fin')}
 					required
+					value={formatDateForInput(vague.fin ?? '')}
 				/>
 				<ActionButton
 					type="submit"
 					btnStyling="w-full"
 					isLoading={isPending}
-				>{"Créer"}</ActionButton>
+				>{"Modifier"}</ActionButton>
 			</form>
 		</Modal>
 	)

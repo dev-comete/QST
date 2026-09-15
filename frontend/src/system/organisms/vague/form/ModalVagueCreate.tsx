@@ -53,9 +53,9 @@ const ModalVagueCreate = ({ open, closeModal } : ModalsProps) => {
 					name="formation"
 					label="Formation"
 					selectionValue={selectedFormation}
-					handleChange={formChangeHandler(setVague, 'formation_id', (value) => {
-						const selected = formations.find((q) => q.nom_formation === value) ?? selectedFormation[0]
-						return String(selected.id)
+					handleChange={formChangeHandler(setVague, 'formation_id', (value: string): number => {
+						const selected = formations.find((q) => q.nom_formation === value) ?? formations[0]
+						return Number(selected?.id ?? 0)
 					})}
 					required
 				/>

@@ -23,7 +23,7 @@ type vagueType = {
 
 type vaguePayload = {
 	nom_vague: string,
-	formation_id: string,
+	formation_id: number,
 	debut: string | null,
 	fin: string | null
 }
@@ -73,6 +73,15 @@ type vagueStat = {
     statistiques_par_quiz: vagueStatQuiz[]
 }
 
+type vagueInfo = {
+	id: 10,
+    a_des_evaluations_en_cours: false,
+    nom_vague: string,
+    debut: string,
+    fin: string,
+    formation: number
+}
+
 export type {
 	vagueType,
 	vaguePayload,
@@ -83,5 +92,6 @@ export type {
 	vagueStat,
 	vagueStatGlobal,
 	vagueStatInfo,
-	vagueStatQuiz
+	vagueStatQuiz,
+	vagueInfo
 }

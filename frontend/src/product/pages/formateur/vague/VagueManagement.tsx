@@ -2,7 +2,7 @@ import { useState } from "react";
 import BodyLayout from "../../../layout/common/BodyLayout";
 import ActionButton from "../../../../system/molecules/Buttons/ActionButton";
 import VagueList from "../../../../system/organisms/vague/list/VagueList";
-import ModalVagueCreate from "../../../../system/organisms/vague/form/ModalVagueEdit";
+import ModalVagueCreate from "../../../../system/organisms/vague/form/ModalVagueCreate";
 
 const VagueManagement = () => {
 
@@ -18,7 +18,7 @@ const VagueManagement = () => {
 			}
 		>
 			<VagueList />
-			<ModalVagueCreate 
+			<ModalVagueCreate
 				open={open}
 				closeModal={() => setOpen(false)}
 			/>

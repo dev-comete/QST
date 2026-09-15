@@ -128,11 +128,28 @@ const formatTime = (ms: number) => {
   return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 };
 
+const formatDateForInput = (dateStr?: string) => {
+	if (!dateStr) return '';
+    
+    // Handles DD/MM/YYYY HH:mm
+    const regex = /^(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}:\d{2})(?::\d{2})?$/;
+    const match = dateStr.match(regex);
+    
+    if (match) {
+        const [, day, month, year, time] = match;
+        return `${year}-${month}-${day}T${time}`;
+    }
+
+    // Fallback for standard ISO strings (e.g., 2026-09-29T21:00:00Z)
+    return dateStr.slice(0, 16);
+};
+
 
 export {
 	formChangeHandler,
 	getSelectData,
 	formatDate,
 	formatTime,
-	parseDurationToMs
+	parseDurationToMs,
+	formatDateForInput
 }

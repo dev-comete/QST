@@ -34,7 +34,7 @@ export const useVague = (id ?: string) => {
 	})
 
 	const infoVagueQuery = useQuery({
-		queryKey: ['question_info', id],
+		queryKey: ['vague_info', id],
 		queryFn: () => VagueService.info(id ? id : ''),
 		enabled: !!id
 	})
@@ -49,7 +49,7 @@ export const useVagueCreate = () => {
 
 	const [ vague, setVague ] = useState<vaguePayload>({
 		nom_vague: '',
-		formation_id: '1',
+		formation_id: 1,
 		debut: null,
 		fin: null
 	})
@@ -90,7 +90,7 @@ export const useVagueCreate = () => {
 
 			setVague((prev) => ({
 				...prev,
-				formation_id: formations.length === 0 ? '' : String(formations[0].id),
+				formation_id: formations.length === 0 ? 1 : formations[0].id,
 			}));
 		}
 
@@ -110,7 +110,7 @@ export const useVagueEdit = (id: string) => {
 
 	const [ vague, setVague ] = useState<vaguePayload>({
 		nom_vague: '',
-		formation_id: '1',
+		formation_id: 1,
 		debut: null,
 		fin: null
 	})
@@ -119,7 +119,7 @@ export const useVagueEdit = (id: string) => {
 	const { infoVagueQuery } = useVague(id)
 
 	const editVague = useMutation({
-		mutationFn: VagueService.create,
+		mutationFn: ({ id, data }: { id: number; data: vaguePayload }) => VagueService.edit(id, data),
 		onSuccess: () => {
 			queryClient.invalidateQueries({
                 queryKey: ['vague_list'],
@@ -135,25 +135,29 @@ export const useVagueEdit = (id: string) => {
 			...vague,
 			debut: vague.debut ,
 			fin: vague.fin ,
+			nom_vague: vague.nom_vague
 		}
 
-		return await editVague.mutateAsync(payload)
+		return await editVague.mutateAsync({id: Number(id), data: payload})
 	}
 
 	useEffect(() => {
 
-		const initQuestion = async () => {
+		const initVague = async () => {
 			
 			if (!formations || !infoVagueQuery.data) return
 
 			const initVague = infoVagueQuery.data
+
 			setVague({
-				nom_vague: initVague.,
-				formation_id: 
+				nom_vague: initVague.nom_vague,
+				formation_id: initVague.formation,
+				debut: initVague.debut,
+				fin: initVague.fin
 			});
 		}
 
-		initQuestion()
+		initVague()
 
 	}, [formations, infoVagueQuery.data]);
 

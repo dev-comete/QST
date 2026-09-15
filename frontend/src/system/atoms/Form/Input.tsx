@@ -36,7 +36,7 @@ const Input = ({
 	htmlFor
 }: InputProps) => {
 
-	const basicStyle = "flex p-2 rounded-xl border border-background bg-white w-full items-center justify-center focus:outline focus:outline-primary"
+	const basicStyle = "flex p-2 rounded-xl border border-background w-full items-center justify-center focus:outline focus:outline-primary"
 
 	return (
 		<div className="flex flex-col w-full">
@@ -45,7 +45,7 @@ const Input = ({
 				type={type}
 				id={id}
 				name={name}
-				className={`${basicStyle} ${className}`}
+				className={`${basicStyle} ${className} ${readOnly ? 'bg-background text-text cursor-not-allowed' : 'bg-white'}`}
 				onChange={onChange}
 				step={step}
 				checked={checked}
