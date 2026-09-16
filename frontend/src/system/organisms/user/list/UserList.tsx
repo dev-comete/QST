@@ -55,8 +55,8 @@ const getUserTabColumn = (
 		}
     },
     {
-        header: 'Organisation',
-        key: "organisation",
+        header: 'Projet',
+        key: "projet",
         render: (value: string | number | number[] | string[] | null | undefined) => {
             const list = Array.isArray(value) ? value : []
 

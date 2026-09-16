@@ -34,25 +34,32 @@ const EnonceForm = () => {
 				value={question.enonce_question}
 				onChange={formChangeHandler(setQuestion, 'enonce_question')}
 				required={true}
+				placeholder="Exemple: Comment parler à un client ?"
 			/>
-			<Select
-				id={"type"}
-				name={"type"}
-				selectionValue={selectionQuestionType}
-				label="Type"
-				handleChange={formChangeHandler(setQuestion, 'type_id', (value) => {
-					const selected = selectionQuestionType.find((q) => q.value === value) ?? selectionQuestionType[0]
-					const realId = Number(selected.id)
-					return realId + 1
-				})}
-			/>
-			<BaremeInput onBaremeChange={(e) => formChangeHandler(setQuestion, 'bareme_pts')} />
+			<Box className="w-full gap-2">
+				<Box className="min-w-0 flex-1">
+					<Select
+						id={"type"}
+						name={"type"}
+						selectionValue={selectionQuestionType}
+						label="Type de question"
+						handleChange={formChangeHandler(setQuestion, 'type_id', (value) => {
+							const selected = selectionQuestionType.find((q) => q.value === value) ?? selectionQuestionType[0]
+							const realId = Number(selected.id)
+							return realId + 1
+						})}
+					/>
+				</Box>
+				<Box className="min-w-0 flex-1">
+					<BaremeInput onBaremeChange={() => formChangeHandler(setQuestion, 'bareme_pts')} />
+				</Box>
+			</Box>
 		</Box>
 	)
 }
 
 
-const QuestionForm = ({ openRespForm } : { openRespForm : () => void}) => {
+const QuestionForm = () => {
 
 	const { question, handleCreate, isPending } = useQuestionCreate()
 
@@ -72,11 +79,14 @@ const QuestionForm = ({ openRespForm } : { openRespForm : () => void}) => {
 				title="Réponses"
 				sideButton={
 					<ActionButton
-						onClick={(e) => {e.preventDefault() ; openRespForm()}}
+						onClick={(e) => {e.preventDefault()}}
 					>{"+ Réponse"}</ActionButton>
 				}
 			/>
-			<RespCreatedList />
+			<RespCreatedList 
+				responses={question.options}
+				setResponses={}
+			/>
 			<ActionButton
 				type="submit"
 				form="createQuestion"

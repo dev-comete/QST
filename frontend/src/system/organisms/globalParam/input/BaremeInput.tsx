@@ -10,7 +10,7 @@ interface BaremeInputProps {
 	onBaremeChange: (value: string) => void;
 }
 
-const BaremeInput = ({ onBaremeChange } : BaremeInputProps) => {
+export const OldBaremeInput = ({ onBaremeChange } : BaremeInputProps) => {
 
 	const { baremeQuery, baremeInput, setBaremeInput, handleCreateBareme } = useBareme()
 	const { data: baremes } = baremeQuery
@@ -60,6 +60,22 @@ const BaremeInput = ({ onBaremeChange } : BaremeInputProps) => {
 				/>
 			</div>
 		</div>
+
+	)
+}
+
+const BaremeInput = ({ onBaremeChange } : BaremeInputProps) => {
+	return (
+		<Input
+			label="Barème"
+			id="bareme"
+			name='bareme'
+			type='number'
+			min={0}
+			max={100}
+			step={0.25}
+			onChange={(e) => onBaremeChange(e.target.value)}
+		/>
 
 	)
 }

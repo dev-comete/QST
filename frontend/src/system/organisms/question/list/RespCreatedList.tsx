@@ -1,81 +1,84 @@
-import { useQuestionCreate } from "../../../../other/hooks/question/useQuestionCreate"
+import { type Dispatch, type SetStateAction } from "react"
 import type { respType } from "../../../../other/types/questionType"
 import Box from "../../../atoms/Container/Box"
 import Info from "../../../atoms/Form/Info"
+import TextArea from "../../../atoms/Form/TextArea"
 import Input from "../../../atoms/Form/Input"
-import { Table, type Column } from "../../../atoms/Table/Table"
-import CustomText from "../../../atoms/Text/CustomText"
-import IconButton from "../../../molecules/Buttons/IconButton"
 
-const getResponseColumns = (
-    onToggleCorrect: (index: number, isChecked: boolean) => void,
-    onRemove: (index: number) => void
-): Column<respType>[] => [
-    {
-        header: 'Sélection',
-        key: "est_correct",
-        render: (value, _record, index) => (
-            <Input
-				id={`check + ${index}`}
-				name={`check + ${index}`}
-                type="checkbox"
-                checked={Boolean(value)}
-                onChange={(e) => typeof index === 'number' && onToggleCorrect(index, e.target.checked)}
-                className="cursor-pointer h-4 w-4 rounded"
-            />
-        )
-    },
-    {
-        header: "Réponse",
-        key: "reponse"
-    },
-	{
-        header: "Explication",
-        key: "explication"
-    },
-    {
-        header: "Action",
-        key: 'id',
-        render: (_value, _record, index) => (
-            <IconButton
-                iconName="trash"
-                iconStyling="text-text hover:text-error"
-                action={() => typeof index === 'number' && onRemove(index)}
-            />
-        )
-    }
-];
+interface RespItemProps {
+	id: number,
+	response: respType,
+	handleRemove: () => void,
+	handleSelectTrue: () => void
+	handleOnChange: () => void
+}
 
-const RespCreatedList = () => {
+const RespItem = ({ id, response, handleRemove, handleSelectTrue, handleOnChange } : RespItemProps) => {
+	return (
+		<Box direction="column" className="gap-2">
+			<Input id='resp' name='response' type='checkbox' onChange={handleSelectTrue}/>
+			<TextArea
+				id={"enonce" + id}
+				name={"enonce"}
+				label="Enoncé"
+				value={response.reponse}
+				onChange={handleOnChange}
+				required={true}
+				placeholder="Exemple: Parler doucement"
+			/>
+			{
+				response.est_correct &&
+				<TextArea
+					id={"explication" + id}
+					name={"explication"}
+					label="Explication"
+					value={response.reponse}
+					onChange={handleOnChange}
+					required={true}
+					placeholder="Exemple: Parler doucement"
+				/>
 
-	const { question, setQuestion } = useQuestionCreate()
+			}
+		</Box>
+	)
+}
+
+interface RespCreatedListProps {
+	responses: respType[]
+	setResponses: Dispatch<SetStateAction<respType[]>>
+}
+
+const RespCreatedList = ({ responses, setResponses } : RespCreatedListProps) => {
     
     const handleRemove = (index: number) => {
-        setQuestion((prev) => ({
+        setResponses((prev) => ({
             ...prev,
-            options: prev.options.filter((_, i) => i !== index)
+            options: prev.filter((_, i) => i !== index)
         }));
     };
 	
 	const handleCheckboxChange = (index: number, isChecked: boolean) => {
-		setQuestion((prev) => ({
+		setResponses((prev) => ({
 			...prev,
-			options: prev.options.map((item, i) =>
+			options: prev.map((item, i) =>
 				i === index ? { ...item, est_correct: isChecked } : item
 		)
 		}));
     };
 
-    const columns = getResponseColumns(handleCheckboxChange, handleRemove);
-
 	return (
 		<Box direction="column" className="w-full items-center justify-center">
 			<Info info="Veuillez créer au moins deux réponses, les réponses vraies doivent avoir une explication"/>
-			<Table 
-				columns={columns}
-				data={question.options}
-				rowKey={'reponse'}
-			/>
+			{
+				responses.map((r, index) => 
+				<RespItem 
+					response={r}
+					id={index}
+					handleOnChange={}
+					handleRemove={() => handleRemove(index)}
+					handleSelectTrue={() => handleCheckboxChange(index)}
+				/>)
+			}
 		</Box>
 	)
 }
