@@ -1,20 +1,63 @@
-import { type UseQueryResult } from "@tanstack/react-query";
-import type { baremeType, questionIdType, questionType } from "../../types/questionType";
-import { createContext, useContext, type Dispatch, type SetStateAction } from "react";
-
-interface QuestionCreateContextType {
-	question: questionType,
-	setQuestion: Dispatch<SetStateAction<questionType>>;
-	handleCreate: () => void
-	isPending: boolean
-	baremeQuery: UseQueryResult<baremeType[], Error>
-	questionTypeQuery: UseQueryResult<questionIdType[], Error>
-}
-
-export const QuestionCreateContext = createContext<QuestionCreateContextType | undefined>(undefined);
+import { useEffect, useState } from "react";
+import type { respType, questionType } from "../../types/questionType";
+import { initialQuestion } from "../../types/constant";
+import { useBareme } from "../bareme/useBareme";
+import { useQuestion } from "./useQuestion";
+import { useMutation } from "@tanstack/react-query";
+import { QuestionService } from "../../services/questionService";
 
 export const useQuestionCreate = () => {
-	const context = useContext(QuestionCreateContext);
-	if (!context) throw new Error('useCreateQuestion must be used within an AuthProvider');
-	return context;
+
+	const [ question, setQuestion ] = useState<questionType>(initialQuestion)
+
+	const [ responses, setResponses ] = useState<respType[]>([])
+
+	const { questionTypeQuery } = useQuestion()
+	const { baremeQuery } = useBareme()
+
+	const createQuestion = useMutation({
+		mutationFn: QuestionService.create,
+		onSuccess: () => {
+			setQuestion(initialQuestion)
+		},
+		onError: (err) => {
+			console.log("Erreur", err)
+		},
+	});
+
+	const handleCreate = async () => {
+		const payload = {
+			...question,
+			options: responses,
+		};
+
+		return await createQuestion.mutateAsync(payload)
+	}
+
+	useEffect(() => {
+
+		const initQuestion = async () => {
+
+			if (!questionTypeQuery.data?.length || !baremeQuery.data) return 
+
+			setQuestion((prev) => ({
+				...prev,
+				type_id: questionTypeQuery.data[0].id,
+				bareme_pts: baremeQuery.data[0].pts,
+			}));
+		}
+
+		initQuestion()
+
+    }, [questionTypeQuery.data, baremeQuery.data]);
+
+	return {
+		question,
+		setQuestion,
+		responses,
+		setResponses,
+		handleCreate,
+		questionTypeQuery,
+		isPending: createQuestion.isPending
+	}
 }

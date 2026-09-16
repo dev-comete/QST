@@ -9,18 +9,16 @@ import { formChangeHandler, getSelectData } from "../../../../other/helper/helpe
 import Loading from "../../../atoms/Loading/Loading";
 import FetchError from "../../../atoms/Loading/FetchError";
 import BaremeInput from "../../globalParam/input/BaremeInput";
+import type { Dispatch, SetStateAction } from "react";
+import type { questionIdType, questionType } from "../../../../other/types/questionType";
 
+interface EnonceFormProps {
+	question: questionType
+	setQuestion: Dispatch<SetStateAction<questionType>>
+	questionType: questionIdType[]
+}
 
-const EnonceForm = () => {
-
-	const { question, setQuestion, questionTypeQuery  } = useQuestionCreate();
-	const { data : questionType, status : questionTypeStatus } = questionTypeQuery
-
-	if (questionTypeStatus == 'pending')
-		return <Loading />
-	
-	if (!questionType)
-		return <FetchError />
+const EnonceForm = ({ question, setQuestion, questionType} : EnonceFormProps) => {
 
 	const selectionQuestionType = getSelectData(questionType, 'code')
 
@@ -61,7 +59,12 @@ const EnonceForm = () => {
 
 const QuestionForm = () => {
 
-	const { question, handleCreate, isPending } = useQuestionCreate()
+	const { question, setQuestion, responses, setResponses, questionTypeQuery, handleCreate, isPending } = useQuestionCreate()
+	const { data: questionType, status: questionTypeStatus } = questionTypeQuery
+
+	if (questionTypeStatus == 'pending') return <Loading />
+
+	if (!questionType) return <FetchError />
 
 	const handleSubmit = async(e: React.SubmitEvent) => {
 		e.preventDefault()
@@ -74,7 +77,11 @@ const QuestionForm = () => {
 			onSubmit={handleSubmit}
 			className="flex flex-col justify-center items-center w-3/4 mx-auto space-y-5"
 		>
-			<EnonceForm />
+			<EnonceForm
+				question={question}
+				setQuestion={setQuestion}
+				questionType={questionType}
+			/>
 			<Title
 				title="Réponses"
 				sideButton={
@@ -84,8 +91,8 @@ const QuestionForm = () => {
 				}
 			/>
 			<RespCreatedList 
-				responses={question.options}
-				setResponses={}
+				responses={responses}
+				setResponses={setResponses}
 			/>
 			<ActionButton
 				type="submit"
