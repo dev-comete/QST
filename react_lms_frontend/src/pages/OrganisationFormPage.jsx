@@ -47,7 +47,7 @@ export default function OrganisationFormPage() {
       navigate('/organisations');
     } catch (error) {
       console.error("Erreur d'enregistrement", error);
-      notify({ type: 'error', message: "Erreur lors de la sauvegarde. Vérifiez que ce nom d'organisation n'existe pas déjà." });
+      notify({ type: 'error', message: "Erreur lors de la sauvegarde. Vérifiez que ce nom de projet n'existe pas déjà." });
     }
   };
 
@@ -58,7 +58,7 @@ export default function OrganisationFormPage() {
           
           <div className="lms-pageheader">
             <h1 className="lms-pageheader__title">
-              {isEditing ? 'Modifier Organisation' : 'Créer une Organisation'}
+              {isEditing ? 'Modifier le projet' : 'Créer un projet'}
             </h1>
           </div>
 
@@ -71,7 +71,7 @@ export default function OrganisationFormPage() {
             <form onSubmit={handleSubmit} className="lms-card lms-card--pad-lg">
               
               <div className="lms-field">
-                <label className="lms-label">Nom de l'organisation *</label>
+                <label className="lms-label">Nom du projet *</label>
                 <input 
                   type="text" 
                   name="nom" 
@@ -86,10 +86,10 @@ export default function OrganisationFormPage() {
               <div className="lms-field" style={{ marginTop: 'var(--space-6)' }}>
                 <label className="lms-picker-item" style={{ cursor: 'pointer' }}>
                   <span className="lms-picker-item__text">
-                    <strong>Organisation active</strong>
+                    <strong>Projet active</strong>
                     <br/>
                     <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-slate)' }}>
-                      Les utilisateurs de cette organisation pourront se connecter.
+                      Les utilisateurs de ce projet pourront se connecter.
                     </span>
                   </span>
                   <input 

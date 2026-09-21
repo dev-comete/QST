@@ -14,7 +14,7 @@ from .services import tester_connexion_gemini, generer_distracteurs_qcm, parser_
 from .formater.file_import_reader import extraire_texte_fichier
 
 class TestGeminiAPIView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         resultat = tester_connexion_gemini()
@@ -24,7 +24,7 @@ class TestGeminiAPIView(APIView):
         })
 
 class GenerateDistractorsAPIView(APIView):
-    permission_classes = [AllowAny] 
+    permission_classes = [IsAuthenticated] 
 
     def post(self, request):
         enonce = request.data.get('enonce')
@@ -58,9 +58,8 @@ class GenerateDistractorsAPIView(APIView):
             )
 
 class ImportQuestionsIAAPIView(GenericAPIView):
-    permission_classes = [AllowAny] 
+    permission_classes = [IsAuthenticated] 
     parser_classes = [MultiPartParser, FormParser, JSONParser]
-
     serializer_class = ImportQuestionsSerializer
 
     def post(self, request):
@@ -69,10 +68,8 @@ class ImportQuestionsIAAPIView(GenericAPIView):
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        # 2. On récupère les données nettoyées
         fichier = serializer.validated_data.get('fichier')
         texte = serializer.validated_data.get('texte')
-
         raw_text = ""
         
         if fichier:
@@ -90,11 +87,8 @@ class ImportQuestionsIAAPIView(GenericAPIView):
             )
 
         try:
-            # 1. On demande à l'IA de structurer le texte
             questions_ia = parser_questions_brutes(raw_text)
             
-            # 2. On prépare un dictionnaire pour mapper les codes aux IDs réels
-            # Ex: {"QCU": 1, "QCM": 2, "OUV": 3}
             types_mapping = {
                 t.code.upper(): t.id 
                 for t in TypeQuestion.objects.all() if t.code
@@ -102,17 +96,20 @@ class ImportQuestionsIAAPIView(GenericAPIView):
 
             questions_formatees = []
 
-            # 3. On nettoie et on adapte au format exact du frontend (createPayload)
             for q in questions_ia:
+                # 🌟 SÉCURITÉ : On ignore les éléments qui ne sont pas des dictionnaires
+                if not isinstance(q, dict):
+                    continue
+
                 type_code = q.get('type_code', 'QCM').upper()
                 type_id = types_mapping.get(type_code)
 
-                # Si l'IA a inventé un code ou s'il manque en base, on passe
                 if not type_id:
                     continue 
 
+                # 🌟 Utilisation stricte de .get() pour éviter toute KeyError
                 question_propre = {
-                    "enonce_question": q.get('enonce_question', ''),
+                    "enonce_question": q.get('enonce_question', 'Question sans énoncé'),
                     "type_id": type_id,
                     "bareme_pts": float(q.get('bareme_pts', 1.0)),
                     "options": q.get('options', [])
@@ -131,5 +128,5 @@ class ImportQuestionsIAAPIView(GenericAPIView):
                 
             return Response(
                 {"error": erreur_msg},
-                status=status.HTTP_503_SERVICE_UNAVAILABLE
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
