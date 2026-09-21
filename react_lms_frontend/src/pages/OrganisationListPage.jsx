@@ -43,22 +43,22 @@ export default function OrganisationListPage() {
           
           <div className="lms-pageheader">
             <div>
-              <h1 className="lms-pageheader__title">Gestion des Organisations</h1>
-              <p className="lms-pageheader__subtitle">Gérez les écoles, entreprises ou centres de formation.</p>
+              <h1 className="lms-pageheader__title">Gestion des Projets</h1>
+              <p className="lms-pageheader__subtitle">Gérez les vos divers activités et projets.</p>
             </div>
             <button
               type="button"
               className="lms-btn lms-btn--success"
               onClick={() => navigate('/organisations/create')}
             >
-              + Nouvelle Organisation
+              + Nouveau Projet
             </button>
           </div>
 
           {loading ? (
             <div className="lms-loading">
               <div className="lms-spinner"></div>
-              <span>Chargement des organisations...</span>
+              <span>Chargement des activités...</span>
             </div>
           ) : (
             <div className="lms-tablewrap">

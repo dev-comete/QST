@@ -29,24 +29,31 @@ const IconHint = (props) => (
 
 export default function QuizQuestionsPage() {
   const { id } = useParams(); // ID du quiz
+  const [quizInfo, setQuizInfo] = useState(null);
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchQuestions = async () => {
+    const fetchPageData = async () => {
       try {
-        const data = await QuizService.getAssignedQuestions(id);
-        setQuestions(data);
+        //  On charge les infos du quiz ET ses questions en même temps
+        const [quizData, questionsData] = await Promise.all([
+          QuizService.getQuizById(id),
+          QuizService.getAssignedQuestions(id)
+        ]);
+        
+        setQuizInfo(quizData);
+        setQuestions(questionsData);
       } catch (err) {
         console.error(err);
-        setError("Impossible de charger les questions de ce quiz.");
+        setError("Impossible de charger les données du quiz.");
       } finally {
         setLoading(false);
       }
     };
-    fetchQuestions();
+    fetchPageData();
   }, [id]);
 
   if (loading) {
@@ -67,7 +74,7 @@ export default function QuizQuestionsPage() {
         {/* EN-TÊTE */}
         <div className="lms-header-row" style={{ marginBottom: 'var(--space-6)' }}>
           <div>
-            <h1 className="lms-pageheader__title">Questions du Quiz #{id}</h1>
+            <h1 className="lms-pageheader__title">Questions du {quizInfo?.titre || 'Quiz'}</h1>
             <p className="lms-pageheader__subtitle">
               Total : {questions.length} question(s) assignée(s)
             </p>

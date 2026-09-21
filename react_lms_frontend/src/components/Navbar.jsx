@@ -60,7 +60,7 @@ const NAV_LINKS = [
   { to: '/baremes', label: 'Barèmes', showFor: ['formateur', 'admin'] },
   { to: '/vagues', label: 'Vagues', showFor: ['formateur', 'admin'] },
   { to: '/users', label: 'Utilisateurs', showFor: ['admin'] },
-  { to: '/organisations', label: 'Organisations', showFor: ['admin'] }
+  { to: '/organisations', label: 'Projets', showFor: ['admin'] }
 ];
 
 const Navbar = () => {
