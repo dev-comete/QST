@@ -7,7 +7,7 @@ import { useQuestion } from "../../../../other/hooks/question/useQuestion";
 import FetchError from "../../../../system/atoms/Loading/FetchError";
 import Loading from "../../../../system/atoms/Loading/Loading";
 
-const QuestionDetail = () => {
+const QuestionDetailPage = () => {
 
 	const { id } = useParams()
 	const { infoQuestionQuery } = useQuestion(id)
@@ -38,7 +38,7 @@ const QuestionDetail = () => {
 								<Box
 									className={`
 										justify-start rounded-lg px-2 py-1
-										${item.est_correcte ? 'bg-success-light' : 'bg-error-light'}	
+										${item.est_correct ? 'bg-success-light' : 'bg-error-light'}	
 									`}
 								>
 									<CustomText>{item.texte}</CustomText>
@@ -53,4 +53,4 @@ const QuestionDetail = () => {
 	)
 }
 
-export default QuestionDetail;
+export default QuestionDetailPage;

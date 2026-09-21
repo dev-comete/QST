@@ -16,7 +16,6 @@ const ActionCell = ({ rowId, row, onEdit } : {
 	row: quizType | null
 	onEdit: (id: string | number | boolean | string[]) => void 
 }) => {
-    const { navigateTo } = useAppNavigation();
 	const { handleDelQuiz, isPending } = useQuizDel(Number(rowId))
 	const { handleUpdateStatus, isPending : updateIsPending } = useQuizUpdate(Number(rowId), row ? row.status : 'draft')
 
@@ -34,13 +33,6 @@ const ActionCell = ({ rowId, row, onEdit } : {
                 iconStyling="text-text hover:text-success"
                 action={() => {
                     onEdit(rowId)
-                }}
-            />
-			<IconButton
-                iconName="question"
-                iconStyling="text-text hover:text-success"
-                action={() => {
-					navigateTo(`${rowId}/quiz_questions`)
                 }}
             />
 			<IconConfirmActionButton
@@ -95,6 +87,7 @@ const QuizList = () => {
 	const [isModalOpen, setIsModalOpen] = useState(false)
 	const { getAllQuiz } = useQuiz()
 	const { data: quizzes, status } = getAllQuiz
+	const { navigateTo } = useAppNavigation();
 
 	if (status == 'pending')
 		return <Loading />
@@ -113,6 +106,7 @@ const QuizList = () => {
 				columns={getQuizTabColumn(handleOpenEditModal)}
 				data={quizzes}
 				rowKey={'id'}
+				onRowClick={(row) => navigateTo(`${row.id}/quiz_questions`)}
 			/>
 			<ModalQuizUpdate
 				open={isModalOpen}

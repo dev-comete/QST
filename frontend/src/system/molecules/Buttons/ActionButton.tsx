@@ -26,11 +26,16 @@ const ActionButton = ({
 	onClick: action,
 	isLoading,
 } : ActionButtonProps) => {
+	const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+		e.stopPropagation();
+		action?.(e);
+	};
+
 	return (
 		<Button
 			color={btnColor}
 			className={btnStyling}
-			onClick={action}
+			onClick={handleClick}
 			disabled={disabled}
 			type={type}
 			form={form}

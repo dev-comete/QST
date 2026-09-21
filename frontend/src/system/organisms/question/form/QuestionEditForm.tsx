@@ -12,6 +12,7 @@ import BaremeInput from "../../globalParam/input/BaremeInput";
 import type { Dispatch, SetStateAction } from "react";
 import type { questionIdType, questionType } from "../../../../other/types/questionType";
 import Info from "../../../atoms/Form/Info";
+import { useNavigate } from "react-router";
 
 interface EnonceFormProps {
 	question: questionType
@@ -59,7 +60,7 @@ const EnonceForm = ({ question, setQuestion, questionType} : EnonceFormProps) =>
 }
 
 
-const QuestionForm = () => {
+const QuestionEditForm = () => {
 
 	const { 
 		question,
@@ -72,6 +73,8 @@ const QuestionForm = () => {
 		errorForm,
 		isOuvert,
 	} = useQuestionCreate()
+
+	const navigate = useNavigate()
 
 	const { data: questionType, status: questionTypeStatus } = questionTypeQuery
 
@@ -98,7 +101,7 @@ const QuestionForm = () => {
 
 	return (
 		<form
-			id="createQuestion"
+			id="editQuestion"
 			onSubmit={handleSubmit}
 			className="flex flex-col justify-center items-center w-3/4 mx-auto space-y-5"
 		>
@@ -109,9 +112,7 @@ const QuestionForm = () => {
 			/>
 			{errorForm.type != 'response' && errorForm.msg && <Info info={errorForm.msg} variant="error"/>}
 			{
-				isOuvert ? 
-					<Info info={'Une question ouverte ne nécessite pas de proposition de réponses'} />
-				:
+				!isOuvert && 
 				<>
 					<Title
 						title="Options de réponse"
@@ -126,14 +127,19 @@ const QuestionForm = () => {
 					/>
 				</>
 			}
-			<ActionButton
-				type="submit"
-				form="createQuestion"
-				disabled={question.enonce_question.length == 0}
-				isLoading={isPending}
-			>{"Créer question"}</ActionButton>
+			<Box>
+				<ActionButton
+					onClick={() => navigate(-1)}
+				>{"Annuler"}</ActionButton>
+				<ActionButton
+					type="submit"
+					form="editQuestion"
+					disabled={question.enonce_question.length == 0}
+					isLoading={isPending}
+				>{"Modifier"}</ActionButton>
+			</Box>
 		</form>
 	)
 }
 
-export default QuestionForm;
+export default QuestionEditForm;

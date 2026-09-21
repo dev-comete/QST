@@ -30,11 +30,11 @@ const RespItem = ({ id, response, handleRemove, handleSelectTrue, handleOnChange
 				<TextArea
 					id={"enonce" + id}
 					name="enonce"
-					label="Enoncé"
+					label="Réponse"
 					value={response.reponse}
 					onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleOnChange('reponse', e.target.value)}
 					required={true}
-					placeholder="Enoncé"
+					placeholder="Veuillez écrire la réponse"
 				/>
 				{response.est_correct && (
 					<TextArea
@@ -44,7 +44,7 @@ const RespItem = ({ id, response, handleRemove, handleSelectTrue, handleOnChange
 						value={response.explication || ''}
 						onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleOnChange('explication', e.target.value)}
 						required={true}
-						placeholder="Explication"
+						placeholder="Veuillez fournir une explication"
 					/>
 				)}
 			</Box>
@@ -56,9 +56,10 @@ const RespItem = ({ id, response, handleRemove, handleSelectTrue, handleOnChange
 interface RespCreatedListProps {
     responses: respType[];
     setResponses: Dispatch<SetStateAction<respType[]>>;
+	errorMsg: string | null
 }
 
-const RespCreatedList = ({ responses, setResponses }: RespCreatedListProps) => {
+const RespCreatedList = ({ responses, setResponses, errorMsg }: RespCreatedListProps) => {
     const handleRemove = (index: number) => {
         setResponses((prev) => prev.filter((_, i) => i !== index));
     };
@@ -77,7 +78,7 @@ const RespCreatedList = ({ responses, setResponses }: RespCreatedListProps) => {
 
     return (
         <Box direction="column" className="w-full items-center justify-center">
-            <Info info="Veuillez créer au moins deux réponses, les réponses vraies doivent avoir une explication" />
+			{ errorMsg && <Info info={errorMsg} variant="error"/>}
             {responses.map((r, index) => (
                 <RespItem
                     key={'resp' + index}

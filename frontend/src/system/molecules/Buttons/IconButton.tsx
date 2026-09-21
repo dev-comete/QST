@@ -81,11 +81,16 @@ const IconButton = ({
 	iconName,
 	iconStyling
 } : IconButtonProps) => {
+	const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+		e.stopPropagation();
+		action?.(e);
+	};
+
 	return (
 		<Button
 			color={btnColor}
 			className={`${btnStyling} cursor-pointer`}
-			onClick={action}
+			onClick={handleClick}
 			disabled={disabled}
 			type={type}
 			form={form}

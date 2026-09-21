@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { ReactNode, MouseEvent } from "react";
 import CustomText from "../Text/CustomText";
 
 export interface Column<T> {
@@ -17,7 +17,8 @@ interface TableProps<T> {
     count?: number;
     setCount?: (count: number) => void;
     totalCount?: number;
-	emptyTitle?: string
+    emptyTitle?: string
+    onRowClick?: (row: T, index: number, event?: MouseEvent<HTMLTableRowElement>) => void
 }
 
 export const Table = <T,>({
@@ -26,6 +27,7 @@ export const Table = <T,>({
     rowKey,
     title,
 	emptyTitle = 'Pas encore de données...',
+	onRowClick,
     // page,
     // setPage,
     // count,
@@ -69,7 +71,8 @@ export const Table = <T,>({
                         {data.map((row, idx) => (
                             <tr
                                 key={`${String(row[rowKey])}-${idx}`}
-                                className="transition-colors duration-150 ease-in-out hover:bg-accent"
+                                className={`transition-colors duration-150 ease-in-out hover:bg-accent ${onRowClick ? 'cursor-pointer' : ''}`}
+                                onClick={(e) => onRowClick?.(row, idx, e)}
                             >
                                 {columns.map((col, colIndex) => {
                                     const rawValue =

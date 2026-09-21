@@ -95,22 +95,22 @@ const parseDurationToMs = (durationStr: string | number | null) => {
 		timeStr = parts[1];
   }
 	const timeParts = timeStr.split(':');
-  if (timeParts.length >= 3) {
-	const hours = parseInt(timeParts[0], 10) || 0;
-	const minutes = parseInt(timeParts[1], 10) || 0;
-	const seconds = parseFloat(timeParts[2]) || 0;
-	const result = (days * 86400 + hours * 3600 + minutes * 60 + seconds) * 1000;
-	console.log('[QUIZ DEBUG] parseDurationToMs OK (format HH:MM:SS):', {
-	  input: durationStr,
-	  days,
-	  hours,
-	  minutes,
-	  seconds,
-	  resultMs: result,
-	  resultMinutes: result / 60000,
-	});
-	return result;
-  }
+	if (timeParts.length >= 3) {
+		const hours = parseInt(timeParts[0], 10) || 0;
+		const minutes = parseInt(timeParts[1], 10) || 0;
+		const seconds = parseFloat(timeParts[2]) || 0;
+		const result = (days * 86400 + hours * 3600 + minutes * 60 + seconds) * 1000;
+		console.log('[QUIZ DEBUG] parseDurationToMs OK (format HH:MM:SS):', {
+			input: durationStr,
+			days,
+			hours,
+			minutes,
+			seconds,
+			resultMs: result,
+			resultMinutes: result / 60000,
+		});
+		return result;
+	}
 
   // 🌟 DEBUG: si on arrive ici, le format n'a pas été reconnu -> durée = 0 -> quiz expire instantanément
   console.error('[QUIZ DEBUG] parseDurationToMs: FORMAT NON RECONNU, retourne 0 !', {
@@ -132,7 +132,6 @@ const formatTime = (ms: number) => {
 const formatDateForInput = (dateStr?: string) => {
 	if (!dateStr) return '';
     
-    // Handles DD/MM/YYYY HH:mm
     const regex = /^(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}:\d{2})(?::\d{2})?$/;
     const match = dateStr.match(regex);
     
@@ -141,12 +140,11 @@ const formatDateForInput = (dateStr?: string) => {
         return `${year}-${month}-${day}T${time}`;
     }
 
-    // Fallback for standard ISO strings (e.g., 2026-09-29T21:00:00Z)
     return dateStr.slice(0, 16);
 };
 
-const checkOptionValidation = (responses: respType[], typeQuestion: string): boolean => {
-    if (!responses || responses.length === 0) return false;
+const checkOptionValidation = (responses: respType[] | null, typeQuestion: string): boolean => {
+    if (!responses) return false;
 
     const correctExplanationsValid = responses
         .filter((r) => r.est_correct)

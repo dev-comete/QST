@@ -7,20 +7,68 @@ import { useMutation } from "@tanstack/react-query";
 import { QuestionService } from "../../services/questionService";
 import { checkOptionValidation } from "../../helper/helper";
 
+const buildInitialResponses = (typeCode?: string): respType[] => {
+	switch (typeCode) {
+		case 'QCM':
+		return [
+			{ reponse: '', est_correct: true, explication: '' },
+			{ reponse: '', est_correct: true, explication: '' },
+			{ reponse: '', est_correct: false, explication: '' },
+		]
+
+		case 'QCU':
+		return [
+			{ reponse: '', est_correct: true, explication: '' },
+			{ reponse: '', est_correct: false, explication: '' },
+		]
+
+		case 'OUV':
+		return []
+
+		default:
+		return [
+			{ reponse: '', est_correct: true, explication: '' },
+			{ reponse: '', est_correct: false, explication: '' },
+		]
+	}
+}
+
 export const useQuestionCreate = () => {
 
 	const [ question, setQuestion ] = useState<questionType>(initialQuestion)
-	const [ responses, setResponses ] = useState<respType[]>([])
+	const [ responses, setResponses ] = useState<respType[]>([
+		{ reponse: '', est_correct: true, explication: '' },
+		{ reponse: '', est_correct: false, explication: '' },
+	])
+	const [ errorForm, setErrorForm ] = useState<{
+		msg: string | null,
+		type: string
+	}>({msg: null, type: ''})
 
-	const [ errorMsg, setErrorMsg ] = useState<string | null>(null)
+	const setErrorMsg = (msg: string, type: string = 'error') => {
+		setErrorForm({ msg, type })
+	}
 
 	const { questionTypeQuery } = useQuestion()
 	const { baremeQuery } = useBareme()
+	const [ isOuvert, setIsOuvert ] = useState(false)
+
+	useEffect(() => {
+		const selectedType = questionTypeQuery.data?.find((q) => q.id === question.type_id)?.code ?? 'QCM';
+		if (selectedType == 'OUV'){
+			setIsOuvert(true)
+		} else {
+			setIsOuvert(false)
+		}
+		setResponses(buildInitialResponses(selectedType))
+	}, [questionTypeQuery.data, question.type_id])
 
 	const createQuestion = useMutation({
 		mutationFn: QuestionService.create,
 		onSuccess: () => {
 			setQuestion(initialQuestion)
+			setResponses([])
+			setErrorForm({msg: null, type: ''})
 		},
 		onError: (err) => {
 			console.log("Erreur", err)
@@ -37,12 +85,12 @@ export const useQuestionCreate = () => {
 		}
 
 		if (question.enonce_question.trim().length == 0) {
-			setErrorMsg("L'énoncé est obligatoire")
+			setErrorMsg("L'énoncé de la question est obligatoire")
 			return
 		}
 
-		if (checkOptionValidation(responses, questionType.find(q => q.id == question.type_id)?.code || '') == false){
-			setErrorMsg("Les options de réponses ne sont pas respectées")
+		if (!isOuvert && checkOptionValidation(responses, questionType.find(q => q.id == question.type_id)?.code || '') == false){
+			setErrorMsg("Les options de réponses ne sont pas respectées", 'response')
 			return
 		}
 
@@ -79,7 +127,8 @@ export const useQuestionCreate = () => {
 		handleCreate,
 		questionTypeQuery,
 		isPending: createQuestion.isPending,
-		errorMsg,
-		setErrorMsg
+		errorForm,
+		setErrorMsg,
+		isOuvert
 	}
 }

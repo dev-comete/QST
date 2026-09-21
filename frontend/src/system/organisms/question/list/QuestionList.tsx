@@ -5,28 +5,26 @@ import FetchError from "../../../atoms/Loading/FetchError"
 import Loading from "../../../atoms/Loading/Loading"
 import { Table, type Column } from "../../../atoms/Table/Table"
 import IconButton, { IconConfirmActionButton } from "../../../molecules/Buttons/IconButton"
-// import { useAppNavigation } from "../../../../other/hooks/navigation/useAppNavigation"
 import QuestionDetail from "../../../../product/pages/formateur/question/QuestionDetail"
 import { useState, type Dispatch, type SetStateAction } from "react"
-// import { useState } from "react"
+import { useAppNavigation } from "../../../../other/hooks/navigation/useAppNavigation"
 
-const ActionCell = ({ rowId, setSelectedId }: { 
+const ActionCell = ({ questionId }: { 
     rowId: string | number | boolean | string[]
-	onEdit?: (id: string | number | boolean | string[]) => void
 	setSelectedId: Dispatch<SetStateAction<number | null>>
+	questionId: number
 }) => {    
 
-	// const { navigateTo } = useAppNavigation()
+	const { navigateTo } = useAppNavigation()
 
-	const { handleQuestionDel, isPending } = useQuestionDel(Number(rowId))
-	
+	const { handleQuestionDel, isPending } = useQuestionDel(questionId)
 
     return (
         <Box>
 			<IconButton
-                iconName="book"
+                iconName="edit"
                 iconStyling="text-text hover:text-success"
-                action={() => setSelectedId(Number(rowId))}
+                action={() => navigateTo('gestion_question/' + questionId + '/edit')}
             />
 			<IconConfirmActionButton
 				iconName="trash"
@@ -40,11 +38,8 @@ const ActionCell = ({ rowId, setSelectedId }: {
 };
 
 const getQuestionTabColumn = (
-    // onEdit?: (id: string | number | boolean | string[]) => void,
 	setSelectedId: Dispatch<SetStateAction<number | null>>
 ): Column<bankQuestionType>[] => [
-
-// const questionTabColumn : Column<bankQuestionType>[] = [
 
 	{
 		header: 'Enoncé',
@@ -53,7 +48,11 @@ const getQuestionTabColumn = (
 	{
 		header: "Action",
 		key: 'id',
-		render: (_val, _row, index) => <ActionCell rowId={index ? index : 0} setSelectedId={setSelectedId} />
+		render: (_val, row, index) => <ActionCell
+			rowId={index ? index : 0}
+			setSelectedId={setSelectedId}
+			questionId={Number(row?.id)}
+		/>
 	}
 ]
 
@@ -62,15 +61,6 @@ const QuestionList = () => {
 	const { list } = useQuestion()
 	const { data: questions, status } = list
 
-	// const [selectedId, setSelectedId] = useState<string>('')
-	// const [isModalOpen, setIsModalOpen] = useState(false)
-
-	// const handleOpenEditModal = (id: string | number | boolean | string[]) => {
-	// 	setSelectedId(id as string)
-	// 	setIsModalOpen(true)
-	// }
-
-	
 	const [ selectedId, setSelectedId ] = useState<number | null>(null)
 	
 	if (status == "pending")
@@ -81,11 +71,14 @@ const QuestionList = () => {
 	
 	return (
 		<Box direction="column" className="w-full items-center justify-center">
-			{selectedId === null && <Table 
-				columns={getQuestionTabColumn(setSelectedId)}
-				data={questions}
-				rowKey={'id'}
-			/>}
+			{selectedId === null && 
+				<Table 
+					columns={getQuestionTabColumn(setSelectedId)}
+					data={questions}
+					rowKey={'id'}
+					onRowClick={(_row, idx) => setSelectedId(idx)}
+				/>
+			}
 			{ selectedId != null && 
 				<QuestionDetail
 					question={questions[selectedId]}
