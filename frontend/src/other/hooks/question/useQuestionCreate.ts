@@ -5,12 +5,14 @@ import { useBareme } from "../bareme/useBareme";
 import { useQuestion } from "./useQuestion";
 import { useMutation } from "@tanstack/react-query";
 import { QuestionService } from "../../services/questionService";
+import { checkOptionValidation } from "../../helper/helper";
 
 export const useQuestionCreate = () => {
 
 	const [ question, setQuestion ] = useState<questionType>(initialQuestion)
-
 	const [ responses, setResponses ] = useState<respType[]>([])
+
+	const [ errorMsg, setErrorMsg ] = useState<string | null>(null)
 
 	const { questionTypeQuery } = useQuestion()
 	const { baremeQuery } = useBareme()
@@ -26,6 +28,24 @@ export const useQuestionCreate = () => {
 	});
 
 	const handleCreate = async () => {
+
+		const { data: questionType } = questionTypeQuery
+
+		if (!questionType) {
+			setErrorMsg("Il n'y a pas de type de question disponible")
+			return
+		}
+
+		if (question.enonce_question.trim().length == 0) {
+			setErrorMsg("L'énoncé est obligatoire")
+			return
+		}
+
+		if (checkOptionValidation(responses, questionType.find(q => q.id == question.type_id)?.code || '') == false){
+			setErrorMsg("Les options de réponses ne sont pas respectées")
+			return
+		}
+
 		const payload = {
 			...question,
 			options: responses,
@@ -58,6 +78,8 @@ export const useQuestionCreate = () => {
 		setResponses,
 		handleCreate,
 		questionTypeQuery,
-		isPending: createQuestion.isPending
+		isPending: createQuestion.isPending,
+		errorMsg,
+		setErrorMsg
 	}
 }

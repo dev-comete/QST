@@ -4,6 +4,7 @@ import Box from "../../../atoms/Container/Box"
 import Info from "../../../atoms/Form/Info"
 import TextArea from "../../../atoms/Form/TextArea"
 import Input from "../../../atoms/Form/Input"
+import IconButton from "../../../molecules/Buttons/IconButton"
 
 interface RespItemProps {
     id: number;
@@ -15,35 +16,39 @@ interface RespItemProps {
 
 const RespItem = ({ id, response, handleRemove, handleSelectTrue, handleOnChange }: RespItemProps) => {
     return (
-        <Box direction="column" className="gap-2">
-            <Input 
-                id={`resp_${id}`} 
-                name="response" 
-                type="checkbox" 
-                checked={response.est_correct}
-                onChange={handleSelectTrue}
-            />
-            <TextArea
-                id={"enonce" + id}
-                name="enonce"
-                label="Enoncé"
-                value={response.reponse}
-                onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleOnChange('reponse', e.target.value)}
-                required={true}
-                placeholder="Exemple: Parler doucement"
-            />
-            {response.est_correct && (
-                <TextArea
-                    id={"explication" + id}
-                    name="explication"
-                    label="Explication"
-                    value={response.explication || ''}
-                    onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleOnChange('explication', e.target.value)}
-                    required={true}
-                    placeholder="Exemple: Parler doucement car..."
-                />
-            )}
-            <button type="button" onClick={handleRemove}>Supprimer</button>
+        <Box className={`border ${response.est_correct ? 'border-success bg-success-light' : 'border-background'} px-5 py-10 gap-2 w-full items-start rounded-xl relative`}>
+			<Box>
+				<Input 
+					id={`resp_${id}`} 
+					name="response" 
+					type="checkbox" 
+					checked={response.est_correct}
+					onChange={handleSelectTrue}
+				/>
+			</Box>
+			<Box direction="column" className={`w-full space-x-2 `}>
+				<TextArea
+					id={"enonce" + id}
+					name="enonce"
+					label="Enoncé"
+					value={response.reponse}
+					onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleOnChange('reponse', e.target.value)}
+					required={true}
+					placeholder="Enoncé"
+				/>
+				{response.est_correct && (
+					<TextArea
+						id={"explication" + id}
+						name="explication"
+						label="Explication"
+						value={response.explication || ''}
+						onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleOnChange('explication', e.target.value)}
+						required={true}
+						placeholder="Explication"
+					/>
+				)}
+			</Box>
+            <IconButton iconName="close" btnStyling="absolute right-1 top-1" action={handleRemove}/>
         </Box>
     );
 };

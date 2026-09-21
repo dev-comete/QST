@@ -36,11 +36,11 @@ const Input = ({
 	htmlFor
 }: InputProps) => {
 
-	const basicStyle = "flex p-2 rounded-xl border border-background w-full items-center justify-center focus:outline focus:outline-primary"
+	const basicStyle = `flex p-2 rounded-xl ${type != 'checkbox' && 'border'} border-background w-full items-center justify-center focus:outline focus:outline-primary`
 
 	return (
 		<div className="flex flex-col w-full">
-			{ label && <LabelInput label={label} htmlFor={htmlFor}/> }
+			{ label && <LabelInput label={label} htmlFor={htmlFor} required={required}/> }
 			<input
 				type={type}
 				id={id}

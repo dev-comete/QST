@@ -5,12 +5,13 @@ import TextArea from "../../../atoms/Form/TextArea";
 import Select from "../../../atoms/Form/Select";
 import ActionButton from "../../../molecules/Buttons/ActionButton";
 import RespCreatedList from "../list/RespCreatedList";
-import { formChangeHandler, getSelectData } from "../../../../other/helper/helper";
+import { checkOptionValidation, formChangeHandler, getSelectData } from "../../../../other/helper/helper";
 import Loading from "../../../atoms/Loading/Loading";
 import FetchError from "../../../atoms/Loading/FetchError";
 import BaremeInput from "../../globalParam/input/BaremeInput";
 import type { Dispatch, SetStateAction } from "react";
 import type { questionIdType, questionType } from "../../../../other/types/questionType";
+import Info from "../../../atoms/Form/Info";
 
 interface EnonceFormProps {
 	question: questionType
@@ -59,7 +60,18 @@ const EnonceForm = ({ question, setQuestion, questionType} : EnonceFormProps) =>
 
 const QuestionForm = () => {
 
-	const { question, setQuestion, responses, setResponses, questionTypeQuery, handleCreate, isPending } = useQuestionCreate()
+	const { 
+		question,
+		setQuestion,
+		responses,
+		setResponses,
+		questionTypeQuery,
+		handleCreate,
+		isPending,
+		errorMsg,
+		setErrorMsg,
+	} = useQuestionCreate()
+
 	const { data: questionType, status: questionTypeStatus } = questionTypeQuery
 
 	if (questionTypeStatus == 'pending') return <Loading />
@@ -68,7 +80,19 @@ const QuestionForm = () => {
 
 	const handleSubmit = async(e: React.SubmitEvent) => {
 		e.preventDefault()
+		checkOptionValidation(responses, questionType.find(q => q.id == question.type_id)?.code || '')
 		await handleCreate()
+	}
+
+	const addResponse = () => {
+		setResponses((prev) => [
+			...prev,
+			{
+				reponse: '',
+				est_correct: false,
+				explication: ''
+			}
+		]);
 	}
 
 	return (
@@ -82,12 +106,11 @@ const QuestionForm = () => {
 				setQuestion={setQuestion}
 				questionType={questionType}
 			/>
+			{errorMsg && <Info info={errorMsg}/>}
 			<Title
 				title="Réponses"
 				sideButton={
-					<ActionButton
-						onClick={(e) => {e.preventDefault()}}
-					>{"+ Réponse"}</ActionButton>
+					<ActionButton onClick={addResponse}>{"+ Réponse"}</ActionButton>
 				}
 			/>
 			<RespCreatedList 
@@ -97,7 +120,7 @@ const QuestionForm = () => {
 			<ActionButton
 				type="submit"
 				form="createQuestion"
-				disabled={question.enonce_question.length == 0 || question.options.length < 2}
+				disabled={question.enonce_question.length == 0}
 				isLoading={isPending}
 			>{"Créer question"}</ActionButton>
 		</form>

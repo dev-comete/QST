@@ -75,6 +75,7 @@ const BaremeInput = ({ onBaremeChange } : BaremeInputProps) => {
 			max={100}
 			step={0.25}
 			onChange={(e) => onBaremeChange(e.target.value)}
+			required
 		/>
 
 	)

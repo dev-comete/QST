@@ -1,4 +1,5 @@
 import type { ChangeEvent } from 'react';
+import type { respType } from '../types/questionType';
 
 const formChangeHandler = <T, K extends keyof T>(
     setter: React.Dispatch<React.SetStateAction<T>>,
@@ -144,6 +145,33 @@ const formatDateForInput = (dateStr?: string) => {
     return dateStr.slice(0, 16);
 };
 
+const checkOptionValidation = (responses: respType[], typeQuestion: string): boolean => {
+    if (!responses || responses.length === 0) return false;
+
+    const correctExplanationsValid = responses
+        .filter((r) => r.est_correct)
+        .every((r) => r.explication && r.explication.trim().length > 0);
+
+    if (!correctExplanationsValid) return false;
+
+    const correctCount = responses.filter((r) => r.est_correct).length;
+    const incorrectCount = responses.filter((r) => !r.est_correct).length;
+
+    switch (typeQuestion) {
+        case 'QCM':
+            return correctCount >= 2 && incorrectCount >= 1;
+
+        case 'QCU':
+            return correctCount === 1 && incorrectCount === 1;
+
+        case 'OUV':
+            return true;
+
+        default:
+            return false;
+    }
+};
+
 
 export {
 	formChangeHandler,
@@ -151,5 +179,6 @@ export {
 	formatDate,
 	formatTime,
 	parseDurationToMs,
-	formatDateForInput
+	formatDateForInput,
+	checkOptionValidation,
 }
