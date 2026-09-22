@@ -70,24 +70,24 @@
 /* States colors */
 
 
-/* Success (#28a745) */
---color-success-light: #d4f0da;
---color-success: #28a745;
---color-success-dark: #1e7e34;
+/* Success (Modern Emerald) */
+--color-success-light: #f0fdf4;
+--color-success: #22c55e;
+--color-success-dark: #15803d;
 
-/* Error (#dc3545) */
---color-error-light: #f8d7da;
---color-error: #dc3545;
---color-error-dark: #bd2130;
+/* Error (Modern Rose/Red) */
+--color-error-light: #fff1f2;
+--color-error: #f43f5e;
+--color-error-dark: #be123c;
 
-/* Warning (#ffc107) */
---color-warning-light: #fff3cd;
---color-warning: #ffc107;
---color-warning-dark: #d39e00;
+/* Warning (Modern Amber) */
+--color-warning-light: #fffbeb;
+--color-warning: #f59e0b;
+--color-warning-dark: #b45309;
 
-/* Disabled (#b8cce0) */
---color-disabled-light: #eef4fa;
---color-disabled: #b8cce0;
---color-disabled-dark: #8ba2b8;
+/* Disabled (Modern Slate) */
+--color-disabled-light: #f8fafc;
+--color-disabled: #cbd5e1;
+--color-disabled-dark: #64748b;
 
 }

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getSelectData } from "../../../../other/helper/helper";
 import { useBareme } from "../../../../other/hooks/bareme/useBareme";
 import Input from "../../../atoms/Form/Input";
@@ -65,6 +65,12 @@ export const OldBaremeInput = ({ onBaremeChange } : BaremeInputProps) => {
 }
 
 const BaremeInput = ({ onBaremeChange } : BaremeInputProps) => {
+	const [value, setValue] = useState<string | number>('1');
+
+	useEffect(() => {
+		onBaremeChange(String(value));
+	}, []); // call once on mount to set default
+
 	return (
 		<Input
 			label="Barème"
@@ -74,10 +80,14 @@ const BaremeInput = ({ onBaremeChange } : BaremeInputProps) => {
 			min={0}
 			max={100}
 			step={0.25}
-			onChange={(e) => onBaremeChange(e.target.value)}
+			onChange={(e) => {
+				const v = e.target.value;
+				setValue(v);
+				onBaremeChange(v);
+			}}
 			required
+			value={value}
 		/>
-
 	)
 }
 

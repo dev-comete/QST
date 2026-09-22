@@ -15,6 +15,7 @@ interface ButtonProps {
     type?: 'submit' | 'reset' | 'button';
     form?: string;
 	isLoading?: boolean
+	title?: string
 }
 
 const Button = ({
@@ -26,7 +27,8 @@ const Button = ({
     type = 'button',
     form,
     onClick: action,
-	isLoading
+	isLoading,
+	title
 }: ButtonProps) => {
 
     const roundParam = isRounded ? "rounded-lg" : "";
@@ -48,6 +50,7 @@ const Button = ({
             onClick={action}
             type={type}
             form={form}
+			title={title}
         >
             {isLoading ? <Spinner size='sm'/> : children}
         </button>

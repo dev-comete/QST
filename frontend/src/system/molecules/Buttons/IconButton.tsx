@@ -17,6 +17,7 @@ interface IconConfirmActionButtonProps {
 	iconStyling?: string
 	confirmText?: string
 	isLoading?: boolean
+	title?: string
 }
 
 export const IconConfirmActionButton = ({
@@ -29,6 +30,8 @@ export const IconConfirmActionButton = ({
 	btnStyling,
 	confirmText = "Souhaitez-vous poursuivre ?",
 	isLoading,
+	title,
+	iconStyling
 } : IconConfirmActionButtonProps) => {
 
 	const [ isOpen, setIsOpen ] = useState(false);
@@ -53,6 +56,8 @@ export const IconConfirmActionButton = ({
 				type={type}
 				form={form}
 				iconName={iconName}
+				title={title}
+				iconStyling={iconStyling}
 			/>
 		</>
 	)
@@ -69,6 +74,7 @@ interface IconButtonProps {
 	form?: string,
 	iconName: string
 	iconStyling?: string
+	title?: string
 }
 
 const IconButton = ({
@@ -79,7 +85,8 @@ const IconButton = ({
 	form,
 	action,
 	iconName,
-	iconStyling
+	iconStyling,
+	title
 } : IconButtonProps) => {
 	const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.stopPropagation();
@@ -94,6 +101,7 @@ const IconButton = ({
 			disabled={disabled}
 			type={type}
 			form={form}
+			title={title}
 		>
 			<FAIcon name={iconName} className={iconStyling}/>
 		</Button>

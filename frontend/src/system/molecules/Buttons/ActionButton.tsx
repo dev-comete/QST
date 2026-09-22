@@ -13,6 +13,7 @@ interface ActionButtonProps {
 	type?: 'submit' | 'reset' | 'button',
 	form?: string
 	isLoading?: boolean
+	title?: string
 }
 
 const ActionButton = ({
@@ -25,6 +26,7 @@ const ActionButton = ({
 	form,
 	onClick: action,
 	isLoading,
+	title,
 } : ActionButtonProps) => {
 	const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.stopPropagation();
@@ -40,6 +42,7 @@ const ActionButton = ({
 			type={type}
 			form={form}
 			isLoading={isLoading}
+			title={title}
 		>
 			<CustomText color={textColor} weight="bold">{children}</CustomText>
 		</Button>

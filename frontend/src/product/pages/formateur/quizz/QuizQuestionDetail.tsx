@@ -24,8 +24,8 @@ const OptionItem = ({ item } : OptionItemProps) => {
 						>
 							<Box
 								className={`
-									justify-start rounded-lg px-2 py-1
-									${opt.est_correct ? 'bg-success-light' : 'bg-error-light'}	
+									justify-start rounded-lg px-3 py-5
+									${opt.est_correct ? 'bg-success-light border border-success' : 'bg-error-light border border-error'}	
 								`}
 							>
 								<CustomText>{opt.texte}</CustomText>
@@ -69,6 +69,7 @@ const QuizQuestionDetail = ({ questions } : QuizQuestionDetailProps) => {
 													bg-text
 													px-2 py-1 rounded-md
 													text-white
+													shadow-sm
 												`}
 											>{item.type_nom}</CustomText>
 											<CustomText
@@ -78,6 +79,7 @@ const QuizQuestionDetail = ({ questions } : QuizQuestionDetailProps) => {
 													bg-success
 													px-2 py-1 rounded-md
 													text-white
+													shadow-sm
 												`}
 											>{item.points} pts</CustomText>
 										</Box>

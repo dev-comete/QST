@@ -22,6 +22,7 @@ const ActionCell = ({ questionId }: {
     return (
         <Box>
 			<IconButton
+				title="Modifier"
                 iconName="edit"
                 iconStyling="text-text hover:text-success"
                 action={() => navigateTo('gestion_question/' + questionId + '/edit')}
@@ -32,6 +33,7 @@ const ActionCell = ({ questionId }: {
 				action={handleQuestionDel}
 				confirmText="Voulez-vous vraiment supprimer la question?"
 				isLoading={isPending}
+				title="Supprimer"
 			/>
         </Box>
     );

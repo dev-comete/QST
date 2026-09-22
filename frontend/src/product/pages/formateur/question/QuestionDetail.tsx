@@ -24,6 +24,7 @@ const QuestionDetail = ({ question, setSelectedId } : QuestionDetailProps) => {
 						textTag="h2"
 						weight="bold"
 						color="primary"
+						className="border-b border-background pb-3"
 					>{question.enonce_question}</CustomText>
 					{
 						question.reponses.map((item, index) => {
@@ -35,8 +36,8 @@ const QuestionDetail = ({ question, setSelectedId } : QuestionDetailProps) => {
 									>
 										<Box
 											className={`
-												justify-start rounded-lg px-2 py-1
-												${item.est_correct ? 'bg-success-light' : 'border border-background'}	
+												justify-start rounded-lg px-3 py-5
+												${item.est_correct ? 'bg-success-light border border-success' : 'border border-background'}	
 											`}
 										>
 											<CustomText>{item.texte}</CustomText>

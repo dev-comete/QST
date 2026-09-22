@@ -30,7 +30,7 @@ export const useDelBareme = (id: number) => {
 
 export const useBareme = () => {
 
-	const [ baremeInput, setBaremeInput ] = useState<number | undefined>(undefined)
+	const [ baremeInput, setBaremeInput ] = useState<number | undefined>(1)
 	const queryClient = useQueryClient()
 
 	const { mutate, status : createBaremeStatus } = useMutation({
@@ -50,7 +50,7 @@ export const useBareme = () => {
 
 	const handleCreateBareme = () => {
 		const payload = {
-			pts: baremeInput ? baremeInput : 0
+			pts: baremeInput ? baremeInput : 1
 		}
 		mutate(payload)
 		setBaremeInput(undefined)

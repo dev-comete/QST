@@ -10,6 +10,12 @@ export const QuestionService = {
 		return response.data;
 	},
 
+	edit : async ( data : questionType) => {
+		const url = import.meta.env.VITE_CREATE_QUESTION
+		const response = await apiClient.put(url, data);
+		return response.data;
+	},
+
 	getTypeQuestion : async () => {
 		const url = import.meta.env.VITE_TYPE_QUESTION
 		const response = await apiClient.get(url);
@@ -25,6 +31,13 @@ export const QuestionService = {
 
 	info: async (id: string) => {
 		const response = await apiClient.get(QUESTION_URL + id + '/');
+		const result = response.data as bankQuestionType
+		return result;
+	},
+
+	detail: async (id: string) => {
+		const url = import.meta.env.VITE_CREATE_QUESTION
+		const response = await apiClient.get(url + id + '/');
 		const result = response.data as bankQuestionType
 		return result;
 	},
