@@ -49,7 +49,7 @@ export const useQuestionCreate = () => {
 		setErrorForm({ msg, type })
 	}
 
-	const { questionTypeQuery } = useQuestion()
+	const { questionTypeQuery } = useQuestion({})
 	const { baremeQuery } = useBareme()
 	const [ isOuvert, setIsOuvert ] = useState(false)
 

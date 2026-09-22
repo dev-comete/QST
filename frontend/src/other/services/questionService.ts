@@ -3,6 +3,12 @@ import apiClient from "./apiClient";
 
 const QUESTION_URL = import.meta.env.VITE_CRUD_QUESTION
 
+export interface BankQuestionParams {
+	search?: string;
+	type?: string;
+	page?: number;
+}
+
 export const QuestionService = {
 	create : async ( data : questionType) => {
 		const url = import.meta.env.VITE_CREATE_QUESTION
@@ -22,9 +28,16 @@ export const QuestionService = {
 		return response.data as questionIdType[];
 	},
 
-	list: async () => {
+	list: async ({ search, type, page }: BankQuestionParams) => {
 		const url = import.meta.env.VITE_BANK_QUESTION
-		const response = await apiClient.get(url);
+
+		const queryParams = new URLSearchParams({
+			search: search ?? '',
+			type: type ?? '',
+			page: page ? page.toString() : '1',
+		}).toString();
+
+		const response = await apiClient.get(`${url}?${queryParams}`);
 		const result = response.data.results as bankQuestionType[]
 		return result;
 	},

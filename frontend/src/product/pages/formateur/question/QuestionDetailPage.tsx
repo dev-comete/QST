@@ -10,7 +10,7 @@ import Loading from "../../../../system/atoms/Loading/Loading";
 const QuestionDetailPage = () => {
 
 	const { id } = useParams()
-	const { infoQuestionQuery } = useQuestion(id)
+	const { infoQuestionQuery } = useQuestion({id})
 
 	if (infoQuestionQuery.isPending) return <Loading />
 

@@ -1,9 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { QuestionService } from "../../services/questionService";
-import { GENERAL_CACHE_TIME, GENERAL_STALE_TIME, initialQuestion } from "../../types/constant";
+import { GENERAL_CACHE_TIME, GENERAL_STALE_TIME } from "../../types/constant";
 import { useEffect, useState } from "react";
-import type { bankQuestionType, questionType, respType } from "../../types/questionType";
-import { checkOptionValidation } from "../../helper/helper";
+import type { bankQuestionType, respType } from "../../types/questionType";
 
 export const useQuestionDel = (id: number) => {
 
@@ -29,11 +28,18 @@ export const useQuestionDel = (id: number) => {
 	}
 }
 
-const useQuestion = (id?: string) => {
+type UseQuestionParams = {
+	id?: string
+	search?: string
+	type?: string
+	page?: number
+}
+
+const useQuestion = ({ id, search, type, page } : UseQuestionParams) => {
 
 	const list = useQuery({
-		queryKey: ['bank_question'],
-		queryFn: QuestionService.list
+		queryKey: ['bank_question', search, type],
+		queryFn: () => QuestionService.list({ search, type, page }),
 	})
 
 	const questionTypeQuery = useQuery({
@@ -59,7 +65,7 @@ const useQuestion = (id?: string) => {
 		list,
 		questionTypeQuery,
 		infoQuestionQuery,
-		detailQuestionQuery
+		detailQuestionQuery,
 	}
 }
 
@@ -79,7 +85,7 @@ const useQuestionEdit = (id: string | number) => {
 		setErrorForm({ msg, type })
 	}
 
-	const { questionTypeQuery } = useQuestion()
+	const { questionTypeQuery } = useQuestion({})
 	const [ isOuvert, setIsOuvert ] = useState(false)
 
 	useEffect(() => {
@@ -118,7 +124,7 @@ const useQuestionEdit = (id: string | number) => {
 			return
 		}
 
-		if (question.enonce_question.trim().length == 0) {
+		if (question && question.enonce_question.trim().length == 0) {
 			setErrorMsg("L'énoncé de la question est obligatoire")
 			return
 		}
@@ -133,21 +139,21 @@ const useQuestionEdit = (id: string | number) => {
 			options: responses,
 		};
 
-		return await editQuestion.mutateAsync(payload)
+		// return await editQuestion.mutateAsync(payload)
 	}
 
-	useEffect(() => {
+	// useEffect(() => {
 
-		const initQuestion = async () => {
+	// 	const initQuestion = async () => {
 
-			setQuestion((prev) => ({
-				...prev,
-			}));
-		}
+	// 		setQuestion((prev) => ({
+	// 			...prev,
+	// 		}));
+	// 	}
 
-		initQuestion()
+	// 	initQuestion()
 
-    }, []);
+    // }, []);
 
 	return {
 		question,
@@ -159,7 +165,8 @@ const useQuestionEdit = (id: string | number) => {
 		isPending: editQuestion.isPending,
 		errorForm,
 		setErrorMsg,
-		isOuvert
+		isOuvert,
+		setIsOuvert
 	}
 }
 

@@ -40,7 +40,7 @@ export interface QuizBankQuestionProps {
 
 const QuizBankQuestion = ({ questions, setQuestion, ownedQuestions } : QuizBankQuestionProps) => {
 
-	const { list } = useQuestion()
+	const { list } = useQuestion({})
 	const { data: bankQuestions, status } = list
 
 	const handleSelectQuestion = (selectedQuestion: assignQuestionType) => {

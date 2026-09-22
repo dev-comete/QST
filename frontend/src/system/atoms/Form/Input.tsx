@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { ColorTheme } from "../../../other/types/common";
 import LabelInput from "./LabelInput";
 
@@ -17,6 +18,7 @@ interface InputProps {
 	required?: boolean
 	value?: string | number
 	htmlFor?: string
+	endIcon?: ReactNode
 }
 
 const Input = ({
@@ -33,19 +35,20 @@ const Input = ({
 	max,
 	required,
 	value,
-	htmlFor
+	htmlFor,
+	endIcon,
 }: InputProps) => {
 
 	const basicStyle = `flex p-2 rounded-xl ${type != 'checkbox' && 'border'} border-background w-full items-center justify-center focus:outline focus:outline-primary`
 
 	return (
-		<div className="flex flex-col w-full">
+		<div className="flex flex-col w-full relative">
 			{ label && <LabelInput label={label} htmlFor={htmlFor} required={required}/> }
 			<input
 				type={type}
 				id={id}
 				name={name}
-				className={`${basicStyle} ${className} ${readOnly ? 'bg-background text-text cursor-not-allowed' : 'bg-white'}`}
+				className={`w-full bg-white pr-12 [&::-webkit-search-cancel-button]:appearance-none ${basicStyle} ${className}`}
 				onChange={onChange}
 				step={step}
 				checked={checked}
@@ -56,6 +59,11 @@ const Input = ({
 				required={required}
 				value={value}
 			/>
+			{endIcon && (
+				<div className="absolute right-1 top-1 flex items-center justify-center">
+					{endIcon}
+				</div>
+			)}
 		</div>
 	)
 }
