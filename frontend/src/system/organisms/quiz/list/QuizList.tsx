@@ -8,9 +8,8 @@ import FetchError from "../../../atoms/Loading/FetchError";
 import Loading from "../../../atoms/Loading/Loading";
 import { Table, type Column } from "../../../atoms/Table/Table";
 import IconButton, { IconConfirmActionButton } from "../../../molecules/Buttons/IconButton";
-import ModalQuizUpdate from "../form/ModalQuizUpdate";
-import StatusTag from "../tag/StatusTag";
-import { useFormAction } from "react-router";
+import ModalQuizEdit from "../form/ModalQuizEdit";
+import { QuizStatusTag } from "../tag/StatusTag";
 import { useFormation } from "../../../../other/hooks/formation/useFormation";
 
 const ActionCell = ({ rowId, row, onEdit } : {
@@ -56,9 +55,9 @@ const QuizList = () => {
 	const { getAllQuiz } = useQuiz()
 	const { data: quizzes, status } = getAllQuiz
 	const { navigateTo } = useAppNavigation();
-	const { formations } = useFormation()
+	const { formations, formationsStatus } = useFormation()
 
-	if (status == 'pending')
+	if (status == 'pending' || formationsStatus == 'pending' )
 		return <Loading />
 	
 	if (!quizzes || !formations)
@@ -78,12 +77,13 @@ const QuizList = () => {
 		},
 		{
 			header: 'Formation',
-			key: "formation"
+			key: "formation",
+			render: (value) => formations.find((f) => value == f.id)?.nom_formation
 		},
 		{
 			header: 'Statut',
 			key: "status",
-			render: (value) => <StatusTag status={String(value)}/>
+			render: (value) => <QuizStatusTag status={String(value)}/>
 		},
 		{
 			header: 'Durée',
@@ -113,7 +113,7 @@ const QuizList = () => {
 				rowKey={'id'}
 				onRowClick={(row) => navigateTo(`${row.id}/quiz_questions`)}
 			/>
-			<ModalQuizUpdate
+			<ModalQuizEdit
 				open={isModalOpen}
 				closeModal={() => setIsModalOpen(false)}
 				id={selectedUserId}

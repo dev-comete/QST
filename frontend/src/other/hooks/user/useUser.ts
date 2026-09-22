@@ -143,7 +143,16 @@ export const useUserUpdate = (id: string) => {
 
 	useEffect(() => {
 		if (!userInfoQuery.data) return
-		setUser(userInfoQuery.data)
+
+		const { username, email, type_utilisateur, organisation } = userInfoQuery.data;
+
+		setUser({
+			username,
+			email,
+			type_utilisateur,
+			projets: organisation,
+		});
+
 	}, [userInfoQuery.data])
 
 	const queryClient = useQueryClient()

@@ -1,5 +1,5 @@
 import { USERNAME_MIN } from "../types/constant";
-import type { projectType, userPayload, userType, utilisateurType } from "../types/userType";
+import type { projectType, userPayload, userType, userWithOrganisation, utilisateurType } from "../types/userType";
 import apiClient from "./apiClient";
 
 const USER_URL = import.meta.env.VITE_CRUD_USER
@@ -18,13 +18,17 @@ export const UserService = {
 
 	create: async (data: userPayload) => {
 		userValidationPayload(data)
-		const response = await apiClient.post(USER_URL, data);
+		const { username, type_utilisateur, projets, email} = data
+		const realPayload = { username, type_utilisateur, email, organisation: projets}
+		const response = await apiClient.post(USER_URL, realPayload);
 		return response.data;
 	},
 
 	update: async (id : string, data: userPayload) => {
 		userValidationPayload(data)
-		const response = await apiClient.put(`${USER_URL}${id}/`, data);
+		const { username, type_utilisateur, projets, email} = data
+		const realPayload = { username, type_utilisateur, email, organisation: projets}
+		const response = await apiClient.put(`${USER_URL}${id}/`, realPayload);
 		return response.data;
 	},
 
@@ -45,7 +49,7 @@ export const UserService = {
 
 	info: async (params?: { id: string }) => {
 		const id = params?.id;
-		const response = await apiClient.get<userPayload>(USER_URL + id);
+		const response = await apiClient.get<userWithOrganisation>(USER_URL + id);
 		return response.data;
 	},
 

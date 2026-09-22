@@ -1,6 +1,6 @@
 import type { vagueQuiz } from "../../../../other/types/vagueType";
 import { Table, type Column } from "../../../atoms/Table/Table";
-import StatusTag from "../../quiz/tag/StatusTag";
+import { QuizStatusTag } from "../../quiz/tag/StatusTag";
 
 const ownedQuizColumn : Column<vagueQuiz>[] = [
 	{
@@ -10,7 +10,7 @@ const ownedQuizColumn : Column<vagueQuiz>[] = [
 	{
 		header: 'Statut',
 		key: "status",
-		render: (value) => <StatusTag status={String(value)}/>
+		render: (value) => <QuizStatusTag status={String(value)}/>
 	}
 ]
 

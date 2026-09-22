@@ -59,11 +59,9 @@ export const useCreateProject = () => {
 
 	const queryClient = useQueryClient()
 
-	const { mutate, status } = useMutation({
+	const { mutate, isPending } = useMutation({
 		mutationFn: ProjectService.create,
-		onSuccess: (data) => {
-			console.log("Project created", data)
-
+		onSuccess: () => {
 			queryClient.invalidateQueries({
                 queryKey: ['project_list'],
             });
@@ -79,7 +77,7 @@ export const useCreateProject = () => {
 
 	return {
 		handleCreateProject,
-		status,
+		isPending,
 		project,
 		setProject,
 	}
@@ -104,11 +102,11 @@ export const useEditProject = (id: string) => {
 		mutationFn: ({ id, data }: { id: string; data: ProjectPayload }) => ProjectService.update(id, data),
 		onSuccess: () => {
 		queryClient.invalidateQueries({
-			queryKey: ['Project_list'],
+			queryKey: ['project_list'],
 		});
 		},
 		onError: (err) => {
-			console.error('Project creation failed:', err);
+			console.error('Project edit failed:', err);
 		},
 	});
 

@@ -6,6 +6,7 @@ import { formatDate } from "../../../../other/helper/helper"
 import ModalProjectEdit from "../form/ModalEditProject"
 import { useState } from "react"
 import { useProjectDel } from "../../../../other/hooks/user/useProject"
+import { StatusTag } from "../../quiz/tag/StatusTag"
 
 const ActionCell = ({ rowId, onEdit } : { 
 	rowId: string | number | boolean | string[]
@@ -25,7 +26,7 @@ const ActionCell = ({ rowId, onEdit } : {
                 iconName="trash"
                 iconStyling="text-text hover:text-error"
                 action={handleDelProject}
-				confirmText="Voulez-vous vraiment supprimer l'organisation?"
+				confirmText="Voulez-vous vraiment supprimer le projet?"
 				isLoading={isPending}
             />
         </Box>
@@ -47,7 +48,10 @@ const getOrgTabColumn = (
 	{
 		header: 'Statut',
 		key: "is_active",
-		render: (val) => val === true ? 'Actif' : 'Inactif'
+		render: (val) => {
+			const stat = val == true ? 'Actif' : 'Inactif'
+			return <StatusTag status={stat}/>
+		}
 	},
 	{
 		header: "Action",
@@ -59,7 +63,7 @@ const getOrgTabColumn = (
 	}
 ]
 
-const ProjectList = ({ organisations } : { organisations : projectType[]}) => {
+const ProjectList = ({ projects } : { projects : projectType[]}) => {
 
 	const [selectedId, setSelectedId] = useState<string>('')
 	const [isModalOpen, setIsModalOpen] = useState(false)
@@ -73,7 +77,7 @@ const ProjectList = ({ organisations } : { organisations : projectType[]}) => {
 		<Box direction="column" className="w-full items-center justify-center">
 			<Table
 				columns={getOrgTabColumn(handleOpenEditModal)}
-				data={organisations}
+				data={projects}
 				rowKey={'id'}
 			/>
 			<ModalProjectEdit 

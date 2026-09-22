@@ -9,8 +9,8 @@ import FetchError from "../../../atoms/Loading/FetchError";
 import Loading from "../../../atoms/Loading/Loading";
 import ActionButton from "../../../molecules/Buttons/ActionButton";
 import { Modal } from "../../../molecules/Modal/Modal";
-import ErrorBloc from "../../../molecules/Container/ErrorBloc";
 import ProjetForm from "./ProjetForm";
+import Info from "../../../atoms/Form/Info";
 
 interface UserEditFormProps {
 	listTypeUser: utilisateurType[]
@@ -39,7 +39,7 @@ const UserEditForm = ({ handleSubmit, user, setUser, listTypeUser, listProject, 
 				required={true}
 				value={user.username}
 			/>
-			{errors.userError && <ErrorBloc message={errors.userError} />}
+			{errors.userError && <Info info={errors.userError} variant='error'/>}
 			<Input 
 				id="email"
 				name="email"
@@ -49,7 +49,7 @@ const UserEditForm = ({ handleSubmit, user, setUser, listTypeUser, listProject, 
 				required={true}
 				value={user.email}
 			/>
-			{errors.emailError && <ErrorBloc message={errors.emailError} />}
+			{errors.emailError && <Info info={errors.emailError} variant='error'/>}
 			<Select 
 				id="role"
 				name="role"

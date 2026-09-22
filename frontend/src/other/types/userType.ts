@@ -8,6 +8,14 @@ type userType = {
 
 type userPayload = Omit<userType, 'id'>
 
+type userWithOrganisation = {
+	id: number,
+	username: string,
+	email: string,
+	type_utilisateur: number | null,
+	organisation: number[]
+}
+
 type utilisateurType = {
 	id: number,
 	type_utilisateur: string
@@ -30,5 +38,6 @@ export type {
 	userPayload,
 	utilisateurType,
 	projectType,
-	ProjectPayload
+	ProjectPayload,
+	userWithOrganisation
 }

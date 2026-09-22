@@ -8,6 +8,7 @@ import { useTypeUser, useUser, useUserDel } from "../../../../other/hooks/user/u
 import type { projectType, userType, utilisateurType } from "../../../../other/types/userType"
 import CustomText from "../../../atoms/Text/CustomText"
 import ModalUserUpdate from "../form/ModalUpdateUser"
+import { UserRoleTag } from "../../quiz/tag/StatusTag"
 
 const ActionCell = ({ rowId, onEdit }: { 
     rowId: string | number | boolean | string[]
@@ -38,6 +39,14 @@ const getUserTabColumn = (
 	listProject: projectType[],
 	listType: utilisateurType[]
 ): Column<userType>[] => [
+	{
+		header: 'Rôle',
+		key: "type_utilisateur",
+		render: (value) => {
+			const role = listType.find((t) => t.id === value)
+			return <UserRoleTag role={role?.type_utilisateur ?? ''}/>
+		}
+	},
     {
         header: 'Nom',
         key: "username"
@@ -47,27 +56,24 @@ const getUserTabColumn = (
         key: "email"
     },
     {
-        header: 'Type',
-        key: "type_utilisateur",
-		render: (value) => {
-			const role = listType.find((t) => t.id === value)
-			return <CustomText textTag="h4">{role?.type_utilisateur}</CustomText>
-		}
-    },
-    {
-        header: 'Projet',
-        key: "projet",
+        header: 'Projets',
+        key: "organisation",
         render: (value: string | number | number[] | string[] | null | undefined) => {
             const list = Array.isArray(value) ? value : []
 
-			if (list.length === 0) return <CustomText textTag="h5">Aucune</CustomText>
+			if (list.length === 0) return <CustomText textTag="h5" className="text-center">Aucun</CustomText>
 
             return (
-                <Box>
+                <Box direction="row" className="justify-center max-w-50">
                     {
 						list.map((item, index) =>{
 							const found = listProject.find((org) => org.id === item)
-						return <CustomText textTag="h4" key={index}>{found?.nom}</CustomText>
+
+							return <CustomText
+								key={index}
+								textTag="h6"
+								className="border border-background rounded-xl px-1.5 py-1 shadow-sm"
+							>{found?.nom}</CustomText>
 					})}
                 </Box>
             )

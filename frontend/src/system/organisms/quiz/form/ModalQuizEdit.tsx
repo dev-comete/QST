@@ -9,7 +9,7 @@ import { formChangeHandler, getSelectData } from "../../../../other/helper/helpe
 import { useFormation } from "../../../../other/hooks/formation/useFormation";
 import { useQuizEdit } from "../../../../other/hooks/quiz/useQuiz";
 
-interface ModalQuizUpdateProps {
+interface ModalQuizEditProps {
 	open: boolean;
 	closeModal: () => void
 	id: number
@@ -33,7 +33,7 @@ const QuizForm = ({ closeModal, id } : { closeModal : () => void, id: number }) 
 
 	const selectedFormations = getSelectData(formations, 'nom_formation')
 
-	const handleSubmit = async (e: React.SubmitEvent) => {
+	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
 		try {
 			await handleQuizEdit()
@@ -67,7 +67,9 @@ const QuizForm = ({ closeModal, id } : { closeModal : () => void, id: number }) 
 						const selected = formations.find((q) => q.nom_formation === value) ?? formations[0]
 						return String(selected.id)
 					})}
-					value={selectedFormations.find((q) => q.value == quiz.formation)?.value}
+					value={
+						(formations.find((q) => String(q.id) === String(quiz.formation))?.nom_formation) ?? formations[0].nom_formation
+					}
 				/>
 				<Input
 					id={"duree"}
@@ -101,7 +103,7 @@ const QuizForm = ({ closeModal, id } : { closeModal : () => void, id: number }) 
 	)
 }
 
-const ModalQuizUpdate = ({ open, closeModal, id } : ModalQuizUpdateProps) => {
+const ModalQuizEdit = ({ open, closeModal, id } : ModalQuizEditProps) => {
 	return (
 		<Modal
 			title="Modification du quiz"
@@ -113,4 +115,4 @@ const ModalQuizUpdate = ({ open, closeModal, id } : ModalQuizUpdateProps) => {
 	)
 }
 
-export default ModalQuizUpdate;
+export default ModalQuizEdit;

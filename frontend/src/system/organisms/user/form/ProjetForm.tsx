@@ -21,32 +21,35 @@ const ProjetForm = ({ listProject, setUser, user } : ProjectFormProps) => {
 					textTag="h5"
 					isItalic
 					>Il n'y a aucun projet, veuillez en créer</CustomText>
-				: <Box direction="column" className="overflow-y-auto border border-background p-2">
+				: <Box direction="column" className="w-full overflow-y-auto border border-background p-2">
 				{
 					listProject.map((proj) => {
+						const projectKey = `project-${proj.id ?? proj.nom}-${user?.username ?? 'anonymous'}-edit`;
 						return (
-							<Box className="justify-star w-fit">
-								<Input
-									id={`check + ${proj.id}`}
-									name={`check + ${proj.nom}`}
-									type="checkbox"
-									checked={user && user.projets?.includes(proj.id)}
-									onChange={(e) => {
-										const checked = (e.target as HTMLInputElement).checked;
-										setUser((prev) => {
-											const currentOrgs = (prev.projets ?? []).filter((v): v is number => typeof v === 'number' && !isNaN(v));
-											if (checked) {
-												if (!currentOrgs.includes(proj.id)) {
-													return { ...prev, projets: [...currentOrgs, proj.id] };
+							<Box key={projectKey} className="justify-start w-full">
+								<Box>
+									<Input
+										id={`check + ${proj.id}`}
+										name={`check + ${proj.nom}`}
+										type="checkbox"
+										checked={user && user.projets?.includes(proj.id)}
+										onChange={(e) => {
+											const checked = (e.target as HTMLInputElement).checked;
+											setUser((prev) => {
+												const currentOrgs = (prev.projets ?? []).filter((v): v is number => typeof v === 'number' && !isNaN(v));
+												if (checked) {
+													if (!currentOrgs.includes(proj.id)) {
+														return { ...prev, projets: [...currentOrgs, proj.id] };
+													}
+													return prev;
+												} else {
+													return { ...prev, projets: currentOrgs.filter((item) => item !== proj.id) };
 												}
-												return prev;
-											} else {
-												return { ...prev, projets: currentOrgs.filter((item) => item !== proj.id) };
-											}
-										});
-									}}
-									className="cursor-pointer h-4 w-4 rounded"
-								/>
+											});
+										}}
+										className="cursor-pointer h-4 w-4 rounded"
+									/>
+								</Box>
 								<CustomText>{proj.nom}</CustomText>
 							</Box>
 						)

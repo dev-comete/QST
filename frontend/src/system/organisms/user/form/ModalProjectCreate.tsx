@@ -6,15 +6,15 @@ import Input from "../../../atoms/Form/Input";
 import Select from "../../../atoms/Form/Select";
 import ActionButton from "../../../molecules/Buttons/ActionButton";
 import { Modal } from "../../../molecules/Modal/Modal";
-import { useEditProject } from "../../../../other/hooks/user/useProject";
+import { useCreateProject } from "../../../../other/hooks/user/useProject";
 
-interface ProjectEditFormProps {
+interface ProjectCreateFormProps {
 	project: ProjectPayload
 	setProject: Dispatch<SetStateAction<ProjectPayload>>
 	handleSubmit: (e: React.SubmitEvent) => void
 }
 
-const ProjectEditForm = ({ handleSubmit, project, setProject } : ProjectEditFormProps ) => {
+const ProjectCreateForm = ({ handleSubmit, project, setProject } : ProjectCreateFormProps ) => {
 
 	const selectionValue = [
 		{ id: '0', value: 'Actif'},
@@ -23,7 +23,7 @@ const ProjectEditForm = ({ handleSubmit, project, setProject } : ProjectEditForm
 
 	return (
 		<form
-			id="ProjectEditForm"
+			id="ProjectCreateForm"
 			className="flex flex-col space-y-5 justify-center w-[80%] m-auto"
 			onSubmit={handleSubmit}
 		>
@@ -38,6 +38,7 @@ const ProjectEditForm = ({ handleSubmit, project, setProject } : ProjectEditForm
 			<Select
 				id={"is_active"}
 				name={"is_active"}
+				label="Statut"
 				selectionValue={selectionValue}
 				handleChange={formChangeHandler(setProject, 'is_active', (value) => {
 					return value == 'Actif'
@@ -48,19 +49,18 @@ const ProjectEditForm = ({ handleSubmit, project, setProject } : ProjectEditForm
 	)
 }
 
-interface ModalProjectEditProps {
+interface ModalProjectCreateProps {
 	open: boolean;
 	closeModal: () => void,
-	id: string
 }
 
-const ModalProjectEdit = ({ id, open, closeModal } : ModalProjectEditProps) => {
+const ModalProjectCreate = ({ open, closeModal } : ModalProjectCreateProps) => {
 	const {
 		project,
 		setProject,
 		isPending,
-		handleEditProject,
-	} = useEditProject(id)
+		handleCreateProject,
+	} = useCreateProject()
 
 	const handleOnCloseModal = () => {
 		closeModal()
@@ -69,7 +69,7 @@ const ModalProjectEdit = ({ id, open, closeModal } : ModalProjectEditProps) => {
 	const handleSubmit = async (e: React.SubmitEvent) => {
 		e.preventDefault()
 		try {
-			await handleEditProject()
+			await handleCreateProject()
 			handleOnCloseModal()
 		} catch (error) {
 			console.log("Error", error)
@@ -78,31 +78,25 @@ const ModalProjectEdit = ({ id, open, closeModal } : ModalProjectEditProps) => {
 
 	return (
 		<Modal
-			title="Modification du projet"
+			title="Création de projet"
 			isOpen={open}
 			closeModal={handleOnCloseModal}
 			footer={
 				<Box>
 					<ActionButton
-						btnColor="text"
-						onClick={handleOnCloseModal}
-					>
-						Annuler
-					</ActionButton>
-					<ActionButton
 						type="submit"
-						form="ProjectEditForm"
+						form="ProjectCreateForm"
 						btnColor="primary"
 						textColor="white"
 						isLoading={isPending}
 						disabled={project.nom.length == 0}
 					>
-						Modifier
+						Créer
 					</ActionButton>
 				</Box>
 			}
 		>
-			<ProjectEditForm
+			<ProjectCreateForm
 				project={project}
 				setProject={setProject}
 				handleSubmit={handleSubmit}
@@ -111,4 +105,4 @@ const ModalProjectEdit = ({ id, open, closeModal } : ModalProjectEditProps) => {
 	)
 }
 
-export default ModalProjectEdit;
+export default ModalProjectCreate;

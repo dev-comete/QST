@@ -18,19 +18,12 @@ const ActionCell = ({ rowId, onEdit }: {
 
 	// const { handleDelVague } = useVagueDel(rowId as number)
 
-	const { navigateTo } = useAppNavigation()
-
     return (
         <Box>
 			<IconButton
                 iconName="edit"
                 iconStyling="text-text hover:text-success"
                 action={() => onEdit(rowId)}
-            />
-            <IconButton
-                iconName="layer-group"
-                iconStyling="text-text hover:text-success"
-                action={() => navigateTo('vagues/' + rowId)}
             />
         </Box>
     );
@@ -48,12 +41,12 @@ const getVagueTabColumn = (
 		key: "formation_nom"
 	},
 	{
-		header: 'Date de début',
+		header: 'Début',
 		key: "debut",
 		render: (value) => formatDate(value)
 	},
 	{
-		header: 'Date de fin',
+		header: 'Fin',
 		key: "fin",
 		render: (value) => formatDate(value)
 	},
@@ -82,6 +75,7 @@ const VagueList = () => {
 	const { data: vagues, status } = getAllVague
 	const [isModalOpen, setIsModalOpen] = useState(false)
 	const [selectedVagueId, setSelectedVagueId] = useState<string>('')
+	const { navigateTo } = useAppNavigation()
 
 	if (status == 'pending')
 		return <Loading />
@@ -100,6 +94,7 @@ const VagueList = () => {
 				columns={getVagueTabColumn(handleOpenEditModal)}
 				data={vagues}
 				rowKey={'id'}
+				onRowClick={(row) => navigateTo('vagues/' + row.id)}
 			/>
 			<ModalVagueEdit
 				open={isModalOpen}

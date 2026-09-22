@@ -56,18 +56,18 @@ export const Table = <T,>({
                 </CustomText>
             )}
 
-            <div className="w-full">
+            <div className="w-full max-h-[80vh] overflow-y-auto">
                 <table className="w-full border-collapse text-left text-sm text-slate-700">
-                    <thead>
+                    <thead className="sticky top-0 z-10">
                         <tr className="border-b border-slate-200 bg-secondary text-xs font-semibold uppercase tracking-wider text-slate-500">
                             {columns.map((col, index) => (
-                                <th key={index} className="px-6 py-3.5 text-center align-middle">
+                                <th key={index} className="px-6 py-3.5 text-center align-middle bg-secondary sticky top-0">
                                     {col.header}
                                 </th>
                             ))}
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100 overflow-y-auto">
+                    <tbody className="divide-y divide-slate-100">
                         {data.map((row, idx) => (
                             <tr
                                 key={`${String(row[rowKey])}-${idx}`}
@@ -81,8 +81,8 @@ export const Table = <T,>({
                                             : undefined;
 
                                     return (
-                                        <td key={colIndex} className="px-6 py-4 text-center align-middle font-normal text-text">
-                                            <div className="flex w-full items-center justify-center">
+                                        <td key={colIndex} className="px-6 py-4 text-center align-top font-normal text-text">
+                                            <div className="flex w-full items-start justify-center max-h-20 overflow-y-auto">
                                                 {col.render
                                                     ? col.render(rawValue, row, idx)
                                                     : String(rawValue ?? "—")}

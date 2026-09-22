@@ -2,15 +2,14 @@ import type { Dispatch, SetStateAction } from "react";
 import { formChangeHandler, getSelectData } from "../../../../other/helper/helper";
 import { useCreateUser } from "../../../../other/hooks/user/useUser";
 import type { projectType, userPayload, utilisateurType } from "../../../../other/types/userType";
-import Box from "../../../atoms/Container/Box";
 import Input from "../../../atoms/Form/Input";
 import Select from "../../../atoms/Form/Select";
 import FetchError from "../../../atoms/Loading/FetchError";
 import Loading from "../../../atoms/Loading/Loading";
 import ActionButton from "../../../molecules/Buttons/ActionButton";
 import { Modal } from "../../../molecules/Modal/Modal";
-import ErrorBloc from "../../../molecules/Container/ErrorBloc";
 import ProjetForm from "./ProjetForm";
+import Info from "../../../atoms/Form/Info";
 
 interface UserFormProps {
 	listTypeUser: utilisateurType[]
@@ -37,7 +36,7 @@ const UserForm = ({ handleSubmit, setUser, listTypeUser, listProject, errors } :
 				onChange={formChangeHandler(setUser, 'username')}
 				required={true}
 			/>
-			{errors.userError && <ErrorBloc message={errors.userError} />}
+			{errors.userError && <Info info={errors.userError} variant='error'/>}
 			<Input 
 				id="email"
 				name="email"
@@ -46,7 +45,7 @@ const UserForm = ({ handleSubmit, setUser, listTypeUser, listProject, errors } :
 				onChange={formChangeHandler(setUser, 'email')}
 				required={true}
 			/>
-			{errors.emailError && <ErrorBloc message={errors.emailError} />}
+			{errors.emailError && <Info info={errors.emailError} variant='error'/>}
 			<Select 
 				id="role"
 				name="role"
@@ -103,22 +102,15 @@ const ModalUserCreate = ({ open, closeModal, listProject } : ModalUserCreateProp
 			isOpen={open}
 			closeModal={handleOnCloseModal}
 			footer={
-				<Box>
-					<ActionButton
-						onClick={handleOnCloseModal}
-					>
-						Annuler
-					</ActionButton>
-					<ActionButton
-						type="submit"
-						form="userForm"
-						btnColor="primary"
-						textColor="white"
-						isLoading={isPending}
-					>
-						Créer
-					</ActionButton>
-				</Box>
+				<ActionButton
+					type="submit"
+					form="userForm"
+					btnColor="primary"
+					textColor="white"
+					isLoading={isPending}
+				>
+					Créer
+				</ActionButton>
 			}
 		>
 			<UserForm
