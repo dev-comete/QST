@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import type { Role, User } from "../../types/common";
@@ -34,18 +34,20 @@ const getRoleLandingPath = (role: Role) => {
 const useLogin = () => {
 	const navigate = useNavigate();
 	const { setAuthUser } = useAuth();
+	const [ error, setError ] = useState<string | null>(null)
 
 	const { mutate, status, isPending } = useMutation({
 		mutationFn: AuthService.login,
 		onSuccess: (data) => {
+			setError(null)
 			const { user, access, refresh } = data;
 			TokenStorage.setAuthData(access, refresh, user);
 			setAuthUser(user);
 			const path = getRoleLandingPath(user.role)
 			navigate(path, { replace: true });
 		},
-		onError: (err) => {
-			console.error('Login failed:', err);
+		onError: (err : any) => {
+			setError(err.response?.data?.detail || 'Identifiants incorrects. Veuillez réessayer.');
 		},
 	});
 
@@ -54,13 +56,23 @@ const useLogin = () => {
 		const formData = new FormData(e.currentTarget);
 		const username = formData.get('username') as string;
 		const password = formData.get('password') as string;
+		if (username.trim().length == 0) {
+			setError("Le nom d'utilisateur est obligatoire")
+			return
+		}
+		if (password.trim().length == 0) {
+			setError("Le mot de passe est obligatoire")
+			return
+		}
+		setError(null)
 		mutate({ username, password });
 	};
 
 	return {
 		status,
 		handleSubmit,
-		isPending
+		isPending,
+		error,
 	};
 };
 

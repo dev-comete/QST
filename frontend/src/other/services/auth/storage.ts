@@ -22,7 +22,7 @@ export const TokenStorage = {
 
 	apiClient.interceptors.response.use(
 	(response) => {
-	return response;
+		return response;
 	},
 	async (error) => {
 	const originalRequest = error.config;
@@ -55,12 +55,12 @@ export const TokenStorage = {
 		return apiClient(originalRequest);
 
 		} catch (refreshError) {
-		console.error("Session expirée. Veuillez vous reconnecter.");
-		TokenStorage.clear();
-		
-		// Redirection forcée vers le login (adaptez l'URL selon votre routeur)
-		window.location.href = '/login'; 
-		return Promise.reject(refreshError);
+			console.error("Session expirée. Veuillez vous reconnecter.");
+			TokenStorage.clear();
+			
+			// Redirection forcée vers le login (adaptez l'URL selon votre routeur)
+			window.location.href = '/login'; 
+			return Promise.reject(refreshError);
 		}
 	}
 

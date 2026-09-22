@@ -16,7 +16,7 @@ const NavigationBarButton = ({ title, isClicked, onClick } : NavigationButtonPro
 	return (
 		<div
 			onClick={onClick}
-			className={`${baseStyle} ${isClicked ? 'bg-secondary' : ''}`}
+			className={`${baseStyle} ${isClicked ? 'bg-secondary shadow-md' : ''}`}
 		>
 			<CustomText weight='bold' textTag="h3" color={`${isClicked ? 'primary' : 'disabled'}`}>{title}</CustomText>
 		</div>

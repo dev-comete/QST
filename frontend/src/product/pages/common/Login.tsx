@@ -1,13 +1,18 @@
-import { useLogin } from "../../../other/hooks/auth/useAuth";
+import { Navigate } from "react-router";
+import { useAuth, useLogin } from "../../../other/hooks/auth/useAuth";
 import Box from "../../../system/atoms/Container/Box";
 import Paper from "../../../system/atoms/Container/Paper";
+import Info from "../../../system/atoms/Form/Info";
 import Input from "../../../system/atoms/Form/Input";
 import CustomText from "../../../system/atoms/Text/CustomText";
 import ActionButton from "../../../system/molecules/Buttons/ActionButton";
 import Logo from "../../../system/molecules/Logo/Logo";
 
 const Login = () => {
-    const { handleSubmit, isPending } = useLogin();
+    const { handleSubmit, isPending, error } = useLogin();
+	const { authUser } = useAuth()
+
+	if (authUser) return <Navigate to="/" replace />;
 
     return (
         <Box className="flex h-screen w-full overflow-hidden">
@@ -26,6 +31,7 @@ const Login = () => {
                                     name="username"
                                     label="Nom d'utilisateur"
                                     className="w-full"
+									required
                                 />
                                 <Input
                                     id="password"
@@ -33,7 +39,9 @@ const Login = () => {
                                     type="password"
                                     label="Mot de passe"
                                     className="w-full"
+									required
                                 />
+								{ error && <Info info={error} variant="error"/>}
                                 <ActionButton
 									type="submit"
 									btnStyling="w-full mt-2"
