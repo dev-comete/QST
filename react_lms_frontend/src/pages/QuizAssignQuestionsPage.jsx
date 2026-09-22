@@ -12,6 +12,8 @@ const QuizAssignQuestionsPage = () => {
   const { id: quizId } = useParams();
   const navigate = useNavigate();
 
+  const [quizInfo, setQuizInfo] = useState(null);
+
   // IDs des questions déjà assignées au quiz
   const [assignedQuestionIds, setAssignedQuestionIds] = useState([]);
 
@@ -31,7 +33,7 @@ const QuizAssignQuestionsPage = () => {
 
   // 1. Charger les questions déjà assignées, puis la banque, au montage
   useEffect(() => {
-    fetchAssignedQuestions();
+    fetchInitialData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -42,14 +44,20 @@ const QuizAssignQuestionsPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearchTerm, assignedQuestionIds]);
 
-  const fetchAssignedQuestions = async () => {
+  const fetchInitialData = async () => {
     try {
-      const data = await QuizService.getAssignedQuestions(quizId);
-      const items = data.results || data;
+      const [quizData, assignedData] = await Promise.all([
+        QuizService.getQuizById(quizId),
+        QuizService.getAssignedQuestions(quizId)
+      ]);
+      
+      setQuizInfo(quizData);
+
+      const items = assignedData.results || assignedData;
       const ids = items.map(item => parseInt(item.question_id, 10));
       setAssignedQuestionIds(ids);
     } catch (err) {
-      console.error("Impossible de charger les questions déjà assignées", err);
+      console.error("Impossible de charger les données initiales", err);
       setAssignedQuestionIds([]);
     }
   };
@@ -133,7 +141,7 @@ const QuizAssignQuestionsPage = () => {
     <div className="lms-scope lms-page">
       <div className="lms-container">
         <div className="lms-header-row" style={{ marginBottom: 'var(--space-6)' }}>
-          <h1 className="lms-pageheader__title">Assigner des questions — Quiz #{quizId}</h1>
+          <h1 className="lms-pageheader__title">Assigner des questions — {quizInfo?.titre || `Quiz #${quizId}`}</h1>
           <Link to="/quizzes" className="lms-btn lms-btn--outline">
             Retour aux quiz
           </Link>

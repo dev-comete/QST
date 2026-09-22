@@ -222,9 +222,9 @@ const LoginPage = () => {
                 />
                 Se souvenir de moi
               </label>
-              <Link to="/forgot-password" className="lms-auth-options__link">
+              {/* <Link to="/forgot-password" className="lms-auth-options__link">
                 Mot de passe oublié ?
-              </Link>
+              </Link> */}
             </div>
 
             {error && <div className="lms-alert lms-alert--danger" style={{ marginBottom: 'var(--space-5)' }}>{error}</div>}
