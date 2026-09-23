@@ -19,6 +19,7 @@ interface InputProps {
 	value?: string | number
 	htmlFor?: string
 	endIcon?: ReactNode
+	placeholder?: string
 }
 
 const Input = ({
@@ -37,6 +38,7 @@ const Input = ({
 	value,
 	htmlFor,
 	endIcon,
+	placeholder,
 }: InputProps) => {
 
 	const basicStyle = `flex p-2 rounded-xl ${type != 'checkbox' && 'border'} border-background w-full items-center justify-center focus:outline focus:outline-primary`
@@ -58,9 +60,10 @@ const Input = ({
 				max={max}
 				required={required}
 				value={value}
+				placeholder={placeholder}
 			/>
 			{endIcon && (
-				<div className="absolute right-1 top-1 flex items-center justify-center">
+				<div className="absolute right-2 top-3 flex items-center justify-center">
 					{endIcon}
 				</div>
 			)}

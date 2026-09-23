@@ -24,10 +24,11 @@ const ActionCell = ({ rowId, row, onEdit } : {
         <Box>
 			<IconConfirmActionButton
                 iconName={row && row.status === 'draft' ? 'arrow-up' : 'arrow-down'}
-                iconStyling="text-text hover:text-warning"
+                iconStyling="text-text hover:text-primary"
                 action={handleUpdateStatus}
 				confirmText="Voulez-vous changer le statut du quiz?"
 				isLoading={updateIsPending}
+				title={row && row.status === 'draft' ? 'Publier' : 'Retirer'}
             />
 			<IconButton
                 iconName="edit"

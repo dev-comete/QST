@@ -1,6 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { QuestionService } from "../../services/questionService";
-import { GENERAL_CACHE_TIME, GENERAL_STALE_TIME } from "../../types/constant";
 import { useEffect, useState } from "react";
 import type { bankQuestionType, respType } from "../../types/questionType";
 
@@ -33,6 +32,7 @@ type UseQuestionParams = {
 	search?: string
 	type?: string
 	page?: number
+	timer?: string
 }
 
 const useQuestion = ({ id, search, type, page } : UseQuestionParams) => {
@@ -45,8 +45,6 @@ const useQuestion = ({ id, search, type, page } : UseQuestionParams) => {
 	const questionTypeQuery = useQuery({
 		queryKey: ['question_type_list'],
 		queryFn: QuestionService.getTypeQuestion,
-		staleTime: GENERAL_STALE_TIME,
-		gcTime: GENERAL_CACHE_TIME,
 	})
 
 	const infoQuestionQuery = useQuery({
@@ -69,6 +67,7 @@ const useQuestion = ({ id, search, type, page } : UseQuestionParams) => {
 	}
 }
 
+//Not functionnal yet
 const useQuestionEdit = (id: string | number) => {
 	const { detailQuestionQuery } = useQuestion(String(id))
 	const [ question, setQuestion ] = useState<bankQuestionType>()
