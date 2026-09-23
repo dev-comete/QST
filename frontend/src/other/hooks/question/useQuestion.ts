@@ -94,7 +94,7 @@ const useQuestion = ({ id, search, type, page, listType } : UseQuestionParams) =
 
 //Not functionnal yet
 const useQuestionEdit = (id: string | number) => {
-	const { detailQuestionQuery } = useQuestion(String(id))
+	const { detailQuestionQuery } = useQuestion({ id: String(id) })
 	const [ question, setQuestion ] = useState<bankQuestionType>()
 	const [ responses, setResponses ] = useState<respType[]>([
 		{ reponse: '', est_correct: true, explication: '' },
