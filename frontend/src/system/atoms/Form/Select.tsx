@@ -23,7 +23,7 @@ const Select = ({
 	handleChange
 }: SelectProps) => {
 
-	const styling = "w-full h-10 px-3 py-2 text-base text-text bg-white border border-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer ";
+	const styling = "w-full h-10 px-3 py-2 text-base text-text bg-white border border-background rounded-xl focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer ";
 	const selectId = id || name;
 
 	return (

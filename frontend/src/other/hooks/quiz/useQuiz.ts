@@ -27,11 +27,39 @@ export const useQuizDel = (id: number) => {
 	}
 }
 
-export const useQuiz = (id ?: number) => {
+export const useQuizRestore = (id: number) => {
+	const queryClient = useQueryClient()
+
+	const restoreMutation = useMutation({
+		mutationFn: QuizService.restore,
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ['quiz_list'] })
+		},
+		onError: (err) => {
+			console.error('Quiz deletion failed:', err);
+		},
+	});
+
+	const handleRestoreQuiz = async () => {
+		return await restoreMutation.mutateAsync(id)
+	}
+
+	return {
+		handleRestoreQuiz,
+		isPending: restoreMutation.isPending
+	}
+}
+
+type useQuizParam = {
+	id?: number
+	listType?: string
+}
+
+export const useQuiz = ({id, listType = 'default'} : useQuizParam) => {
 
 	const getAllQuiz = useQuery({
-		queryKey: ['quiz_list'],
-		queryFn: QuizService.list
+		queryKey: ['quiz_list', listType],
+		queryFn: () => QuizService.list(listType)
 	})
 
 	const infoQuestionQuiz = useQuery({
@@ -90,7 +118,7 @@ export const useQuizEdit = (id: number) => {
 	const [quiz, setQuiz] = useState<quizCreateType>(initQuiz)
 	const { formations } = useFormation()
 	const queryClient = useQueryClient()
-	const { infoQuiz } = useQuiz(id)
+	const { infoQuiz } = useQuiz({id})
 	
 	const updateQuiz= useMutation({
 		mutationFn: ({ id, data }: { id: number; data: quizCreateType }) => QuizService.update(id, data),

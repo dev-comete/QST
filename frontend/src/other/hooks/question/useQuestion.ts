@@ -1,6 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { QuestionService } from "../../services/questionService";
-import { GENERAL_CACHE_TIME, GENERAL_STALE_TIME } from "../../types/constant";
 import { useEffect, useState } from "react";
 import type { bankQuestionType, respType } from "../../types/questionType";
 
@@ -14,7 +13,7 @@ export const useQuestionDel = (id: number) => {
 			queryClient.invalidateQueries({ queryKey: ['bank_question'] })
 		},
 		onError: (err) => {
-			console.error('Organisation creation failed:', err);
+			console.error('Question deletion failed:', err);
 		},
 	});
 
@@ -28,25 +27,49 @@ export const useQuestionDel = (id: number) => {
 	}
 }
 
+export const useQuestionRestore = (id: number) => {
+
+	const queryClient = useQueryClient()
+
+	const restoreMutation = useMutation({
+		mutationFn: QuestionService.restore,
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ['bank_question'] })
+		},
+		onError: (err) => {
+			console.error('Question restoration failed:', err);
+		},
+	});
+
+	const handleQuestionRestore = async () => {
+		return await restoreMutation.mutateAsync(id)
+	}
+
+	return {
+		handleQuestionRestore,
+		isPending: restoreMutation.isPending
+	}
+}
+
 type UseQuestionParams = {
 	id?: string
 	search?: string
 	type?: string
 	page?: number
+	timer?: string
+	listType?: string
 }
 
-const useQuestion = ({ id, search, type, page } : UseQuestionParams) => {
+const useQuestion = ({ id, search, type, page, listType } : UseQuestionParams) => {
 
 	const list = useQuery({
-		queryKey: ['bank_question', search, type],
-		queryFn: () => QuestionService.list({ search, type, page }),
+		queryKey: ['bank_question', search, type, page],
+		queryFn: () => QuestionService.list({ search, type, page, listType }),
 	})
 
 	const questionTypeQuery = useQuery({
 		queryKey: ['question_type_list'],
 		queryFn: QuestionService.getTypeQuestion,
-		staleTime: GENERAL_STALE_TIME,
-		gcTime: GENERAL_CACHE_TIME,
 	})
 
 	const infoQuestionQuery = useQuery({
@@ -69,8 +92,9 @@ const useQuestion = ({ id, search, type, page } : UseQuestionParams) => {
 	}
 }
 
+//Not functionnal yet
 const useQuestionEdit = (id: string | number) => {
-	const { detailQuestionQuery } = useQuestion(String(id))
+	const { detailQuestionQuery } = useQuestion({ id: String(id) })
 	const [ question, setQuestion ] = useState<bankQuestionType>()
 	const [ responses, setResponses ] = useState<respType[]>([
 		{ reponse: '', est_correct: true, explication: '' },

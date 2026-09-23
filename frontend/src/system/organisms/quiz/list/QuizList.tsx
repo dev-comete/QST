@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { formatDate } from "../../../../other/helper/helper";
 import { useAppNavigation } from "../../../../other/hooks/navigation/useAppNavigation";
-import { useQuiz, useQuizDel, useQuizUpdate } from "../../../../other/hooks/quiz/useQuiz";
+import { useQuiz, useQuizDel, useQuizRestore, useQuizUpdate } from "../../../../other/hooks/quiz/useQuiz";
 import type { quizType } from "../../../../other/types/quizType";
 import Box from "../../../atoms/Container/Box";
 import FetchError from "../../../atoms/Loading/FetchError";
@@ -12,47 +12,66 @@ import ModalQuizEdit from "../form/ModalQuizEdit";
 import { QuizStatusTag } from "../tag/StatusTag";
 import { useFormation } from "../../../../other/hooks/formation/useFormation";
 
-const ActionCell = ({ rowId, row, onEdit } : {
+const ActionCell = ({ rowId, row, onEdit, listType } : {
 	rowId : string | number | boolean,
 	row: quizType | null
-	onEdit: (id: string | number | boolean | string[]) => void 
+	onEdit: (id: string | number | boolean | string[]) => void
+	listType: string
 }) => {
 	const { handleDelQuiz, isPending } = useQuizDel(Number(rowId))
+	const { handleRestoreQuiz, isPending : restorePending } = useQuizRestore(Number(rowId))
 	const { handleUpdateStatus, isPending : updateIsPending } = useQuizUpdate(Number(rowId), row ? row.status : 'draft')
 
     return (
         <Box>
-			<IconConfirmActionButton
-                iconName={row && row.status === 'draft' ? 'arrow-up' : 'arrow-down'}
-                iconStyling="text-text hover:text-warning"
-                action={handleUpdateStatus}
-				confirmText="Voulez-vous changer le statut du quiz?"
-				isLoading={updateIsPending}
-            />
-			<IconButton
-                iconName="edit"
-				title="Modifier"
-                iconStyling="text-text hover:text-success"
-                action={() => {
-                    onEdit(rowId)
-                }}
-            />
-			<IconConfirmActionButton
-				iconName="trash"
-				title="Supprimer"
-				iconStyling="text-text hover:text-error"
-				action={handleDelQuiz}
-				confirmText="Voulez-vous vraiment supprimer le quiz?"
-				isLoading={isPending}
-			/>
+			{
+				listType == 'trash' &&
+				<IconConfirmActionButton
+					iconName={'rotate-left'}
+					iconStyling="text-text hover:text-primary"
+					action={handleRestoreQuiz}
+					confirmText="Voulez-vous vraiment restaurer le quiz?"
+					isLoading={restorePending}
+					title={'Restaurer'}
+				/>
+			}
+			{
+				listType == 'default' &&
+				<>
+					<IconConfirmActionButton
+						iconName={row && row.status === 'draft' ? 'arrow-up' : 'arrow-down'}
+						iconStyling="text-text hover:text-primary"
+						action={handleUpdateStatus}
+						confirmText="Voulez-vous changer le statut du quiz?"
+						isLoading={updateIsPending}
+						title={row && row.status === 'draft' ? 'Publier' : 'Retirer'}
+					/>
+					<IconButton
+						iconName="edit"
+						title="Modifier"
+						iconStyling="text-text hover:text-success"
+						action={() => {
+							onEdit(rowId)
+						}}
+					/>
+					<IconConfirmActionButton
+						iconName="trash"
+						title="Supprimer"
+						iconStyling="text-text hover:text-error"
+						action={handleDelQuiz}
+						confirmText="Voulez-vous vraiment supprimer le quiz?"
+						isLoading={isPending}
+					/>
+				</>
+			}
         </Box>
     );
 };
 
-const QuizList = () => {
+const QuizList = ({ listType = 'default' } : { listType?: string }) => {
 	const [selectedUserId, setSelectedUserId] = useState<number>(0)
 	const [isModalOpen, setIsModalOpen] = useState(false)
-	const { getAllQuiz } = useQuiz()
+	const { getAllQuiz } = useQuiz({listType})
 	const { data: quizzes, status } = getAllQuiz
 	const { navigateTo } = useAppNavigation();
 	const { formations, formationsStatus } = useFormation()
@@ -69,7 +88,8 @@ const QuizList = () => {
     }
 
 	const getQuizTabColumn = (
-		onEdit: (id: string | number | boolean | string[]) => void
+		onEdit: (id: string | number | boolean | string[]) => void,
+		listType: string
 	): Column<quizType>[] => [
 		{
 			header: 'Titre',
@@ -98,7 +118,12 @@ const QuizList = () => {
 			header: "Action",
 			key: 'id',
 			render: (value, row) => {
-				return <ActionCell rowId={value ? value : ''} row={row ? row : null} onEdit={onEdit}/>
+				return <ActionCell
+					rowId={value ? value : ''}
+					row={row ? row : null}
+					onEdit={onEdit}
+					listType={listType}
+				/>
 			}
 			
 		}
@@ -108,7 +133,7 @@ const QuizList = () => {
 	return (
 		<Box direction="column" className="w-full items-center justify-center">
 			<Table 
-				columns={getQuizTabColumn(handleOpenEditModal)}
+				columns={getQuizTabColumn(handleOpenEditModal, listType)}
 				data={quizzes}
 				rowKey={'id'}
 				onRowClick={(row) => navigateTo(`${row.id}/quiz_questions`)}

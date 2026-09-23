@@ -1,12 +1,16 @@
+import type { PaginatedData } from "../types/common";
 import type { bankQuestionType, questionIdType, questionType } from "../types/questionType";
 import apiClient from "./apiClient";
 
 const QUESTION_URL = import.meta.env.VITE_CRUD_QUESTION
+const BANK_QUESTION_URL = import.meta.env.VITE_BANK_QUESTION
+const TRASH_QUESTION_URL = import.meta.env.VITE_TRASH_QUESTION
 
 export interface BankQuestionParams {
 	search?: string;
 	type?: string;
 	page?: number;
+	listType?: string
 }
 
 export const QuestionService = {
@@ -28,18 +32,18 @@ export const QuestionService = {
 		return response.data as questionIdType[];
 	},
 
-	list: async ({ search, type, page }: BankQuestionParams) => {
-		const url = import.meta.env.VITE_BANK_QUESTION
-
+	list: async ({ search, type, page, listType }: BankQuestionParams) => {
+		
 		const queryParams = new URLSearchParams({
 			search: search ?? '',
 			type: type ?? '',
 			page: page ? page.toString() : '1',
 		}).toString();
+		
+		const url = listType == 'bank' ? BANK_QUESTION_URL : TRASH_QUESTION_URL
 
-		const response = await apiClient.get(`${url}?${queryParams}`);
-		const result = response.data.results as bankQuestionType[]
-		return result;
+		const response = await apiClient.get<PaginatedData<bankQuestionType>>(`${url}?${queryParams}`);
+		return response.data;
 	},
 
 	info: async (id: string) => {
@@ -57,6 +61,12 @@ export const QuestionService = {
 
 	delete: async (id: number) => {
 		const response = await apiClient.delete(QUESTION_URL + id + '/');
+		const result = response.data
+		return result;
+	},
+
+	restore: async (id: number) => {
+		const response = await apiClient.post(TRASH_QUESTION_URL + id + '/restaurer/');
 		const result = response.data
 		return result;
 	},

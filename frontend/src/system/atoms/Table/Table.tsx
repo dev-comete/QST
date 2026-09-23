@@ -1,5 +1,7 @@
 import type { ReactNode, MouseEvent } from "react";
 import CustomText from "../Text/CustomText";
+import IconButton from "../../molecules/Buttons/IconButton";
+import Box from "../Container/Box";
 
 export interface Column<T> {
     header: string;
@@ -14,6 +16,7 @@ interface TableProps<T> {
     title?: string;
     page?: number;
     setPage?: (page: number | ((prev: number) => number)) => void;
+	hasNextPage?: boolean
     count?: number;
     setCount?: (count: number) => void;
     totalCount?: number;
@@ -28,8 +31,9 @@ export const Table = <T,>({
     title,
 	emptyTitle = 'Pas encore de données...',
 	onRowClick,
-    // page,
-    // setPage,
+    page,
+    setPage,
+	hasNextPage,
     // count,
     // setCount,
     // totalCount,
@@ -97,8 +101,10 @@ export const Table = <T,>({
             </div>
 
             {/* Pagination Footer */}
-            {/* <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-200 bg-slate-50/50 px-6 py-3 text-xs text-slate-500">
-                <div className="flex items-center gap-2">
+			{
+				setPage && page && 
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-200 bg-slate-50/50 px-6 py-3 text-xs text-slate-500">
+                {/* <div className="flex items-center gap-2">
                     <span>Afficher</span>
                     <select
                         value={count}
@@ -115,36 +121,28 @@ export const Table = <T,>({
                         ))}
                     </select>
                     <span>éléments par page</span>
-                </div>
+                </div> */}
 
-                <div>
+                {/* <div>
                     Affichage de <span className="font-semibold text-slate-700">{startItem}</span> à{" "}
                     <span className="font-semibold text-slate-700">{endItem}</span> sur{" "}
                     <span className="font-semibold text-slate-700">{totalCount}</span> résultats
-                </div>
-
-                <div className="flex items-center gap-2">
-                    <button
-                        type="button"
-                        onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-                        disabled={page <= 1}
-                        className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 font-medium text-slate-600 shadow-sm transition hover:bg-slate-50 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
-                    >
-                        Précédent
-                    </button>
-                    <span className="px-2 font-medium text-slate-600">
-                        {page} / {totalPages}
-                    </span>
-                    <button
-                        type="button"
-                        onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
-                        disabled={page >= totalPages}
-                        className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 font-medium text-slate-600 shadow-sm transition hover:bg-slate-50 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
-                    >
-                        Suivant
-                    </button>
-                </div>
-            {/* </div> */}
+                </div> */}
+				<Box className="items-center w-full justify-center">
+					<IconButton
+						iconName="caret-left"
+						action={() => setPage((prev) => Math.max(prev - 1, 1))}
+						disabled={page <= 1}
+					/>
+					<CustomText textTag="h6" className="bg-background p-2 rounded-lg">{page}</CustomText>
+					<IconButton
+						iconName="caret-right"
+						action={() => setPage((prev) => (prev + 1))}
+						disabled={!hasNextPage}
+					/>
+				</Box>
+            </div>
+			}
         </div>
     );
 };

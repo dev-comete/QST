@@ -11,7 +11,7 @@ const QuizQuestion = () => {
 
 	const { id } = useParams()
 
-	const { infoQuestionQuiz } = useQuiz(Number(id))
+	const { infoQuestionQuiz } = useQuiz({ id: Number(id) })
 	const { data : questions, isPending } = infoQuestionQuiz
 
 	if (isPending) return <Loading />

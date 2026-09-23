@@ -12,7 +12,7 @@ interface QuizVagueListProps {
 
 const QuizVagueSelect = ({ setQuiz } : QuizVagueListProps) => {
 
-	const { getAllQuiz } = useQuiz()
+	const { getAllQuiz } = useQuiz({})
 
 	const { data, status } = getAllQuiz
 
