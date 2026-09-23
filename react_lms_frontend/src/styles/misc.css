@@ -1,0 +1,106 @@
+/* ==========================================================================
+   Misc — loading states, empty states, dashboard summary rows
+   ========================================================================== */
+
+.lms-loading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--color-slate);
+  font-size: var(--text-sm);
+  padding: var(--space-6) 0;
+}
+
+.lms-spinner {
+  width: 1.1rem;
+  height: 1.1rem;
+  border: 2px solid var(--color-border-strong);
+  border-top-color: var(--color-harbor);
+  border-radius: 50%;
+  animation: lms-spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes lms-spin {
+  to { transform: rotate(360deg); }
+}
+
+.lms-empty {
+  text-align: center;
+  padding: var(--space-8) var(--space-5);
+  color: var(--color-slate);
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-paper);
+}
+
+.lms-empty__title {
+  font-family: var(--font-display);
+  font-size: var(--text-md);
+  color: var(--color-ink-soft);
+  margin-bottom: var(--space-2);
+}
+
+.lms-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.lms-summary-row:last-child {
+  border-bottom: none;
+}
+
+.lms-summary-row__label {
+  font-size: var(--text-sm);
+  color: var(--color-slate);
+  font-weight: 600;
+}
+
+.lms-summary-row__value {
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  color: var(--color-ink);
+}
+
+.lms-headline-stat {
+  background: var(--color-harbor-light);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-5);
+  font-weight: 700;
+  color: var(--color-harbor-dark);
+  font-family: var(--font-mono);
+  font-size: var(--text-md);
+  white-space: nowrap;
+}
+
+.lms-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.lms-brandmark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+}
+
+.lms-brandmark__glyph {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-sm);
+  background: var(--color-harbor);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-md);
+}

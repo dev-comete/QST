@@ -1,3 +1,619 @@
-from django.shortcuts import render
+from django.db.models.aggregates import Sum
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status , viewsets , generics
+from rest_framework.permissions import IsAuthenticated , IsAdminUser
+from rest_framework.generics import ListAPIView , GenericAPIView
+from django.db import transaction
 
-# Create your views here.
+from django.core.exceptions import ValidationError
+from django.shortcuts import get_object_or_404
+from django.utils.timezone import now
+
+from .permissions import IsFormateurOrAdminOrReadOnly, IsApprenant
+
+from .serializers import QuizSubmissionSerializer , QuizSerializer, QuestionSerializer, ReponseSerializer , AssignStudentSerializer , StudentTodoQuizSerializer , AssignQuestionsSerializer , TypeQuestionSerializer , BaremeSerializer , QuestionTypeQuestionSerializer , QuestionBaremeSerializer, CreateFullQuestionSerializer , QuizQuestionSerializer , ApprenantQuizListSerializer, StudentQuizQuestionSerializer , QuestionBankSerializer 
+
+from .pagination import QuestionBankPagination
+
+from .services import submit_entire_quiz, assign_questions_to_quiz , create_question_with_answers , search_questions_in_bank_service , remove_question_from_quiz
+
+from .models import Quiz, Question, Reponse , UtilisateurQuiz, QuizQuestion , TypeQuestion, Bareme, QuestionTypeQuestion, QuestionBareme , Valiny , Corrigee
+
+from formations.models import UtilisateurVague
+
+class QuizViewSet(viewsets.ModelViewSet):
+    serializer_class = QuizSerializer
+    permission_classes = [IsFormateurOrAdminOrReadOnly]
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = Quiz.objects.all()
+        
+        # Si c'est un Admin, il voit tous les quiz du système
+        if user.is_staff or user.is_superuser:
+            return queryset
+            
+        # Si c'est un formateur, il ne voit que les quiz liés aux formations de son organisation
+        if user.type_utilisateur.type_utilisateur == 'formateur':
+            return queryset.filter(formation__organisation=user.orga_principale)
+            
+        return queryset.none()
+    
+    def destroy(self, request, *args, **kwargs):
+        quiz = self.get_object()
+
+        # Vérifie si au moins un étudiant a déjà commencé ce quiz
+        quiz_deja_commence = quiz.utilisateurquiz_set.filter(
+            heure_debut__isnull=False
+        ).exists()
+
+        if quiz_deja_commence:
+            return Response(
+                {"error": "Impossible de supprimer ce quiz car des apprenants l'ont déjà commencé ou terminé. Si vous souhaitez bloquer son accès, modifiez sa 'Date de fermeture'."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Si tout va bien, on déclenche le Soft Delete (qui appellera le quiz.delete() de votre modèle)
+        quiz.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class QuestionViewSet(viewsets.ModelViewSet):
+    serializer_class = QuestionSerializer
+    permission_classes = [IsFormateurOrAdminOrReadOnly]
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = Question.objects.all()
+        
+        if user.is_staff or user.is_superuser:
+            return queryset
+            
+        if user.type_utilisateur.type_utilisateur == 'formateur':
+            return queryset.filter(organisation=user.orga_principale)
+            
+        return queryset.none()
+
+class ReponseViewSet(viewsets.ModelViewSet):
+    queryset = Reponse.objects.all()
+    serializer_class = ReponseSerializer
+    permission_classes = [IsFormateurOrAdminOrReadOnly]
+
+class TypeQuestionViewSet(viewsets.ModelViewSet):
+    queryset = TypeQuestion.objects.all()
+    serializer_class = TypeQuestionSerializer
+    permission_classes = [IsFormateurOrAdminOrReadOnly]
+
+class BaremeViewSet(viewsets.ModelViewSet):
+    queryset = Bareme.objects.all()
+    serializer_class = BaremeSerializer
+    permission_classes = [IsFormateurOrAdminOrReadOnly]
+
+class QuizQuestionViewSet(viewsets.ModelViewSet):
+    queryset = QuizQuestion.objects.all()
+    serializer_class = QuizQuestionSerializer
+    permission_classes = [IsFormateurOrAdminOrReadOnly]
+
+class QuestionTypeQuestionViewSet(viewsets.ModelViewSet):
+    """ViewSet to link a Question to a specific Type."""
+    queryset = QuestionTypeQuestion.objects.all()
+    serializer_class = QuestionTypeQuestionSerializer
+    permission_classes = [IsFormateurOrAdminOrReadOnly]
+
+class QuestionBaremeViewSet(viewsets.ModelViewSet):
+    """ViewSet to link a Question to a specific point value."""
+    queryset = QuestionBareme.objects.all()
+    serializer_class = QuestionBaremeSerializer
+    permission_classes = [IsFormateurOrAdminOrReadOnly]
+
+class AssignQuestionsAPIView(APIView):
+    permission_classes = [IsFormateurOrAdminOrReadOnly]
+
+    def post(self, request):
+        # 1. Parse and validate the incoming JSON
+        serializer = AssignQuestionsSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+        quiz = get_object_or_404(Quiz, id=serializer.validated_data['quiz_id'])
+        
+        # 2. View-Level Security Check
+        is_admin = request.user.is_staff or request.user.is_superuser
+        if not is_admin and quiz.formation.createur != request.user:
+            return Response({"error": "Accès refusé."}, status=status.HTTP_403_FORBIDDEN)
+            
+        # 3. Delegate to the Service Layer
+        try:
+            created_count = assign_questions_to_quiz(
+                quiz=quiz, 
+                questions_choisies=serializer.validated_data['questions_choisies']
+            )
+            return Response(
+                {"message": f"{created_count} question(s) assignée(s) !"}, 
+                status=status.HTTP_200_OK
+            )
+        except ValidationError as e:
+                    # Bulletproof error extraction that handles both Django and DRF ValidationErrors
+                    if hasattr(e, 'detail'):
+                        # It's a DRF ValidationError
+                        error_message = e.detail[0] if isinstance(e.detail, list) else e.detail
+                    elif hasattr(e, 'messages'):
+                        # It's a Django ValidationError
+                        error_message = e.messages[0]
+                    else:
+                        # Fallback for any other type of error
+                        error_message = str(e)
+                        
+                    return Response({"error": error_message}, status=status.HTTP_400_BAD_REQUEST)
+
+class CreateFullQuestionAPIView(APIView):
+    permission_classes = [IsFormateurOrAdminOrReadOnly]
+
+    def post(self, request):
+        serializer = CreateFullQuestionSerializer(data=request.data)
+        
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+        data = serializer.validated_data
+        
+        try:
+            # Pass the validated data directly to the service layer
+            question = create_question_with_answers(
+                enonce=data['enonce_question'],
+                type_id=data['type_id'],
+                bareme_pts=data['bareme_pts'],
+                options=data.get('options', []),
+                user=request.user
+            )
+            
+            return Response(
+                {
+                    "message": "Question ajoutée avec succès à la banque !", 
+                    "question_id": question.id
+                }, 
+                status=status.HTTP_201_CREATED
+            )
+            
+        except Exception as e:
+            if hasattr(e, 'detail'):
+                # Erreur DRF (ex: serializers.ValidationError)
+                error_message = e.detail[0] if isinstance(e.detail, list) else e.detail
+            elif hasattr(e, 'messages'):
+                # Erreur Core Django (ex: django.core.exceptions.ValidationError)
+                error_message = e.messages[0]
+            else:
+                # Autre type d'erreur générique (ex: KeyError, ValueError)
+                error_message = str(e)
+                
+            return Response({"error": error_message}, status=status.HTTP_400_BAD_REQUEST)
+
+class MyTodoQuizzesAPIView(generics.ListAPIView):
+    serializer_class = StudentTodoQuizSerializer
+    # Strict security: Only students can access this endpoint
+    permission_classes = [IsApprenant]
+
+    def get_queryset(self):
+        """
+        This is the magic part. Instead of returning all quizzes in the database,
+        we strictly filter it to ONLY show unfinished quizzes assigned to the user making the request.
+        """
+        return UtilisateurQuiz.objects.filter(
+            utilisateur=self.request.user,
+            termine=False
+        ).select_related('quiz', 'quiz__formation') # select_related makes the database query much faster!
+
+
+class SubmitQuizAPIView(APIView):
+    permission_classes = [IsApprenant]
+
+    def post(self, request):
+        serializer = QuizSubmissionSerializer(data=request.data)
+        
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        data = serializer.validated_data
+
+        try:
+            # Calls your newly secured service layer
+            quiz_attempt = submit_entire_quiz(
+                user=request.user,
+                quiz_id=data['quiz_id'],
+                vague_id=data['vague_id'],
+                quiz_payload=data['answers']
+            )
+            
+        except ValidationError as e:
+            # This perfectly catches the "already submitted" or "not assigned" errors!
+            return Response({"error": str(e.detail[0] if hasattr(e, 'detail') else e)}, status=status.HTTP_403_FORBIDDEN)
+            
+        except Exception as e:
+            return Response({"error": "Une erreur interne est survenue."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        formation_liee = quiz_attempt.quiz.formation
+        
+        return Response({
+            "message": "Quiz soumis avec succès.",
+            "formation_id": formation_liee.id,
+            "formation_nom": formation_liee.nom_formation,
+            "quiz_id": quiz_attempt.quiz.id,
+            "score_obtenu": quiz_attempt.score_obtenu,
+            "termine": quiz_attempt.termine
+        }, status=status.HTTP_201_CREATED)
+    
+class QuizReviewAPIView(APIView):
+    permission_classes = [IsAuthenticated] # Add IsApprenant if applicable
+
+    def get(self, request, quiz_id):
+
+        vague_id = request.query_params.get('vague_id')
+        if not vague_id:
+            return Response({"error": "L'ID de la vague est manquant dans l'URL."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        assignment = get_object_or_404(UtilisateurQuiz, quiz_id=quiz_id, vague_id=vague_id, utilisateur=request.user)
+        
+        if not assignment.termine:
+            return Response(
+                {"error": "Vous ne pouvez pas voir la correction d'un quiz non terminé."}, 
+                status=status.HTTP_403_FORBIDDEN
+            )
+        total_possible = QuizQuestion.objects.filter(
+            quiz_id=quiz_id
+        ).aggregate(
+            total=Sum('bareme__pts')
+        )['total'] or 0.0
+
+        valinys = Valiny.objects.filter(
+            utilisateur=request.user, 
+            quiz_id=quiz_id,
+            vague_id=vague_id
+        ).select_related('question').prefetch_related('reponses_choisies')
+
+        corrections = []
+        for v in valinys:
+            # Get IDs of what the student clicked
+            choisis_ids = set(v.reponses_choisies.values_list('id', flat=True))
+            
+            # 🆕 Fetch all Corrigee (options) for this question
+            corriges = Corrigee.objects.filter(question=v.question).select_related('reponse')
+            
+            options_details = []
+            for c in corriges:
+                options_details.append({
+                    "reponse_id": c.reponse.id,
+                    "texte": c.reponse.reponse,
+                    "est_correct": c.est_correct,
+                    "choisi_par_apprenant": c.reponse.id in choisis_ids,
+                    "explication": c.explication # The specific explanation!
+                })
+            
+            corrections.append({
+                "question_id": v.question.id,
+                "enonce": v.question.enonce_question,
+                "points_obtenus": v.pts,
+                "vrai_ou_faux": v.vrai_ou_faux,
+                "options": options_details # 🆕 Replaces the simple ID lists
+            })
+
+        return Response({
+            "quiz_id": quiz_id,
+            "vague_id": vague_id,
+            "score_final": assignment.score_obtenu,
+            "score_possible": total_possible,
+            "corrections": corrections
+        }, status=status.HTTP_200_OK)
+
+
+class AssignStudentAPIView(GenericAPIView):
+    """
+    Allows a Formateur (or Admin) to assign a specific Quiz to a Student.
+    """
+    permission_classes = [IsFormateurOrAdminOrReadOnly]
+    serializer_class = AssignStudentSerializer # ⬅️ Enables the DRF UI form!
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+        # ✨ Because of PrimaryKeyRelatedField, these are already the actual instances!
+        quiz = serializer.validated_data['quiz_id']
+        student = serializer.validated_data['etudiant_id']
+        
+        # 1. SECURITY CHECK: Does this Formateur own the Formation this Quiz belongs to?
+        is_admin = request.user.is_staff or request.user.is_superuser
+        if not is_admin and quiz.formation.createur != request.user:
+            return Response(
+                {"error": "Vous ne pouvez assigner des étudiants qu'à vos propres quiz."}, 
+                status=status.HTTP_403_FORBIDDEN
+            )
+            
+
+        # 3. ENROLLMENT CHECK: Is the student registered in a Vague for this Formation?
+        is_enrolled = UtilisateurVague.objects.filter(
+            utilisateur=student,
+            vague__formation=quiz.formation
+        ).exists()
+
+        if not is_enrolled:
+            return Response(
+                {"error": "Cet étudiant n'est pas inscrit à la formation liée à ce quiz."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # 4. CREATE ASSIGNMENT: Give them the Quiz
+        assignment, created = UtilisateurQuiz.objects.get_or_create(
+            utilisateur=student,
+            quiz=quiz,
+            defaults={
+                'score_obtenu': 0.0,
+                'termine': False
+            }
+        )
+        
+        if not created:
+            return Response(
+                {"message": "L'étudiant est déjà assigné à ce quiz."}, 
+                status=status.HTTP_200_OK
+            )
+            
+        return Response({
+            "message": f"Étudiant {student.username} assigné avec succès au quiz '{quiz.titre}'."
+        }, status=status.HTTP_201_CREATED)
+
+class ApprenantQuizListAPIView(ListAPIView):
+    """
+    Returns a list of all quizzes assigned to the logged-in student,
+    along with their completion status and score.
+    """
+    # 1. Lock it down: Must be logged in AND must be an apprenant
+    permission_classes = [IsAuthenticated, IsApprenant]
+    
+    # 2. Tell DRF how to format the data
+    serializer_class = ApprenantQuizListSerializer
+
+    # 3. Tell DRF which data to fetch
+    def get_queryset(self):
+        # We only return the assignments that belong to the exact user making the request.
+        # select_related makes the database query extremely fast by joining the tables!
+        return UtilisateurQuiz.objects.filter(
+            utilisateur=self.request.user,
+            quiz__status='published'
+        ).select_related('quiz', 'quiz__formation')
+    
+class TakeQuizAPIView(APIView):
+    """
+    Fetches the quiz details and questions for a student.
+    Strictly verifies assignment and prevents retakes of completed quizzes.
+    """
+    permission_classes = [IsAuthenticated, IsApprenant]
+
+    def get(self, request, quiz_id):
+        vague_id = request.query_params.get('vague_id')
+        if not vague_id:
+            return Response({"error": "L'ID de la vague est manquant dans l'URL."}, status=status.HTTP_400_BAD_REQUEST)
+        # GATE 1 & 2: Get the assignment for THIS exact student and THIS exact quiz
+        # If it doesn't exist, get_object_or_404 will automatically return a 404 Not Found.
+        assignment = get_object_or_404(
+            UtilisateurQuiz, 
+            quiz_id=quiz_id, 
+            vague_id=vague_id,
+            utilisateur=request.user
+        )
+
+        quiz = assignment.quiz
+        current_time = now()
+
+        if quiz.status != 'published':
+            return Response(
+                {"error": "Ce quiz est en cours de préparation et n'est pas encore accessible."}, 
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        # NOUVEAU - GATE 2.5 : Vérification de la fenêtre de planification
+        if quiz.date_ouverture and current_time < quiz.date_ouverture:
+            return Response(
+                {"error": f"Ce quiz ne sera accessible qu'à partir du {quiz.date_ouverture.strftime('%d/%m/%Y %H:%M')}."}, 
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        if quiz.date_fermeture and current_time > quiz.date_fermeture:
+            return Response(
+                {"error": "La période d'accès à ce quiz est terminée."}, 
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        # GATE 3: Check if the student already submitted this test
+        if assignment.termine:
+            return Response(
+                {"error": "Vous avez déjà terminé ce quiz. Vous ne pouvez pas le refaire."}, 
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        if not assignment.heure_debut:
+            assignment.heure_debut = now()
+            assignment.save(update_fields=['heure_debut'])
+
+        # Fetch all questions configured for this quiz
+        # .select_related() optimizes the database lookup for the linked questions
+        quiz_questions = QuizQuestion.objects.filter(quiz_id=quiz_id).select_related('question')
+        
+        # Serialize the questions using our safe serializer
+        serializer = StudentQuizQuestionSerializer(quiz_questions, many=True)
+
+        # Return a nice, clean payload for the frontend
+        return Response({
+            "quiz_id": assignment.quiz.id,
+            "quiz_titre": assignment.quiz.titre,
+            "quiz_duree": assignment.quiz.duree,
+            "heure_debut": assignment.heure_debut,
+            "questions": serializer.data
+        }, status=status.HTTP_200_OK)
+
+class QuestionBankSearchAPIView(APIView):
+    permission_classes = [IsAuthenticated] 
+
+    def get(self, request):
+        search_term = request.query_params.get('search', '').strip()
+        type_code = request.query_params.get('type', '').strip()
+        exclude_quiz_id = request.query_params.get('exclude_quiz', '').strip()
+
+        user = request.user
+
+        base_queryset = Question.objects.prefetch_related(
+            'corrigee_set__reponse',
+            'questionbareme_set__bareme'
+        )
+
+        if user.is_staff or user.is_superuser:
+            # L'admin fouille partout
+            queryset = base_queryset.all().order_by('-id')
+        else:
+            # Le formateur fouille uniquement dans son organisation
+            queryset = base_queryset.filter(
+                organisation=user.orga_principale
+            ).order_by('-id')
+
+        if search_term:
+            queryset = queryset.filter(enonce_question__icontains=search_term)
+        if type_code:
+            queryset = queryset.filter(questiontypequestion__type_question__code__iexact=type_code)
+
+        if exclude_quiz_id:
+            assigned_ids = QuizQuestion.objects.filter(
+                quiz_id=exclude_quiz_id
+            ).values_list('question_id', flat=True)
+            queryset = queryset.exclude(id__in=assigned_ids)
+
+        paginator = QuestionBankPagination()
+        paginated_queryset = paginator.paginate_queryset(queryset.distinct(), request)
+        serializer = QuestionBankSerializer(paginated_queryset, many=True)
+        return paginator.get_paginated_response(serializer.data)
+
+class RemoveQuestionFromQuizAPIView(APIView):
+    permission_classes = [IsFormateurOrAdminOrReadOnly] 
+
+    def delete(self, request, quiz_id, question_id):     
+        remove_question_from_quiz(
+            quiz_id=quiz_id, 
+            question_id=question_id, 
+            user=request.user
+        )
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class QuestionsSupprimeesAPIView(APIView):
+    def get(self, request):
+        questions = Question.all_objects.filter(is_active=False)
+        
+class QuizAssignedQuestionsListAPIView(ListAPIView):
+    """
+    Retourne la liste détaillée de toutes les questions assignées à un quiz spécifique.
+    """
+    serializer_class = QuizQuestionSerializer
+    permission_classes = [IsFormateurOrAdminOrReadOnly] # Ou IsAuthenticated selon vos besoins
+
+    def get_queryset(self):
+        # Récupère l'ID du quiz depuis l'URL
+        quiz_id = self.kwargs.get('quiz_id')
+        
+        # select_related permet de faire les jointures SQL en une seule requête 
+        # pour éviter le problème du "N+1 queries"
+        return QuizQuestion.objects.filter(quiz_id=quiz_id).select_related(
+            'question', 
+            'type_question', 
+            'bareme'
+        ).order_by('id') # Vous pouvez trier par ID ou date d'ajout
+
+class QuestionDetailAPIView(APIView):
+    # permission_classes = [IsFormateurOrAdminOrReadOnly]
+
+    def get(self, request, question_id):
+        question = get_object_or_404(Question.all_objects, id=question_id)
+        serializer = QuestionBankSerializer(question)
+        return Response(serializer.data)
+
+    def delete(self, request, question_id):
+        question = get_object_or_404(Question.objects, id=question_id)
+        user = request.user
+
+        # 1. Vérification de l'organisation
+        if not (user.is_staff or user.is_superuser):
+            if question.organisation != user.orga_principale:
+                return Response(
+                    {"error": "Accès refusé. Cette question n'appartient pas à votre organisation."},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+        # 2. Vérification d'utilisation dans des quiz
+        quizzes_lies = QuizQuestion.objects.filter(question=question, quiz__is_active=True)
+        if quizzes_lies.exists():
+            return Response(
+                {"error": "Impossible de mettre à la corbeille : cette question est actuellement assignée à un ou plusieurs quiz. Veuillez l'en retirer d'abord."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # 3. Soft Delete
+        question.delete()
+        
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @transaction.atomic
+    def put(self, request, question_id):
+        question = get_object_or_404(Question.all_objects, id=question_id)
+        data = request.data
+
+        # 1. Vérification : des étudiants ont-ils déjà répondu ?
+        a_deja_des_reponses = Valiny.objects.filter(question=question).exists()
+        
+        # 2. Mise à jour de l'énoncé (Autorisé)
+        if 'enonce_question' in data:
+            question.enonce_question = data['enonce_question']
+            question.save(update_fields=['enonce_question'])
+
+        # 3. Synchronisation des options (Autorisé)
+        if 'options' in data:
+            options_data = data['options']
+            
+            existing_corrigee_ids = list(Corrigee.objects.filter(question=question).values_list('id', flat=True))
+            updated_corrigee_ids = []
+
+            for opt in options_data:
+                corrigee_id = opt.get('id')
+                
+                if corrigee_id and corrigee_id in existing_corrigee_ids:
+                    # A. MISE À JOUR
+                    c = Corrigee.objects.get(id=corrigee_id)
+                    c.reponse.reponse = opt.get('texte', c.reponse.reponse)
+                    c.reponse.save(update_fields=['reponse'])
+                    
+                    c.est_correct = opt.get('est_correct', c.est_correct)
+                    c.explication = opt.get('explication', c.explication)
+                    c.save(update_fields=['est_correct', 'explication'])
+                    
+                    updated_corrigee_ids.append(corrigee_id)
+                else:
+                    # B. CRÉATION (nouvelle option ajoutée à une question existante)
+                    nouvelle_reponse = Reponse.objects.create(reponse=opt.get('texte', ''))
+                    nouveau_corrigee = Corrigee.objects.create(
+                        question=question,
+                        reponse=nouvelle_reponse,
+                        est_correct=opt.get('est_correct', False),
+                        explication=opt.get('explication', '')
+                    )
+                    updated_corrigee_ids.append(nouveau_corrigee.id)
+
+            # C. SUPPRESSION des options qui ont été retirées
+            for cid in existing_corrigee_ids:
+                if cid not in updated_corrigee_ids:
+                    if a_deja_des_reponses:
+                        return Response(
+                            {"error": "Impossible de supprimer une option car des étudiants ont déjà répondu à cette question. Vous pouvez seulement modifier son texte."},
+                            status=status.HTTP_400_BAD_REQUEST
+                        )
+                    else:
+                        Corrigee.objects.filter(id=cid).delete()
+
+        return Response({"message": "Question mise à jour avec succès."}, status=status.HTTP_200_OK)

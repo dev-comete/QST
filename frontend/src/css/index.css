@@ -1,0 +1,94 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Playwrite+AR+Guides&display=swap');
+
+@import "tailwindcss";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import './base.css';
+@import './components.css';
+@import './utilities.css';
+@import './scrollbar.css';
+
+@theme {
+	
+	  /* Fonts */
+	--font-sans: 'Nunito', system-ui, sans-serif;
+	--font-mono: 'JetBrains Mono', monospace;
+
+/* Text Colors + shades */
+
+--color-text: #18181b;
+
+--color-text-50: #070a13;
+--color-text-100: #0e1525;
+--color-text-200: #1b294b;
+--color-text-500: #4468bb;
+--color-text-900: #dae1f1;
+
+/*  Background Colors + shades */
+
+--color-background: #dae7f7;
+
+--color-background-50: #080d12;
+--color-background-100: #0f1924;
+--color-background-200: #1f3347;
+--color-background-500: #4d7fb3;
+--color-background-900: #dbe6f0;
+
+/*  Primary Colors + shades */
+
+--color-primary: #2563eb; /* map to 500 */
+
+--color-primary-50: #020917;
+--color-primary-100: #04122f;
+--color-primary-200: #09235d;
+--color-primary-500: #1659e9;
+--color-primary-900: #d0defb;
+
+/*  Secondary Colors + shades */
+
+--color-secondary: #eff6ff; /* map to 500 */
+
+--color-secondary-50: #000b1a;
+--color-secondary-100: #001633;
+--color-secondary-200: #002c66;
+--color-secondary-500: #006eff;
+--color-secondary-900: #cce2ff;
+
+/*  Accent Colors + shades */
+
+--color-accent: #dbeafe; /* map to 500 */
+
+--color-accent-50: #010b19;
+--color-accent-100: #011632;
+--color-accent-200: #032d63;
+--color-accent-500: #066ff9;
+--color-accent-900: #cde2fe;
+
+/* States colors */
+
+
+/* Success (Modern Emerald) */
+--color-success-light: #f0fdf4;
+--color-success: #22c55e;
+--color-success-dark: #15803d;
+
+/* Error (Modern Rose/Red) */
+--color-error-light: #fff1f2;
+--color-error: #f43f5e;
+--color-error-dark: #be123c;
+
+/* Warning (Modern Amber) */
+--color-warning-light: #fffbeb;
+--color-warning: #f59e0b;
+--color-warning-dark: #b45309;
+
+/* Disabled (Modern Slate) */
+--color-disabled-light: #f8fafc;
+--color-disabled: #cbd5e1;
+--color-disabled-dark: #64748b;
+
+}

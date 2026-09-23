@@ -4,13 +4,29 @@ from django.db import models
 class Formation(models.Model):
     # Represents Formation/Dossier
     nom_formation = models.CharField(max_length=200)
+    createur = models.ForeignKey(
+            settings.AUTH_USER_MODEL, 
+            on_delete=models.SET_NULL,
+            null=True,
+            limit_choices_to={'type_utilisateur__type_utilisateur': 'formateur'} # Optional: restricts dropdowns in Django Admin
+        )
 
+    organisation = models.ForeignKey(
+        'accounts.Organisation', 
+        on_delete=models.CASCADE,
+        null=True,   # ⬅️ AJOUTEZ CECI
+        blank=True,
+        related_name='formations'
+    )
+    
     def __str__(self):
         return self.nom_formation
 
 class Vague(models.Model):
+    nom_vague = models.CharField(max_length=255, default="Nouvelle Session")
     formation = models.ForeignKey(Formation, on_delete=models.CASCADE)
-    date_vague = models.DateTimeField()
+    debut = models.DateTimeField()
+    fin = models.DateTimeField()
 
     def __str__(self):
         return f"Vague {self.id} - {self.formation.nom_formation}"

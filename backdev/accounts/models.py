@@ -1,6 +1,14 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+class Organisation(models.Model):
+    nom = models.CharField(max_length=200, unique=True)
+    date_creation = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.nom
+
 class TypeUtilisateur(models.Model):
     type_utilisateur = models.CharField(max_length=100)
 
@@ -21,6 +29,36 @@ class Utilisateur(AbstractUser):
         null=True, 
         blank=True
     )
+
+    organisation = models.ManyToManyField(
+        Organisation, 
+        #on_delete=models.CASCADE, 
+        blank=True,
+        related_name='utilisateurs'
+    )
+
+    @property
+    def orga_principale(self):
+        """
+        Raccourci très pratique !
+        Renvoie l'organisation unique du formateur pour simplifier vos requêtes.
+        """
+        return self.organisation.first()
+
+    def save(self, *args, **kwargs):
+            # 1. Check if this user has a type_utilisateur assigned
+            if self.type_utilisateur is not None:
+                # 2. If the role is "admin", automatically grant Django staff status
+                if self.type_utilisateur.type_utilisateur == 'admin':
+                    self.is_staff = True
+                    self.is_superuser = True # Optional: gives them access to absolutely everything
+                else:
+                    # 3. If they are changed to a student or teacher, strip their admin rights
+                    self.is_staff = False
+                    self.is_superuser = False
+                    
+            # 4. Proceed with the normal save process
+            super().save(*args, **kwargs)
 
     def __str__(self):
         return self.username

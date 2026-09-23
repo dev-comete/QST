@@ -1,0 +1,315 @@
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+
+import PublicRoute from './components/PublicRoute';
+import ProtectedRoute from './components/ProtectedRoute';
+import AdminRoute from './components/AdminRoute';
+import FormateurRoute from './components/FormateurRoute'; 
+import ApprenantRoute from './components/ApprenantRoute';
+
+import MainLayout from './components/MainLayout';
+
+import LoginPage from './pages/LoginPage';
+import DashboardPage from './pages/DashboardPage';
+
+import QuestionBankPage from './pages/QuestionBankPage';
+import QuestionFormPage from './pages/QuestionFormPage';
+
+import QuizListPage from './pages/QuizListPage';
+import QuizCreatePage from './pages/QuizCreatePage';
+import QuizAssignQuestionsPage from './pages/QuizAssignQuestionsPage';
+import QuizQuestionsPage from './pages/QuizQuestionsPage';
+
+import BaremeListPage from './pages/BaremeListPage';
+import BaremeFormPage from './pages/BaremeFormPage';
+
+import FormationListPage from './pages/FormationListPage';
+import FormationFormPage from './pages/FormationFormPage';
+
+import VagueFormPage from './pages/VagueFormPage';
+import VagueListPage from './pages/VagueListPage';
+import VagueDetailPage from './pages/VagueDetailPage';
+
+import UserListPage from './pages/UserListPage';
+import UserFormPage from './pages/UserFormPage';
+
+import OrganisationListPage from './pages/OrganisationListPage';
+import OrganisationFormPage from './pages/OrganisationFormPage';
+
+import SetPasswordPage from './pages/SetPasswordPage';
+
+import StudentDashboardPage from './pages/StudentDashboardPage';
+import TakeQuizPage from './pages/TakeQuizPage';
+import ReviewQuizPage from './pages/ReviewQuizPage';
+
+import VagueAnalyticsPage from './pages/VagueAnalyticsPage';
+import StudentBulletinPage from './pages/StudentBulletinPage';
+
+
+
+function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <Routes>
+          {/* Routes Publiques */}
+            <Route path="/login" element={
+              <PublicRoute>
+                <LoginPage />
+              </PublicRoute>
+            } />
+
+            <Route 
+            path="/set-password/:uid/:token" 
+            element={
+              <PublicRoute>
+                <SetPasswordPage />
+              </PublicRoute>
+            } />
+          
+            {/* Routes Protégées (Nécessite juste d'être connecté) */}
+            <Route 
+              element={
+                <ProtectedRoute>
+                  <MainLayout />
+                </ProtectedRoute>
+              }
+            >
+            {/* Accessible à TOUT le monde (Apprenants, Formateurs, Admins) */}
+            <Route path="/dashboard" element={<DashboardPage />} />
+
+            <Route 
+              path="/student/dashboard" 
+              element={
+                <ApprenantRoute>
+                  <StudentDashboardPage />
+                </ApprenantRoute>
+              }
+            />
+            <Route 
+              path="/student/quizzes/:id/take" 
+              element={
+                <ApprenantRoute>
+                  <TakeQuizPage />
+                </ApprenantRoute>
+              }
+            />
+            <Route 
+              path="/student/quizzes/:id/review" 
+              element={
+                <ApprenantRoute>
+                  <ReviewQuizPage />
+                </ApprenantRoute>
+              }
+            />
+            <Route path="/student/vagues/:id/bulletin" element={<ApprenantRoute><StudentBulletinPage /></ApprenantRoute>} />
+            
+            
+            {/* Routes RESTREINTES (Nécessite le rôle formateur/admin) */}
+            <Route path="/vagues/:id/analytics" element={<FormateurRoute><VagueAnalyticsPage /></FormateurRoute>} />
+
+            <Route 
+              path="/banque-questions" 
+              element={
+                <FormateurRoute>
+                  <QuestionBankPage />
+                </FormateurRoute>
+              } 
+            />
+            <Route 
+              path="/banque-questions/create" 
+              element={
+                <FormateurRoute>
+                  <QuestionFormPage />
+                </FormateurRoute>
+              } 
+            />
+
+            <Route 
+              path="/banque-questions/:id/edit" 
+              element={
+                <FormateurRoute>
+                  <QuestionFormPage />
+                </FormateurRoute>
+              } 
+            />
+            
+              <Route 
+                path="/quizzes" 
+                element={
+                  <FormateurRoute>
+                    <QuizListPage />
+                  </FormateurRoute>
+                } 
+              />
+
+              {/* Création d'un Quiz (DOIT être déclarée explicitement ici) */}
+            <Route 
+              path="/quizzes/create" 
+              element={
+                <FormateurRoute>
+                  <QuizCreatePage />
+                </FormateurRoute>
+              } 
+            />
+
+            <Route 
+              path="/quizzes/:id/edit" 
+              element={
+                <FormateurRoute>
+                  <QuizCreatePage />
+                </FormateurRoute>
+              } 
+            />
+
+            <Route 
+              path="/quizzes/:id/assign" 
+              element={
+                <FormateurRoute>
+                  <QuizAssignQuestionsPage />
+                </FormateurRoute>
+              } 
+            />
+
+            <Route 
+              path="/quizzes/:id/questions" 
+              element={
+                <FormateurRoute>
+                  <QuizQuestionsPage />
+                </FormateurRoute>
+              } 
+            />
+
+            <Route 
+              path="/baremes" 
+              element={
+                <FormateurRoute>
+                  <BaremeListPage />
+                </FormateurRoute>
+              } 
+            />
+
+            <Route 
+              path="/baremes/create" 
+              element={
+                <FormateurRoute>
+                  <BaremeFormPage />
+                </FormateurRoute>
+              } 
+            />
+
+            <Route 
+              path="/baremes/:id/edit" 
+              element={
+                <FormateurRoute>
+                  <BaremeFormPage />
+                </FormateurRoute>
+              } 
+            />
+
+            <Route 
+              path="/formations" 
+              element={
+                <FormateurRoute>
+                  <FormationListPage />
+                </FormateurRoute>
+              } 
+            />
+
+            <Route 
+              path="/formations/create" 
+              element={
+                <FormateurRoute>
+                  <FormationFormPage />
+                </FormateurRoute>
+              } 
+            />
+
+            <Route 
+              path="/formations/:id/edit" 
+              element={
+                <FormateurRoute>
+                  <FormationFormPage />
+                </FormateurRoute>
+              } 
+            />
+
+            <Route 
+              path="/vagues/create" 
+              element={
+                <FormateurRoute>
+                  <VagueFormPage />
+                </FormateurRoute>
+              } 
+            />
+
+            <Route 
+              path="/vagues/:id/edit" 
+              element={
+                <FormateurRoute>
+                  <VagueFormPage />
+                </FormateurRoute>
+              } 
+            />
+
+            <Route 
+              path="/vagues" 
+              element={
+                <FormateurRoute>
+                  <VagueListPage />
+                </FormateurRoute>
+              } 
+            />
+
+            <Route 
+              path="/vagues/:id" 
+              element={
+                <FormateurRoute>
+                  <VagueDetailPage />
+                </FormateurRoute>
+              } 
+            />
+            <Route 
+              path="/users" 
+              element={
+                <AdminRoute>
+                  <UserListPage />
+                </AdminRoute>
+              }
+            />
+            <Route 
+              path="/users/create" 
+              element={
+                <AdminRoute>
+                  <UserFormPage />
+                </AdminRoute>
+              }
+            />
+            <Route 
+              path="/users/:id/edit" 
+              element={
+                <AdminRoute>
+                  <UserFormPage />
+                </AdminRoute>
+              }
+            />
+
+            <Route path="/organisations" element={<AdminRoute><OrganisationListPage /></AdminRoute>} />
+
+            <Route path="/organisations/create" element={<AdminRoute><OrganisationFormPage /></AdminRoute>} />
+
+            <Route path="/organisations/:id/edit" element={<AdminRoute><OrganisationFormPage /></AdminRoute>} />
+
+          </Route>
+          
+          {/* Fallbacks */}
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
+  );
+}
+
+export default App;

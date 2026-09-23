@@ -1,0 +1,70 @@
+import type React from "react";
+import type { ColorTheme } from "../../../other/types/common";
+
+type TextType = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span' | 'caption';
+
+type TextWeight = 'light' | 'normal' | 'bold';
+
+interface TextProps {
+	children: React.ReactNode
+	textTag?: TextType
+	weight?: TextWeight
+	color?: ColorTheme
+	isItalic?: boolean
+	className?: string
+}
+
+const textBase : Record<TextType, string> = {
+	'h1': 'text-2xl',
+	'h2': 'text-xl',
+	'h3': 'text-lg',
+	'h4': 'text-md',
+	'h5': 'text-sm',
+	'h6': 'text-xs',
+	'p': 'text-base',
+	'span': 'text-base',
+	'caption': 'text-sm'
+};
+
+const textWeight : Record<TextWeight, string> = {
+	'light': 'font-light',
+	'normal': 'font-normal',
+	'bold': 'font-bold'
+}
+
+const textColor : Record<ColorTheme, string> = {
+	'background': 'text-background',
+	'primary': 'text-primary',
+	'secondary': 'text-secondary',
+	'accent': 'text-accent',
+	'success': 'text-success',
+	'error': 'text-error',
+	'warning': 'text-warning',
+	'text': 'text-text',
+	'white': 'text-white',
+	'disabled' : 'text-disabled',
+	'transparent' : 'text-transparent'
+}
+
+const CustomText = ({
+	children,
+	textTag : Tag = "p",
+	color = 'text',
+	weight = "normal",
+	isItalic,
+	className
+}: TextProps) => {
+
+	if (textBase[Tag] === undefined)
+		return <p className="text-base">{children}</p>;
+	
+	const textStyling = `${textBase[Tag]} ${textWeight[weight]} ${textColor[color]} ${isItalic ? "italic" : null} ${className}`;
+
+	return (
+		<Tag className={textStyling}>
+			{children}
+		</Tag>
+	)
+}
+
+export default CustomText;

@@ -1,0 +1,63 @@
+import type { bankQuestionType, questionIdType, questionType } from "../types/questionType";
+import apiClient from "./apiClient";
+
+const QUESTION_URL = import.meta.env.VITE_CRUD_QUESTION
+
+export interface BankQuestionParams {
+	search?: string;
+	type?: string;
+	page?: number;
+}
+
+export const QuestionService = {
+	create : async ( data : questionType) => {
+		const url = import.meta.env.VITE_CREATE_QUESTION
+		const response = await apiClient.post(url, data);
+		return response.data;
+	},
+
+	edit : async ( data : questionType) => {
+		const url = import.meta.env.VITE_CREATE_QUESTION
+		const response = await apiClient.put(url, data);
+		return response.data;
+	},
+
+	getTypeQuestion : async () => {
+		const url = import.meta.env.VITE_TYPE_QUESTION
+		const response = await apiClient.get(url);
+		return response.data as questionIdType[];
+	},
+
+	list: async ({ search, type, page }: BankQuestionParams) => {
+		const url = import.meta.env.VITE_BANK_QUESTION
+
+		const queryParams = new URLSearchParams({
+			search: search ?? '',
+			type: type ?? '',
+			page: page ? page.toString() : '1',
+		}).toString();
+
+		const response = await apiClient.get(`${url}?${queryParams}`);
+		const result = response.data.results as bankQuestionType[]
+		return result;
+	},
+
+	info: async (id: string) => {
+		const response = await apiClient.get(QUESTION_URL + id + '/');
+		const result = response.data as bankQuestionType
+		return result;
+	},
+
+	detail: async (id: string) => {
+		const url = import.meta.env.VITE_CREATE_QUESTION
+		const response = await apiClient.get(url + id + '/');
+		const result = response.data as bankQuestionType
+		return result;
+	},
+
+	delete: async (id: number) => {
+		const response = await apiClient.delete(QUESTION_URL + id + '/');
+		const result = response.data
+		return result;
+	},
+}

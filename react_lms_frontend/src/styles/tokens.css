@@ -1,0 +1,78 @@
+/* ==========================================================================
+   Design tokens — LMS Formateur Console
+   A ledger-inspired palette: deep harbor blue, paper surfaces, ink text.
+   No orange, no full dark mode — a calm, professional daylight interface.
+   ========================================================================== */
+
+:root {
+  /* Typefaces */
+  --font-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+
+  /* Core palette */
+  --color-ink: #1c2530;
+  --color-ink-soft: #34404d;
+  --color-slate: #5b6b7c;
+  --color-slate-light: #8996a4;
+  --color-mist: #eef1f5;
+  --color-mist-strong: #e3e8ee;
+  --color-paper: #ffffff;
+  --color-border: #dce2e8;
+  --color-border-strong: #c3ccd6;
+
+  /* Brand accent — "harbor" deep teal-navy */
+  --color-harbor: #1f4e5f;
+  --color-harbor-dark: #163945;
+  --color-harbor-darker: #0f2a33;
+  --color-harbor-light: #e4edef;
+  --color-harbor-tint: #d5e4e7;
+
+  /* Semantic colors */
+  --color-success: #2f6b4f;
+  --color-success-strong: #235a41;
+  --color-success-light: #e3f0e9;
+  --color-danger: #a33a3a;
+  --color-danger-strong: #8c2f2f;
+  --color-danger-light: #f7e9e9;
+  --color-warning: #93691f;
+  --color-warning-light: #f6eeda;
+  --color-info: #2b5f8a;
+  --color-info-light: #e6eef5;
+
+  /* Radii */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 14px;
+  --radius-pill: 999px;
+
+  /* Shadows — kept flat and quiet */
+  --shadow-xs: 0 1px 2px rgba(28, 37, 48, 0.05);
+  --shadow-sm: 0 1px 3px rgba(28, 37, 48, 0.08), 0 1px 2px rgba(28, 37, 48, 0.04);
+  --shadow-md: 0 8px 24px rgba(28, 37, 48, 0.09);
+  --shadow-focus: 0 0 0 3px rgba(31, 78, 95, 0.22);
+
+  /* Spacing scale */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 2.5rem;
+  --space-8: 3rem;
+
+  /* Type scale */
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-base: 0.9375rem;
+  --text-md: 1.0625rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.625rem;
+  --text-2xl: 2rem;
+
+  /* Motion */
+  --ease-standard: cubic-bezier(0.2, 0.6, 0.2, 1);
+  --duration-fast: 120ms;
+  --duration-base: 180ms;
+}

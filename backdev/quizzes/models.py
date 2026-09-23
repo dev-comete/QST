@@ -1,18 +1,68 @@
 from django.conf import settings
 from django.db import models
 
+class ActiveManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(is_active=True)
+
 class Quiz(models.Model):
+    titre = models.CharField(
+        max_length=255, 
+        default="Quiz sans titre", 
+        help_text="Le nom ou le titre de ce quiz"
+    )
     # Represents Sous dossier/Quiz
     formation = models.ForeignKey('formations.Formation', on_delete=models.CASCADE)
     date_creation_quiz = models.DateTimeField(auto_now_add=True)
     duree = models.DurationField(help_text="Durée allouée pour le quiz")
-    status = models.CharField(max_length=50)
+    status = models.CharField(max_length=50, default='draft', help_text="draft (brouillon), published (publié), deleted (supprimé)")
+
+    date_ouverture = models.DateTimeField(
+        null=True, 
+        blank=True, 
+        help_text="Date et heure à partir desquelles le quiz est accessible"
+    )
+    date_fermeture = models.DateTimeField(
+        null=True, 
+        blank=True, 
+        help_text="Date et heure limites pour démarrer le quiz"
+    )
+
+    is_active = models.BooleanField(default=True)
+
+    # NOUVEAU : On assigne les Managers
+    objects = ActiveManager()      # Le manager par défaut filtre les actifs
+    all_objects = models.Manager() # Pour garder un accès à tout (archives)
+
+    def delete(self, *args, **kwargs):
+        self.is_active = False
+        self.status = 'deleted'
+        self.save()
 
     def __str__(self):
-        return f"Quiz {self.id} - {self.formation.nom_formation}"
+        return f"Quiz {self.id} -{self.titre}- {self.formation.nom_formation}"
 
 class Question(models.Model):
     enonce_question = models.TextField()
+
+    # NOUVEAU : Le champ pour le Soft Delete
+    is_active = models.BooleanField(default=True)
+
+    organisation = models.ForeignKey(
+        'accounts.Organisation', 
+        on_delete=models.CASCADE,
+        null=True,   
+        blank=True
+    )
+
+    # NOUVEAU : On assigne les Managers
+    objects = ActiveManager()
+    all_objects = models.Manager()
+
+    # NOUVEAU : On surcharge la suppression
+    def delete(self, *args, **kwargs):
+        self.is_active = False
+        self.save()
 
     def __str__(self):
         return self.enonce_question[:50]
@@ -20,8 +70,15 @@ class Question(models.Model):
 class TypeQuestion(models.Model):
     type_question = models.CharField(max_length=100)
 
+    code = models.CharField(
+        max_length=10, 
+        unique=True, 
+        null=True,
+        help_text="Code système immuable (ex: QCU, QCM, OUV)"
+    )
+
     def __str__(self):
-        return self.type_question
+        return f"{self.type_question} ({self.code})"
 
 class Reponse(models.Model):
     reponse = models.TextField()
@@ -36,18 +93,35 @@ class Bareme(models.Model):
         return f"{self.pts} pts"
 
 class UtilisateurQuiz(models.Model):
-    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
     utilisateur = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    quiz = models.ForeignKey('Quiz', on_delete=models.CASCADE)
+    vague = models.ForeignKey('formations.Vague', on_delete=models.CASCADE, null=True, blank=True)
+    
+    # We add these fields to track the final result
+    score_obtenu = models.FloatField(default=0.0)
+    termine = models.BooleanField(default=False)
+    date_assignation = models.DateTimeField(auto_now_add=True)
+
+    heure_debut = models.DateTimeField(null=True, blank=True, help_text="Heure à laquelle l'étudiant a commencé le quiz")
 
     class Meta:
-        unique_together = ('quiz', 'utilisateur')
+        unique_together = ('quiz', 'utilisateur', 'vague')
+
+    def __str__(self):
+        return f"{self.utilisateur.username} - {self.quiz.id} - Score: {self.score_obtenu}"
 
 class QuizQuestion(models.Model):
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    type_question = models.ForeignKey(TypeQuestion, on_delete=models.CASCADE)
+    bareme = models.ForeignKey(Bareme, on_delete=models.CASCADE)
 
     class Meta:
-        unique_together = ('quiz', 'question')
+            # A quiz can't have the exact same question/type/bareme combo twice
+        unique_together = ('quiz', 'question', 'type_question', 'bareme')
+            
+    def __str__(self):
+        return f"{self.quiz.id} | {self.question.id} ({self.type_question} - {self.bareme})"
 
 class QuestionTypeQuestion(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
@@ -60,8 +134,23 @@ class Corrigee(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     reponse = models.ForeignKey(Reponse, on_delete=models.CASCADE)
 
+    est_correct = models.BooleanField(
+        default=False,
+        help_text="Cochez si cette réponse est la bonne."
+    )
+
+    explication = models.TextField(
+        blank=True, 
+        null=True,
+        help_text="Explication affichée pour ce choix spécifique lors de la correction."
+    )
+
     class Meta:
         unique_together = ('question', 'reponse')
+
+    def __str__(self):
+        status = "Correct" if self.est_correct else "Faux"
+        return f"Q{self.question.id} - {self.reponse.reponse[:20]} ({status})"
 
 class QuestionBareme(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
@@ -71,13 +160,24 @@ class QuestionBareme(models.Model):
         unique_together = ('question', 'bareme')
 
 class Valiny(models.Model):
-    # Stores the actual answer the user chose or typed
-    user_valiny = models.TextField(help_text="La réponse choisie ou saisie par l'apprenant")
-    corrigee = models.ForeignKey(Corrigee, on_delete=models.CASCADE)
     utilisateur = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    pts = models.FloatField(default=0.0)
-    vrai_ou_faux = models.BooleanField()
+    question = models.ForeignKey('Question', on_delete=models.CASCADE)
 
+    quiz = models.ForeignKey('Quiz', on_delete=models.CASCADE, null=True, blank=True)
+    vague = models.ForeignKey('formations.Vague', on_delete=models.CASCADE, null=True, blank=True)
+    
+    # M2M links the user's attempt to the predefined Reponse objects
+    reponses_choisies = models.ManyToManyField(
+        'Reponse', 
+        blank=True,
+        help_text="Les options sélectionnées par l'apprenant pour les QCM/QCU"
+    )
+    
+    # We keep a text field for open-ended questions (if needed later)
+    reponse_ouverte = models.TextField(blank=True, null=True)
+
+    pts = models.FloatField(default=0.0)
+    vrai_ou_faux = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"Réponse donnée : {self.user_valiny[:50]} - ({self.vrai_ou_faux})"
+        return f"Valiny: {self.utilisateur.username} - Q: {self.question.id}"

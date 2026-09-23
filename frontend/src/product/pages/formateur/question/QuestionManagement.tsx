@@ -1,0 +1,24 @@
+import { useAppNavigation } from "../../../../other/hooks/navigation/useAppNavigation";
+import ActionButton from "../../../../system/molecules/Buttons/ActionButton";
+import QuestionList from "../../../../system/organisms/question/list/QuestionList";
+import BodyLayout from "../../../layout/common/BodyLayout";
+
+const QuestionManagement = () => {
+
+	const { navigateTo } = useAppNavigation()
+
+    return (
+        <BodyLayout
+			title={"Banque de questions"}
+			titleButton={
+				<ActionButton
+					onClick={() => navigateTo("creation_question")}
+				>{"+ Créer une question"}</ActionButton>
+			}
+		>
+			<QuestionList />
+		</BodyLayout>
+    )
+}
+
+export default QuestionManagement;

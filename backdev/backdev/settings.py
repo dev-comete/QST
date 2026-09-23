@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 import os
 import environ
 from pathlib import Path
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,42 +30,46 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 
-#SECRET_KEY = 'django-insecure-&4i12nu32-bcc)b@^8lc!spost6&*e1y)8=7k$9xokednjr&v%'
+SECRET_KEY = 'django-insecure-&4i12nu32-bcc)b@^8lc!spost6&*e1y)8=7k$9xokednjr&v%'
+GEMINI_API_KEY = env('GEMINI_API_KEY', default=None)
 
-SECRET_KEY = env('DJANGO_SECRET_KEY')
+# SECRET_KEY = env('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
+
 ALLOWED_HOSTS = [
     '8000-cs-053069f0-3449-4470-96df-35d3150becaf.cs-asia-southeast1-fork.cloudshell.dev',
+    '8000-cs-629375525277-default.cs-asia-southeast1-palm.cloudshell.dev'
     '127.0.0.1',
-    'localhost'
+    'localhost',
+    '127.0.0.1:8000',
+    FRONTEND_URL,
+    '*'
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000',
+    'http://localhost:3001',
     'http://127.0.0.1:8000',
-    'https://8000-cs-053069f0-3449-4470-96df-35d3150becaf.cs-asia-southeast1-fork.cloudshell.dev'
+    'http://127.0.0.1:3001',
+    FRONTEND_URL,
+    'https://8000-cs-053069f0-3449-4470-96df-35d3150becaf.cs-asia-southeast1-fork.cloudshell.dev',
+    'https://8000-cs-629375525277-default.cs-asia-southeast1-palm.cloudshell.dev'
   
 ]
 
-CSRF_ALLOWED_ORIGINS = [
-    'localhost:8000',
-    '127.0.0.1:8000',
-    '8000-cs-053069f0-3449-4470-96df-35d3150becaf.cs-asia-southeast1-fork.cloudshell.dev'
-]
-
-CORS_ALLOWED_ORIGINS = [
-    'localhost:8000',
-    '127.0.0.1:8000',
-    '8000-cs-053069f0-3449-4470-96df-35d3150becaf.cs-asia-southeast1-fork.cloudshell.dev'
-]
+CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_TRUSTED_ORIGINS = [
     'http://localhost:8000',
     'http://127.0.0.1:8000',
-    'https://8000-cs-053069f0-3449-4470-96df-35d3150becaf.cs-asia-southeast1-fork.cloudshell.dev'
+    'http://127.0.0.1:3001',
+    FRONTEND_URL,
+    'https://8000-cs-053069f0-3449-4470-96df-35d3150becaf.cs-asia-southeast1-fork.cloudshell.dev',
+    'https://8000-cs-629375525277-default.cs-asia-southeast1-palm.cloudshell.dev'
 ]
 
 
@@ -77,31 +82,55 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'accounts',
     'formations',
-    'quizzes'
+    'quizzes',
+    'ia'
 ]
 
 MIDDLEWARE = [
-    'django.middleware.csrf.CsrfViewMiddleware',
+    'corsheaders.middleware.CorsMiddleware', # Toujours en premier, c'est parfait
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware', # ⬅️ Déplacé ici (DOIT être avant CSRF)
+    'django.middleware.common.CommonMiddleware',            # ⬅️ Déplacé ici
+    'django.middleware.csrf.CsrfViewMiddleware',            # ⬅️ Déplacé ici (Sécurise la session)
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+    # Optional: Force all endpoints to require authentication by default
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}
+
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
 
 ROOT_URLCONF = 'backdev.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -116,7 +145,8 @@ WSGI_APPLICATION = 'backdev.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-"""DATABASES = {
+"""
+DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': env('DB_NAME'),
@@ -128,8 +158,9 @@ WSGI_APPLICATION = 'backdev.wsgi.application'
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
         }
     }
-}"""
+}
 
+"""
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -178,3 +209,12 @@ STATIC_URL = 'static/'
 
 # Tells Django to use the 'Utilisateur' model in the 'accounts' app for authentication
 AUTH_USER_MODEL = 'accounts.Utilisateur'
+
+# Configuration SMTP pour Gmail
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = env('EMAIL_HOST_USER') # Optionnel: remplace 'noreply@comete.ai' par votre adresse Gmail
