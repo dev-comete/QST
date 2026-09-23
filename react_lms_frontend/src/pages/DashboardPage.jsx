@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Navigate } from 'react-router-dom';
+import { Navigate , useNavigate} from 'react-router-dom';
 import { DashboardService } from '../api/dashboard.service';
 import '../styles/index.css';
 
 const DashboardPage = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   // SÉCURITÉ : Si c'est un apprenant, on le renvoie dans son espace instantanément
   if (user?.role === 'apprenant') {
@@ -57,9 +58,14 @@ const DashboardPage = () => {
         </div>
 
         {/* --- KPIs --- */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--space-4)', marginBottom: 'var(--space-6)' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--space-4)', marginBottom: 'var(--space-6)' }} >
           {metrics.stats.map((stat) => (
-            <div key={stat.label} className="lms-card lms-card--tab" style={{ borderLeftColor: stat.tone === 'harbor' ? 'var(--color-harbor)' : stat.tone === 'success' ? 'var(--color-success)' : stat.tone === 'info' ? 'var(--color-info)' : 'var(--color-warning)' }}>
+            <div key={stat.label} className="lms-card lms-card--tab" onClick={() => stat.link && navigate(stat.link)} style={{ borderLeftColor: stat.tone === 'harbor' ? 'var(--color-harbor)' : stat.tone === 'success' ? 'var(--color-success)' : stat.tone === 'info' ? 'var(--color-info)' : 'var(--color-warning)' }} onMouseEnter={(e) => { 
+                if(stat.link) e.currentTarget.style.transform = 'translateY(-2px)';
+              }}
+              onMouseLeave={(e) => { 
+                if(stat.link) e.currentTarget.style.transform = 'none';
+              }} >
               <div className="lms-card__header" style={{ marginBottom: 'var(--space-3)' }}>
                 <span className="lms-card__title" style={{ fontSize: 'var(--text-sm)', color: 'var(--color-slate)' }}>{stat.label}</span>
               </div>
@@ -85,7 +91,7 @@ const DashboardPage = () => {
                 <p style={{ color: 'var(--color-slate)', fontSize: 'var(--text-sm)' }}>Aucun quiz publié récemment.</p>
               ) : (
                 metrics.recentQuizzes.map((quiz, index) => (
-                  <div key={index} style={{ border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', padding: 'var(--space-3) var(--space-4)', background: 'var(--color-mist)' }}>
+                  <div key={index} onClick={() => quiz.id && navigate(`/quizzes/${quiz.id}/questions`)} style={{ border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', padding: 'var(--space-3) var(--space-4)', background: 'var(--color-mist)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-2)' }}>
                       <strong style={{ fontSize: 'var(--text-sm)' }}>{quiz.name}</strong>
                       <span className="lms-badge lms-badge--neutral">{quiz.status}</span>
@@ -116,7 +122,7 @@ const DashboardPage = () => {
                 <p style={{ color: 'var(--color-slate)', fontSize: 'var(--text-sm)' }}>Aucune session planifiée à venir.</p>
               ) : (
                 metrics.upcomingSessions.map((session, index) => (
-                  <div key={index} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 'var(--space-3)', borderBottom: '1px solid var(--color-border)', paddingBottom: 'var(--space-2)' }}>
+                  <div key={index} onClick={() => session.id && navigate(`/vagues/${session.id}`)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 'var(--space-3)', borderBottom: '1px solid var(--color-border)', paddingBottom: 'var(--space-2)' }}>
                     <div>
                       <div style={{ fontWeight: 600 }}>{session.name}</div>
                       <div style={{ fontSize: 'var(--text-sm)', color: 'var(--color-slate)' }}>{session.date}</div>

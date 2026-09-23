@@ -34,7 +34,6 @@ def get_dashboard_metrics_service(user):
     taux_reussite = "0%"
     
     if tentatives.exists():
-        # 🌟 CORRECTION DU CALCUL : Calcul précis point par point
         quiz_ids = set(t.quiz_id for t in tentatives)
         
         quiz_max_pts = dict(
@@ -51,11 +50,13 @@ def get_dashboard_metrics_service(user):
             moyenne_pct = (points_obtenus / points_max_total) * 100
             taux_reussite = f"{round(moyenne_pct)}%"
 
+    # 🌟 NOUVEAU : Ajout de la clé "link" pour la redirection React
+    # (Ajustez les URL selon les vraies routes de votre frontend)
     stats = [
-        {"label": "Formations", "value": str(total_formations), "change": "Actives", "tone": "harbor"},
-        {"label": "Quiz publiés", "value": str(total_quiz_actifs), "change": "En ligne", "tone": "success"},
-        {"label": "Questions", "value": str(total_questions), "change": "Dans la banque", "tone": "info"},
-        {"label": "Taux de réussite", "value": taux_reussite, "change": "Global", "tone": "warning"},
+        {"label": "Formations", "value": str(total_formations), "change": "Actives", "tone": "harbor", "link": "/formations"},
+        {"label": "Quiz publiés", "value": str(total_quiz_actifs), "change": "En ligne", "tone": "success", "link": "/quizzes"},
+        {"label": "Questions", "value": str(total_questions), "change": "Dans la banque", "tone": "info", "link": "/banque-questions"},
+        {"label": "Taux de réussite", "value": taux_reussite, "change": "Global", "tone": "warning", "link": None}, # None car pas de page spécifique
     ]
 
     # --- 3. Quiz Récents ---
@@ -71,6 +72,7 @@ def get_dashboard_metrics_service(user):
         elif completion_pct > 0: status_text = "En cours"
 
         recent_quizzes.append({
+            "id": q.id, # 🌟 NOUVEAU : Requis pour navigate(`/quizzes/${quiz.id}`)
             "name": q.titre,
             "completion": f"{completion_pct}%",
             "status": status_text
@@ -80,9 +82,10 @@ def get_dashboard_metrics_service(user):
     upcoming_sessions = []
     for v in vagues.filter(debut__gte=now()).order_by('debut')[:3]:
         upcoming_sessions.append({
-            "name": v.nom_vague, # 🌟 NOUVEAU : On utilise le nom de la vague
-            "formation_nom": v.formation.nom_formation, # On garde l'info au cas où le front en a besoin
-            "date": v.debut.strftime("%d/%m/%Y") # Format plus standard
+            "id": v.id, # 🌟 NOUVEAU : Requis pour navigate(`/sessions/${session.id}`)
+            "name": v.nom_vague, 
+            "formation_nom": v.formation.nom_formation,
+            "date": v.debut.strftime("%d/%m/%Y") 
         })
 
     return {
