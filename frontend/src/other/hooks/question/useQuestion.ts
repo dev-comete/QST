@@ -13,7 +13,7 @@ export const useQuestionDel = (id: number) => {
 			queryClient.invalidateQueries({ queryKey: ['bank_question'] })
 		},
 		onError: (err) => {
-			console.error('Organisation creation failed:', err);
+			console.error('Question deletion failed:', err);
 		},
 	});
 
@@ -27,19 +27,44 @@ export const useQuestionDel = (id: number) => {
 	}
 }
 
+export const useQuestionRestore = (id: number) => {
+
+	const queryClient = useQueryClient()
+
+	const restoreMutation = useMutation({
+		mutationFn: QuestionService.restore,
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ['bank_question'] })
+		},
+		onError: (err) => {
+			console.error('Question restoration failed:', err);
+		},
+	});
+
+	const handleQuestionRestore = async () => {
+		return await restoreMutation.mutateAsync(id)
+	}
+
+	return {
+		handleQuestionRestore,
+		isPending: restoreMutation.isPending
+	}
+}
+
 type UseQuestionParams = {
 	id?: string
 	search?: string
 	type?: string
 	page?: number
 	timer?: string
+	listType?: string
 }
 
-const useQuestion = ({ id, search, type, page } : UseQuestionParams) => {
+const useQuestion = ({ id, search, type, page, listType } : UseQuestionParams) => {
 
 	const list = useQuery({
 		queryKey: ['bank_question', search, type, page],
-		queryFn: () => QuestionService.list({ search, type, page }),
+		queryFn: () => QuestionService.list({ search, type, page, listType }),
 	})
 
 	const questionTypeQuery = useQuery({

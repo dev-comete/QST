@@ -130,13 +130,13 @@ export const Table = <T,>({
                 </div> */}
 				<Box className="items-center w-full justify-center">
 					<IconButton
-						iconName="chevron-left"
+						iconName="caret-left"
 						action={() => setPage((prev) => Math.max(prev - 1, 1))}
 						disabled={page <= 1}
 					/>
 					<CustomText textTag="h6" className="bg-background p-2 rounded-lg">{page}</CustomText>
 					<IconButton
-						iconName="chevron-right"
+						iconName="caret-right"
 						action={() => setPage((prev) => (prev + 1))}
 						disabled={!hasNextPage}
 					/>

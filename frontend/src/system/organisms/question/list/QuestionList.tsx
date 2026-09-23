@@ -1,4 +1,4 @@
-import { useQuestion, useQuestionDel } from "../../../../other/hooks/question/useQuestion"
+import { useQuestion, useQuestionDel, useQuestionRestore } from "../../../../other/hooks/question/useQuestion"
 import type { bankQuestionType } from "../../../../other/types/questionType"
 import Box from "../../../atoms/Container/Box"
 import FetchError from "../../../atoms/Loading/FetchError"
@@ -14,38 +14,56 @@ import { getSelectData } from "../../../../other/helper/helper"
 import useDebounce from "../../../../other/hooks/question/useDebounce"
 import FAIcon from "../../../atoms/Icon/FAIcon"
 
-const ActionCell = ({ questionId }: { 
+const ActionCell = ({ questionId, listType }: { 
     rowId: string | number | boolean | string[]
 	setSelectedId: Dispatch<SetStateAction<number | null>>
 	questionId: number
+	listType?: string
 }) => {    
 
 	const { navigateTo } = useAppNavigation()
 
 	const { handleQuestionDel, isPending } = useQuestionDel(questionId)
+	const { handleQuestionRestore, isPending : restorePending } = useQuestionRestore(questionId)
 
     return (
         <Box>
-			<IconButton
-				title="Modifier"
-                iconName="edit"
-                iconStyling="text-text hover:text-success"
-                action={() => navigateTo('gestion_question/' + questionId + '/edit')}
-            />
-			<IconConfirmActionButton
-				iconName="trash"
-				iconStyling="text-text hover:text-error"
-				action={handleQuestionDel}
-				confirmText="Voulez-vous vraiment supprimer la question?"
-				isLoading={isPending}
-				title="Supprimer"
-			/>
+			{listType == 'bank' && 
+				<>
+					<IconButton
+						title="Modifier"
+						iconName="edit"
+						iconStyling="text-text hover:text-success"
+						action={() => navigateTo('gestion_question/' + questionId + '/edit')}
+					/>
+					<IconConfirmActionButton
+						iconName="trash"
+						iconStyling="text-text hover:text-error"
+						action={handleQuestionDel}
+						confirmText="Voulez-vous vraiment supprimer la question?"
+						isLoading={isPending}
+						title="Supprimer"
+					/>
+				</>
+			}
+			{
+				listType == 'trash' && <IconConfirmActionButton
+					iconName="rotate-left"
+					iconStyling="text-text hover:text-primary"
+					action={handleQuestionRestore}
+					confirmText="Voulez-vous vraiment restaurer la question?"
+					isLoading={restorePending}
+					title="Restaurer"
+				/>
+
+			}
         </Box>
     );
 };
 
 const getQuestionTabColumn = (
-	setSelectedId: Dispatch<SetStateAction<number | null>>
+	setSelectedId: Dispatch<SetStateAction<number | null>>,
+	listType: string
 ): Column<bankQuestionType>[] => [
 
 	{
@@ -55,20 +73,22 @@ const getQuestionTabColumn = (
 	{
 		header: "Action",
 		key: 'id',
-		render: (_val, row, index) => <ActionCell
+		render: (_val, row, index) => 
+		<ActionCell
 			rowId={index ? index : 0}
 			setSelectedId={setSelectedId}
 			questionId={Number(row?.id)}
+			listType={listType}
 		/>
 	}
 ]
 
-const QuestionList = () => {
+const QuestionList = ({ listType = 'bank'} : { listType?: 'bank' | 'trash'}) => {
 	const [ search, setSearch ] = useState('')
 	const [ type, setType ] = useState('')
 	const [ page, setPage ] = useState(1)
 	const { debouncedValue, setDebouncedValue } = useDebounce(search, 500);
-	const { list, questionTypeQuery } = useQuestion({ search : debouncedValue, type, page })
+	const { list, questionTypeQuery } = useQuestion({ search : debouncedValue, type, page, listType })
 	const { data: questionsData, status } = list
 	const { data : questionType, isPending } = questionTypeQuery
 
@@ -98,12 +118,12 @@ const QuestionList = () => {
 		else setType(value)
 	}
 
-	const { count, next, prev, results: questions } = questionsData ?? {}
+	const { next, results: questions } = questionsData ?? {}
 
 	return (
 		<Box direction="column" className="w-full items-center justify-center">
 			{isLoading && <Loading />}
-			{selectedId === null &&
+			{!isLoading && selectedId === null &&
 				<>
 					{/* Filters */}
 					<Box className="flex items-center self-start w-2/3">
@@ -137,7 +157,7 @@ const QuestionList = () => {
 
 					{/* Table */}
 					<Table 
-						columns={getQuestionTabColumn(setSelectedId)}
+						columns={getQuestionTabColumn(setSelectedId, listType)}
 						data={questions ?? []}
 						rowKey={'id'}
 						onRowClick={(_row, idx) => setSelectedId(idx)}
@@ -152,7 +172,7 @@ const QuestionList = () => {
 					/>
 				</>
 			}
-			{ selectedId != null && questions && questions[selectedId] && 
+			{ !isLoading && selectedId != null && questions && questions[selectedId] && 
 				<QuestionDetail
 					question={questions[selectedId]}
 					setSelectedId={setSelectedId}

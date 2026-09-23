@@ -34,7 +34,24 @@ type formationType = {
 	organisation: string | null	
 }
 
-type ColorTheme = 'background' | 'primary' | 'secondary' | 'accent' | 'success' | 'error' | 'warning' | 'text' | 'white' | 'disabled' | 'transparent';
+type ColorTheme = 
+	'background' 
+	| 'primary' 
+	| 'secondary' 
+	| 'accent' 
+	| 'success' 
+	| 'success-light' 
+	| 'success-dark' 
+	| 'error' 
+	| 'error-light' 
+	| 'error-dark' 
+	| 'warning' 
+	| 'warning-light' 
+	| 'warning-dark' 
+	| 'text' 
+	| 'white' 
+	| 'disabled' 
+	| 'transparent';
 
 type Role = 'admin' | 'formateur' | 'apprenant' | 'rfq'
 
