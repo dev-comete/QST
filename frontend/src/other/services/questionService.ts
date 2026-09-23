@@ -1,3 +1,4 @@
+import type { PaginatedData } from "../types/common";
 import type { bankQuestionType, questionIdType, questionType } from "../types/questionType";
 import apiClient from "./apiClient";
 
@@ -37,9 +38,8 @@ export const QuestionService = {
 			page: page ? page.toString() : '1',
 		}).toString();
 
-		const response = await apiClient.get(`${url}?${queryParams}`);
-		const result = response.data.results as bankQuestionType[]
-		return result;
+		const response = await apiClient.get<PaginatedData<bankQuestionType>>(`${url}?${queryParams}`);
+		return response.data;
 	},
 
 	info: async (id: string) => {

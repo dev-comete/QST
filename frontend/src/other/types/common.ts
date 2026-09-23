@@ -38,9 +38,17 @@ type ColorTheme = 'background' | 'primary' | 'secondary' | 'accent' | 'success' 
 
 type Role = 'admin' | 'formateur' | 'apprenant' | 'rfq'
 
+interface PaginatedData<T> {
+	count: number
+	next: string | null
+	prev: string | null
+	results: T[]
+}
+
 export type {
 	ColorTheme,
 	Role,
 	authData,
-	formationType
+	formationType,
+	PaginatedData
 }

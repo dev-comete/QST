@@ -38,7 +38,7 @@ type UseQuestionParams = {
 const useQuestion = ({ id, search, type, page } : UseQuestionParams) => {
 
 	const list = useQuery({
-		queryKey: ['bank_question', search, type],
+		queryKey: ['bank_question', search, type, page],
 		queryFn: () => QuestionService.list({ search, type, page }),
 	})
 

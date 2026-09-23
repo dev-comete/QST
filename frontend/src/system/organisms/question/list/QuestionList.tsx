@@ -69,7 +69,7 @@ const QuestionList = () => {
 	const [ page, setPage ] = useState(1)
 	const { debouncedValue, setDebouncedValue } = useDebounce(search, 500);
 	const { list, questionTypeQuery } = useQuestion({ search : debouncedValue, type, page })
-	const { data: questions, status } = list
+	const { data: questionsData, status } = list
 	const { data : questionType, isPending } = questionTypeQuery
 
 	const isLoading = status === 'pending' || isPending
@@ -83,7 +83,7 @@ const QuestionList = () => {
 		setPage(1)
 	}
 
-	if (!isLoading && (!questions || !questionType)) {
+	if (!isLoading && (!questionsData || !questionType)) {
 		return <FetchError />
 	}
 
@@ -97,7 +97,9 @@ const QuestionList = () => {
 		if (value === 'Tous les types') setType('')
 		else setType(value)
 	}
-	
+
+	const { count, next, prev, results: questions } = questionsData ?? {}
+
 	return (
 		<Box direction="column" className="w-full items-center justify-center">
 			{isLoading && <Loading />}
@@ -139,6 +141,9 @@ const QuestionList = () => {
 						data={questions ?? []}
 						rowKey={'id'}
 						onRowClick={(_row, idx) => setSelectedId(idx)}
+						page={page}
+						setPage={setPage}
+						hasNextPage={next != null}
 						emptyTitle={
 							search.length === 0 ?
 							"Il n'y a pas encore de question, veuillez en créer"
