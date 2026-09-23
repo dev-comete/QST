@@ -6,13 +6,19 @@ class StatItemSerializer(serializers.Serializer):
     value = serializers.CharField()
     change = serializers.CharField()
     tone = serializers.CharField()
+    # 🌟 NOUVEAU : On autorise le champ link (qui peut être null pour le taux de réussite)
+    link = serializers.CharField(allow_null=True, required=False)
 
 class RecentQuizSerializer(serializers.Serializer):
+    # 🌟 NOUVEAU : On ajoute l'ID du quiz
+    id = serializers.IntegerField()
     name = serializers.CharField()
     completion = serializers.CharField()
     status = serializers.CharField()
 
 class UpcomingSessionSerializer(serializers.Serializer):
+    # 🌟 NOUVEAU : On ajoute l'ID de la vague/session
+    id = serializers.IntegerField()
     name = serializers.CharField()
     date = serializers.CharField()
 
