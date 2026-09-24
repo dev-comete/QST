@@ -6,7 +6,8 @@ import Box from "../Container/Box";
 export interface Column<T> {
     header: string;
     key: keyof T | (string & {});
-    render?: (value?: T[keyof T], record?: T, index?: number) => ReactNode;
+    //render?: (value?: T[keyof T], record?: T, index?: number) => ReactNode;
+    render?: (value: any, record: T, index: number) => ReactNode;
 }
 
 interface TableProps<T> {

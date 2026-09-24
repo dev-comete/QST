@@ -75,8 +75,8 @@ const Modal = ({
 	footer
 } : ModalProps) => {
 
-	const modalOverlayStyling = "fixed top-0 left-0 w-full h-full bg-black/90 z-100";
-
+	const modalOverlayStyling = "fixed top-0 left-0 w-full h-full bg-black/50 backdrop-blur-sm z-100";
+	
 	const checkModal = isOpen ? null : 'hidden';
 
 	const [ subIdx, setSubIdx ] = useState(0)
