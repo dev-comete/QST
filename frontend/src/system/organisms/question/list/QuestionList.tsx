@@ -8,11 +8,9 @@ import IconButton, { IconConfirmActionButton } from "../../../molecules/Buttons/
 import QuestionDetail from "../../../../product/pages/formateur/question/QuestionDetail"
 import { useState, type Dispatch, type SetStateAction, type ChangeEvent } from "react"
 import { useAppNavigation } from "../../../../other/hooks/navigation/useAppNavigation"
-import Input from "../../../atoms/Form/Input"
 import Select from "../../../atoms/Form/Select"
 import { getSelectData } from "../../../../other/helper/helper"
 import useDebounce from "../../../../other/hooks/question/useDebounce"
-import FAIcon from "../../../atoms/Icon/FAIcon"
 
 const ActionCell = ({ questionId, listType }: { 
     rowId: string | number | boolean | string[]
@@ -71,7 +69,7 @@ const getQuestionTabColumn = (
 		key: "enonce_question"
 	},
 	{
-		header: "Action",
+		header: null,
 		key: 'id',
 		render: (_val, row, index) => 
 		<ActionCell
@@ -125,38 +123,7 @@ const QuestionList = ({ listType = 'bank'} : { listType?: 'bank' | 'trash'}) => 
 			{isLoading && <Loading />}
 			{!isLoading && selectedId === null &&
 				<>
-					{/* Filters */}
-					<Box className="flex items-center self-start w-2/3">
-						<Input
-							id={"searchQuestion"}
-							name={"searchQuestion"}
-							type="search"
-							placeholder="Rechercher un mot clé dans l'énoncé..."
-							onChange={(e) => setSearch(e.target.value)}
-							endIcon={
-								<FAIcon name={"search"} className="text-disabled"/>
-							}
-							value={search}			
-						/>
-						<Select 
-							id="type-question"
-							name="type-question"
-							selectionValue={selectedType}
-							value={type === '' ? 'Tous' : type}
-							handleChange={handleTypeChange}
-						/>
-						{
-							debouncedValue &&
-							<IconButton
-								iconName={"close"}
-								action={resetFilters}
-								title="Réinitialiser"
-							/>
-						}
-					</Box>
-
-					{/* Table */}
-					<Table 
+					<Table
 						columns={getQuestionTabColumn(setSelectedId, listType)}
 						data={questions ?? []}
 						rowKey={'id'}
@@ -168,6 +135,28 @@ const QuestionList = ({ listType = 'bank'} : { listType?: 'bank' | 'trash'}) => 
 							search.length === 0 ?
 							"Il n'y a pas encore de question, veuillez en créer"
 							: "Aucune question ne correspond à votre recherche "
+						}
+						search={search}
+						setSearch={setSearch}
+						searchPlaceholder="Rechercher un mot-clé..."
+						filters={
+							<Box className="flex items-center self-start">
+								<Select 
+									id="type-question"
+									name="type-question"
+									selectionValue={selectedType}
+									value={type === '' ? 'Tous' : type}
+									handleChange={handleTypeChange}
+								/>
+								{
+									debouncedValue &&
+									<IconButton
+										iconName={"close"}
+										action={resetFilters}
+										title="Réinitialiser"
+									/>
+								}
+							</Box>
 						}
 					/>
 				</>

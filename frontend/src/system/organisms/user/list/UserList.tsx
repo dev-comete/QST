@@ -39,20 +39,6 @@ const getUserTabColumn = (
 	listProject: projectType[],
 	listType: utilisateurType[]
 ): Column<userType>[] => [
-    {
-        header: 'Nom',
-        key: "username",
-        render: (value, row) => (
-            <Box direction="column" className="flex flex-col justify-center">
-                <CustomText weight="bold" textTag="p" color="text" className="capitalize">
-                    {String(value)}
-                </CustomText>
-                <CustomText textTag="h4" color="primary" className="lowercase" >
-                    {row.email}
-                </CustomText>
-            </Box>
-        )
-    },
 	{
 		header: 'Rôle',
 		key: "type_utilisateur",
@@ -61,10 +47,14 @@ const getUserTabColumn = (
 			return <UserRoleTag role={role?.type_utilisateur ?? ''}/>
 		}
 	},
-    // {
-    //     header: 'Email',
-    //     key: "email"
-    // },
+    {
+        header: 'Nom',
+        key: "username"
+    },
+    {
+        header: 'Email',
+        key: "email"
+    },
     {
         header: 'Projets',
         key: "organisation",
@@ -90,16 +80,7 @@ const getUserTabColumn = (
         }
     },
     {
-        header: 'ID',
-        key: 'id',
-        render: (value) => (
-            <CustomText weight="bold" textTag="caption" color="disabled">
-                #{String(value)}
-            </CustomText>
-        )
-    },
-    {
-        header: "Action",
+        header: null,
         key: 'id',
         render: (value) => {
             return <ActionCell rowId={Number(value)} onEdit={onEdit} />

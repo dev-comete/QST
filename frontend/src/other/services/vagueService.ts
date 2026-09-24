@@ -4,6 +4,12 @@ import apiClient from "./apiClient";
 const VAGUE_URL = import.meta.env.VITE_CREATE_VAGUE
 const VAGUE_CRUD = import.meta.env.VITE_VAGUE_CRUD
 
+export interface VagueListParam {
+	formation?: string
+	month?: string
+	year?: string
+}
+
 export const VagueService = {
 
 	create: async ( data : vaguePayload) => {
@@ -21,9 +27,16 @@ export const VagueService = {
 		return response.data;
 	},
 
-	list: async () => {
+	list: async ({formation, month, year} : VagueListParam) => {
 		const url = import.meta.env.VITE_LIST_VAGUE
-		const response = await apiClient.get(url);
+
+		const queryParams = new URLSearchParams({
+			formation: formation ?? '',
+			mois: month ?? '',
+			annee: year ?? '',
+		}).toString();
+
+		const response = await apiClient.get(url + '?' + queryParams);
 		return response.data as vagueType[];
 	},
 

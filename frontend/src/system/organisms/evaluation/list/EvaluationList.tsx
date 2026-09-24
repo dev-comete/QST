@@ -47,7 +47,7 @@ const getQuizTabColumns = () : Column<DetailQuiz>[] => [
 		
 	},
 	{
-		header: 'Action',
+		header: null,
 		key: 'quiz_id',
 		render: (value, row) => row?.statut == 'Terminé' && <ActionCell rowId={value ?? ''}/>
 	}

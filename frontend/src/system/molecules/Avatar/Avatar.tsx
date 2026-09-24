@@ -51,7 +51,7 @@ const Avatar = ({ isSidebarOpen = true }: AvatarProps) => {
                 </CustomText>
                 
                 <CustomText 
-                    textTag="caption" 
+                    textTag="h6" 
                     color="disabled" 
                     className="truncate w-full text-xs mt-0.5"
                 >
@@ -59,7 +59,7 @@ const Avatar = ({ isSidebarOpen = true }: AvatarProps) => {
                 </CustomText>
                 
                 <CustomText 
-                    textTag="caption" 
+                    textTag="h6" 
                     color="disabled" 
                     className="lowercase truncate w-full text-[11px] opacity-75 mt-0.5"
                 >

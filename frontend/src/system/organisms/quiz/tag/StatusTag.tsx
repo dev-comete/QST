@@ -17,7 +17,7 @@ export const QuizStatusTag = ({ status }: { status: string }) => {
         <div className={`inline-flex items-center justify-center px-2.5 py-0.5 rounded-full ${bgStyle}`}>
             <CustomText
                 weight="bold"
-                textTag="caption"
+                textTag="h6"
                 color={textColor}
                 className="tracking-wide"
             >
@@ -42,7 +42,7 @@ export const StatusTag = ({ status }: { status: string }) => {
         <div className={`inline-flex items-center justify-center px-2.5 py-0.5 rounded-full ${bgStyle}`}>
             <CustomText
                 weight="bold"
-                textTag="caption"
+                textTag="h6"
                 color={textColor}
                 className="capitalize tracking-wide"
             >
@@ -84,7 +84,7 @@ export const UserRoleTag = ({ role }: { role: Role | string }) => {
         <div className={`inline-flex items-center justify-center px-2.5 py-0.5 rounded-full ${bgStyle}`}>
             <CustomText
                 weight="bold"
-                textTag="caption"
+                textTag="h6"
                 color={textColor}
                 className="capitalize tracking-wide"
             >
