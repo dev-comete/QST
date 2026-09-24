@@ -44,10 +44,10 @@ const getUserTabColumn = (
         key: "username",
         render: (value, row) => (
             <Box direction="column" className="flex flex-col justify-center">
-                <CustomText weight="bold" textTag="p" color="text">
+                <CustomText weight="bold" textTag="p" color="text" className="capitalize">
                     {String(value)}
                 </CustomText>
-                <CustomText textTag="h4" color="primary" >
+                <CustomText textTag="h4" color="primary" className="lowercase" >
                     {row.email}
                 </CustomText>
             </Box>

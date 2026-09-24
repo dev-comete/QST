@@ -1,31 +1,73 @@
-import { useAuth } from "../../../other/hooks/auth/useAuth"
-import Box from "../../atoms/Container/Box"
-import CustomText from "../../atoms/Text/CustomText"
+import { useAuth } from "../../../other/hooks/auth/useAuth";
+import Box from "../../atoms/Container/Box";
+import CustomText from "../../atoms/Text/CustomText";
 
-export const UserNameAvatar = ({ name } : { name: string}) => {
-
-    return (
-		<div className="w-10 h-10 rounded-full bg-secondary text-primary flex items-center justify-center p-2">
-			{name.charAt(0).toUpperCase()}
-		</div>
-    )
+interface AvatarProps {
+    isSidebarOpen?: boolean;
 }
 
-const Avatar = () => {
-    const { authUser } = useAuth()
+export const UserNameAvatar = ({ name }: { name: string }) => {
+    return (
+        <div className="w-10 h-10 rounded-full bg-secondary text-primary flex items-center justify-center p-2 flex-shrink-0 font-bold">
+            {name.charAt(0).toUpperCase()}
+        </div>
+    );
+};
 
-    const role = authUser?.role ?? 'Apprenant'
-    const username = authUser?.username ?? 'JohnDoe'
-    const email = authUser?.email ?? 'default@mail.qst'
+const Avatar = ({ isSidebarOpen = true }: AvatarProps) => {
+    const { authUser } = useAuth();
+
+    const role = authUser?.role ?? 'Apprenant';
+    const username = authUser?.username ?? 'JohnDoe';
+    const email = authUser?.email ?? 'default@mail.qst';
 
     return (
-        <Box className="rounded-xl p-5 border border-background w-3/4 items-center">
-            <div className="w-10 h-10 rounded-full bg-secondary text-primary flex items-center justify-center p-2">
+        <Box 
+            direction="row" 
+            className={`rounded-xl border border-background items-center transition-all duration-300 ease-in-out ${
+                isSidebarOpen 
+                    ? 'w-11/12 p-3 gap-3 justify-start' 
+                    : 'w-auto p-1.5 justify-center border-transparent bg-transparent'
+            }`}
+        >
+            {/* Avatar Badge */}
+            <div className="w-10 h-10 rounded-full bg-secondary text-primary flex items-center justify-center flex-shrink-0 font-bold shadow-sm leading-none">
                 {role.charAt(0).toUpperCase()}
             </div>
-            <CustomText textTag="h5" weight="bold" className="capitalize">{username} - {role} - {email}</CustomText>
-        </Box>
-    )
-}
 
-export default Avatar
+            {/* User Info Block */}
+            <div 
+                className={`flex flex-col items-start justify-center text-left leading-tight transition-all duration-300 ease-in-out overflow-hidden min-w-0 ${
+                    isSidebarOpen ? 'max-w-[170px] opacity-100' : 'max-w-0 opacity-0'
+                }`}
+            >
+                <CustomText 
+                    textTag="p" 
+                    weight="bold" 
+                    color="text" 
+                    className="capitalize truncate w-full text-sm leading-snug"
+                >
+                    {username}
+                </CustomText>
+                
+                <CustomText 
+                    textTag="caption" 
+                    color="disabled" 
+                    className="truncate w-full text-xs mt-0.5"
+                >
+                    {role}
+                </CustomText>
+                
+                <CustomText 
+                    textTag="caption" 
+                    color="disabled" 
+                    className="lowercase truncate w-full text-[11px] opacity-75 mt-0.5"
+                >
+                    {email}
+                </CustomText>
+            </div>
+        </Box>
+    );
+};
+
+export default Avatar;
