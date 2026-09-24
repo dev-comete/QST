@@ -175,13 +175,13 @@ export const Table = <T,>({
 							</thead>
 							{ data.length == 0 ?
 								<tbody>
-								<tr>
-									<td colSpan={columns.length} className="bg-white p-8 text-center rounded-b-xl">
-										<CustomText textTag="h6" isItalic={true}>
-											{emptyTitle}
-										</CustomText>
-									</td>
-								</tr>
+									<tr>
+										<td colSpan={columns.length} className="bg-white p-8 text-center rounded-b-xl">
+											<CustomText textTag="h6" isItalic={true}>
+												{emptyTitle}
+											</CustomText>
+										</td>
+									</tr>
 								</tbody>
 								: 
 							<tbody className="divide-y divide-slate-100">
