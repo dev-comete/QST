@@ -9,10 +9,11 @@ interface NavButtonProps {
     link: string;
     icon?: string;
     children: React.ReactNode;
-    className?: string
+    className?: string;
+	isSidebarOpen?: boolean;
 }
 
-const NavButton = ({ link, children, icon, className = '' }: NavButtonProps) => {
+const NavButton = ({ link, children, icon, className = '' , isSidebarOpen = true}: NavButtonProps) => {
 
     const navigate = useNavigate();
     const { pathname } = useLocation();
@@ -36,24 +37,25 @@ const NavButton = ({ link, children, icon, className = '' }: NavButtonProps) => 
             // We set this to false so we can apply rounded-xl instead of the default rounded-lg
             isRounded={false} 
             onClick={() => navigate(link)}
-            // [ALTERED CODE]: Using !w-full, !px-4, !py-3 to override the Button's default w-fit and padding
-            className={`group !w-full !px-4 !py-3 rounded-xl transition-all duration-200 ease-in-out ${btnStyling} ${className}`}
+            className={`group !w-full ${isSidebarOpen ? '!px-4' : '!px-0'} !py-3 rounded-xl transition-all duration-300 ease-in-out ${btnStyling} ${className}`}
         >
             {/* [ALTERED CODE]: Brought back Box atom to handle flex alignment */}
-            <Box direction="row" className="items-center gap-3 w-full">
+            <Box direction="row" className={`items-center w-full transition-all duration-300 ${isSidebarOpen ? 'gap-3 justify-start' : 'justify-center'}`}>
                 {icon && (
                     <FAIcon 
                         name={icon} 
                         className={`text-[1.1rem] flex-shrink-0 transition-colors ${iconColor}`}
                     />
                 )}
-                <CustomText 
+				<div className={`transition-all duration-300 ease-in-out overflow-hidden flex items-center ${isSidebarOpen ? 'max-w-[200px] opacity-100' : 'max-w-0 opacity-0'}`}>
+					<CustomText 
                     weight={isPathActive ? "bold" : "normal"} 
                     color={textColor}
                     className="truncate text-left w-full"
-                >
-                    {children}
-                </CustomText>
+					>
+						{children}
+					</CustomText>
+				</div>
             </Box>
         </Button>
     )

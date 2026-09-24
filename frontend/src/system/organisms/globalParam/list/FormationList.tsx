@@ -79,7 +79,7 @@ const FormationList = ({ formations } : { formations : Formation[]}) => {
 	}
 
 	return (
-		<Box direction="column" className="w-full items-center justify-center">
+		<Box direction="column" className="w-full items-center justify-center capitalize">
 			<Table 
 				columns={getFormationTabColumn(
 					handleOpenEditModal,
