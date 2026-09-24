@@ -13,6 +13,7 @@ import ModalProjectCreate from "../../../system/organisms/user/form/ModalProject
 const UserManagement = () => {
 	const [ open, setOpen ] = useState(false)
 	const [ openProject, setOpenProject ] = useState(false)
+	const [ activeTab, setActiveTab ] = useState(0);
 	const { projectQuery } = useProject()
 	const { data: projects, status : projectStatus } = projectQuery
 
@@ -27,17 +28,30 @@ const UserManagement = () => {
 				title={"Gestion des utilisateurs"}
 				titleButton={
 					<>
-						<ActionButton
+						{/* <ActionButton
 							onClick={() => setOpen(true)}
 						>{"+ Créer un utilisateur"}</ActionButton>
 						<ActionButton
 							onClick={() => setOpenProject(true)}
-						>{"+ Créer un projet"}</ActionButton>
+						>{"+ Créer un projet"}</ActionButton> */}
+
+						{activeTab === 0 && (
+                            <ActionButton
+                                onClick={() => setOpen(true)}
+                            >{"+ Créer un utilisateur"}</ActionButton>
+                        )}
+                        {activeTab === 1 && (
+                            <ActionButton
+                                onClick={() => setOpenProject(true)}
+                            >{"+ Créer un projet"}</ActionButton>
+                        )}
 					</>
 				}
 			>
 				<NavigationBar
-					titles={['Utilisateurs', 'Projets']}				
+					titles={['Utilisateurs', 'Projets']}
+					activeTab={activeTab}
+                    onTabChange={(index) => setActiveTab(index)}				
 				>
 					<UserList projects={projects}/>
 					<ProjectList projects={projects}/>
