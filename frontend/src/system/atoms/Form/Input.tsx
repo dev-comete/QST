@@ -18,6 +18,7 @@ interface InputProps {
 	required?: boolean
 	value?: string | number
 	htmlFor?: string
+	startIcon?: ReactNode
 	endIcon?: ReactNode
 	placeholder?: string
 }
@@ -39,6 +40,7 @@ const Input = ({
 	htmlFor,
 	endIcon,
 	placeholder,
+	startIcon
 }: InputProps) => {
 
 	const basicStyle = `flex p-2 rounded-xl ${type != 'checkbox' && 'border'} border-background w-full items-center justify-center focus:outline focus:outline-primary`
@@ -46,6 +48,11 @@ const Input = ({
 	return (
 		<div className="flex flex-col w-full relative">
 			{ label && <LabelInput label={label} htmlFor={htmlFor} required={required}/> }
+			{startIcon && (
+				<div className="absolute left-2 top-3 flex items-center justify-center">
+					{startIcon}
+				</div>
+			)}
 			<input
 				type={type}
 				id={id}
