@@ -69,7 +69,7 @@ const getQuestionTabColumn = (
 		key: "enonce_question"
 	},
 	{
-		header: "Action",
+		header: null,
 		key: 'id',
 		render: (_val, row, index) => 
 		<ActionCell

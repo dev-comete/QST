@@ -40,7 +40,7 @@ const quizTabColumn: Column<BulletinVague>[] = [
 		render: (value) => formatDate(value)
 	},
 	{
-		header: "Action",
+		header: null,
 		key: 'vague_id',
 		render: (value) => <ActionCell rowId={value ?? '0'} />
 		

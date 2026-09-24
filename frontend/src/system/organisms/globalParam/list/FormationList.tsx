@@ -53,7 +53,7 @@ const getFormationTabColumn = (
 		}
 	},
 	{
-		header: "Action",
+		header: null,
 		key: 'id',
 		render: (value) => {
 			return <ActionCell rowId={value ? value : ''} onEdit={onEdit} />

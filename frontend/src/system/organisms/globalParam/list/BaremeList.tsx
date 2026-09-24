@@ -25,7 +25,7 @@ const formationTabColumn: Column<baremeType>[] = [
 		key: "pts"
 	},
 	{
-		header: "Action",
+		header: null,
 		key: 'id',
 		render: (value) => {
 			return <ActionCell rowId={Number(value)} />

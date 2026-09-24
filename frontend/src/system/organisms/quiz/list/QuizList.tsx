@@ -115,7 +115,7 @@ const QuizList = ({ listType = 'default' } : { listType?: string }) => {
 			render: (value) => formatDate(value)
 		},
 		{
-			header: "Action",
+			header: null,
 			key: 'id',
 			render: (value, row) => {
 				return <ActionCell

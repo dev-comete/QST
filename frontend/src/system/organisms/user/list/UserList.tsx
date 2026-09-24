@@ -80,7 +80,7 @@ const getUserTabColumn = (
         }
     },
     {
-        header: "Action",
+        header: null,
         key: 'id',
         render: (value) => {
             return <ActionCell rowId={Number(value)} onEdit={onEdit} />

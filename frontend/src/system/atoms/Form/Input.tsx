@@ -4,7 +4,7 @@ import LabelInput from "./LabelInput";
 
 interface InputProps {
 	label?: string;
-	type?: 'text' | 'password' | 'email' | 'search' | 'time' | 'checkbox' | 'date' | 'datetime-local' | 'radio' | 'number';
+	type?: 'text' | 'password' | 'email' | 'search' | 'time' | 'checkbox' | 'date' | 'datetime-local' | 'radio' | 'number' | 'month';
 	id: string;
 	name: string;
 	textColor?: ColorTheme;

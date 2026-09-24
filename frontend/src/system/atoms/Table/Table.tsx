@@ -5,7 +5,7 @@ import Box from "../Container/Box";
 import SearchBar from "../../molecules/Input/SearchBar";
 
 export interface Column<T> {
-    header: string;
+    header: string | null;
     key: keyof T | (string & {});
     render?: (value?: T[keyof T], record?: T, index?: number) => ReactNode;
 }
@@ -51,18 +51,20 @@ const TableHeader = ({ title, search, setSearch, searchPlaceholder, filters } : 
 					{title}
 				</CustomText>
 			)}
-			<Box className="w-full justify-between">
-				{
-					setSearch &&
-					<Box>
+			<Box className="w-full items-center justify-between">
+				{setSearch ? (
+					<Box className="w-1/3">
 						<SearchBar
 							placeholder={searchPlaceholder}
 							search={search}
-							setSearch={setSearch}	
+							setSearch={setSearch}   
 						/>
 					</Box>
-				}
-				<Box className="items-center justify-center">
+				) : (
+					<div /> 
+				)}
+				
+				<Box className="items-center">
 					{filters}
 				</Box>
 			</Box>
@@ -127,7 +129,7 @@ export const Table = <T,>({
     data,
     rowKey,
     title,
-	emptyTitle = 'Pas encore de données...',
+	emptyTitle = 'Aucune donnée disponible...',
 	onRowClick,
     page,
     setPage,
@@ -159,15 +161,8 @@ export const Table = <T,>({
 
 			}
 			{
-				data.length == 0
-				?	<div className="flex w-full items-center justify-center p-8 bg-white rounded-xl">
-						<CustomText textTag="h6" isItalic={true}>
-							{emptyTitle}
-						</CustomText>
-					</div>
-				: 
 				<>
-					<div className="w-full max-h-[80vh] overflow-y-auto">
+					<div className="w-full max-h-[70vh] overflow-y-auto">
 						<table className="w-full border-collapse text-left text-sm text-slate-700">
 							<thead className="sticky top-0 z-10">
 								<tr className="border-b border-slate-200 bg-secondary text-xs font-semibold uppercase tracking-wider text-slate-500">
@@ -178,6 +173,17 @@ export const Table = <T,>({
 									))}
 								</tr>
 							</thead>
+							{ data.length == 0 ?
+								<tbody>
+								<tr>
+									<td colSpan={columns.length} className="bg-white p-8 text-center rounded-b-xl">
+										<CustomText textTag="h6" isItalic={true}>
+											{emptyTitle}
+										</CustomText>
+									</td>
+								</tr>
+								</tbody>
+								: 
 							<tbody className="divide-y divide-slate-100">
 								{data.map((row, idx) => (
 									<tr
@@ -204,6 +210,7 @@ export const Table = <T,>({
 									</tr>
 								))}
 							</tbody>
+							}
 						</table>
 					</div>
 					{

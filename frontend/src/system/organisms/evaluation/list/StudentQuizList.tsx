@@ -42,7 +42,7 @@ const quizTabColumn: Column<studentQuizType>[] = [
 		key: "quiz_titre"
 	},
 	{
-		header: "Action",
+		header: null,
 		key: 'termine',
 		render: (value, rowId) => {
 			if (value == true)

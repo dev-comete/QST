@@ -63,7 +63,7 @@ const VagueHeader = ({ vague } : VagueAssignProps) => {
 
 const VagueAssign = () => {
 
-	const { getAllVague } = useVague()
+	const { getAllVague } = useVague({})
 	const { data: vagues, status } = getAllVague
 	const { id } = useParams()
 	
