@@ -42,7 +42,7 @@ export const router = createBrowserRouter([
 			{	
 				element: <AdminTemplate />,
 				children: [
-					{ index: true, element: <Navigate to="gestion_utilisateurs" replace /> },
+					{ index: true, element: <Navigate to="tableau_de_bord" replace /> },
 					{ path: 'gestion_utilisateurs', element: <UserManagement /> },
 					{ path: 'tableau_de_bord', element: <AdminDashboard /> },
 					...COMMON_CHILDREN,
@@ -59,7 +59,7 @@ export const router = createBrowserRouter([
 			{ 
 				element: <FormateurTemplate />,
 				children: [
-					{ index: true, element: <Navigate to="gestion_vague" replace /> },
+					{ index: true, element: <Navigate to="tableau_de_bord" replace /> },
 					...COMMON_CHILDREN,
 					{ path: "tableau_de_bord", element: <Dashboard /> },
 				],
