@@ -39,6 +39,10 @@ const getUserTabColumn = (
 	listProject: projectType[],
 	listType: utilisateurType[]
 ): Column<userType>[] => [
+    {
+        header: 'Nom',
+        key: "username"
+    },
 	{
 		header: 'Rôle',
 		key: "type_utilisateur",
@@ -47,10 +51,6 @@ const getUserTabColumn = (
 			return <UserRoleTag role={role?.type_utilisateur ?? ''}/>
 		}
 	},
-    {
-        header: 'Nom',
-        key: "username"
-    },
     {
         header: 'Email',
         key: "email"
