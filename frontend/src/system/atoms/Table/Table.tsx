@@ -7,7 +7,8 @@ import SearchBar from "../../molecules/Input/SearchBar";
 export interface Column<T> {
     header: string | null;
     key: keyof T | (string & {});
-    render?: (value?: T[keyof T], record?: T, index?: number) => ReactNode;
+    //render?: (value?: T[keyof T], record?: T, index?: number) => ReactNode;
+    render?: (value: any, record: T, index: number) => ReactNode;
 }
 
 interface TableProps<T> {
