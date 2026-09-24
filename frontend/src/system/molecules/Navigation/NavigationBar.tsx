@@ -1,4 +1,4 @@
-import { Children, useState, type ReactNode } from "react"
+import { Children, type ReactNode } from "react"
 import CustomText from "../../atoms/Text/CustomText"
 import Box from "../../atoms/Container/Box"
 import Paper from "../../atoms/Container/Paper"
@@ -25,16 +25,19 @@ const NavigationBarButton = ({ title, isClicked, onClick } : NavigationButtonPro
 
 interface NavigationBarProps {
 	titles: string[],
-	children: ReactNode
+	children: ReactNode,
+	activeTab: number,
+    onTabChange: (index: number) => void
 }
 
-const NavigationBar = ({ titles, children } : NavigationBarProps ) => {
+const NavigationBar = ({ titles, children , activeTab, onTabChange} : NavigationBarProps ) => {
 
-	const [ idx, setIdx ] = useState(0)
+	//const [ idx, setIdx ] = useState(0)
 
 	const pages = Children.toArray(children);
 
-	const currentPage = pages[idx] ?? pages[0] ?? null;
+	//const currentPage = pages[idx] ?? pages[0] ?? null;
+	const currentPage = pages[activeTab] ?? pages[0] ?? null;
 
 	return (
 		<Box direction="column" className="space-y-3">
@@ -45,8 +48,10 @@ const NavigationBar = ({ titles, children } : NavigationBarProps ) => {
 							<NavigationBarButton
 								key={'nav' + i + value}
 								title={value}
-								isClicked={i === idx}
-								onClick={() => setIdx(i)}
+								//isClicked={i === idx}
+								isClicked={i === activeTab}
+								//onClick={() => setIdx(i)}
+								onClick={() => onTabChange(i)}
 							/>
 						)
 					})

@@ -9,6 +9,7 @@ import { useBareme } from '../../../../other/hooks/bareme/useBareme';
 import ActionButton from '../../../../system/molecules/Buttons/ActionButton';
 import Input from '../../../../system/atoms/Form/Input';
 import type { ReactNode } from 'react';
+import { useState } from 'react';
 import BaremeList from '../../../../system/organisms/globalParam/list/BaremeList';
 
 const GlobalItem = ({ disabled, onChange, onClick, children, name, type = 'text', min, max, step, value } : {
@@ -52,6 +53,7 @@ const GlobalItem = ({ disabled, onChange, onClick, children, name, type = 'text'
 }
 
 export default function GlobalParam() {
+	const [activeTab, setActiveTab] = useState(0);
 	const { formationInput, setFormationInput, handleCreateFormation } = useCreateFormation()
 	const { formations, formationsStatus } = useFormation()
 	const { baremeQuery, baremeInput, setBaremeInput, handleCreateBareme } = useBareme()
@@ -70,6 +72,8 @@ export default function GlobalParam() {
 			<Box direction='column' className='space-y-5'>
 				<NavigationBar 
 					titles={['Formation', 'Barème de question']}
+					activeTab={activeTab}
+                    onTabChange={(index) => setActiveTab(index)}
 				>
 					<GlobalItem
 						onChange={(e) => { setFormationInput(e.target.value)}}
