@@ -9,35 +9,34 @@ import NavigationBar from "../../../system/molecules/Navigation/NavigationBar";
 import ProjectList from "../../../system/organisms/user/list/ProjectList";
 import { useProject } from "../../../other/hooks/user/useProject";
 import ModalProjectCreate from "../../../system/organisms/user/form/ModalProjectCreate";
+import FormationList from "../../../system/organisms/globalParam/list/FormationList";
+import { useFormation } from "../../../other/hooks/formation/useFormation";
+import ModalFormationCreate from "../../../system/organisms/formation/form/ModalFormationCreate";
 
-const UserManagement = () => {
-	const [ open, setOpen ] = useState(false)
+const Parameters = () => {
+	const [ openUser, setOpenUser ] = useState(false)
 	const [ openProject, setOpenProject ] = useState(false)
+	const [ openFormation, setOpenFormation ] = useState(false)
+
 	const [ activeTab, setActiveTab ] = useState(0);
 	const { projectQuery } = useProject()
 	const { data: projects, status : projectStatus } = projectQuery
-
-	if (projectStatus == 'pending')
+	const { formations, formationsStatus } = useFormation()
+	
+	if (projectStatus == 'pending' || formationsStatus == 'pending')
 		return <Loading />
-	if (!projects)
+	if (!projects || !formations)
 		return <FetchError />
 
     return (
 		<>
 			<BodyLayout
-				title={"Gestion des utilisateurs"}
+				title={"Paramètres généraux"}
 				titleButton={
 					<>
-						{/* <ActionButton
-							onClick={() => setOpen(true)}
-						>{"+ Créer un utilisateur"}</ActionButton>
-						<ActionButton
-							onClick={() => setOpenProject(true)}
-						>{"+ Créer un projet"}</ActionButton> */}
-
 						{activeTab === 0 && (
                             <ActionButton
-                                onClick={() => setOpen(true)}
+                                onClick={() => setOpenUser(true)}
                             >{"+ Créer un utilisateur"}</ActionButton>
                         )}
                         {activeTab === 1 && (
@@ -45,29 +44,39 @@ const UserManagement = () => {
                                 onClick={() => setOpenProject(true)}
                             >{"+ Créer un projet"}</ActionButton>
                         )}
+						{activeTab === 2 && (
+                            <ActionButton
+                                onClick={() => setOpenFormation(true)}
+                            >{"+ Créer une formation"}</ActionButton>
+                        )}
 					</>
 				}
 			>
 				<NavigationBar
-					titles={['Utilisateurs', 'Projets']}
+					titles={['Utilisateurs', 'Projets', 'Formations']}
 					activeTab={activeTab}
                     onTabChange={(index) => setActiveTab(index)}				
 				>
 					<UserList projects={projects}/>
 					<ProjectList projects={projects}/>
+					<FormationList formations={formations} />
 				</NavigationBar>
 			</BodyLayout>
 			<ModalUserCreate
-				open={open}
-				closeModal={() => setOpen(false)}
+				open={openUser}
+				closeModal={() => setOpenUser(false)}
 				listProject={projects}
 			/>
 			<ModalProjectCreate
 				open={openProject}
 				closeModal={() => setOpenProject(false)}
 			/>
+			<ModalFormationCreate
+				open={openFormation}
+				closeModal={() => setOpenFormation(false)}
+			/>
 		</>
     )
 }
 
-export default UserManagement;
+export default Parameters;

@@ -30,15 +30,16 @@ export const useDelFormation = (id: string) => {
 
 export const useCreateFormation = () => {
 
-	const [ formationInput, setFormationInput ] = useState('')
-
+	const [ formation, setFormation ] = useState<FormationPayload>({
+		nom_formation: '',
+	})
 	const queryClient = useQueryClient()
 
-	const { mutate, status : createFormationStatus } = useMutation({
+	const createFormation = useMutation({
 		mutationFn: FormationService.create,
 		onSuccess: (data) => {
 			console.log("Formation created", data)
-			setFormationInput('')
+			setFormation({ nom_formation: ''})
 			queryClient.invalidateQueries({
                 queryKey: ['formation_list'],
             });
@@ -49,17 +50,15 @@ export const useCreateFormation = () => {
 		},
 	});
 
-	const handleCreateFormation = () => {
-		const payload = {
-			nom_formation: formationInput.trim()
-		}
-		mutate(payload)
+	const handleCreateFormation = async () => {
+		if (formation.nom_formation.trim().length == 0) return
+		return await createFormation.mutateAsync(formation)
 	}
 
 	return {
-		formationInput, setFormationInput,
+		formation, setFormation,
 		handleCreateFormation,
-		createFormationStatus
+		isPending : createFormation.isPending,
 	}
 }
 

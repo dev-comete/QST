@@ -55,7 +55,7 @@ const QuizBankQuestion = ({ questions, setQuestion, ownedQuestions } : QuizBankQ
 	return (
 		<Box direction="column">
 			{
-				bankQuestions.map((item) => {
+				bankQuestions.results.map((item) => {
 					const isSelected = 
 						questions?.some((q) => q.id === item.id) || 
 						ownedQuestions?.some((q) => q.question_id === item.id);
