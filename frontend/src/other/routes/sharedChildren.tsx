@@ -2,7 +2,7 @@ import VagueManagement from "../../product/pages/formateur/vague/VagueManagement
 import QuestionManagement from "../../product/pages/formateur/question/QuestionManagement";
 import QuestionCreate from "../../product/pages/formateur/question/QuestionCreate";
 import QuizManagement from "../../product/pages/formateur/quizz/QuizManagement";
-import QuestionDetailPage from "../../product/pages/formateur/question/QuestionDetailPage";
+import QuestionDetail from "../../product/pages/formateur/question/QuestionDetail";
 import QuizQuestion from "../../product/pages/formateur/quizz/QuizQuestion";
 import VagueAssign from "../../product/pages/formateur/vague/VagueAssign";
 import VagueStat from "../../product/pages/formateur/vague/VagueStat";
@@ -15,8 +15,8 @@ const COMMON_CHILDREN = [
 	{ path: "gestion_question", element: <QuestionManagement /> },
 	{ path: "gestion_question/corbeille", element: <QuestionBin /> },
 	{ path: "gestion_question/:id/edit", element: <QuestionEdit /> },
+	{ path: "gestion_question/:id", element: <QuestionDetail /> },
 	{ path: "creation_question", element: <QuestionCreate /> },
-	{ path: ":id/question_detail", element: <QuestionDetailPage /> },
 	{ path: ":id/quiz_questions", element: <QuizQuestion /> },
 	{ path: "gestion_quiz", element: <QuizManagement /> },
 	{ path: "gestion_quiz/corbeille", element: <QuizBin /> },

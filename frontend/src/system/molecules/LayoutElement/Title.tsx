@@ -12,33 +12,10 @@ interface TitleProps {
 }
 
 const Title = ({ title, sideButton, linkBack, defaultLinkBack = false, info } : TitleProps) => {
-
-		if (linkBack && sideButton) {
-			return (
-				<Box className="flex flex-col w-full border-b border-text pb-2">
-					<Box className="grid grid-cols-3 items-center w-full">
-						<Box className="justify-start">
-							<BackButton link={linkBack} />
-						</Box>
-						<Box className="justify-center text-center">
-							<CustomText textTag="h1" weight="bold">{title}</CustomText>
-						</Box>
-						<Box className="justify-end">
-							{sideButton}
-						</Box>
-					</Box>
-					{ info && <CustomText textTag="caption">{info}</CustomText>}
-				</Box>
-			);
-		}
-
-		const justifyClass = !linkBack && !sideButton 
-			? "justify-center" 
-			: "justify-between";
 	
 		return (
 			<Box className="flex flex-col w-full border-b border-text pb-2">
-				<Box className={`flex items-center gap-3 w-full ${justifyClass}`}>
+				<Box className={`flex items-center gap-3 w-full justify-between`}>
 					<Box className="flex items-center gap-3">
 						{linkBack && <BackButton link={linkBack} />}
 						{defaultLinkBack && <BackButton />}
@@ -50,7 +27,7 @@ const Title = ({ title, sideButton, linkBack, defaultLinkBack = false, info } : 
 						</Box>
 					)}
 				</Box>
-				{ info && <CustomText textTag="caption">{info}</CustomText> }
+				{ info && <CustomText textTag="h6">{info}</CustomText> }
 			</Box>
 		);
 }

@@ -78,17 +78,17 @@ const useQuestion = ({ id, search, type, page, listType } : UseQuestionParams) =
 		enabled: !!id
 	})
 
-	const detailQuestionQuery = useQuery({
-		queryKey: ['question_detail', id],
-		queryFn: () => QuestionService.detail(id ? id : ''),
-		enabled: !!id
-	})
+	// const detailQuestionQuery = useQuery({
+	// 	queryKey: ['question_detail', id],
+	// 	queryFn: () => QuestionService.detail(id ? id : ''),
+	// 	enabled: !!id
+	// })
 
 	return {
 		list,
 		questionTypeQuery,
 		infoQuestionQuery,
-		detailQuestionQuery,
+		// detailQuestionQuery,
 	}
 }
 

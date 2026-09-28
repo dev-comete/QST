@@ -1,23 +1,28 @@
+import BodyLayout from "../../../layout/common/BodyLayout";
 import Paper from "../../../../system/atoms/Container/Paper";
 import CustomText from "../../../../system/atoms/Text/CustomText";
 import Box from "../../../../system/atoms/Container/Box";
-import type { bankQuestionType } from "../../../../other/types/questionType";
-import type { Dispatch, SetStateAction } from "react";
-import ActionButton from "../../../../system/molecules/Buttons/ActionButton";
+import { useParams } from "react-router";
+import { useQuestion } from "../../../../other/hooks/question/useQuestion";
+import FetchError from "../../../../system/atoms/Loading/FetchError";
+import Loading from "../../../../system/atoms/Loading/Loading";
 
-interface QuestionDetailProps {
-	question: bankQuestionType
-	setSelectedId: Dispatch<SetStateAction<number | null>>
-}
+const QuestionDetail = () => {
 
-const QuestionDetail = ({ question, setSelectedId } : QuestionDetailProps) => {
+	const { id } = useParams()
+	const { infoQuestionQuery } = useQuestion({id})
+	const { data : question, isPending } = infoQuestionQuery
+	console.log("Id", id)
+
+	if (isPending) return <Loading />
+
+	if (!question) return <FetchError />
 
 	return (
-		<div className="flex flex-col gap-5 w-full">
-			<ActionButton
-				btnColor="text"
-				onClick={() => setSelectedId(null)}
-			>Retour</ActionButton>
+		<BodyLayout
+			title={"Détails de la question"}
+			defaultLinkBack
+		>
 			<Paper className="p-5">
 				<Box direction="column" className="space-y-3">
 					<CustomText
@@ -49,7 +54,7 @@ const QuestionDetail = ({ question, setSelectedId } : QuestionDetailProps) => {
 					}
 				</Box>
 			</Paper>
-		</div>
+		</BodyLayout>
 	)
 }
 

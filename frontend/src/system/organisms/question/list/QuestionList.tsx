@@ -7,19 +7,20 @@ import { Table, type Column } from "../../../atoms/Table/Table"
 import IconButton, { IconConfirmActionButton } from "../../../molecules/Buttons/IconButton"
 import QuestionDetail from "../../../../product/pages/formateur/question/QuestionDetail"
 import { useState, type Dispatch, type SetStateAction, type ChangeEvent } from "react"
-import { useAppNavigation } from "../../../../other/hooks/navigation/useAppNavigation"
+// import { useAppNavigation } from "../../../../other/hooks/navigation/useAppNavigation"
 import Select from "../../../atoms/Form/Select"
 import { getSelectData } from "../../../../other/helper/helper"
 import useDebounce from "../../../../other/hooks/question/useDebounce"
+import { useAppNavigation } from "../../../../other/hooks/navigation/useAppNavigation"
 
 const ActionCell = ({ questionId, listType }: { 
     rowId: string | number | boolean | string[]
-	setSelectedId: Dispatch<SetStateAction<number | null>>
+	// setSelectedId: Dispatch<SetStateAction<number | null>>
 	questionId: number
 	listType?: string
 }) => {    
 
-	const { navigateTo } = useAppNavigation()
+	// const { navigateTo } = useAppNavigation()
 
 	const { handleQuestionDel, isPending } = useQuestionDel(questionId)
 	const { handleQuestionRestore, isPending : restorePending } = useQuestionRestore(questionId)
@@ -28,12 +29,12 @@ const ActionCell = ({ questionId, listType }: {
         <Box>
 			{listType == 'bank' && 
 				<>
-					<IconButton
+					{/* <IconButton
 						title="Modifier"
 						iconName="edit"
 						iconStyling="text-text hover:text-success"
 						action={() => navigateTo('gestion_question/' + questionId + '/edit')}
-					/>
+					/> */}
 					<IconConfirmActionButton
 						iconName="trash"
 						iconStyling="text-text hover:text-error"
@@ -60,7 +61,7 @@ const ActionCell = ({ questionId, listType }: {
 };
 
 const getQuestionTabColumn = (
-	setSelectedId: Dispatch<SetStateAction<number | null>>,
+	// setSelectedId: Dispatch<SetStateAction<number | null>>,
 	listType: string
 ): Column<bankQuestionType>[] => [
 
@@ -74,7 +75,7 @@ const getQuestionTabColumn = (
 		render: (_val, row, index) => 
 		<ActionCell
 			rowId={index ? index : 0}
-			setSelectedId={setSelectedId}
+			// setSelectedId={setSelectedId}
 			questionId={Number(row?.id)}
 			listType={listType}
 		/>
@@ -92,7 +93,9 @@ const QuestionList = ({ listType = 'bank'} : { listType?: 'bank' | 'trash'}) => 
 
 	const isLoading = status === 'pending' || isPending
 
-	const [ selectedId, setSelectedId ] = useState<number | null>(null)
+	// const [ selectedId, setSelectedId ] = useState<number | null>(null)
+
+	const { navigateTo } = useAppNavigation()
 
 	const resetFilters = () => {
 		setSearch('')
@@ -121,13 +124,13 @@ const QuestionList = ({ listType = 'bank'} : { listType?: 'bank' | 'trash'}) => 
 	return (
 		<Box direction="column" className="w-full items-center justify-center">
 			{isLoading && <Loading />}
-			{!isLoading && selectedId === null &&
+			{!isLoading &&
 				<>
 					<Table
-						columns={getQuestionTabColumn(setSelectedId, listType)}
+						columns={getQuestionTabColumn(listType)}
 						data={questions ?? []}
 						rowKey={'id'}
-						onRowClick={(_row, idx) => setSelectedId(idx)}
+						onRowClick={(row) => { console.log(row.id) ; navigateTo('gestion_question/' + row.id)}}
 						page={page}
 						setPage={setPage}
 						hasNextPage={next != null}
@@ -161,12 +164,12 @@ const QuestionList = ({ listType = 'bank'} : { listType?: 'bank' | 'trash'}) => 
 					/>
 				</>
 			}
-			{ !isLoading && selectedId != null && questions && questions[selectedId] && 
+			{/* { !isLoading && selectedId != null && questions && questions[selectedId] && 
 				<QuestionDetail
 					question={questions[selectedId]}
 					setSelectedId={setSelectedId}
 				/>
-			}
+			} */}
 		</Box>
 	)
 }
