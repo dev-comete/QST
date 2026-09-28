@@ -50,7 +50,9 @@ type ColorTheme =
 	| 'warning-dark' 
 	| 'text' 
 	| 'white' 
-	| 'disabled' 
+	| 'disabled'
+	| 'disabled-light'
+	| 'disabled-dark'
 	| 'transparent';
 
 type Role = 'admin' | 'formateur' | 'apprenant' | 'rfq'

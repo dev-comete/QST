@@ -7,17 +7,19 @@ const backgroundColor : Record<ColorTheme, string> = {
 	'secondary': 'bg-secondary',
 	'accent': 'bg-accent',
 	'success': 'bg-success',
-	'sucess-light': 'bg-sucess-light',
-	'sucess-dark': 'bg-sucess-dark',
+	'success-light': 'bg-sucess-light',
+	'success-dark': 'bg-sucess-dark',
 	'error': 'bg-error',
 	'error-light': 'bg-error-light',
 	'error-dark': 'bg-error-dark',
 	'warning': 'bg-warning',
-	'success-light': 'bg-success-light',
-	'success-dark': 'bg-success-dark',
+	'warning-light': 'bg-warning-light',
+	'warning-dark': 'bg-warning-dark',
 	'text': 'bg-text',
 	'white': 'bg-white',
 	'disabled' : 'bg-disabled',
+	'disabled-light': 'bg-disabled-light',
+	'disabled-dark': 'bg-disabled-dark',
 	'transparent' : 'bg-transparent'
 }
 

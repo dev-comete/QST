@@ -99,7 +99,7 @@ const IconButton = ({
     };
 
     // [NEW CODE ADDED]: Combine both btnStyling and className cleanly
-    const combinedStyles = `${btnStyling ?? ''} ${className ?? ''} cursor-pointer`.trim();
+    const combinedStyles = `${btnStyling ?? ''} ${className ?? ''} cursor-pointer border-0 bg-transparent p-0 shadow-none focus:outline-none rounded-full`.trim();
 
     return (
         <Button

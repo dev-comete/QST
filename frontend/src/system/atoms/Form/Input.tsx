@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import type { ColorTheme } from "../../../other/types/common";
 import LabelInput from "./LabelInput";
 
-interface InputProps {
+export interface InputProps {
 	label?: string;
 	type?: 'text' | 'password' | 'email' | 'search' | 'time' | 'checkbox' | 'date' | 'datetime-local' | 'radio' | 'number' | 'month';
 	id: string;
@@ -48,32 +48,34 @@ const Input = ({
 	return (
 		<div className="flex flex-col w-full relative">
 			{ label && <LabelInput label={label} htmlFor={htmlFor} required={required}/> }
-			{startIcon && (
-				<div className="absolute left-2 top-3 flex items-center justify-center">
-					{startIcon}
-				</div>
-			)}
-			<input
-				type={type}
-				id={id}
-				name={name}
-				className={`w-full bg-white pr-12 [&::-webkit-search-cancel-button]:appearance-none ${basicStyle} ${className}`}
-				onChange={onChange}
-				step={step}
-				checked={checked}
-				autoComplete={type}
-				readOnly={readOnly}
-				min={min}
-				max={max}
-				required={required}
-				value={value}
-				placeholder={placeholder}
-			/>
-			{endIcon && (
-				<div className="absolute right-2 top-3 flex items-center justify-center">
-					{endIcon}
-				</div>
-			)}
+			<div className="relative w-full flex items-center">
+				{startIcon && (
+					<div className="absolute left-2 top-1/2 flex items-center justify-center">
+						{startIcon}
+					</div>
+				)}
+				<input
+					type={type}
+					id={id}
+					name={name}
+					className={`w-full bg-white pr-12 [&::-webkit-search-cancel-button]:appearance-none ${basicStyle} ${className}`}
+					onChange={onChange}
+					step={step}
+					checked={checked}
+					autoComplete={type}
+					readOnly={readOnly}
+					min={min}
+					max={max}
+					required={required}
+					value={value}
+					placeholder={placeholder}
+				/>
+				{endIcon && (
+					<div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-auto">
+						{endIcon}
+					</div>
+				)}
+			</div>
 		</div>
 	)
 }
