@@ -6,6 +6,7 @@ import FetchError from "../../../../system/atoms/Loading/FetchError";
 import NavigationBar from "../../../../system/molecules/Navigation/NavigationBar";
 import QuizQuestionDetail from "./QuizQuestionDetail";
 import QuizAssignForm from "../../../../system/organisms/quiz/form/QuizAssignForm";
+import { useState } from "react";
 
 const QuizQuestion = () => {
 
@@ -13,6 +14,9 @@ const QuizQuestion = () => {
 
 	const { infoQuestionQuiz } = useQuiz({ id: Number(id) })
 	const { data : questions, isPending } = infoQuestionQuiz
+
+	const [ activeTab, setActiveTab ] = useState(0);
+	
 
 	if (isPending) return <Loading />
 
@@ -24,7 +28,9 @@ const QuizQuestion = () => {
 			defaultLinkBack={true}
 		>
 			<NavigationBar
-				titles={['Détails des questions', 'Assignation des questions']}				
+				titles={['Détails', 'Assignation']}		
+				activeTab={activeTab}
+				onTabChange={(index) => setActiveTab(index)}				
 			>
 				<QuizQuestionDetail questions={questions}/>
 				<QuizAssignForm ownedQuestions={questions}/>
