@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useParams } from 'react-router';
+import { useParams, useSearchParams } from 'react-router';
 import { QuizService } from '../../../../other/services/quizService';
 import type { AnswersMap, Question, QuizInfo } from '../../../../other/types/quizType';
 import Box from '../../../../system/atoms/Container/Box';
@@ -15,6 +15,8 @@ import { useAppNavigation } from '../../../../other/hooks/navigation/useAppNavig
 
 export default function TakingEvaluation() {
 	const { id } = useParams();
+	const [searchParams] = useSearchParams();
+	const vagueId = searchParams.get('vague_id') ?? '';
 	const { navigateTo } = useAppNavigation();
 
 	const [quizInfo, setQuizInfo] = useState<QuizInfo | null>(null);
@@ -40,7 +42,11 @@ export default function TakingEvaluation() {
 		// console.warn('[QUIZ DEBUG] forceSubmitTimeout() appelé - réponses envoyées:', answersRef.current);
 		setSubmitting(true);
 		try {
-			const response = await QuizService.submitQuiz({ quiz_id: id as string, answers: answersRef.current as AnswersMap[]});
+			const response = await QuizService.submitQuiz({
+				quiz_id: id as string,
+				vague_id: vagueId,
+				answers: answersRef.current as AnswersMap[]
+			});
 			alert(`Temps écoulé ! Quiz soumis automatiquement.\n\nScore : ${response.score_obtenu} points.`);
 			navigateTo('/');
 		} catch (err: any) {
@@ -56,7 +62,10 @@ export default function TakingEvaluation() {
 
 		const fetchQuizData = async () => {
 			try {
-				const data = (await QuizService.startQuiz(id as string)) as QuizInfo;
+				if (!vagueId) {
+					throw new Error("L'ID de la vague est manquant dans l'URL.");
+				}
+				const data = (await QuizService.startQuiz(id as string, vagueId)) as QuizInfo;
 
 		setQuizInfo(data);
 		setQuestions(data.questions || []);
@@ -115,7 +124,7 @@ export default function TakingEvaluation() {
 			if (timerId) clearInterval(timerId);
 		};
 	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [id]);
+	}, [id, vagueId]);
 
 
 
@@ -127,6 +136,7 @@ export default function TakingEvaluation() {
 		try {
 			const response = await QuizService.submitQuiz(({
 				quiz_id: id as string,
+				vague_id: vagueId,
 				answers: answersRef.current as AnswersMap[]
 			}));
 			alert(`Félicitations, quiz terminé !\n\nScore : ${response.score_obtenu} points.`);

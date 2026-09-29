@@ -243,7 +243,7 @@ class SubmitQuizAPIView(APIView):
         }, status=status.HTTP_201_CREATED)
     
 class QuizReviewAPIView(APIView):
-    permission_classes = [IsAuthenticated] # Add IsApprenant if applicable
+    permission_classes = [IsAuthenticated] 
 
     def get(self, request, quiz_id):
 

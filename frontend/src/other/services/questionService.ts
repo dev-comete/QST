@@ -10,6 +10,7 @@ export interface BankQuestionParams {
 	search?: string;
 	type?: string;
 	page?: number;
+	pageSize?:number;
 	listType?: string
 }
 
@@ -32,12 +33,13 @@ export const QuestionService = {
 		return response.data as questionIdType[];
 	},
 
-	list: async ({ search, type, page, listType }: BankQuestionParams) => {
+	list: async ({ search, type, page, pageSize, listType }: BankQuestionParams) => {
 		
 		const queryParams = new URLSearchParams({
 			search: search ?? '',
 			type: type ?? '',
 			page: page ? page.toString() : '1',
+			page_size: pageSize? pageSize.toString() : '3',
 		}).toString();
 		
 		const url = listType == 'bank' ? BANK_QUESTION_URL : TRASH_QUESTION_URL
