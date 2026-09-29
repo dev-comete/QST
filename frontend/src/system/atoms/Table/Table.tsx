@@ -1,8 +1,9 @@
-import type { ReactNode, MouseEvent, Dispatch, SetStateAction } from "react";
+import type { ReactNode, MouseEvent, Dispatch, SetStateAction, ChangeEvent } from "react";
 import CustomText from "../Text/CustomText";
 import IconButton from "../../molecules/Buttons/IconButton";
 import Box from "../Container/Box";
 import SearchBar from "../../molecules/Input/SearchBar";
+import Select from "../Form/Select";
 
 export interface Column<T> {
     header: string | null;
@@ -28,6 +29,8 @@ interface TableProps<T> {
 	setSearch?: Dispatch<SetStateAction<string>>
 	searchPlaceholder?: string
 	filters?: ReactNode
+	pageSize?: number
+	setPageSize?: Dispatch<SetStateAction<number>>
 }
 
 type TableHeaderProps = Pick<
@@ -37,11 +40,11 @@ type TableHeaderProps = Pick<
 
 type TablePaginationProps = Pick<
 	TableProps<unknown>,
-	'page' | 'setPage' | 'hasNextPage' | 'count' | 'setCount' | 'totalCount'
-	& {
+	'page' | 'setPage' | 'hasNextPage' | 'count' | 'setCount' | 'totalCount' | 'pageSize' | 'setPageSize'
+	> & {
 		hasNextPage?: boolean
 	}
->;
+;
 
 const TableHeader = ({ title, search, setSearch, searchPlaceholder, filters } : TableHeaderProps) => {
 
@@ -77,37 +80,40 @@ const TablePagination = ({
 	page = 1,
 	setPage,
 	hasNextPage,
+	pageSize = 3,
+	setPageSize,
 	// totalCount,
 	// setCount,
 	// count
 } : TablePaginationProps) => {
 
+	const pageSizeOptions = [
+        { id: '1', value: '10' },
+        { id: '2', value: '25' },
+        { id: '3', value: '50' }
+    ]
+
+	const handlePageSizeChange = (e: ChangeEvent<HTMLSelectElement>) => {
+        const newValue = Number(e.target.value);
+        setPageSize?.(isNaN(newValue) ? 3 : newValue);
+        setPage?.(1);
+    }
+
 	return (
 		<div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-200 bg-slate-50/50 px-6 py-3 text-xs text-slate-500">
-			{/* <div className="flex items-center gap-2">
-				<span>Afficher</span>
-				<select
-					value={count}
-					onChange={(e) => {
-						setCount(Number(e.target.value));
-						setPage(1); // Reset to first page when changing items per page
-					}}
-					className="rounded-md border border-slate-200 bg-white px-2 py-1 text-xs font-medium text-slate-700 shadow-sm focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
-				>
-					{[10, 20, 50].map((pageSize) => (
-						<option key={pageSize} value={pageSize}>
-							{pageSize}
-						</option>
-					))}
-				</select>
-				<span>éléments par page</span>
-			</div> */}
-
-			{/* <div>
-				Affichage de <span className="font-semibold text-slate-700">{startItem}</span> à{" "}
-				<span className="font-semibold text-slate-700">{endItem}</span> sur{" "}
-				<span className="font-semibold text-slate-700">{totalCount}</span> résultats
-			</div> */}
+			{ setPageSize && 
+				<div className="flex flex-row items-center gap-2">
+					<Select 
+						id="page-size-select"
+						name="page-size-select"
+						selectionValue={pageSizeOptions}
+						value={String(pageSize)}
+						handleChange={handlePageSizeChange}
+						className="w-auto min-w-[90px]"
+					/>
+					<CustomText textTag="p" className="whitespace-nowrap">par page</CustomText>
+				</div>
+			}
 			<Box className="items-center w-full justify-center">
 				<IconButton
 					iconName="caret-left"
@@ -139,6 +145,8 @@ export const Table = <T,>({
 	setSearch,
 	searchPlaceholder,
 	filters,
+	pageSize,
+	setPageSize,
     // count,
     // setCount,
     // totalCount,
@@ -159,11 +167,10 @@ export const Table = <T,>({
 					searchPlaceholder={searchPlaceholder}
 					filters={filters}
 				/>
-
 			}
 			{
 				<>
-					<div className="w-full max-h-[70vh] overflow-y-auto">
+					<div className="w-full max-h-[60vh] overflow-y-auto">
 						<table className="w-full border-collapse text-left text-sm text-slate-700">
 							<thead className="sticky top-0 z-10">
 								<tr className="border-b border-slate-200 bg-secondary text-xs font-semibold uppercase tracking-wider text-slate-500">
@@ -220,6 +227,8 @@ export const Table = <T,>({
 							page={page}
 							setPage={setPage}
 							hasNextPage={hasNextPage}
+							pageSize={pageSize}
+							setPageSize={setPageSize}
 							// totalCount,
 							// setCount,
 							// count
