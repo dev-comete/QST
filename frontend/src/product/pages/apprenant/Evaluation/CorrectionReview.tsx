@@ -1,4 +1,4 @@
-import { useParams } from "react-router";
+import { useParams, useSearchParams } from "react-router";
 import { useReviewQuiz } from "../../../../other/hooks/quiz/useReviewQuiz";
 import Box from "../../../../system/atoms/Container/Box";
 import CorrectionBloc, { CorrectionBlocNav } from "../../../../system/organisms/quiz/container/CorrectionBloc";
@@ -10,8 +10,10 @@ import { ScoreDisplay } from "../../../../system/molecules/Display/ScoreDisplay"
 const CorrectionReview = () => {
 
 	const { id : quizId } = useParams();
+	const [searchParams] = useSearchParams();
+	const vagueId = searchParams.get('vague_id') ?? '';
 
-	const { review, status } = useReviewQuiz(quizId ?? '')
+	const { review, status } = useReviewQuiz(quizId ?? '', vagueId)
 
 	if (status == 'pending') return <Loading />
 

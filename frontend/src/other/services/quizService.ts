@@ -60,9 +60,11 @@ export const QuizService = {
 		return response.data as studentQuizType[];
 	},
 
-	startQuiz: async (id: string) => {
-		const url = '/quizzes/'+ id + '/take/'
-		const response = await apiClient.get(url);
+	startQuiz: async (id: string, vagueId: string | number) => {
+		const url = '/quizzes/' + id + '/take/'
+		const response = await apiClient.get(url, {
+			params: { vague_id: vagueId }
+		});
 		return response.data;
 	},
 
@@ -72,8 +74,10 @@ export const QuizService = {
 		return response.data;
 	},
 
-	reviewQuiz: async (quizId: string) => {
-		const response = await apiClient.get(`quizzes/${quizId}/review/`);
+	reviewQuiz: async (quizId: string, vagueId: string | number) => {
+		const response = await apiClient.get(`quizzes/${quizId}/review/`, {
+			params: { vague_id: vagueId }
+		});
 		return response.data as QuizReview;
 	},
 }
