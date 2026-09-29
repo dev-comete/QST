@@ -9,8 +9,9 @@ import Box from "../../../atoms/Container/Box"
 import { Table, type Column } from "../../../atoms/Table/Table"
 import IconButton from "../../../molecules/Buttons/IconButton"
 
-const ActionCell = ({ rowId, variant } : {
-	rowId : string | number | boolean,
+const ActionCell = ({ quizId, vagueId, variant } : {
+	quizId : string | number | boolean,
+	vagueId : string | number | boolean,
 	variant: 'à faire' | 'terminé',
 }) => {
     const navigate = useNavigate();
@@ -23,9 +24,9 @@ const ActionCell = ({ rowId, variant } : {
                 action={() => {
 
 					if (variant == 'terminé')
-						navigate(`/quiz/${rowId}/revue`)
+						navigate(`/quiz/${quizId}/revue?vague_id=${vagueId}`)
 					else
-						navigate(`/quiz/${rowId}/take`)
+						navigate(`/quiz/${quizId}/take?vague_id=${vagueId}`)
                 }}
             />
         </Box>
@@ -46,9 +47,9 @@ const quizTabColumn: Column<studentQuizType>[] = [
 		key: 'termine',
 		render: (value, rowId) => {
 			if (value == true)
-				return <ActionCell rowId={rowId ? rowId.quiz_id : ''} variant="terminé" />
+				return <ActionCell quizId={rowId ? rowId.quiz_id : ''} vagueId={rowId ? rowId.vague_id : ''} variant="terminé" />
 			else
-				return <ActionCell rowId={rowId ? rowId.quiz_id : ''} variant="à faire" />
+				return <ActionCell quizId={rowId ? rowId.quiz_id : ''} vagueId={rowId ? rowId.vague_id : ''} variant="à faire" />
 		}
 		
 	}

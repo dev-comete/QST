@@ -28,6 +28,7 @@ type studentQuizType = {
 	quiz_id: number,
 	quiz_titre: string,
 	formation_nom: string,
+	vague_id: number,
 	termine: boolean,
 	score_obtenu: number
 }
@@ -55,6 +56,7 @@ type AnswersMap = Record<string, Array<number | string>>;
 
 type QuizSubmitPayload = {
 	quiz_id: string,
+	vague_id: string | number,
 	answers: AnswersMap[]
 }
 

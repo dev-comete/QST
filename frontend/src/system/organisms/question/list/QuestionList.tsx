@@ -85,8 +85,9 @@ const QuestionList = ({ listType = 'bank'} : { listType?: 'bank' | 'trash'}) => 
 	const [ search, setSearch ] = useState('')
 	const [ type, setType ] = useState('')
 	const [ page, setPage ] = useState(1)
+	const [ pageSize, setPageSize ] = useState(3)
 	const { debouncedValue, setDebouncedValue } = useDebounce(search, 500);
-	const { list, questionTypeQuery } = useQuestion({ search : debouncedValue, type, page, listType })
+	const { list, questionTypeQuery } = useQuestion({ search : debouncedValue, type, page, pageSize, listType })
 	const { data: questionsData, status } = list
 	const { data : questionType, isPending } = questionTypeQuery
 
@@ -99,6 +100,7 @@ const QuestionList = ({ listType = 'bank'} : { listType?: 'bank' | 'trash'}) => 
 		setDebouncedValue('')
 		setType('')
 		setPage(1)
+		setPageSize(3)
 	}
 
 	if (!isLoading && (!questionsData || !questionType)) {
@@ -110,11 +112,23 @@ const QuestionList = ({ listType = 'bank'} : { listType?: 'bank' | 'trash'}) => 
 		...getSelectData(questionType, 'code')
 	] : [{ id: 'all', value: 'Tous les types' }]
 
+	const pageSizeOptions = [
+        { id: '3', value: '3' },
+        { id: '20', value: '20' },
+        { id: '50', value: '50' }
+    ]
+
 	const handleTypeChange = (e: ChangeEvent<HTMLSelectElement>) => {
 		const value = e.target.value
 		if (value === 'Tous les types') setType('')
 		else setType(value)
 	}
+
+	const handlePageSizeChange = (e: ChangeEvent<HTMLSelectElement>) => {
+        const newValue = Number(e.target.value);
+        setPageSize(isNaN(newValue) ? 3 : newValue);
+        setPage(1);
+    }
 
 	const { next, results: questions } = questionsData ?? {}
 
@@ -123,7 +137,46 @@ const QuestionList = ({ listType = 'bank'} : { listType?: 'bank' | 'trash'}) => 
 			{isLoading && <Loading />}
 			{!isLoading && selectedId === null &&
 				<>
-					<Table
+					{/* Filters */}
+					<Box className="flex items-center self-start w-2/3">
+						<Input
+							id={"searchQuestion"}
+							name={"searchQuestion"}
+							type="search"
+							placeholder="Rechercher un mot clé dans l'énoncé..."
+							onChange={(e) => setSearch(e.target.value)}
+							endIcon={
+								<FAIcon name={"search"} className="text-disabled"/>
+							}
+							value={search}			
+						/>
+						<Select 
+							id="type-question"
+							name="type-question"
+							selectionValue={selectedType}
+							value={type === '' ? 'Tous' : type}
+							handleChange={handleTypeChange}
+						/>
+						<Select 
+                            id="page-size-select"
+                            name="page-size-select"
+                            selectionValue={pageSizeOptions}
+                            value={String(pageSize)}
+                            handleChange={handlePageSizeChange}
+                        />
+                        
+                        {
+                            (debouncedValue || type !== '' || pageSize !== 10) &&
+                            <IconButton
+                                iconName={"close"}
+                                action={resetFilters}
+                                title="Réinitialiser"
+                            />
+						}
+					</Box>
+
+					{/* Table */}
+					<Table 
 						columns={getQuestionTabColumn(setSelectedId, listType)}
 						data={questions ?? []}
 						rowKey={'id'}

@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient , keepPreviousData} from "@tanstack/react-query";
 import { QuestionService } from "../../services/questionService";
 import { useEffect, useState } from "react";
 import type { bankQuestionType, respType } from "../../types/questionType";
@@ -56,15 +56,17 @@ type UseQuestionParams = {
 	search?: string
 	type?: string
 	page?: number
+	pageSize?: number
 	timer?: string
 	listType?: string
 }
 
-const useQuestion = ({ id, search, type, page, listType } : UseQuestionParams) => {
+const useQuestion = ({ id, search, type, page, pageSize , listType } : UseQuestionParams) => {
 
 	const list = useQuery({
-		queryKey: ['bank_question', search, type, page],
-		queryFn: () => QuestionService.list({ search, type, page, listType }),
+		queryKey: ['bank_question', search, type, page, pageSize, listType],
+		queryFn: () => QuestionService.list({ search, type, page, pageSize,listType }),
+		placeholderData: keepPreviousData,
 	})
 
 	const questionTypeQuery = useQuery({
