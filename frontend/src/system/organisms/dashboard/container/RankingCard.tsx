@@ -3,13 +3,7 @@ import Paper from "../../../atoms/Container/Paper"
 import FAIcon from "../../../atoms/Icon/FAIcon"
 import CustomText from "../../../atoms/Text/CustomText"
 import { UserNameAvatar } from "../../../molecules/Avatar/Avatar"
-
-export interface RankedStudent {
-    utilisateur__username: string;
-    utilisateur__first_name?: string;
-    utilisateur__last_name?: string;
-    score_cumule?: number | null;
-}
+import type { RankedStudent } from "../../../../other/types/vagueType";
 
 interface RankingCardProps {
 	variant?: string
