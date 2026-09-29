@@ -49,6 +49,8 @@ const textColor : Record<ColorTheme, string> = {
 	'text': 'text-text',
 	'white': 'text-white',
 	'disabled' : 'text-disabled',
+	'disabled-light' : 'text-disabled-light',
+	'disabled-dark' : 'text-disabled-dark',
 	'transparent' : 'text-transparent'
 }
 

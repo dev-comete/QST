@@ -29,7 +29,7 @@ const QuestionDetail = () => {
 						textTag="h2"
 						weight="bold"
 						color="primary"
-						className="border-b border-background pb-3"
+						className={`${question.reponses.length == 0 ? '' : 'border-b'} border-background pb-3`}
 					>{question.enonce_question}</CustomText>
 					{
 						question.reponses.map((item, index) => {

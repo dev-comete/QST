@@ -39,7 +39,6 @@ const ActionButton = ({
 	return (
 		<Button
 			color={btnColor}
-			//className={btnStyling}
 			className={combinedStyles}
 			onClick={handleClick}
 			disabled={disabled}

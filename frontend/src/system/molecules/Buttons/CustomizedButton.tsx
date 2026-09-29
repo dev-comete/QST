@@ -2,6 +2,19 @@ import { useAppNavigation } from "../../../other/hooks/navigation/useAppNavigati
 import FAIcon from "../../atoms/Icon/FAIcon"
 import ActionButton from "./ActionButton"
 
+export const CancelButton = ({ text = 'Non, annuler', onClick } : { text ?: string, onClick : () => void }) => {
+	return (
+		<ActionButton
+			btnColor="white"
+			textColor="text"
+			onClick={onClick} 
+			className="hover:bg-slate-100 px-4 py-2 rounded-lg transition-colors border border-background"
+		>
+			{text}
+		</ActionButton>
+	)
+}
+
 export const BackButton = ({ link } : { link? : string}) => {
 
 	const { navigateTo } = useAppNavigation()

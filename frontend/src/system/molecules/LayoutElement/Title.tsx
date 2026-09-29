@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import CustomText from "../../atoms/Text/CustomText";
 import Box from "../../atoms/Container/Box";
-import { BackButton } from "../Buttons/BackButton";
+import { BackButton } from "../Buttons/CustomizedButton";
 
 interface TitleProps {
 	title: string,
@@ -9,9 +9,10 @@ interface TitleProps {
 	linkBack?: string
 	defaultLinkBack?: boolean
 	info?: string
+	titleTag?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p" | "span"
 }
 
-const Title = ({ title, sideButton, linkBack, defaultLinkBack = false, info } : TitleProps) => {
+const Title = ({ title, sideButton, linkBack, defaultLinkBack = false, info, titleTag = 'h1' } : TitleProps) => {
 	
 		return (
 			<Box className="flex flex-col w-full border-b border-text pb-2">
@@ -19,7 +20,7 @@ const Title = ({ title, sideButton, linkBack, defaultLinkBack = false, info } : 
 					<Box className="flex items-center gap-3">
 						{linkBack && <BackButton link={linkBack} />}
 						{defaultLinkBack && <BackButton />}
-						<CustomText textTag="h1" weight="bold">{title}</CustomText>
+						<CustomText textTag={titleTag} weight="bold">{title}</CustomText>
 					</Box>
 					{sideButton && (
 						<Box className="justify-end">
