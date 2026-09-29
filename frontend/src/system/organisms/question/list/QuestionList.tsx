@@ -1,6 +1,8 @@
 import { useQuestion, useQuestionDel, useQuestionRestore } from "../../../../other/hooks/question/useQuestion"
 import type { bankQuestionType } from "../../../../other/types/questionType"
 import Box from "../../../atoms/Container/Box"
+import Input from "../../../atoms/Form/Input"
+import FAIcon from "../../../atoms/Icon/FAIcon"
 import FetchError from "../../../atoms/Loading/FetchError"
 import Loading from "../../../atoms/Loading/Loading"
 import { Table, type Column } from "../../../atoms/Table/Table"
@@ -137,44 +139,6 @@ const QuestionList = ({ listType = 'bank'} : { listType?: 'bank' | 'trash'}) => 
 			{isLoading && <Loading />}
 			{!isLoading && selectedId === null &&
 				<>
-					{/* Filters */}
-					<Box className="flex items-center self-start w-2/3">
-						<Input
-							id={"searchQuestion"}
-							name={"searchQuestion"}
-							type="search"
-							placeholder="Rechercher un mot clé dans l'énoncé..."
-							onChange={(e) => setSearch(e.target.value)}
-							endIcon={
-								<FAIcon name={"search"} className="text-disabled"/>
-							}
-							value={search}			
-						/>
-						<Select 
-							id="type-question"
-							name="type-question"
-							selectionValue={selectedType}
-							value={type === '' ? 'Tous' : type}
-							handleChange={handleTypeChange}
-						/>
-						<Select 
-                            id="page-size-select"
-                            name="page-size-select"
-                            selectionValue={pageSizeOptions}
-                            value={String(pageSize)}
-                            handleChange={handlePageSizeChange}
-                        />
-                        
-                        {
-                            (debouncedValue || type !== '' || pageSize !== 10) &&
-                            <IconButton
-                                iconName={"close"}
-                                action={resetFilters}
-                                title="Réinitialiser"
-                            />
-						}
-					</Box>
-
 					{/* Table */}
 					<Table 
 						columns={getQuestionTabColumn(setSelectedId, listType)}
@@ -194,6 +158,17 @@ const QuestionList = ({ listType = 'bank'} : { listType?: 'bank' | 'trash'}) => 
 						searchPlaceholder="Rechercher un mot-clé..."
 						filters={
 							<Box className="flex items-center self-start">
+								<Input
+									id={"searchQuestion"}
+									name={"searchQuestion"}
+									type="search"
+									placeholder="Rechercher un mot clé dans l'énoncé..."
+									onChange={(e) => setSearch(e.target.value)}
+									endIcon={
+										<FAIcon name={"search"} className="text-disabled"/>
+									}
+									value={search}			
+								/>
 								<Select 
 									id="type-question"
 									name="type-question"
@@ -201,14 +176,23 @@ const QuestionList = ({ listType = 'bank'} : { listType?: 'bank' | 'trash'}) => 
 									value={type === '' ? 'Tous' : type}
 									handleChange={handleTypeChange}
 								/>
+								<Select 
+									id="page-size-select"
+									name="page-size-select"
+									selectionValue={pageSizeOptions}
+									value={String(pageSize)}
+									handleChange={handlePageSizeChange}
+								/>
+								
 								{
-									debouncedValue &&
+									(debouncedValue || type !== '' || pageSize !== 10) &&
 									<IconButton
 										iconName={"close"}
 										action={resetFilters}
 										title="Réinitialiser"
 									/>
 								}
+								
 							</Box>
 						}
 					/>
