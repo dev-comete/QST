@@ -5,6 +5,11 @@ type RankedStudent = {
     score_cumule?: number | null;
 }
 
+type QuizRankedStudent = {
+    username: string;
+    score: number;
+}
+
 type etudiantType = {
 	etudiant_id: number,
 	username: string,
@@ -56,7 +61,7 @@ type vagueStatGlobal = {
 	moyenne_globale_classe: number,
 	taux_reussite_global_pct: number,
 	majors_de_promo_top3: RankedStudent[],
-	etudiants_en_difficulte_bottom3: string[]
+	etudiants_en_difficulte_bottom3: RankedStudent[]
 }
 
 type vagueStatQuiz = {
@@ -67,8 +72,8 @@ type vagueStatQuiz = {
 	taux_participation_pct: number,
 	moyenne_classe: number,
 	taux_reussite_pct: number,
-	top_3: RankedStudent[],
-	bottom_3: RankedStudent[],
+	top_3: QuizRankedStudent[],
+	bottom_3: QuizRankedStudent[],
 	alerte_question_difficile: string | null,
 	nombre_echecs_question: number
 }
