@@ -4,17 +4,35 @@ import FAIcon from "../../../atoms/Icon/FAIcon"
 import CustomText from "../../../atoms/Text/CustomText"
 import { UserNameAvatar } from "../../../molecules/Avatar/Avatar"
 
-interface RankingCardProps {
-	variant?: string
-	students: string[]
+export interface RankedStudent {
+    utilisateur__username: string;
+    utilisateur__first_name?: string;
+    utilisateur__last_name?: string;
+    score_cumule?: number | null;
 }
 
-const RankingCardItem = ({ student } : { student : string }) => {
+interface RankingCardProps {
+	variant?: string
+	students: RankedStudent[]
+}
+
+const RankingCardItem = ({ student } : { student : RankedStudent }) => {
+	const displayName = student.utilisateur__username || "Inconnu";
 	return (
-		<Box className="border border-background p-3 rounded-xl w-full items-center">
-			<UserNameAvatar name={student}/>
-			<CustomText >{student}</CustomText>
-		</Box>
+		<Box className="border border-background p-3 rounded-xl w-full items-center justify-between mt-2">
+            <Box className="items-center gap-3">
+                {/* On passe bien une STRING à l'avatar */}
+                <UserNameAvatar name={displayName}/>
+                {/* On passe bien une STRING au texte */}
+                <CustomText>{displayName}</CustomText>
+            </Box>
+            
+            {student.score_cumule !== undefined && student.score_cumule !== null && (
+                <CustomText weight="bold" className="text-primary text-sm">
+                    {student.score_cumule} pts
+                </CustomText>
+            )}
+        </Box>
 	)
 }
 

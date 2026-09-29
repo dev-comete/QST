@@ -7,9 +7,13 @@ interface AvatarProps {
 }
 
 export const UserNameAvatar = ({ name }: { name: string }) => {
+    const initial = typeof name === 'string' && name.trim().length > 0 
+        ? name.charAt(0).toUpperCase() 
+        : '?';
+
     return (
         <div className="w-10 h-10 rounded-full bg-secondary text-primary flex items-center justify-center p-2 flex-shrink-0 font-bold">
-            {name.charAt(0).toUpperCase()}
+            {initial}
         </div>
     );
 };
