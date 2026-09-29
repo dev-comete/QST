@@ -7,6 +7,7 @@ interface ActionButtonProps {
 	children: React.ReactNode,
 	btnColor?: ColorTheme,
 	btnStyling?: string,
+	className?: string,
 	textColor?: ColorTheme,
 	onClick? : (event: React.MouseEvent<HTMLButtonElement>) => void,
 	disabled? : boolean,
@@ -20,6 +21,7 @@ const ActionButton = ({
 	children,
 	btnColor = "primary",
 	btnStyling,
+	className,
 	textColor = "white",
 	disabled = false,
 	type,
@@ -32,11 +34,13 @@ const ActionButton = ({
 		e.stopPropagation();
 		action?.(e);
 	};
+	const combinedStyles = `${btnStyling ?? ''} ${className ?? ''}`.trim();
 
 	return (
 		<Button
 			color={btnColor}
-			className={btnStyling}
+			//className={btnStyling}
+			className={combinedStyles}
 			onClick={handleClick}
 			disabled={disabled}
 			type={type}

@@ -27,10 +27,17 @@ export const useVagueDel = (id: number) => {
 	}
 }
 
-export const useVague = (id ?: string) => {
+type UseVagueParam = {
+	id?: string
+	formation?: string
+	month?: string
+	year?: string
+}
+
+export const useVague = ({ id, formation, month, year } : UseVagueParam) => {
 	const getAllVague = useQuery({
-		queryKey: ['vague_list'],
-		queryFn: VagueService.list,
+		queryKey: ['vague_list', formation, month, year],
+		queryFn: () => VagueService.list({formation, month, year}),
 	})
 
 	const infoVagueQuery = useQuery({
@@ -116,7 +123,7 @@ export const useVagueEdit = (id: string) => {
 	})
 	const { formations } = useFormation()
 	const queryClient = useQueryClient()
-	const { infoVagueQuery } = useVague(id)
+	const { infoVagueQuery } = useVague({ id })
 
 	const editVague = useMutation({
 		mutationFn: ({ id, data }: { id: number; data: vaguePayload }) => VagueService.edit(id, data),

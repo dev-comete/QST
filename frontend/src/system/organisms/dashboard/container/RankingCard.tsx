@@ -24,8 +24,6 @@ const RankingCard = ({ students, variant = 'top' } : RankingCardProps) => {
 
 	const icon = variant == 'top' ? 'trophy' : 'ranking-star'
 
-	const staticStudents = ['John Doe', 'Becky Anderson', 'Rakoto rabe']
-
 	return (
 			<Paper className="flex flex-col space-y-2 items-center px-3 py-2 flex-1 min-w-0 min-h-30 w-full">
 				<Box className="border-b border-background p-3 w-full justify-center">
@@ -34,9 +32,9 @@ const RankingCard = ({ students, variant = 'top' } : RankingCardProps) => {
 				</Box>
 				<Box direction="column" className="items-center justify-center w-full">
 					{
-						staticStudents.length == 0 
+						students.length == 0 
 						? <CustomText textTag="h6" isItalic>Classement indisponible</CustomText>
-						: staticStudents.map(( stud, index) => <RankingCardItem key={variant + index} student={stud}/>)
+						: students.map(( stud, index) => <RankingCardItem key={variant + index} student={stud}/>)
 					}
 				</Box>
 			</Paper>

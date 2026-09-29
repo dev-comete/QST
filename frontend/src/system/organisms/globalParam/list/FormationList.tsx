@@ -4,7 +4,7 @@ import type { Formation } from "../../../../other/types/formationType";
 import Box from "../../../atoms/Container/Box";
 import { Table, type Column } from "../../../atoms/Table/Table";
 import IconButton, { IconConfirmActionButton } from "../../../molecules/Buttons/IconButton";
-import ModalEditFormation from "../form/ModalEditFormation";
+import ModalEditFormation from "../../formation/form/ModalEditFormation";
 import { useUser } from "../../../../other/hooks/user/useUser";
 import FetchError from "../../../atoms/Loading/FetchError";
 import Loading from "../../../atoms/Loading/Loading";
@@ -53,7 +53,7 @@ const getFormationTabColumn = (
 		}
 	},
 	{
-		header: "Action",
+		header: null,
 		key: 'id',
 		render: (value) => {
 			return <ActionCell rowId={value ? value : ''} onEdit={onEdit} />
@@ -79,7 +79,7 @@ const FormationList = ({ formations } : { formations : Formation[]}) => {
 	}
 
 	return (
-		<Box direction="column" className="w-full items-center justify-center">
+		<Box direction="column" className="w-full items-center justify-center capitalize">
 			<Table 
 				columns={getFormationTabColumn(
 					handleOpenEditModal,

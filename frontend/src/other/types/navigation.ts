@@ -12,12 +12,11 @@ export interface SideBarConfig {
 const ROLE_CONFIGS: Record<string, SideBarConfig> = {
 	admin: {
 		navItem: [
-			{ label: 'Utilisateurs', link: '/admin/gestion_utilisateurs', icon: 'users' },
+			{ label: 'Tableau de bord', link: '/admin/tableau_de_bord', icon:'chart-column' },
 			{ label: 'Paramètres généraux', link: '/admin/parametre_general', icon:'sliders' },
 			{ label: 'Banque de questions', link: '/admin/gestion_question', icon: 'circle-question' },
 			{ label: 'Quiz', link: '/admin/gestion_quiz', icon:'file-pen' },
 			{ label: 'Vagues', link: '/admin/gestion_vague', icon: 'calendar-days' },
-			{ label: 'Tableau de bord', link: '/admin/tableau_de_bord', icon:'chart-column' },
 		]
 	},
 

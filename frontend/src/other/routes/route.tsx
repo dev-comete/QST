@@ -3,7 +3,7 @@ import FormateurTemplate from "../../product/layout/role/FormateurTemplate";
 import Dashboard from "../../product/pages/formateur/Dashboard";
 import AdminTemplate from "../../product/layout/role/AdminTemplate";
 import ApprenantTemplate from "../../product/layout/role/ApprenantTemplate";
-import UserManagement from "../../product/pages/admin/UserManagement";
+import Parameters from "../../product/pages/admin/Parameters";
 import BulletinReview from "../../product/pages/apprenant/Bulletin/BulletinReview";
 import Home from "../../product/pages/common/Home";
 import Login from "../../product/pages/common/Login";
@@ -12,10 +12,10 @@ import ProtectedRoute from "../../product/layout/common/ProtectedRoute";
 import Unauthorized from "../../product/pages/common/Unauthorized";
 import { RootRedirect } from "../../product/layout/common/RootRedirect";
 import CorrectionReview from "../../product/pages/apprenant/Evaluation/CorrectionReview";
-import COMMON_CHILDREN from "./sharedChildren";
 import Bulletin from "../../product/pages/apprenant/Bulletin/Bulletin";
 import MyEvaluations from "../../product/pages/apprenant/Evaluation/MyEvaluations";
 import TakingEvaluation from "../../product/pages/apprenant/Evaluation/TakingEvaluation";
+import COMMON_CHILDREN from "./sharedChildren";
 
 export const router = createBrowserRouter([
 
@@ -42,8 +42,8 @@ export const router = createBrowserRouter([
 			{	
 				element: <AdminTemplate />,
 				children: [
-					{ index: true, element: <Navigate to="gestion_utilisateurs" replace /> },
-					{ path: 'gestion_utilisateurs', element: <UserManagement /> },
+					{ index: true, element: <Navigate to="tableau_de_bord" replace /> },
+					{ path: 'parametre_general', element: <Parameters /> },
 					{ path: 'tableau_de_bord', element: <AdminDashboard /> },
 					...COMMON_CHILDREN,
 				]
@@ -59,7 +59,7 @@ export const router = createBrowserRouter([
 			{ 
 				element: <FormateurTemplate />,
 				children: [
-					{ index: true, element: <Navigate to="gestion_vague" replace /> },
+					{ index: true, element: <Navigate to="tableau_de_bord" replace /> },
 					...COMMON_CHILDREN,
 					{ path: "tableau_de_bord", element: <Dashboard /> },
 				],

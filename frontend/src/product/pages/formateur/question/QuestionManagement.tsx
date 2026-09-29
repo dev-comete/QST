@@ -19,10 +19,10 @@ const QuestionManagement = () => {
 						textColor="text"
 						onClick={() => navigateTo("gestion_question/corbeille")}
 					>
-						<Box className="items-center">
+						<span className="items-center">
 							<FAIcon name="trash-can"/>
 							{"Corbeille"}
-						</Box>
+						</span>
 					</ActionButton>
 					<ActionButton
 						onClick={() => navigateTo("creation_question")}

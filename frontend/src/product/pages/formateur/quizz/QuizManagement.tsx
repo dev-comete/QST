@@ -23,10 +23,10 @@ const QuizManagement = () => {
 						textColor="text"
 						onClick={() => navigateTo("gestion_quiz/corbeille")}
 					>
-						<Box className="items-center">
+						<span className="items-center">
 							<FAIcon name="trash-can"/>
 							{"Corbeille"}
-						</Box>
+						</span>
 					</ActionButton>
 					<ActionButton
 						onClick={(e) => { e.preventDefault(); setOpen(true)}}

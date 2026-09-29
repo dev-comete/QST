@@ -1,8 +1,7 @@
 import type { ReactNode } from "react";
 import CustomText from "../../atoms/Text/CustomText";
 import Box from "../../atoms/Container/Box";
-import IconButton from "../Buttons/IconButton";
-import { useAppNavigation } from "../../../other/hooks/navigation/useAppNavigation";
+import { BackButton } from "../Buttons/BackButton";
 
 interface TitleProps {
 	title: string,
@@ -10,19 +9,6 @@ interface TitleProps {
 	linkBack?: string
 	defaultLinkBack?: boolean
 	info?: string
-}
-
-const BackButton = ({ link } : { link? : string}) => {
-
-	const { navigateTo } = useAppNavigation()
-
-	return (
-		<IconButton 
-			iconName="chevron-left"
-			action={() => navigateTo(link ? link : -1)}
-			btnStyling="rounded-full bg-white"
-		/>
-	)
 }
 
 const Title = ({ title, sideButton, linkBack, defaultLinkBack = false, info } : TitleProps) => {
@@ -64,7 +50,7 @@ const Title = ({ title, sideButton, linkBack, defaultLinkBack = false, info } : 
 						</Box>
 					)}
 				</Box>
-				{ info && <CustomText textTag="caption">{info}</CustomText>}
+				{ info && <CustomText textTag="caption">{info}</CustomText> }
 			</Box>
 		);
 }

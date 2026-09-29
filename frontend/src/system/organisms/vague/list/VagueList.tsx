@@ -8,8 +8,11 @@ import Loading from "../../../atoms/Loading/Loading";
 import { formatDate } from "../../../../other/helper/helper";
 import CustomText from "../../../atoms/Text/CustomText";
 import { useAppNavigation } from "../../../../other/hooks/navigation/useAppNavigation";
-import { useState } from "react";
+import { useState, type ChangeEvent } from "react";
 import ModalVagueEdit from "../form/ModalVagueEdit";
+import Select from "../../../atoms/Form/Select";
+import { useFormation } from "../../../../other/hooks/formation/useFormation";
+import Input from "../../../atoms/Form/Input";
 
 const ActionCell = ({ rowId, onEdit }: { 
     rowId: string | number | boolean | string[]
@@ -60,7 +63,7 @@ const getVagueTabColumn = (
 		
 	},
 	{
-		header: "Action",
+		header: null,
 		key: 'id',
 		render: (value) => {
 			return <ActionCell rowId={String(value)} onEdit={onEdit} />
@@ -71,31 +74,89 @@ const getVagueTabColumn = (
 
 const VagueList = () => {
 
-	const { getAllVague } = useVague()
-	const { data: vagues, status } = getAllVague
 	const [isModalOpen, setIsModalOpen] = useState(false)
 	const [selectedVagueId, setSelectedVagueId] = useState<string>('')
 	const { navigateTo } = useAppNavigation()
+	const { formations, formationsStatus } = useFormation()
+	const [ formationFilter, setFormationFilter ] = useState<string>('')
+	const [ periodFilter, setPeriodFilter ] = useState<{ year: string, month: string}>({
+		year: '',
+		month: ''
+	})
+	const { getAllVague } = useVague({ 
+		formation: formationFilter,
+		month: periodFilter.month,
+		year: periodFilter.year
+	})
+	const { data: vagues, status } = getAllVague
 
-	if (status == 'pending')
-		return <Loading />
+	const isLoading = status == 'pending' || formationsStatus == 'pending'
 	
-	if (!vagues)
+	if (!isLoading && (!vagues || !formations))
 		return <FetchError />
+
+	const selectionFormation = [
+		{ id: '', value: 'Toutes les formations' },
+		...(formations?.map((f) => ({
+			id: String(f.id),
+			value: f.nom_formation
+		})) ?? [])
+	]
 
 	const handleOpenEditModal = (id: string | number | boolean | string[]) => {
 		setSelectedVagueId(id as string)
         setIsModalOpen(true)
     }
 
+	const handleFormationChange = (e: ChangeEvent<HTMLSelectElement>) => {
+		const selectedText = e.target.value
+		const selectedItem = selectionFormation.find((item) => item.value === selectedText)
+		setFormationFilter(selectedItem ? selectedItem.id : '')
+	}
+
+	const handlePeriodChange = (e: ChangeEvent<HTMLInputElement>) => {
+		const period = e.target.value.split('-')
+
+		if (period.length == 2)
+			setPeriodFilter({
+				month: period[1],
+				year: period[0]
+			})
+	}
+
 	return (
 		<Box direction="column" className="w-full items-center justify-center">
-			<Table 
-				columns={getVagueTabColumn(handleOpenEditModal)}
-				data={vagues}
-				rowKey={'id'}
-				onRowClick={(row) => navigateTo('vagues/' + row.id)}
-			/>
+			{isLoading && <Loading />}
+			{!isLoading && 			
+				<Table 
+					columns={getVagueTabColumn(handleOpenEditModal)}
+					data={vagues ?? []}
+					rowKey={'id'}
+					onRowClick={(row) => navigateTo('vagues/' + row.id)}
+					filters={
+						<Box className="flex items-center self-start">
+							<Select 
+								id="type-question"
+								name="type-question"
+								selectionValue={selectionFormation}
+								handleChange={handleFormationChange}
+								value={
+									formationFilter === '' 
+										? 'Toutes les formations' 
+										: formations?.find((f) => String(f.id) === formationFilter)?.nom_formation ?? ''
+								}
+							/>
+							<Input
+								id={"debut"}
+								name={"debut"}
+								type="month"
+								onChange={handlePeriodChange}
+								required
+							/>
+						</Box>
+					}
+				/>
+			}
 			<ModalVagueEdit
 				open={isModalOpen}
 				closeModal={() => setIsModalOpen(false)}
