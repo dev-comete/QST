@@ -13,6 +13,11 @@ export const BulletinService = {
 		const url = import.meta.env.VITE_MY_BULLETIN + vagueId
 		const response = await apiClient.get(url);
 		return response.data as BulletinGlobal;
+	}, 
+	exportPdf: async (vagueId: string | number) => {
+        const response = await apiClient.get(`quizzes/bulletin/vague/${vagueId}/pdf/`, {
+            responseType: 'blob', 
+        });
+        return response.data;
 	}
-
 }
