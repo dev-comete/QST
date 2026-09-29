@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation , useQueryClient} from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import type { Role, User } from "../../types/common";
 import { AuthService } from "../../services/auth/authService";
@@ -77,12 +77,21 @@ const useLogin = () => {
 };
 
 const useLogout = () => {
-	const navigate = useNavigate();
+    const navigate = useNavigate();
+    const { setAuthUser } = useAuth();
+    const queryClient = useQueryClient(); 
 
-	return () => {
-		TokenStorage.clear();
-		navigate("/login", { replace: true });
-	};
+    return () => {
+        // Redirection en premier
+        navigate("/login", { replace: true });
+
+        // Nettoyage en arrière-plan pour éviter le clignotement de la page protégée
+        setTimeout(() => {
+            TokenStorage.clear();
+            setAuthUser(null);
+            queryClient.clear();
+        }, 0);
+    };
 };
 
 export {
