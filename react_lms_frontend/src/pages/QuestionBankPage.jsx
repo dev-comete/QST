@@ -22,7 +22,6 @@ const IconRestore = (props) => (
   </svg>
 );
 
-// 🌟 NOUVELLE ICÔNE : Édition
 const IconEdit = (props) => (
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
     <path d="M12 20h9" />
@@ -34,6 +33,9 @@ const QuestionBankPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [typeCode, setTypeCode] = useState('');
   const [page, setPage] = useState(1);
+  
+  // 🌟 NOUVEAU : State pour la taille de la pagination (par défaut 10)
+  const [pageSize, setPageSize] = useState(3);
 
   const [data, setData] = useState({ results: [], count: 0, next: null, previous: null });
   const [loading, setLoading] = useState(false);
@@ -44,22 +46,26 @@ const QuestionBankPage = () => {
   const navigate = useNavigate();
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
+  // 🌟 NOUVEAU : On ajoute pageSize dans les dépendances
   useEffect(() => {
     fetchQuestions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedSearchTerm, typeCode, page, showTrash]);
+  }, [debouncedSearchTerm, typeCode, page, showTrash, pageSize]);
 
+  // 🌟 NOUVEAU : On réinitialise la page à 1 si la taille de page change
   useEffect(() => {
     setPage(1);
-  }, [debouncedSearchTerm, typeCode, showTrash]);
+  }, [debouncedSearchTerm, typeCode, showTrash, pageSize]);
 
   const fetchQuestions = async () => {
     setLoading(true);
     setError(null);
     try {
+      // 🌟 NOUVEAU : Passage du pageSize aux requêtes. 
+      // Note : on passe null pour excludeQuizId dans getBankQuestions.
       const response = showTrash 
-        ? await QuestionService.getTrashQuestions(debouncedSearchTerm, typeCode, page)
-        : await QuestionService.getBankQuestions(debouncedSearchTerm, typeCode, page);
+        ? await QuestionService.getTrashQuestions(debouncedSearchTerm, typeCode, page, pageSize)
+        : await QuestionService.getBankQuestions(debouncedSearchTerm, typeCode, page, null, pageSize);
       setData(response);
     } catch (err) {
       setError("Impossible de charger les questions. Vérifiez votre connexion.");
@@ -85,9 +91,8 @@ const QuestionBankPage = () => {
     if (!confirmed) return;
     try {
       await QuestionService.deleteQuestion(questionId); 
-      fetchQuestions(); // Met à jour la liste si succès
+      fetchQuestions(); 
     } catch (err) {
-      // 🌟 CORRECTION : On affiche le message d'erreur précis renvoyé par Django !
       const errorMsg = err.response?.data?.error || "Erreur lors de la suppression de la question.";
       notify({ type: 'error', message: errorMsg });
     }
@@ -139,17 +144,33 @@ const QuestionBankPage = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <div className="lms-filterbar__select">
-            <select
-              className="lms-select"
-              value={typeCode}
-              onChange={(e) => setTypeCode(e.target.value)}
-            >
-              <option value="">Tous les types</option>
-              <option value="QCM">QCM (Choix Multiples)</option>
-              <option value="QCU">QCU (Choix Unique)</option>
-              <option value="OUV">Question Ouverte</option>
-            </select>
+          
+          <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
+            <div className="lms-filterbar__select">
+              <select
+                className="lms-select"
+                value={typeCode}
+                onChange={(e) => setTypeCode(e.target.value)}
+              >
+                <option value="">Tous les types</option>
+                <option value="QCM">QCM (Choix Multiples)</option>
+                <option value="QCU">QCU (Choix Unique)</option>
+                <option value="OUV">Question Ouverte</option>
+              </select>
+            </div>
+            
+            {/* 🌟 NOUVEAU : Menu déroulant pour le choix de la pagination */}
+            <div className="lms-filterbar__select">
+              <select
+                className="lms-select"
+                value={pageSize}
+                onChange={(e) => setPageSize(Number(e.target.value))}
+              >
+                <option value={3}>3 par page</option>
+                <option value={15}>15 par page</option>
+                <option value={25}>25 par page</option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -183,7 +204,6 @@ const QuestionBankPage = () => {
                       </button>
                     ) : (
                       <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
-                        {/* 🌟 NOUVEAU : Boutons Modifier et Supprimer */}
                         <button 
                           className="lms-icon-action lms-icon-action--neutral"
                           onClick={() => navigate(`/banque-questions/${question.id}/edit`)}
@@ -232,7 +252,9 @@ const QuestionBankPage = () => {
             >
               &laquo; Précédent
             </button>
-            <span className="lms-pagination__label">Page {page}</span>
+            <span className="lms-pagination__label">
+              Page {page} sur {Math.ceil(data.count / pageSize)}
+            </span>
             <button
               className="lms-btn lms-btn--outline"
               disabled={!data.next}
