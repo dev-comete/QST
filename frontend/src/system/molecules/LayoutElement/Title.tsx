@@ -15,7 +15,7 @@ interface TitleProps {
 const Title = ({ title, sideButton, linkBack, defaultLinkBack = false, info, titleTag = 'h1' } : TitleProps) => {
 	
 		return (
-			<Box className="flex flex-col w-full border-b border-text pb-2">
+			<Box className="flex flex-col w-full border-b border-text-light pb-2">
 				<Box className={`flex items-center gap-3 w-full justify-between`}>
 					<Box className="flex items-center gap-3">
 						{linkBack && <BackButton link={linkBack} />}

@@ -5,9 +5,7 @@ import FetchError from "../../../atoms/Loading/FetchError"
 import Loading from "../../../atoms/Loading/Loading"
 import { Table, type Column } from "../../../atoms/Table/Table"
 import IconButton, { IconConfirmActionButton } from "../../../molecules/Buttons/IconButton"
-import QuestionDetail from "../../../../product/pages/formateur/question/QuestionDetail"
-import { useState, type Dispatch, type SetStateAction, type ChangeEvent } from "react"
-// import { useAppNavigation } from "../../../../other/hooks/navigation/useAppNavigation"
+import { useState, type ChangeEvent } from "react"
 import Select from "../../../atoms/Form/Select"
 import { getSelectData } from "../../../../other/helper/helper"
 import useDebounce from "../../../../other/hooks/question/useDebounce"
@@ -15,12 +13,9 @@ import { useAppNavigation } from "../../../../other/hooks/navigation/useAppNavig
 
 const ActionCell = ({ questionId, listType }: { 
     rowId: string | number | boolean | string[]
-	// setSelectedId: Dispatch<SetStateAction<number | null>>
 	questionId: number
 	listType?: string
 }) => {    
-
-	// const { navigateTo } = useAppNavigation()
 
 	const { handleQuestionDel, isPending } = useQuestionDel(questionId)
 	const { handleQuestionRestore, isPending : restorePending } = useQuestionRestore(questionId)
@@ -61,7 +56,6 @@ const ActionCell = ({ questionId, listType }: {
 };
 
 const getQuestionTabColumn = (
-	// setSelectedId: Dispatch<SetStateAction<number | null>>,
 	listType: string
 ): Column<bankQuestionType>[] => [
 
@@ -75,7 +69,6 @@ const getQuestionTabColumn = (
 		render: (_val, row, index) => 
 		<ActionCell
 			rowId={index ? index : 0}
-			// setSelectedId={setSelectedId}
 			questionId={Number(row?.id)}
 			listType={listType}
 		/>
@@ -86,7 +79,7 @@ const QuestionList = ({ listType = 'bank'} : { listType?: 'bank' | 'trash'}) => 
 	const [ search, setSearch ] = useState('')
 	const [ type, setType ] = useState('')
 	const [ page, setPage ] = useState(1)
-	const [ pageSize, setPageSize ] = useState(10)
+	const [ pageSize, setPageSize ] = useState(5)
 	const { debouncedValue, setDebouncedValue } = useDebounce(search, 500);
 	const { list, questionTypeQuery } = useQuestion({ search : debouncedValue, type, page, pageSize, listType })
 	const { data: questionsData, status } = list
@@ -101,7 +94,6 @@ const QuestionList = ({ listType = 'bank'} : { listType?: 'bank' | 'trash'}) => 
 		setDebouncedValue('')
 		setType('')
 		setPage(1)
-		setPageSize(10)
 	}
 
 	if (!isLoading && (!questionsData || !questionType)) {
@@ -166,12 +158,6 @@ const QuestionList = ({ listType = 'bank'} : { listType?: 'bank' | 'trash'}) => 
 					/>
 				</>
 			}
-			{/* { !isLoading && selectedId != null && questions && questions[selectedId] && 
-				<QuestionDetail
-					question={questions[selectedId]}
-					setSelectedId={setSelectedId}
-				/>
-			} */}
 		</Box>
 	)
 }
