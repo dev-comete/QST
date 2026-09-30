@@ -90,25 +90,28 @@ class VagueStudentSerializer(serializers.ModelSerializer):
 
 class VagueListWithStudentsSerializer(serializers.ModelSerializer):
     """Main serializer that returns the Vague and embeds its students."""
+    formation_id = serializers.IntegerField(source='formation.id', read_only=True)
     formation_nom = serializers.CharField(source='formation.nom_formation', read_only=True)
     
-    # We use '_set' because it is the default reverse relation name in Django 
-    # if you didn't set a related_name on the UtilisateurVague model.
     etudiants = VagueStudentSerializer(source='utilisateurvague_set', many=True, read_only=True)
-    quiz_assignes_ids = serializers.SerializerMethodField()
+    
+    # 🌟 1. On utilise le nouveau champ 'quizzes' pour obtenir la liste des IDs directement
+    quiz_assignes_ids = serializers.PrimaryKeyRelatedField(
+        many=True, 
+        read_only=True, 
+        source='quizzes'
+    )
+    
     quizzes_assignes = serializers.SerializerMethodField()
 
     class Meta:
         model = Vague
-        fields = ['id', 'nom_vague', 'formation_nom', 'debut', 'fin', 'etudiants' , 'quiz_assignes_ids', 'quizzes_assignes']
-
-    def get_quiz_assignes_ids(self, obj):
-        # On cherche tous les UtilisateurQuiz liés à cette vague, et on extrait juste les IDs des quiz
-        return UtilisateurQuiz.objects.filter(vague=obj).values_list('quiz_id', flat=True).distinct()
+        fields = ['id', 'nom_vague', 'formation_id', 'formation_nom', 'debut', 'fin', 'etudiants', 'quiz_assignes_ids', 'quizzes_assignes']
 
     def get_quizzes_assignes(self, obj):
-        quiz_ids = UtilisateurQuiz.objects.filter(vague=obj).values_list('quiz_id', flat=True).distinct()
-        quizzes = Quiz.objects.filter(id__in=quiz_ids)
+        # 🌟 2. On lit directement le programme officiel de la Vague (Curriculum)
+        # Plus besoin de requêter UtilisateurQuiz !
+        quizzes = obj.quizzes.all()
         
         return [
             {

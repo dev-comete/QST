@@ -33,6 +33,7 @@ const VagueHeader = ({ vague } : VagueAssignProps) => {
 
 	const { 
 		id,
+		formation_id,
 		formation_nom: formation,
 		debut,
 		fin,
@@ -108,6 +109,7 @@ const VagueAssign = () => {
 						handleAssignQuiz={handleAssignQuiz}
 						isPending={isAssignQuizPending}
 						ownedQuiz={ownedQuiz}
+						formationId={vague.formation_id}
 					/>
 					<StudentAssignation 
 						ownedStudents={ownedStudents}

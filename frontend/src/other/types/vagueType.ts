@@ -24,6 +24,7 @@ type vagueQuiz = {
 
 type vagueType = {
 	id: number,
+	formation_id: number,
 	formation_nom: string,
 	debut: string | null,
 	fin: string | null,
