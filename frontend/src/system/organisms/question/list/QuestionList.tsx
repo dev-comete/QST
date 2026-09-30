@@ -158,14 +158,6 @@ const QuestionList = ({ listType = 'bank'} : { listType?: 'bank' | 'trash'}) => 
 									value={type === '' ? 'Tous' : type}
 									handleChange={handleTypeChange}
 								/>
-								<Select 
-									id="page-size-select"
-									name="page-size-select"
-									selectionValue={pageSizeOptions}
-									value={String(pageSize)}
-									handleChange={handlePageSizeChange}
-								/>
-								
 								{
 									(debouncedValue || type !== '' || pageSize !== 10) &&
 									<IconButton
