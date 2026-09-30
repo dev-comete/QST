@@ -1,6 +1,8 @@
 import { useQuestion, useQuestionDel, useQuestionRestore } from "../../../../other/hooks/question/useQuestion"
 import type { bankQuestionType } from "../../../../other/types/questionType"
 import Box from "../../../atoms/Container/Box"
+import Input from "../../../atoms/Form/Input"
+import FAIcon from "../../../atoms/Icon/FAIcon"
 import FetchError from "../../../atoms/Loading/FetchError"
 import Loading from "../../../atoms/Loading/Loading"
 import { Table, type Column } from "../../../atoms/Table/Table"
@@ -138,6 +140,17 @@ const QuestionList = ({ listType = 'bank'} : { listType?: 'bank' | 'trash'}) => 
 						setPageSize={setPageSize}
 						filters={
 							<Box className="flex items-center self-start">
+								<Input
+									id={"searchQuestion"}
+									name={"searchQuestion"}
+									type="search"
+									placeholder="Rechercher un mot clé dans l'énoncé..."
+									onChange={(e) => setSearch(e.target.value)}
+									endIcon={
+										<FAIcon name={"search"} className="text-disabled"/>
+									}
+									value={search}			
+								/>
 								<Select 
 									id="type-question"
 									name="type-question"
@@ -145,14 +158,23 @@ const QuestionList = ({ listType = 'bank'} : { listType?: 'bank' | 'trash'}) => 
 									value={type === '' ? 'Tous' : type}
 									handleChange={handleTypeChange}
 								/>
+								<Select 
+									id="page-size-select"
+									name="page-size-select"
+									selectionValue={pageSizeOptions}
+									value={String(pageSize)}
+									handleChange={handlePageSizeChange}
+								/>
+								
 								{
-									debouncedValue &&
+									(debouncedValue || type !== '' || pageSize !== 10) &&
 									<IconButton
 										iconName={"close"}
 										action={resetFilters}
 										title="Réinitialiser"
 									/>
 								}
+								
 							</Box>
 						}
 					/>
