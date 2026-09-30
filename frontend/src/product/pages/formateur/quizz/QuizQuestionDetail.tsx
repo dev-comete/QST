@@ -13,11 +13,9 @@ const QuestionInfoDetail = ({ variant = 'type', content} : {
 }) => {
 	return (
 		<Paper
-			color={variant == 'type' ? 'secondary' : 'success-light'}
+			color={'secondary'}
 			hasShadow
-			className={`
-					px-3 py-2 rounded-sm flex items-center justify-center
-				`}
+			className={`px-3 py-2 rounded-sm flex items-center justify-center`}
 		>
 			<CustomText
 				textTag="h5"
@@ -33,7 +31,9 @@ interface QuizQuestionDetailProps {
 }
 
 const QuizQuestionDetail = ({ questions } : QuizQuestionDetailProps) => {
-	const [openQuestions, setOpenQuestions] = useState<Record<number, boolean>>({});
+	const [openQuestions, setOpenQuestions] = useState<Record<number, boolean>>(
+		() => Object.fromEntries(questions.map((item) => [item.question_id, false]))
+	);
 
 	const toggleQuestion = (questionId: number) => {
 		setOpenQuestions((prev) => ({
@@ -52,7 +52,7 @@ const QuizQuestionDetail = ({ questions } : QuizQuestionDetailProps) => {
 				: <Box direction="column" className="space-y-5 overflow-y-auto w-full">
 				{
 					questions.map((item, index) => {
-						const isOpen = openQuestions[item.question_id] ?? true;
+						const isOpen = openQuestions[item.question_id] ?? false;
 
 						return (
 							<Paper className="p-5" key={`ibloc-${item.question_id}-${index}`}>
