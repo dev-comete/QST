@@ -18,64 +18,62 @@
 	--font-sans: 'Nunito', system-ui, sans-serif;
 	--font-mono: 'JetBrains Mono', monospace;
 
-	:root {
-		/* =========================================
-			1. Text Colors
-			========================================= */
-		--color-text-light: #64748b;    /* Muted / Secondary text */
-		--color-text: #434342;          /* Main text (Original) */
-		--color-text-dark: #1e1e1d;     /* High contrast / Titles */
-		
-		/* =========================================
-			2. Background Colors
-			========================================= */
-		--color-background-light: #ffffff; /* pure white for cards/modals */
-		--color-background: #f0f4f8;       /* Original page background */
-		--color-background-dark: #f1f5f9;  /* Section contrast / Subtle borders */
-		
-		/* =========================================
-			3. Primary Colors (Main Brand)
-			========================================= */
-		--color-primary-light: #3b82f6; /* Hover / Active states */
-		--color-primary: #0059e9;       /* Original */
-		--color-primary-dark: #0043b3;  /* Deep primary / Pressed states */
-		
-		/* =========================================
-			4. Secondary Colors
-			========================================= */
-		--color-secondary-light: #f8fafc; /* Ultra soft background */
-		--color-secondary: #eff6ff;       /* Original */
-		--color-secondary-dark: #dbeafe;  /* Border / Hover background */
-		
-		/* =========================================
-			5. Accent Colors
-			========================================= */
-		--color-accent-light: #eff6ff;  /* Soft highlight background */
-		--color-accent: #dbeafe;        /* Original */
-		--color-accent-dark: #93c5fd;   /* Stronger accent / Focus rings */
-		
-		/* =========================================
-			6. States Colors
-			========================================= */
-		
-		/* Success (Modern Emerald) */
-		--color-success-light: #dcfce7;
-		--color-success: #16a34a;
-		--color-success-dark: #15803d;
-		
-		/* Error (Modern Rose/Red) */
-		--color-error-light: #fff1f2;
-		--color-error: #f43f5e;
-		--color-error-dark: #be123c;
-		
-		/* Warning (Modern Amber) */
-		--color-warning-light: #fffbeb;
-		--color-warning: #f59e0b;
-		--color-warning-dark: #b45309;
-		
-		/* Disabled (Modern Slate) */
-		--color-disabled-light: #f8fafc;
-		--color-disabled: #94a3b8;      /* Nettoyé (suppression du double-virgule) */
-		--color-disabled-dark: #64748b;
-	}
+	/* =========================================
+		1. Text Colors
+		========================================= */
+	--color-text-light: #64748b;    /* Muted / Secondary text */
+	--color-text: #434342;          /* Main text (Original) */
+	--color-text-dark: #1e1e1d;     /* High contrast / Titles */
+	
+	/* =========================================
+		2. Background Colors
+		========================================= */
+	--color-background-light: #ffffff; /* pure white for cards/modals */
+	--color-background: #f0f4f8;       /* Original page background */
+	--color-background-dark: #f1f5f9;  /* Section contrast / Subtle borders */
+	
+	/* =========================================
+		3. Primary Colors (Main Brand)
+		========================================= */
+	--color-primary-light: #3b82f6; /* Hover / Active states */
+	--color-primary: #0059e9;       /* Original */
+	--color-primary-dark: #0043b3;  /* Deep primary / Pressed states */
+	
+	/* =========================================
+		4. Secondary Colors
+		========================================= */
+	--color-secondary-light: #f8fafc; /* Ultra soft background */
+	--color-secondary: #eff6ff;       /* Original */
+	--color-secondary-dark: #dbeafe;  /* Border / Hover background */
+	
+	/* =========================================
+		5. Accent Colors
+		========================================= */
+	--color-accent-light: #eff6ff;  /* Soft highlight background */
+	--color-accent: #dbeafe;        /* Original */
+	--color-accent-dark: #93c5fd;   /* Stronger accent / Focus rings */
+	
+	/* =========================================
+		6. States Colors
+		========================================= */
+	
+	/* Success (Modern Emerald) */
+	--color-success-light: #dcfce7;
+	--color-success: #16a34a;
+	--color-success-dark: #15803d;
+	
+	/* Error (Modern Rose/Red) */
+	--color-error-light: #fff1f2;
+	--color-error: #f43f5e;
+	--color-error-dark: #be123c;
+	
+	/* Warning (Modern Amber) */
+	--color-warning-light: #fffbeb;
+	--color-warning: #f59e0b;
+	--color-warning-dark: #b45309;
+	
+	/* Disabled (Modern Slate) */
+	--color-disabled-light: #f8fafc;
+	--color-disabled: #94a3b8;
+	--color-disabled-dark: #64748b;
 }

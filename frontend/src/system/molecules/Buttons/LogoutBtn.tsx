@@ -1,7 +1,6 @@
 import { useLogout } from "../../../other/hooks/auth/useAuth";
 import Button from "../../atoms/Button/Button";
 import FAIcon from "../../atoms/Icon/FAIcon";
-import ActionButton from "./ActionButton";
 
 interface LogoutBtnProps {
     isSidebarOpen?: boolean;

@@ -24,16 +24,16 @@ export const OptionItem = ({ item } : OptionItemProps) => {
 					return (
 						<Box
 							direction="column"
-							className="w-full"
+							className="w-full border border-background p-2 rounded-xl"
 							key={`${opt.id}-${index}`}
 						>
 							<Box
 								className={`
 									justify-between rounded-lg px-3 py-5
-									${opt.est_correct ? 'bg-success-light border border-success' : 'border border-background'}	
+									${opt.est_correct ? 'bg-success-light border border-success' : ''}	
 								`}
 							>
-								<CustomText>{opt.texte}</CustomText>
+								<CustomText color={opt.est_correct ? 'success' : 'text'}>{opt.texte}</CustomText>
 								<FAIcon
 									name={opt.est_correct ? 'circle-check' : ''}
 									className={opt.est_correct ? 'text-success' : 'text-error'}
@@ -43,10 +43,11 @@ export const OptionItem = ({ item } : OptionItemProps) => {
 								opt.explication &&
 								<Box
 									className={`
-										justify-start rounded-xl px-3 py-5 bg-secondary pl-5
+										justify-start items-center rounded-xl px-3 py-5 bg-background pl-5
 									`}
 								>
-									<CustomText isItalic>Explication : {opt.explication}</CustomText>
+									<FAIcon name="lightbulb" className="text-warning"/>
+									<CustomText color="primary" isItalic>Explication : {opt.explication}</CustomText>
 								</Box>
 							}
 						</Box>

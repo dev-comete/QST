@@ -5,6 +5,7 @@ import CustomText from "../../../../system/atoms/Text/CustomText";
 import type { QuestionQuiz } from "../../../../other/types/quizType";
 import IconButton from "../../../../system/molecules/Buttons/IconButton";
 import { OptionItem } from "../question/QuestionDetail";
+import NumerotationBadge from "../../../../system/molecules/Badge/NumerotationBadge";
 
 const QuestionInfoDetail = ({ variant = 'type', content} : {
 	variant?: string,
@@ -57,9 +58,13 @@ const QuizQuestionDetail = ({ questions } : QuizQuestionDetailProps) => {
 							<Paper className="p-5" key={`ibloc-${item.question_id}-${index}`}>
 								<Box direction="column" className="space-y-5">
 									<Box className={`justify-between ${ isOpen ? 'border-b' : ''} border-background pb-2 items-center`}>
-										<CustomText
-											textTag="h2"
-										>{index + 1}. {item.enonce_question}</CustomText>
+										<Box className="items-center space-x-2">
+											<NumerotationBadge index={index + 1}/>
+											<CustomText
+												textTag="h2"
+												weight="bold"
+											>{item.enonce_question}</CustomText>
+										</Box>
 										<Box className="space-x-2 items-center">
 											<QuestionInfoDetail content={item.type_nom}/>
 											<QuestionInfoDetail variant='pts' content={item.points + ' pts'}/>
