@@ -12,6 +12,7 @@ export default function MyEvaluations() {
 	const [quizzes, setQuizzes] = useState<studentQuizType[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState('');
+	const [activeTab, setActiveTab] = useState(0);
 
 	useEffect(() => {
 	const fetchDashboardData = async () => {
@@ -42,6 +43,8 @@ export default function MyEvaluations() {
 			<Box direction='column' className='space-y-5'>
 				<NavigationBar 
 					titles={['Calendrier', 'Historique']}
+					activeTab={activeTab}
+					onTabChange={setActiveTab}
 				>
 					<StudentQuizList data={quizzesAFaire}/>
 					<StudentQuizList data={quizzesTermines}/>
