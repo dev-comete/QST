@@ -54,8 +54,8 @@ export const StatusTag = ({ status }: { status: string }) => {
 
 export const UserRoleTag = ({ role }: { role: Role | string }) => {
     
-    let bgStyle = '';
-    let textColor: ColorTheme = 'text';
+    let bgStyle;
+    let textColor: ColorTheme;
 
     switch (role) {
         case 'admin':

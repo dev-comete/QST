@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import CustomText from "../../atoms/Text/CustomText";
 import Box from "../../atoms/Container/Box";
-import { BackButton } from "../Buttons/BackButton";
+import { BackButton } from "../Buttons/CustomizedButton";
 
 interface TitleProps {
 	title: string,
@@ -9,40 +9,18 @@ interface TitleProps {
 	linkBack?: string
 	defaultLinkBack?: boolean
 	info?: string
+	titleTag?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p" | "span"
 }
 
-const Title = ({ title, sideButton, linkBack, defaultLinkBack = false, info } : TitleProps) => {
-
-		if (linkBack && sideButton) {
-			return (
-				<Box className="flex flex-col w-full border-b border-text pb-2">
-					<Box className="grid grid-cols-3 items-center w-full">
-						<Box className="justify-start">
-							<BackButton link={linkBack} />
-						</Box>
-						<Box className="justify-center text-center">
-							<CustomText textTag="h1" weight="bold">{title}</CustomText>
-						</Box>
-						<Box className="justify-end">
-							{sideButton}
-						</Box>
-					</Box>
-					{ info && <CustomText textTag="caption">{info}</CustomText>}
-				</Box>
-			);
-		}
-
-		const justifyClass = !linkBack && !sideButton 
-			? "justify-center" 
-			: "justify-between";
+const Title = ({ title, sideButton, linkBack, defaultLinkBack = false, info, titleTag = 'h1' } : TitleProps) => {
 	
 		return (
-			<Box className="flex flex-col w-full border-b border-text pb-2">
-				<Box className={`flex items-center gap-3 w-full ${justifyClass}`}>
+			<Box className="flex flex-col w-full border-b border-text-light pb-2">
+				<Box className={`flex items-center gap-3 w-full justify-between`}>
 					<Box className="flex items-center gap-3">
 						{linkBack && <BackButton link={linkBack} />}
 						{defaultLinkBack && <BackButton />}
-						<CustomText textTag="h1" weight="bold">{title}</CustomText>
+						<CustomText textTag={titleTag} weight="bold">{title}</CustomText>
 					</Box>
 					{sideButton && (
 						<Box className="justify-end">
@@ -50,7 +28,7 @@ const Title = ({ title, sideButton, linkBack, defaultLinkBack = false, info } : 
 						</Box>
 					)}
 				</Box>
-				{ info && <CustomText textTag="caption">{info}</CustomText> }
+				{ info && <CustomText textTag="h6">{info}</CustomText> }
 			</Box>
 		);
 }

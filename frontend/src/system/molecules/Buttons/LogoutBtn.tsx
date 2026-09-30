@@ -12,7 +12,7 @@ const LogoutBtn = ({ isSidebarOpen = true }: LogoutBtnProps) => {
     return (
         <Button
             onClick={logout}
-            color="primary"
+            color="error"
             title="Déconnexion"
             // [ALTERED CODE]: Removes padding and forces perfect flex centering when collapsed
             className={`!transition-all !duration-300 !ease-in-out ${

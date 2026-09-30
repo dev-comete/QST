@@ -8,6 +8,7 @@ import type { ColorTheme } from "../../../other/types/common";
 import { Children, useState, type ReactNode } from "react";
 import Title from "../LayoutElement/Title";
 import IconButton from "../Buttons/IconButton";
+import { CancelButton } from "../Buttons/CustomizedButton";
 
 interface ModalProps {
     bgColor?: ColorTheme,
@@ -105,24 +106,30 @@ const Modal = ({
             >
                 {/* [ALTERED CODE]: Header section - aligned title and close button in a row */}
                 <Box className="flex-row justify-between items-start w-full mb-5 flex-none">
-                    <Box direction="column" className="flex-1 pr-4">
-                        { title && <Title title={title} /> }
+                    <Box direction="column" className="flex-1">
+                        { title && 
+							<Title
+								title={title}
+								titleTag="h3"
+								sideButton={
+									closeModal ?
+										<div className="-mt-1 -mr-1">
+											<IconButton
+												action={() => { closeModal() ; setSubIdx(0)}}
+												btnColor="transparent"
+												iconName="circle-xmark"
+												iconStyling="text-slate-400 hover:text-error transition-colors text-xl"
+											/>
+										</div> : null
+								}
+							/>
+						}
                         { subtitle && 
                             <CustomText textTag="h3" color="disabled" className="mt-1">
                                 {subtitle[subIdx]}
                             </CustomText>
                         }
                     </Box>
-                    { closeModal && 
-                        <div className="-mt-1 -mr-1">
-                            <IconButton
-                                action={() => { closeModal() ; setSubIdx(0)}}
-                                btnColor="transparent"
-                                iconName="circle-xmark"
-                                iconStyling="text-slate-400 hover:text-error transition-colors text-xl"
-                            />
-                        </div>
-                    }
                 </Box>
 
                 {/* Content Section */}
@@ -177,13 +184,7 @@ const ConfirmModal = ({
             footer={
                 /* [ALTERED CODE]: Grouped buttons to the right (standard UX) instead of opposite corners */
                 <Box className="w-full justify-end gap-3">
-                    <ActionButton
-                        btnColor="text"
-                        onClick={closeModal} 
-                        className="hover:bg-slate-100 px-4 py-2 rounded-lg transition-colors"
-                    >
-                        Non, annuler
-                    </ActionButton>
+                    <CancelButton onClick={closeModal}/>
                     <ActionButton
                         btnColor="primary"
                         onClick={handleCloseModal}

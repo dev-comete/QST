@@ -49,7 +49,7 @@ export const QuestionService = {
 	},
 
 	info: async (id: string) => {
-		const response = await apiClient.get(QUESTION_URL + id + '/');
+		const response = await apiClient.get(BANK_QUESTION_URL + id + '/');
 		const result = response.data as bankQuestionType
 		return result;
 	},
