@@ -87,6 +87,10 @@ const QuizList = ({ listType = 'default' } : { listType?: string }) => {
         setIsModalOpen(true)
     }
 
+	const handleRowClick = listType === 'trash'
+		? undefined
+		: (row: quizType) => navigateTo(`${row.id}/quiz_questions`)
+
 	const getQuizTabColumn = (
 		onEdit: (id: string | number | boolean | string[]) => void,
 		listType: string
@@ -136,7 +140,7 @@ const QuizList = ({ listType = 'default' } : { listType?: string }) => {
 				columns={getQuizTabColumn(handleOpenEditModal, listType)}
 				data={quizzes}
 				rowKey={'id'}
-				onRowClick={(row) => navigateTo(`${row.id}/quiz_questions`)}
+				onRowClick={handleRowClick}
 			/>
 			<ModalQuizEdit
 				open={isModalOpen}

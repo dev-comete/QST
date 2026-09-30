@@ -90,6 +90,9 @@ const QuestionList = ({ listType = 'bank'} : { listType?: 'bank' | 'trash'}) => 
 	const isLoading = status === 'pending' || isPending
 
 	const { navigateTo } = useAppNavigation()
+	const handleRowClick = listType === 'trash'
+		? undefined
+		: (row: bankQuestionType) => navigateTo('gestion_question/' + row.id)
 
 	const resetFilters = () => {
 		setSearch('')
@@ -124,7 +127,7 @@ const QuestionList = ({ listType = 'bank'} : { listType?: 'bank' | 'trash'}) => 
 						columns={getQuestionTabColumn(listType)}
 						data={questions ?? []}
 						rowKey={'id'}
-						onRowClick={(row) => { console.log(row.id) ; navigateTo('gestion_question/' + row.id)}}
+						onRowClick={handleRowClick}
 						page={page}
 						setPage={setPage}
 						hasNextPage={next != null}

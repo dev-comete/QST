@@ -14,7 +14,8 @@ import FAIcon from "../../../../system/atoms/Icon/FAIcon";
 import type { ColorTheme } from "../../../../other/types/common";
 import ConfirmActionButton from "../../../../system/molecules/Buttons/ConfirmActionButton";
 import { useFormation } from "../../../../other/hooks/formation/useFormation";
-import { formatDate } from "../../../../other/helper/helper";
+import type { QuestionQuiz, quizType } from "../../../../other/types/quizType";
+import type { Formation } from "../../../../other/types/formationType";
 
 interface QuizQuestionInfo {
 	title: string
@@ -23,7 +24,7 @@ interface QuizQuestionInfo {
 	color: ColorTheme
 }
 
-const QuizQuestionCard = ({ title, value, icon, color } : QuizQuestionInfo) => {
+export const QuizQuestionCard = ({ title, value, icon, color } : QuizQuestionInfo) => {
 	return (
 		<Box className="p-2 rounded-xl justify-start items-center">
 			<div className="w-15 h-15 bg-white rounded-xl flex items-center justify-center shadow-md">
@@ -34,6 +35,57 @@ const QuizQuestionCard = ({ title, value, icon, color } : QuizQuestionInfo) => {
 				<CustomText textTag="h2" weight="bold" color={color}>{value}</CustomText>
 			</Box>
 		</Box>
+	)
+}
+
+interface QuizInformationsProps {
+	questions : QuestionQuiz[]
+	info: quizType
+	isPublished: boolean
+	formations: Formation[]
+}
+
+const QuizInformations = ({ questions, info, isPublished, formations } : QuizInformationsProps) => {
+
+	const totalPoints = questions.reduce((sum, q) => sum + q.points, 0);
+
+	const formationName = formations.find((f) => String(info.formation) === String(f.id))?.nom_formation || 'Aucun'
+
+	return (
+		<Paper className="p-3 w-1/3 shrink-0 min-h-[70vh]">
+			<Box className="grid grid-cols-1">
+				<QuizQuestionCard
+					title="Formation"
+					value={formationName}
+					icon="book"
+					color="text"
+				/>
+				<QuizQuestionCard
+					title="Statut"
+					icon="tag"
+					color={isPublished ? 'success' : 'disabled'}
+					value={info.status}
+				/>
+				<QuizQuestionCard
+					title="Questions"
+					icon="question"
+					color="primary"
+					value={questions.length}
+				/>
+				<QuizQuestionCard
+					title="Total"
+					value={totalPoints + "pts"}
+					icon="star"
+					color="success"
+				/>
+				<QuizQuestionCard
+					title="Durée"
+					value={info.duree}
+					icon="clock"
+					color="warning"
+				/>
+			</Box>
+		</Paper>
 	)
 }
 
@@ -53,10 +105,6 @@ const QuizQuestion = () => {
 
 	if (!questions || !info || !formations) return  <FetchError />
 
-	const totalPoints = questions.reduce((sum, q) => sum + q.points, 0);
-
-	const formationName = formations.find((f) => String(info.formation) === String(f.id))?.nom_formation || 'Aucun'
-
 	const isPublished = info.status == 'published'
 
 	return (
@@ -74,52 +122,23 @@ const QuizQuestion = () => {
 			}
 		>
 			<>
-				<Paper className="p-5 w-full space-y-5">
-					<Box className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-						<QuizQuestionCard
-							title="Formation"
-							value={formationName}
-							icon="book"
-							color="text"
-						/>
-						<QuizQuestionCard
-							title="Statut"
-							icon="tag"
-							color={isPublished ? 'success' : 'disabled'}
-							value={info.status}
-						/>
-						<QuizQuestionCard
-							title="Création"
-							icon="calendar"
-							color="text"
-							value={formatDate(info.date_creation_quiz)}
-						/>
-						<QuizQuestionCard
-							title="Questions"
-							icon="question"
-							color="primary"
-							value={questions.length}
-						/>
-						<QuizQuestionCard
-							title="Total"
-							value={totalPoints + "pts"}
-							icon="star"
-							color="success"
-						/>
-						<QuizQuestionCard
-							title="Durée"
-							value={info.duree}
-							icon="clock"
-							color="warning"
-						/>
-					</Box>
-				</Paper>
+				
 				<NavigationBar
 					titles={['Détails', 'Assignation']}		
 					activeTab={activeTab}
 					onTabChange={(index) => setActiveTab(index)}				
 				>
-					<QuizQuestionDetail questions={questions}/>
+					<Box className="w-full items-start">
+						<QuizInformations
+							info={info}
+							questions={questions}
+							isPublished={isPublished}
+							formations={formations}
+						/>
+						<div className="flex-1 min-w-0 overflow-y-auto max-h-[70vh]">
+							<QuizQuestionDetail questions={questions}/>
+						</div>
+					</Box>
 					<QuizAssignForm ownedQuestions={questions}/>
 				</NavigationBar>
 			</>

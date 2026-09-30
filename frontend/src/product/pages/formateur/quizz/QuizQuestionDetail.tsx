@@ -49,7 +49,7 @@ const QuizQuestionDetail = ({ questions } : QuizQuestionDetailProps) => {
 				<Paper className="p-5">
 					<CustomText className="w-full text-center">Veuillez assigner des questions au quiz</CustomText>
 				</Paper>
-				: <Box direction="column" className="space-y-5 overflow-y-auto w-full">
+				: <Box direction="column" className="space-y-1 overflow-y-auto w-full">
 				{
 					questions.map((item, index) => {
 						const isOpen = openQuestions[item.question_id] ?? false;

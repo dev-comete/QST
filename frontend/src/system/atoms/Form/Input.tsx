@@ -21,6 +21,7 @@ export interface InputProps {
 	startIcon?: ReactNode
 	endIcon?: ReactNode
 	placeholder?: string
+	labelPosition?: string
 }
 
 const Input = ({
@@ -40,13 +41,14 @@ const Input = ({
 	htmlFor,
 	endIcon,
 	placeholder,
-	startIcon
+	startIcon,
+	labelPosition = 'col',
 }: InputProps) => {
 
 	const basicStyle = `flex p-2 rounded-xl ${type != 'checkbox' && 'border'} border-background w-full items-center justify-center focus:outline focus:outline-primary`
 
 	return (
-		<div className="flex flex-col w-full relative">
+		<div className={`flex ${labelPosition == 'col' ? 'flex-col' : 'flex-row'} w-full relative`}>
 			{ label && <LabelInput label={label} htmlFor={htmlFor} required={required}/> }
 			<div className="relative w-full flex items-center">
 				{startIcon && (

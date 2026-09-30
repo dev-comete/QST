@@ -8,6 +8,7 @@ import ActionButton from "../../../molecules/Buttons/ActionButton";
 
 interface BaremeInputProps {
 	onBaremeChange: (value: string) => void;
+	labelPosition?: string
 }
 
 export const OldBaremeInput = ({ onBaremeChange } : BaremeInputProps) => {
@@ -46,6 +47,7 @@ export const OldBaremeInput = ({ onBaremeChange } : BaremeInputProps) => {
 							const val = e.target.value;
 							setBaremeInput(val === '' ? undefined : Number(val));
 						}}
+						label="Barème"
 					/>
 					<ActionButton
 						onClick={handleCreateBareme}
@@ -64,12 +66,12 @@ export const OldBaremeInput = ({ onBaremeChange } : BaremeInputProps) => {
 	)
 }
 
-const BaremeInput = ({ onBaremeChange } : BaremeInputProps) => {
+const BaremeInput = ({ onBaremeChange, labelPosition } : BaremeInputProps) => {
 	const [value, setValue] = useState<string | number>('1');
 
 	useEffect(() => {
 		onBaremeChange(String(value));
-	}, []); // call once on mount to set default
+	}, [onBaremeChange, value]);
 
 	return (
 		<Input
@@ -87,6 +89,7 @@ const BaremeInput = ({ onBaremeChange } : BaremeInputProps) => {
 			}}
 			required
 			value={value}
+			labelPosition={labelPosition}
 		/>
 	)
 }

@@ -50,7 +50,7 @@ const ActionButton = ({
 			isLoading={isLoading}
 			title={title}
 		>
-			<span className="flex items-center gap-1">
+			<span className="flex items-center justify-center gap-1">
 				{ interiorIcon && <FAIcon name={interiorIcon} className={"text-" + textColor} size="xs"/>}
 				<CustomText color={textColor} weight="bold">{children}</CustomText>
 			</span>

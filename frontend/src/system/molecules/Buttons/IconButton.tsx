@@ -4,6 +4,7 @@ import type { ColorTheme } from "../../../other/types/common";
 import FAIcon from "../../atoms/Icon/FAIcon";
 import { useState } from "react";
 import { ConfirmModal } from "../Modal/Modal";
+import type { SizeProp } from "@fortawesome/fontawesome-svg-core";
 
 interface IconConfirmActionButtonProps {
     action: () => Promise<void>; // or () => Promise<unknown>
@@ -79,6 +80,7 @@ interface IconButtonProps {
     iconName: string
     iconStyling?: string
     title?: string
+	iconSize?: SizeProp
 }
 
 const IconButton = ({
@@ -92,6 +94,7 @@ const IconButton = ({
     iconName,
     iconStyling,
     title,
+	iconSize,
 } : IconButtonProps) => {
     const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation();
@@ -111,7 +114,7 @@ const IconButton = ({
             form={form}
             title={title}
         >
-            <FAIcon name={iconName} className={iconStyling}/>
+            <FAIcon name={iconName} className={iconStyling} size={iconSize}/>
         </Button>
     )
 }
