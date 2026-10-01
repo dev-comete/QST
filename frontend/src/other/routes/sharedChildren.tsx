@@ -9,6 +9,7 @@ import VagueStat from "../../product/pages/formateur/vague/VagueStat";
 import QuestionEdit from "../../product/pages/formateur/question/QuestionEdit";
 import QuestionBin from "../../product/pages/formateur/question/QuestionBin";
 import QuizBin from "../../product/pages/formateur/quizz/QuizBin";
+import { AnalyticsEvolution } from "../../product/pages/admin/AnalyticsEvolution";
 
 const COMMON_CHILDREN = [
 	{ path: "gestion_vague", element: <VagueManagement /> },
@@ -22,6 +23,7 @@ const COMMON_CHILDREN = [
 	{ path: "gestion_quiz/corbeille", element: <QuizBin /> },
 	{ path: "vagues/:id", element: <VagueAssign /> },
 	{ path: "vagues/:id/statistique", element: <VagueStat /> },
+	{ path: "vagues/:id/evolution", element: <AnalyticsEvolution /> },
 ];
 
 export default COMMON_CHILDREN;

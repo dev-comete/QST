@@ -52,11 +52,18 @@ const VagueHeader = ({ vague } : VagueAssignProps) => {
 			<Box>
 				<HeaderBloc title={'Quiz'} content={ownedQuiz.length} icon={'file'}/>
 				<HeaderBloc title={'Etudiants'} content={ownedStudents.length} icon={'user-graduate'}/>
-				{
-					ownedStudents.length != 0 && <ActionButton onClick={() => navigateTo('/vagues/' + id + '/statistique')}>
-						<FAIcon name="magnifying-glass-chart"/>Statistiques
-					</ActionButton>
-				}
+				<>
+					{ownedStudents.length != 0 && (
+						<>
+							<ActionButton onClick={() => navigateTo('/vagues/' + id + '/statistique')}>
+								<FAIcon name="magnifying-glass-chart"/>Statistiques
+							</ActionButton>
+							<ActionButton onClick={() => navigateTo('/vagues/' + id + '/evolution')}>
+								<FAIcon name="chart-line"/>Évolution
+							</ActionButton>
+						</>
+					)}
+				</>
 			</Box>
 		</Paper>
 	)

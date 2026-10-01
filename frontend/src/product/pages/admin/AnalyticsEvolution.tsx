@@ -9,8 +9,8 @@ import EvolutionChart from '../../../system/organisms/EvolutionChart/EvolutionCh
 import { useVagueAnalytics } from '../../../other/hooks/analytics/useAnalytics';
 
 export const AnalyticsEvolution: React.FC = () => {
-    const { vagueId: vagueIdParam } = useParams<{ vagueId: string }>();
-    const vagueId = Number(vagueIdParam ?? 13);
+    const { vagueId: vagueIdParam, id: idParam } = useParams<{ vagueId?: string; id?: string }>();
+    const vagueId = Number(vagueIdParam ?? idParam ?? 13);
 
     const { data: dashboardData, isLoading, error } = useVagueAnalytics(vagueId);
 
