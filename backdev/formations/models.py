@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from quizzes.models import Quiz
 
 class Formation(models.Model):
     # Represents Formation/Dossier
@@ -27,6 +28,7 @@ class Vague(models.Model):
     formation = models.ForeignKey(Formation, on_delete=models.CASCADE)
     debut = models.DateTimeField()
     fin = models.DateTimeField()
+    quizzes = models.ManyToManyField(Quiz, blank=True, related_name='vagues_assignees')
 
     def __str__(self):
         return f"Vague {self.id} - {self.formation.nom_formation}"
