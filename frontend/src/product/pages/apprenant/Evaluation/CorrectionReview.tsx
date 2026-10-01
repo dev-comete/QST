@@ -23,7 +23,7 @@ const CorrectionReview = () => {
 
 	return (
 		<BodyLayout
-			title={`Résultat du quiz : ${review.quiz_id}`}
+			title={`Résultat du quiz : ${review.quiz_titre ?? review.quiz_id}`}
 			defaultLinkBack={true}
 		>
 			<Box className='space-y-5 space-x-3 justify-between min-h-0'>
