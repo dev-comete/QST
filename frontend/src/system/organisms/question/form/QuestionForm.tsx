@@ -1,17 +1,10 @@
-import { useQuestionCreate } from "../../../../other/hooks/question/useQuestionCreate";
 import Box from "../../../atoms/Container/Box";
-import Title from "../../../molecules/LayoutElement/Title";
 import TextArea from "../../../atoms/Form/TextArea";
 import Select from "../../../atoms/Form/Select";
-import ActionButton from "../../../molecules/Buttons/ActionButton";
-import RespCreatedList from "../list/RespCreatedList";
-import { checkOptionValidation, formChangeHandler, getSelectData } from "../../../../other/helper/helper";
-import Loading from "../../../atoms/Loading/Loading";
-import FetchError from "../../../atoms/Loading/FetchError";
+import { formChangeHandler, getSelectData } from "../../../../other/helper/helper";
 import BaremeInput from "../../globalParam/input/BaremeInput";
-import type { Dispatch, SetStateAction } from "react";
+import { type Dispatch, type SetStateAction } from "react";
 import type { questionIdType, questionType } from "../../../../other/types/questionType";
-import Info from "../../../atoms/Form/Info";
 
 interface EnonceFormProps {
 	question: questionType
@@ -19,13 +12,12 @@ interface EnonceFormProps {
 	questionType: questionIdType[]
 }
 
-const EnonceForm = ({ question, setQuestion, questionType} : EnonceFormProps) => {
+export const EnonceForm = ({ question, setQuestion, questionType} : EnonceFormProps) => {
 
 	const selectionQuestionType = getSelectData(questionType, 'code')
 
 	return (
 		<Box direction="column" className="w-full px-5 space-y-5">
-			<Title title="Enoncé de la question" />
 			<TextArea
 				id={"enonce"}
 				name={"enonce"}
@@ -57,83 +49,3 @@ const EnonceForm = ({ question, setQuestion, questionType} : EnonceFormProps) =>
 		</Box>
 	)
 }
-
-
-const QuestionForm = () => {
-
-	const { 
-		question,
-		setQuestion,
-		responses,
-		setResponses,
-		questionTypeQuery,
-		handleCreate,
-		isPending,
-		errorForm,
-		isOuvert,
-	} = useQuestionCreate()
-
-	const { data: questionType, status: questionTypeStatus } = questionTypeQuery
-
-	if (questionTypeStatus == 'pending') return <Loading />
-
-	if (!questionType) return <FetchError />
-
-	const handleSubmit = async(e: React.SubmitEvent) => {
-		e.preventDefault()
-		checkOptionValidation(responses, questionType.find(q => q.id == question.type_id)?.code || '')
-		await handleCreate()
-	}
-
-	const addResponse = () => {
-		setResponses((prev) => [
-			...prev,
-			{
-				reponse: '',
-				est_correct: false,
-				explication: ''
-			}
-		]);
-	}
-
-	return (
-		<form
-			id="createQuestion"
-			onSubmit={handleSubmit}
-			className="flex flex-col justify-center items-center w-3/4 mx-auto space-y-5"
-		>
-			<EnonceForm
-				question={question}
-				setQuestion={setQuestion}
-				questionType={questionType}
-			/>
-			{errorForm.type != 'response' && errorForm.msg && <Info info={errorForm.msg} variant="error"/>}
-			{
-				isOuvert ? 
-					<Info info={'Une question ouverte ne nécessite pas de proposition de réponses'} />
-				:
-				<>
-					<Title
-						title="Options de réponse"
-						sideButton={
-							<ActionButton onClick={addResponse}>{"+ Réponse"}</ActionButton>
-						}
-					/>
-					<RespCreatedList 
-						responses={responses}
-						setResponses={setResponses}
-						errorMsg={errorForm.type == 'response' ? errorForm.msg : null}
-					/>
-				</>
-			}
-			<ActionButton
-				type="submit"
-				form="createQuestion"
-				disabled={question.enonce_question.length == 0}
-				isLoading={isPending}
-			>{"Créer question"}</ActionButton>
-		</form>
-	)
-}
-
-export default QuestionForm;
