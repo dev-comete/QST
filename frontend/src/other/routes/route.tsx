@@ -16,6 +16,7 @@ import Bulletin from "../../product/pages/apprenant/Bulletin/Bulletin";
 import MyEvaluations from "../../product/pages/apprenant/Evaluation/MyEvaluations";
 import TakingEvaluation from "../../product/pages/apprenant/Evaluation/TakingEvaluation";
 import COMMON_CHILDREN from "./sharedChildren";
+import Formation from "../../product/pages/formateur/Formation";
 
 export const router = createBrowserRouter([
 
@@ -61,6 +62,7 @@ export const router = createBrowserRouter([
 				children: [
 					{ index: true, element: <Navigate to="tableau_de_bord" replace /> },
 					...COMMON_CHILDREN,
+					{ path: "formation", element: <Formation /> },
 					{ path: "tableau_de_bord", element: <Dashboard /> },
 				],
 			}

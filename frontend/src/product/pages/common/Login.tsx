@@ -18,7 +18,7 @@ const Login = () => {
     return (
         <Box
             className="flex h-screen p-10 items-center justify-between w-full overflow-hidden bg-cover bg-center bg-no-repeat"
-            style={{ backgroundImage: 'url("/src/assets/illustration.jpg")' }}
+            style={{ backgroundImage: 'url("/src/assets/illustration.png")' }}
         >
 			<Box className="w-full px-10">
 				<Box direction="column" className="bg-black/50 justify-center p-10 rounded-xl flex-1">

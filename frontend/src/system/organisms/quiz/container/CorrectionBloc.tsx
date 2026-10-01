@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import type { Correction } from "../../../../other/types/quizType";
 import Box from "../../../atoms/Container/Box";
 import Paper from "../../../atoms/Container/Paper";
@@ -68,25 +69,40 @@ const CorrectionItem = ({ item } : CorrectionItemProps) => {
 
 interface QuizReviewBlocProps {
 	corrections: Correction[],
+	activeIndex?: number,
+	onSelectQuestion?: (index: number) => void,
 }
 
-export const CorrectionBlocNav = ({ corrections } : QuizReviewBlocProps) => {
+export const CorrectionBlocNav = ({ corrections, activeIndex = 0, onSelectQuestion } : QuizReviewBlocProps) => {
 	
 	return (
 		<Paper className="p-5 overflow-y-auto flex flex-col item-center">
-			<CustomText textTag='h4'weight='bold' color='primary' className='uppercase text-center border-b border-background pb-2 mb-5'>Résumé</CustomText>
-			<Box direction="column" className="overflow-y-auto">
+			<CustomText
+				textTag='h4'
+				weight='bold'
+				color='primary'
+				className='uppercase text-center border-b border-background pb-2 mb-5'
+			>Liste des questions</CustomText>
+			<Box direction="column" className="overflow-y-auto w-full gap-2">
 				{ corrections.map((item, index) => {
-					
+					const isSelected = activeIndex === index;
 					return (
-						<Box className="justify-between" key={'blocNav' + index}>
-							<CustomText>{index + 1}. {item.enonce}</CustomText>
+						<button
+							type="button"
+							onClick={() => onSelectQuestion?.(index)}
+							key={'blocNav' + index}
+							className={`
+								w-full flex justify-between items-center gap-2 rounded-lg px-2 py-2 text-left cursor-pointer transition-colors
+								${isSelected ? 'bg-accent' : 'hover:bg-background'}
+							`}
+						>
+							<CustomText className="flex-1">{index + 1}. {item.enonce}</CustomText>
 							{
 								item.vrai_ou_faux
 								? <FAIcon name="circle-check" className="text-success"/> 
 								: <FAIcon name="circle-xmark" className="text-error"/>
 							}
-						</Box>
+						</button>
 					)
 				})}
 			</Box>
@@ -94,39 +110,53 @@ export const CorrectionBlocNav = ({ corrections } : QuizReviewBlocProps) => {
 	)
 }
 
-const CorrectionBloc = ({ corrections } : QuizReviewBlocProps) => {
+const CorrectionBloc = ({ corrections, activeIndex = 0 } : QuizReviewBlocProps) => {
+
+	useEffect(() => {
+		if (typeof activeIndex !== 'number') return;
+
+		const questionElement = document.getElementById(`correction-question-${activeIndex}`);
+		if (questionElement) {
+			questionElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+		}
+	}, [activeIndex, corrections.length]);
 
 	return (
 		<Box direction="column" className="space-y-5 overflow-y-auto w-full">
 			{
 				corrections.map((item, index) => {
 					return (
-						<Paper className="p-5" key={`ibloc-${item.question_id}-${index}`}>
-							<Box direction="column" className="space-y-5"> 
-								<Box className="justify-between border-b border-background pb-2">
-									<Box className="items-center space-x-2">
-										<NumerotationBadge index={index + 1}/>
+						<div id={`correction-question-${index}`}>
+							<Paper
+								className='p-5'
+								key={`ibloc-${item.question_id}-${index}`}
+							>
+								<Box direction="column" className="space-y-5"> 
+									<Box className="justify-between border-b border-background pb-2">
+										<Box className="items-center space-x-2">
+											<NumerotationBadge index={index + 1}/>
+											<CustomText
+												textTag="h2"
+												weight="bold"
+											>{item.enonce}</CustomText>
+										</Box>
 										<CustomText
-											textTag="h2"
+											textTag="h6"
 											weight="bold"
-										>{item.enonce}</CustomText>
+											className={`
+												${item.points_obtenus == 0 ? 'bg-error' : 'bg-success'}
+												px-2 py-1 rounded-md
+												text-white
+											`}
+										>{item.points_obtenus} pts</CustomText>
 									</Box>
-									<CustomText
-										textTag="h6"
-										weight="bold"
-										className={`
-											${item.points_obtenus == 0 ? 'bg-error' : 'bg-success'}
-											px-2 py-1 rounded-md
-											text-white
-										`}
-									>{item.points_obtenus} pts</CustomText>
+									<CorrectionItem
+										id={item.question_id}
+										item={item}
+									/>
 								</Box>
-								<CorrectionItem
-									id={item.question_id}
-									item={item}
-								/>
-							</Box>
-						</Paper>
+							</Paper>
+						</div>
 					)
 				})
 			}

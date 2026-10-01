@@ -13,18 +13,16 @@ const ActionCell = ({ rowId } : {
 	const { handleExportPdf, isExporting } = useExportBulletin();
 
     return (
-        // <Box className="flex items-center justify-center">
-			<IconButton
-                iconName={isExporting ? "spinner" : "download"} 
-                iconStyling={`text-text hover:text-success ${isExporting ? 'opacity-50 cursor-not-allowed' : ''}`}
-                title="Exporter en PDF"
-                action={() => {
-                    if (!isExporting) {
-                        handleExportPdf(rowId);
-                    }
-                }}
-            />
-        // </Box>
+		<IconButton
+			iconName={isExporting ? "spinner" : "download"} 
+			iconStyling={`text-text hover:text-success ${isExporting ? 'opacity-50 cursor-not-allowed' : ''}`}
+			title="Exporter en PDF"
+			action={() => {
+				if (!isExporting) {
+					handleExportPdf(rowId);
+				}
+			}}
+		/>
     );
 };
 

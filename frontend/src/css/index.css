@@ -29,8 +29,8 @@
 		2. Background Colors
 		========================================= */
 	--color-background-light: #ffffff; /* pure white for cards/modals */
-	--color-background: #f0f4f8;       /* Original page background */
-	--color-background-dark: #f1f5f9;  /* Section contrast / Subtle borders */
+	--color-background: #e2e8f0;       /* revised: slightly darker page background */
+	--color-background-dark: #cbd5e1;  /* revised: updated for section contrast / borders */
 	
 	/* =========================================
 		3. Primary Colors (Main Brand)

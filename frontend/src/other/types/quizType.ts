@@ -80,6 +80,8 @@ type Correction = {
 type QuizReview = {
 	quiz_id: string | number,
 	score_final: number,
+	score_possible: number,
+	vague_id: number,
 	corrections: Correction[]
 }
 
