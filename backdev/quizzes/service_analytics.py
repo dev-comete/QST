@@ -30,7 +30,7 @@ def get_vague_analytics_service(vague_id: int, requesting_user) -> dict:
             "message": "Aucun étudiant n'est inscrit dans cette vague pour le moment."
         }
 
-    quizzes = Quiz.objects.filter(formation=vague.formation)
+    quizzes = vague.quizzes.all()
 
     # --- A. GLOBAL VAGUE ANALYTICS ---
     total_max_points = QuizQuestion.objects.filter(quiz__in=quizzes).aggregate(

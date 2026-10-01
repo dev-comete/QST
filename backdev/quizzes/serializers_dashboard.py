@@ -20,6 +20,7 @@ class UpcomingSessionSerializer(serializers.Serializer):
     # 🌟 NOUVEAU : On ajoute l'ID de la vague/session
     id = serializers.IntegerField()
     name = serializers.CharField()
+    formation_nom = serializers.CharField()
     date = serializers.CharField()
 
 class DashboardMetricsSerializer(serializers.Serializer):
