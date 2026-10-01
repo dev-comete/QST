@@ -16,6 +16,8 @@ from .views_pdf import ApprenantBulletinPDFAPIView
 from .views_corbeille import CorbeilleQuizAPIView, CorbeilleQuestionAPIView
 from .views_dashboard import FormateurDashboardMetricsAPIView
 
+from .analytics.views.interactive_analytics import InteractiveEvolutionChartAPIView
+
 from formations.views import FormationViewSet, VagueViewSet
 from accounts.views import UtilisateurViewSet, TypeUtilisateurViewSet, OrganisationViewSet
 
@@ -84,6 +86,8 @@ urlpatterns = [
     path('corbeille/quizzes/<int:quiz_id>/restaurer/', CorbeilleQuizAPIView.as_view(), name='restaurer-quiz'),
     path('corbeille/questions/<int:question_id>/restaurer/', CorbeilleQuestionAPIView.as_view(), name='restaurer-question'),
 
-    path('dashboard/metrics/', FormateurDashboardMetricsAPIView.as_view(), name='dashboard-metrics')
+    path('dashboard/metrics/', FormateurDashboardMetricsAPIView.as_view(), name='dashboard-metrics'),
+
+    path('vagues/<int:vague_id>/chart-evolution/', InteractiveEvolutionChartAPIView.as_view(), name='vague-chart-evolution'),
 
 ]
