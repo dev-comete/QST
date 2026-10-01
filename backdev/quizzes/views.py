@@ -298,6 +298,7 @@ class QuizReviewAPIView(APIView):
 
         return Response({
             "quiz_id": quiz_id,
+            "quiz_titre": assignment.quiz.titre,
             "vague_id": vague_id,
             "score_final": assignment.score_obtenu,
             "score_possible": total_possible,
