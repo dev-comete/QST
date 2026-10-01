@@ -8,7 +8,6 @@ import { useNavigate } from "react-router"
 import Box from "../../../atoms/Container/Box"
 import { Table, type Column } from "../../../atoms/Table/Table"
 import IconButton from "../../../molecules/Buttons/IconButton"
-import PercentBadge from "../../../molecules/Badge/PercentBadge";
 import { useAppNavigation } from "../../../../other/hooks/navigation/useAppNavigation";
 
 const ActionCell = ({ quizId, vagueId, variant } : {
@@ -58,7 +57,7 @@ const StudentQuizList = ({ data } : StudentQuizListProps) => {
 			key: "score_obtenu",
 			render: (value, row) => {
 				if (row.termine === true) {
-					return <PercentBadge value={Number(value)} />
+					return String(value) + 'pts'
 				}
 				return <ActionCell quizId={row.quiz_id ?? ''} vagueId={row.vague_id ?? ''} variant="à faire" />
 			}

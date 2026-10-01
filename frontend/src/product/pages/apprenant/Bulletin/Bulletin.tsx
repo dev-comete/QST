@@ -28,7 +28,7 @@ const Bulletin = () => {
 
 	if (myBulletinStatus == 'pending') return <Loading />
 
-	if (!myBulletin) return <FetchError />
+	if (!myBulletin || !id) return <FetchError />
 
 	const { resume_global, details_quizzes } = myBulletin
 
@@ -52,7 +52,7 @@ const Bulletin = () => {
 						value={resume_global.progression}
 					/>
 				</Box>
-			<EvaluationList data={details_quizzes} />
+			<EvaluationList data={details_quizzes} vagueId={id} />
 		</BodyLayout>
 	)
 }
