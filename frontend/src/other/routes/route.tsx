@@ -15,6 +15,7 @@ import CorrectionReview from "../../product/pages/apprenant/Evaluation/Correctio
 import Bulletin from "../../product/pages/apprenant/Bulletin/Bulletin";
 import MyEvaluations from "../../product/pages/apprenant/Evaluation/MyEvaluations";
 import TakingEvaluation from "../../product/pages/apprenant/Evaluation/TakingEvaluation";
+import { AnalyticsEvolution } from "../../product/pages/admin/AnalyticsEvolution";
 import COMMON_CHILDREN from "./sharedChildren";
 
 export const router = createBrowserRouter([
@@ -45,6 +46,8 @@ export const router = createBrowserRouter([
 					{ index: true, element: <Navigate to="tableau_de_bord" replace /> },
 					{ path: 'parametre_general', element: <Parameters /> },
 					{ path: 'tableau_de_bord', element: <AdminDashboard /> },
+					{ path: 'evolution', element: <AnalyticsEvolution /> },
+					{ path: 'evolution/:vagueId', element: <AnalyticsEvolution /> },
 					...COMMON_CHILDREN,
 				]
 			},
