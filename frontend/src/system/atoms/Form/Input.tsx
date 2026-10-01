@@ -48,7 +48,7 @@ const Input = ({
 	const basicStyle = `flex p-2 rounded-xl ${type != 'checkbox' && 'border'} border-background w-full items-center justify-center focus:outline focus:outline-primary`
 
 	return (
-		<div className={`flex ${labelPosition == 'col' ? 'flex-col' : 'flex-row'} w-full relative`}>
+		<div className={`flex ${labelPosition == 'col' ? 'flex-col' : 'flex-row items-center space-x-2'} w-full relative`}>
 			{ label && <LabelInput label={label} htmlFor={htmlFor} required={required}/> }
 			<div className="relative w-full flex items-center">
 				{startIcon && (

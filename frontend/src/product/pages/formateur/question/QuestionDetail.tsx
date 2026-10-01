@@ -63,7 +63,6 @@ const QuestionDetail = () => {
 	const { id } = useParams()
 	const { infoQuestionQuery } = useQuestion({id})
 	const { data : question, isPending } = infoQuestionQuery
-	console.log("Id", id)
 
 	if (isPending) return <Loading />
 

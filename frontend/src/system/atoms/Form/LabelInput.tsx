@@ -6,7 +6,7 @@ interface LabelInputProps {
 
 const LabelInput = ({ label, htmlFor, required = false } : LabelInputProps) => {
 	return (
-		<label className="text-md font-medium text-text" htmlFor={htmlFor}>
+		<label className="text-md font-medium text-text w-full" htmlFor={htmlFor}>
 			{`${label} ${required == true ? '*' : ''}`}
 		</label>
 	)

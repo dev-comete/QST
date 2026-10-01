@@ -52,15 +52,13 @@ const QuizQuestionList = ({questions, setQuestion, startCount  } : QuizQuestionL
         setQuestion(questions.filter((_, index) => index !== indexToDelete));
     };
 
-    const handleBaremeChange = (indexToUpdate: number, newValue: string) => {
-        const updatedQuestions = questions.map((q, index) => {
-            if (index === indexToUpdate) {
-                return { ...q, bareme_pts: Number(newValue) };
-            }
-            return q;
-        });
-        setQuestion(updatedQuestions);
-    };
+	const handleBaremeChange = (indexToUpdate: number, newValue: string) => {
+		const newPts = Number(newValue);
+		const currentPts = questions[indexToUpdate]?.bareme_pts;
+		if (currentPts === newPts) return;
+
+		setQuestion((prev) => prev.map((q, index) => index === indexToUpdate ? { ...q, bareme_pts: newPts } : q));
+	};
 
 	return (
 		<Box direction="column" className="w-full justify-center items-center text-center" >

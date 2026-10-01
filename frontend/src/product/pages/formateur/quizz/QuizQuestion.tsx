@@ -64,7 +64,7 @@ const QuizInformations = ({ questions, info, isPublished, formations } : QuizInf
 					title="Statut"
 					icon="tag"
 					color={isPublished ? 'success' : 'disabled'}
-					value={info.status}
+					value={isPublished ? 'Publié' : 'Brouillon'}
 				/>
 				<QuizQuestionCard
 					title="Questions"
