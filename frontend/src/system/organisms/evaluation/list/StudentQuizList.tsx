@@ -35,12 +35,12 @@ const ActionCell = ({ quizId, vagueId, variant } : {
 
 const quizTabColumn: Column<studentQuizType>[] = [
 	{
-		header: 'Formation',
-		key: "formation_nom"
-	},
-	{
 		header: 'Titre du quiz',
 		key: "quiz_titre"
+	},
+	{
+		header: 'Formation',
+		key: "formation_nom"
 	},
 	{
 		header: null,

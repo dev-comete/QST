@@ -80,7 +80,8 @@ def get_dashboard_metrics_service(user):
 
     # --- 4. Sessions à venir ---
     upcoming_sessions = []
-    for v in vagues.filter(debut__gte=now()).order_by('debut')[:3]:
+    sessions_futures = vagues.filter(debut__gte=now()).select_related('formation').order_by('debut')[:3]
+    for v in sessions_futures:
         upcoming_sessions.append({
             "id": v.id, # 🌟 NOUVEAU : Requis pour navigate(`/sessions/${session.id}`)
             "name": v.nom_vague, 

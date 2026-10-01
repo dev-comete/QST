@@ -13,13 +13,14 @@ interface QuizAssignationProps {
 	setQuiz: Dispatch<SetStateAction<number | null>>
 	handleAssignQuiz: () => void
 	isPending: boolean
+	formationId: number
 }
 
-const QuizAssignation = ({ ownedQuiz, quiz, setQuiz, handleAssignQuiz, isPending } : QuizAssignationProps) => {
+const QuizAssignation = ({ ownedQuiz, quiz, setQuiz, handleAssignQuiz, isPending, formationId } : QuizAssignationProps) => {
 	return (
 		<Box>
 			<Paper className="flex flex-col items-center justify-center p-5 gap-3 w-1/3">
-				<QuizVagueSelect setQuiz={setQuiz} />
+				<QuizVagueSelect setQuiz={setQuiz} formationId={formationId} />
 				<Box className="items-center">
 					<ActionButton
 						type="submit"
