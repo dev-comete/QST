@@ -20,6 +20,13 @@ def get_vague_analytics_service(vague_id: int, requesting_user) -> dict:
     etudiants_ids = UtilisateurVague.objects.filter(vague=vague).values_list('utilisateur_id', flat=True)
     total_etudiants = etudiants_ids.count()
 
+    etudiants_inscrits = list(
+        UtilisateurVague.objects.filter(vague=vague)
+        .select_related('utilisateur')
+        .order_by('utilisateur__username')
+        .values('utilisateur__id', 'utilisateur__username', 'utilisateur__first_name', 'utilisateur__last_name')
+    )
+
     if total_etudiants == 0:
         return {
             "vague": {
@@ -27,6 +34,7 @@ def get_vague_analytics_service(vague_id: int, requesting_user) -> dict:
                 "formation": vague.formation.nom_formation,
                 "total_inscrits": 0
             },
+            "etudiants_inscrits": [],
             "message": "Aucun étudiant n'est inscrit dans cette vague pour le moment."
         }
 
@@ -114,6 +122,15 @@ def get_vague_analytics_service(vague_id: int, requesting_user) -> dict:
             "formation": vague.formation.nom_formation,
             "total_inscrits": total_etudiants
         },
+        "etudiants_inscrits": [
+            {
+                "id": etudiant['utilisateur__id'],
+                "username": etudiant['utilisateur__username'],
+                "first_name": etudiant['utilisateur__first_name'],
+                "last_name": etudiant['utilisateur__last_name'],
+            }
+            for etudiant in etudiants_inscrits
+        ],
         "statistiques_globales": {
             "points_totaux_possibles": total_max_points,
             "moyenne_globale_classe": round(global_avg, 2),

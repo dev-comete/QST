@@ -13,9 +13,9 @@ interface EvolutionChartProps {
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7300'];
 
 const EvolutionChart: React.FC<EvolutionChartProps> = ({ vagueId, etudiantsDisponibles }) => {
-    const [selectedStudentId, setSelectedStudentId] = useState<number | ''>('');
+    const [selectedStudentIds, setSelectedStudentIds] = useState<number[]>([]);
 
-    const { data, isLoading } = useEvolutionChart(vagueId, selectedStudentId ? [selectedStudentId] : []);
+    const { data, isLoading } = useEvolutionChart(vagueId, selectedStudentIds);
 
     if (isLoading) {
         return (
@@ -40,18 +40,32 @@ const EvolutionChart: React.FC<EvolutionChartProps> = ({ vagueId, etudiantsDispo
             <Box direction="row" className="mb-5 items-center justify-between gap-4">
                 <CustomText textTag="h2" weight="bold" color="primary">Progression de la classe</CustomText>
 
-                <select
-                    className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700"
-                    value={selectedStudentId}
-                    onChange={(event) => setSelectedStudentId(Number(event.target.value) || '')}
-                >
-                    <option value="">-- Comparer avec un étudiant --</option>
-                    {etudiantsDisponibles.map((etudiant) => (
-                        <option key={etudiant.id} value={etudiant.id}>
-                            {etudiant.username}
-                        </option>
-                    ))}
-                </select>
+                <div className="flex flex-col gap-2">
+                    <button
+                        type="button"
+                        className="self-end rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-100"
+                        onClick={() => setSelectedStudentIds(etudiantsDisponibles.map((etudiant) => etudiant.id))}
+                    >
+                        Sélectionner tout
+                    </button>
+
+                    <select
+                        multiple
+                        size={Math.min(6, Math.max(3, etudiantsDisponibles.length || 3))}
+                        className="min-w-[220px] rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700"
+                        value={selectedStudentIds.map(String)}
+                        onChange={(event) => {
+                            const nextValues = Array.from(event.target.selectedOptions, (option) => Number(option.value));
+                            setSelectedStudentIds(nextValues);
+                        }}
+                    >
+                        {etudiantsDisponibles.map((etudiant) => (
+                            <option key={etudiant.id} value={etudiant.id}>
+                                {etudiant.username}
+                            </option>
+                        ))}
+                    </select>
+                </div>
             </Box>
 
             <div className="h-[420px] w-full">
