@@ -1,28 +1,19 @@
-import { useNavigate } from "react-router";
 import Box from "../../../atoms/Container/Box";
 import IconButton from "../../../molecules/Buttons/IconButton";
 import { Table, type Column } from "../../../atoms/Table/Table";
 import type { BulletinVague } from "../../../../other/types/bulletinType";
 import { formatDate } from "../../../../other/helper/helper";
 import { useExportBulletin } from "../../../../other/hooks/bulletin/useBulletin";
+import { useAppNavigation } from "../../../../other/hooks/navigation/useAppNavigation";
 
 
 const ActionCell = ({ rowId } : {
 	rowId : string | number ,
 }) => {
-    const navigate = useNavigate();
 	const { handleExportPdf, isExporting } = useExportBulletin();
 
     return (
-        <Box className="flex items-center gap-3">
-            <IconButton
-                iconName={"book"}
-                iconStyling="text-text hover:text-primary"
-                action={() => {
-					navigate(`/vague/${rowId}/bulletin`)
-                }}
-            />
-
+        // <Box className="flex items-center justify-center">
 			<IconButton
                 iconName={isExporting ? "spinner" : "download"} 
                 iconStyling={`text-text hover:text-success ${isExporting ? 'opacity-50 cursor-not-allowed' : ''}`}
@@ -33,11 +24,15 @@ const ActionCell = ({ rowId } : {
                     }
                 }}
             />
-        </Box>
+        // </Box>
     );
 };
 
 const quizTabColumn: Column<BulletinVague>[] = [
+	{
+		header: 'Vague',
+		key: "nom_vague"
+	},
 	{
 		header: 'Formation',
 		key: "formation_nom"
@@ -66,12 +61,15 @@ interface BulletinListProps {
 
 const BulletinList = ({ data } : BulletinListProps) => {
 
+	const { navigateTo } = useAppNavigation()
+
 	return (
 		<Box direction="column" className="w-full items-center justify-center">
 			<Table
 				columns={quizTabColumn}
 				data={data}
 				rowKey={'vague_id'}
+				onRowClick={(row) => navigateTo(`/vague/${row.vague_id}/bulletin`)}
 			/>
 		</Box>
 	)
