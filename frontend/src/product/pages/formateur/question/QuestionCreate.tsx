@@ -10,6 +10,7 @@ import NavigationBar from "../../../../system/molecules/Navigation/NavigationBar
 import { EnonceForm } from "../../../../system/organisms/question/form/QuestionForm";
 import RespCreatedList from "../../../../system/organisms/question/list/RespCreatedList";
 import BodyLayout from "../../../layout/common/BodyLayout";
+import Box from "../../../../system/atoms/Container/Box";
 
 const QuestionCreate = () => {
 
@@ -38,18 +39,7 @@ const QuestionCreate = () => {
 		checkOptionValidation(responses, questionType.find(q => q.id == question.type_id)?.code || '')
 		await handleCreate()
 	}
-	
-	const addResponse = () => {
-		setResponses((prev) => [
-			...prev,
-			{
-				reponse: '',
-				est_correct: false,
-				explication: ''
-			}
-		]);
-	}
-	
+
 	return (
 		<BodyLayout
 			title={"Création de question"}
@@ -63,39 +53,38 @@ const QuestionCreate = () => {
 				>{"Créer la question"}</ActionButton>
 			}
 		>
-
-			<form
-				id="createQuestion"
-				onSubmit={handleSubmit}
-			>
-				<NavigationBar
-					titles={['Enoncé', 'Options']}
-					activeTab={activeTab}
-					onTabChange={(index) => setActiveTab(index)}
+			<Box direction="column">
+				{errorForm.msg && <Info info={errorForm.msg} variant="error"/>}
+				<form
+					id="createQuestion"
+					onSubmit={handleSubmit}
 				>
-					<Paper className="p-5">
-						<EnonceForm
-							question={question}
-							setQuestion={setQuestion}
-							questionType={questionType}
-						/>
-						{errorForm.type != 'response' && errorForm.msg && <Info info={errorForm.msg} variant="error"/>}
-					</Paper>
-					{
-						isOuvert ? 
-							<Info info={'Une question ouverte ne nécessite pas de proposition de réponses'} />
-						:
-						<>
-							<RespCreatedList 
-								responses={responses}
-								setResponses={setResponses}
-								errorMsg={errorForm.type == 'response' ? errorForm.msg : null}
+					<NavigationBar
+						titles={['Enoncé', 'Options']}
+						activeTab={activeTab}
+						onTabChange={(index) => setActiveTab(index)}
+					>
+						<Paper className="p-5 w-2/3 m-auto">
+							<EnonceForm
+								question={question}
+								setQuestion={setQuestion}
+								questionType={questionType}
 							/>
-							<ActionButton onClick={addResponse}>{"+ Réponse"}</ActionButton>
-						</>
-					}
-				</NavigationBar>
-			</form>
+						</Paper>
+						<Paper className="p-5 w-2/3 m-auto">
+						{
+							isOuvert ? 
+								<Info info={'Une question ouverte ne nécessite pas de proposition de réponses'} />
+							:
+								<RespCreatedList 
+									responses={responses}
+									setResponses={setResponses}
+								/>
+							}
+						</Paper>
+					</NavigationBar>
+				</form>
+			</Box>
 		</BodyLayout>
 	)
 }

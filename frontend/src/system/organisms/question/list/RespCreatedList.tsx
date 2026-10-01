@@ -1,10 +1,10 @@
 import { type ChangeEvent, type Dispatch, type SetStateAction } from "react"
 import type { respType } from "../../../../other/types/questionType"
 import Box from "../../../atoms/Container/Box"
-import Info from "../../../atoms/Form/Info"
 import TextArea from "../../../atoms/Form/TextArea"
 import Input from "../../../atoms/Form/Input"
 import IconButton from "../../../molecules/Buttons/IconButton"
+import CustomText from "../../../atoms/Text/CustomText"
 
 interface RespItemProps {
     id: number;
@@ -31,6 +31,7 @@ const RespItem = ({ id, response, handleRemove, handleSelectTrue, handleOnChange
 					id={"enonce" + id}
 					name="enonce"
 					label="Réponse"
+					row={2}
 					value={response.reponse}
 					onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleOnChange('reponse', e.target.value)}
 					required={true}
@@ -41,6 +42,7 @@ const RespItem = ({ id, response, handleRemove, handleSelectTrue, handleOnChange
 						id={"explication" + id}
 						name="explication"
 						label="Explication"
+						row={2}
 						value={response.explication || ''}
 						onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleOnChange('explication', e.target.value)}
 						required={true}
@@ -56,10 +58,9 @@ const RespItem = ({ id, response, handleRemove, handleSelectTrue, handleOnChange
 interface RespCreatedListProps {
     responses: respType[];
     setResponses: Dispatch<SetStateAction<respType[]>>;
-	errorMsg: string | null
 }
 
-const RespCreatedList = ({ responses, setResponses, errorMsg }: RespCreatedListProps) => {
+const RespCreatedList = ({ responses, setResponses }: RespCreatedListProps) => {
     const handleRemove = (index: number) => {
         setResponses((prev) => prev.filter((_, i) => i !== index));
     };
@@ -76,9 +77,19 @@ const RespCreatedList = ({ responses, setResponses, errorMsg }: RespCreatedListP
         );
     };
 
+	const addResponse = () => {
+		setResponses((prev) => [
+			...prev,
+			{
+				reponse: '',
+				est_correct: false,
+				explication: ''
+			}
+		]);
+	}
+
     return (
-        <Box direction="column" className="w-full items-center justify-center">
-			{ errorMsg && <Info info={errorMsg} variant="error"/>}
+        <Box direction="column" className="w-full items-center justify-center space-y-3">
             {responses.map((r, index) => (
                 <RespItem
                     key={'resp' + index}
@@ -89,6 +100,16 @@ const RespCreatedList = ({ responses, setResponses, errorMsg }: RespCreatedListP
                     handleOnChange={(field, value) => handleOnChange(index, field, value)}
                 />
             ))}
+			<div
+				className={`
+					border-2 border-primary w-full items-center
+					justify-center p-5 rounded-xl cursor-pointer
+					hover:bg-background border-dashed text-center
+				`}
+				onClick={addResponse}
+			>
+				<CustomText weight="bold" color="primary">+ Ajouter une autre réponse</CustomText>
+			</div>
         </Box>
     );
 };
