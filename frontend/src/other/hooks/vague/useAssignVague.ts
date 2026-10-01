@@ -1,17 +1,11 @@
 import { useState } from "react"
-// import { useParams } from "react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { VagueService } from "../../services/vagueService";
-
-
-// Issue with init quiz !!! before any selection
 
 export const useAssignVague = (vagueId: number) => {
 	
 	const [ students, setStudents] = useState<number[]>([])
 	const [ quiz, setQuiz ] = useState<number | null>(null)
-	
-	// const { id : vagueId } = useParams();
 
 	const queryClient = useQueryClient()
 

@@ -42,6 +42,7 @@ const QuizVagueSelect = ({ setQuiz, formationId } : QuizVagueListProps) => {
 				name={"type"}
 				selectionValue={getSelectData(compatibleQuizzes, 'titre')}
 				label="Sélection de quiz"
+				placeholder="Sélectionner un quiz"
 				handleChange={(e) => {
 					const quizName = e.target.value
 					const selectedQuiz = compatibleQuizzes.find((q) => q.titre == quizName)

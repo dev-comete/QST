@@ -10,6 +10,7 @@ interface SelectProps {
     className?: string;
     // size?: number;
 	value?: string | number;
+	placeholder?: string
 	handleChange?: (event: ChangeEvent<HTMLSelectElement>) => void;
 }
 
@@ -21,6 +22,7 @@ const Select = ({
     selectionValue,
 	className,
 	value,
+	placeholder,
     // size = 1,
 	handleChange
 }: SelectProps) => {
@@ -36,10 +38,15 @@ const Select = ({
 				id={selectId}
 				name={name}
 				required={required}
-				value={value}
+				{...(value !== undefined ? { value } : { defaultValue: "" })}
 				className={styling}
 				onChange={handleChange}
 			>
+				{placeholder && (
+					<option value="">
+					{placeholder}
+					</option>
+				)}
 				{selectionValue.map((selected) => (
 					<option key={selected.id} value={selected.value}>
 					{selected.value}
