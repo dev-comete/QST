@@ -33,7 +33,6 @@ const VagueHeader = ({ vague } : VagueAssignProps) => {
 
 	const { 
 		id,
-		formation_id,
 		formation_nom: formation,
 		debut,
 		fin,

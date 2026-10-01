@@ -7,7 +7,7 @@ const AssignBloc = ({title, children} : { title: string, children : ReactNode}) 
 	return (
 		<Paper className="flex flex-col items-center rounded-xl p-5 gap-5 min-w-0 flex-1 w-full">
 			<CustomText weight="bold" textTag="h1">{title}</CustomText>
-			<Box direction="column" className="w-full justify-center overflow-y-auto items-stretch">
+			<Box direction="column" className="w-full justify-center overflow-y-auto items-center">
 				{children}
 			</Box>
 		</Paper>

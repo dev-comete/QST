@@ -30,16 +30,20 @@ const QuizAssignForm = ({ ownedQuestions } : QuizAssignManipProps) => {
 				<QuizQuestionList
 					questions={selectedQuestion}
 					setQuestion={setSelectedQuestion}
+					startCount={ownedQuestions.length}
 				/>
-				<ActionButton
-					type="submit"
-					onClick={(e) => {e.preventDefault() ; handleAssignQuestion()}}
-					btnColor={selectedQuestion.length ? "success" : "disabled"}
-					textColor="white"
-					disabled={selectedQuestion.length == 0}
-				>
-					Assigner les questions
-				</ActionButton>
+				{
+					selectedQuestion.length != 0 &&
+					<ActionButton
+						type="submit"
+						onClick={(e) => {e.preventDefault() ; handleAssignQuestion()}}
+						btnColor={selectedQuestion.length ? "success" : "disabled"}
+						textColor="white"
+						disabled={selectedQuestion.length == 0}
+					>
+						Assigner les questions
+					</ActionButton>
+				}
 			</AssignBloc>
 		</form>
 	)

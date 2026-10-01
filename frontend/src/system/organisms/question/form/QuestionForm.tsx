@@ -44,10 +44,10 @@ const EnonceForm = ({ question, setQuestion, questionType} : EnonceFormProps) =>
 						label="Type de question"
 						handleChange={formChangeHandler(setQuestion, 'type_id', (value) => {
 							const selected = selectionQuestionType.find((q) => q.value === value) ?? selectionQuestionType[0]
-							const realId = Number(selected.id)
-							return realId + 1
+							const realId = questionType.find((q) => q.code == selected.value)?.id
+							return Number(realId)
 						})}
-						value={question.type_id}
+						value={selectionQuestionType.find((q) => String(q.id) === String(question.type_id))?.value}
 					/>
 				</Box>
 				<Box className="min-w-0 flex-1">

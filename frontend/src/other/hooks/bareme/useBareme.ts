@@ -9,8 +9,7 @@ export const useDelBareme = (id: number) => {
 
 	const { mutate, status } = useMutation({
 		mutationFn: BaremeService.delete,
-		onSuccess: (data) => {
-			console.log("Bareme deleted", data)
+		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ['bareme_list'] })
 		},
 		onError: (err) => {

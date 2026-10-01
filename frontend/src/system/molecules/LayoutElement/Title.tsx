@@ -5,6 +5,7 @@ import { BackButton } from "../Buttons/CustomizedButton";
 
 interface TitleProps {
 	title: string,
+	subtitle?: ReactNode,
 	sideButton?: ReactNode,
 	linkBack?: string
 	defaultLinkBack?: boolean
@@ -12,7 +13,7 @@ interface TitleProps {
 	titleTag?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p" | "span"
 }
 
-const Title = ({ title, sideButton, linkBack, defaultLinkBack = false, info, titleTag = 'h1' } : TitleProps) => {
+const Title = ({ title, sideButton, linkBack, defaultLinkBack = false, info, titleTag = 'h1', subtitle } : TitleProps) => {
 	
 		return (
 			<Box className="flex flex-col w-full border-b border-text-light pb-2">
@@ -20,7 +21,10 @@ const Title = ({ title, sideButton, linkBack, defaultLinkBack = false, info, tit
 					<Box className="flex items-center gap-3">
 						{linkBack && <BackButton link={linkBack} />}
 						{defaultLinkBack && <BackButton />}
-						<CustomText textTag={titleTag} weight="bold">{title}</CustomText>
+						<Box>
+							<CustomText textTag={titleTag} weight="bold">{title}</CustomText>
+							{subtitle}
+						</Box>
 					</Box>
 					{sideButton && (
 						<Box className="justify-end">

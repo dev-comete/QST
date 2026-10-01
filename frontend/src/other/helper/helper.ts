@@ -160,7 +160,7 @@ const checkOptionValidation = (responses: respType[] | null, typeQuestion: strin
             return correctCount >= 2 && incorrectCount >= 1;
 
         case 'QCU':
-            return correctCount === 1 && incorrectCount === 1;
+            return correctCount === 1 && incorrectCount >= 1;
 
         case 'OUV':
             return true;

@@ -46,7 +46,7 @@ type TablePaginationProps = Pick<
 	}
 ;
 
-const TableHeader = ({ title, search, setSearch, searchPlaceholder, filters } : TableHeaderProps) => {
+export const TableHeader = ({ title, search, setSearch, searchPlaceholder, filters } : TableHeaderProps) => {
 
 	return (
 		<Box direction="column" className="p-5 w-full">
@@ -76,7 +76,7 @@ const TableHeader = ({ title, search, setSearch, searchPlaceholder, filters } : 
 	)
 }
 
-const TablePagination = ({
+export const TablePagination = ({
 	page = 1,
 	setPage,
 	hasNextPage,

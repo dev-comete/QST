@@ -9,6 +9,7 @@ interface ConfirmActionButtonProps {
 	btnColor?: ColorTheme
 	confirmText?: string
 	isLoading?: boolean
+	interiorIcon?: string
 }
 
 const ConfirmActionButton = ({
@@ -17,6 +18,7 @@ const ConfirmActionButton = ({
 	children,
 	confirmText = "Souhaitez-vous poursuivre ?",
 	isLoading,
+	interiorIcon,
 } : ConfirmActionButtonProps) => {
 
 	const [ isOpen, setIsOpen ] = useState(false);
@@ -36,6 +38,7 @@ const ConfirmActionButton = ({
 			<ActionButton
 				btnColor={btnColor}
 				onClick={() => setIsOpen(true)}
+				interiorIcon={interiorIcon}
 			>
 				{children}
 			</ActionButton>

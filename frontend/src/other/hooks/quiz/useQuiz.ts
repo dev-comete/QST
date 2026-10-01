@@ -88,6 +88,7 @@ export const useQuizUpdate = (id: number, status: string) => {
 		mutationFn: ({ id, status }: { id: number; status: string }) => QuizService.updateStatus(id, status),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ['quiz_list']})
+			queryClient.invalidateQueries({ queryKey: ['info_quiz', id]})
 		},
 		onError: (err) => {
 			console.error('Quiz status update failed:', err);
