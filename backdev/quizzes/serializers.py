@@ -1,3 +1,4 @@
+from django.db.models.aggregates import Sum
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 
@@ -297,6 +298,7 @@ class ApprenantQuizListSerializer(serializers.ModelSerializer):
     formation_nom = serializers.CharField(source='quiz.formation.nom_formation', read_only=True)
     vague_id = serializers.IntegerField(source='vague.id', read_only=True)
     vague_nom = serializers.CharField(source='vague.nom_vague', read_only=True)
+    score_pourcentage = serializers.SerializerMethodField()
 
     class Meta:
         model = UtilisateurQuiz
@@ -307,8 +309,21 @@ class ApprenantQuizListSerializer(serializers.ModelSerializer):
             'vague_id',
             'vague_nom',
             'termine', 
-            'score_obtenu'
+            'score_obtenu',
+            'score_pourcentage'
         ]
+    def get_score_pourcentage(self, obj):
+        if not obj.termine:
+            return 0.0
+            
+        # Read the value pre-calculated by the View's .annotate()
+        max_pts = getattr(obj, 'quiz_max_pts', 0.0) or 0.0
+        
+        if max_pts == 0:
+            return 0.0
+            
+        pourcentage = (float(obj.score_obtenu) / float(max_pts)) * 100
+        return round(pourcentage, 1)
 
 class StudentOptionSerializer(serializers.ModelSerializer):
     """
