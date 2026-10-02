@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useParams, useSearchParams } from 'react-router';
+import { useNavigate, useParams, useSearchParams } from 'react-router';
 import { QuizService } from '../../../../other/services/quizService';
 import type { AnswersMap, Question, QuizInfo } from '../../../../other/types/quizType';
 import Box from '../../../../system/atoms/Container/Box';
@@ -12,6 +12,7 @@ import FetchError from '../../../../system/atoms/Loading/FetchError';
 import Paper from '../../../../system/atoms/Container/Paper';
 import ConfirmActionButton from '../../../../system/molecules/Buttons/ConfirmActionButton';
 import { useAppNavigation } from '../../../../other/hooks/navigation/useAppNavigation';
+import ModalQuizFinished from '../../../../system/organisms/evaluation/ModalQuizFinished';
 
 export default function TakingEvaluation() {
 	const { id } = useParams();
@@ -34,8 +35,11 @@ export default function TakingEvaluation() {
 	const [loading, setLoading] = useState<boolean>(true);
 	const [submitting, setSubmitting] = useState<boolean>(false);
 	const [error, setError] = useState<string>('');
-
 	const [timeLeft, setTimeLeft] = useState<number | null>(null);
+
+	const [ open, setOpen ] = useState(false)
+
+	const navigate  = useNavigate()
 
 	// Fonction spéciale de soumission (hors cycle classique) quand le temps est écoulé
 	const forceSubmitTimeout = async (): Promise<void> => {
@@ -49,9 +53,9 @@ export default function TakingEvaluation() {
 			});
 			alert(`Temps écoulé ! Quiz soumis automatiquement.\n\nScore : ${response.score_obtenu} points.`);
 			navigateTo('/');
-		} catch (err: any) {
-			// console.error('[QUIZ DEBUG] Erreur dans forceSubmitTimeout:', err);
-			setError(err?.response?.data?.error || "Erreur lors de la soumission automatique.");
+		} catch (err: unknown) {
+			const apiError = err as { response?: { data?: { error?: string } } };
+			setError(apiError.response?.data?.error || "Erreur lors de la soumission automatique.");
 			setSubmitting(false);
 		}
 	};
@@ -109,9 +113,9 @@ export default function TakingEvaluation() {
 		updateTimer();
 		timerId = setInterval(updateTimer, 1000);
 
-	  } catch (err) {
-		// console.error('[QUIZ DEBUG] Erreur dans fetchQuizData:', err);
-		setError(err.response?.data?.error || "Erreur lors du chargement du quiz.");
+	  } catch (err: unknown) {
+		const apiError = err as { response?: { data?: { error?: string } } };
+		setError(apiError.response?.data?.error || "Erreur lors du chargement du quiz.");
 	  } finally {
 		setLoading(false);
 	  }
@@ -141,9 +145,9 @@ export default function TakingEvaluation() {
 			}));
 			alert(`Félicitations, quiz terminé !\n\nScore : ${response.score_obtenu} points.`);
 			navigateTo('/');
-		} catch (err: any) {
-			// console.error('[QUIZ DEBUG] Erreur dans handleSubmitManually:', err);
-			setError(err?.response?.data?.error || "Erreur lors de la soumission du quiz.");
+		} catch (err: unknown) {
+			const apiError = err as { response?: { data?: { error?: string } } };
+			setError(apiError.response?.data?.error || "Erreur lors de la soumission du quiz.");
 			setSubmitting(false);
 		}
 	};
@@ -152,19 +156,28 @@ export default function TakingEvaluation() {
 	const handleOptionToggle = (questionId: string | number, optionId: string | number, typeCode: string) => {
 		setAnswers(prev => {
 			const qid = String(questionId);
-			const currentSelection = (prev[qid] as any) || [];
+			const currentSelection = (prev[qid] ?? []) as Array<string | number>;
 
 			if (typeCode === 'QCU') {
 				return { ...prev, [qid]: [optionId] };
+			}
+
+			if (typeCode === 'OUV') {
+				const value = String(optionId ?? '').trim();
+				return { ...prev, [qid]: value ? [value] : [] };
+			}
+
+			if (currentSelection.includes(optionId)) {
+				return { ...prev, [qid]: currentSelection.filter((id) => id !== optionId) };
 			} else {
-				if (currentSelection.includes(optionId)) {
-					return { ...prev, [qid]: currentSelection.filter((id: any) => id !== optionId) };
-				} else {
-					return { ...prev, [qid]: [...currentSelection, optionId] };
-				}
+				return { ...prev, [qid]: [...currentSelection, optionId] };
 			}
 		});
 	};
+
+	const onViewResults = () => {
+		navigate('/quiz/' + id + '/revue')
+	}
 
 	if (loading) return <Loading />
 
@@ -191,6 +204,12 @@ export default function TakingEvaluation() {
 					onToggle={handleOptionToggle}
 				/> 
 			</Box>
+			<ModalQuizFinished
+				open={open}
+				closeModal={() => setOpen(false)}
+				onViewResults={onViewResults}
+				id={String(id)}
+			/>
 		</BodyLayout>
 	);
 }

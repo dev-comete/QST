@@ -103,7 +103,7 @@ export const useQuestionCreate = () => {
 	const createQuestion = useMutation({
 		mutationFn: QuestionService.create,
 		onSuccess: () => {
-			navigateTo('gestion_question')
+			navigateTo(-1)
 		},
 		onError: (err) => {
 			console.log("Erreur", err)

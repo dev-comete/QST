@@ -127,7 +127,7 @@ const QuestionCreate = () => {
 	return (
 		<BodyLayout
 			title={"Création de question"}
-			linkBack="gestion_question"
+			defaultLinkBack
 			titleButton={
 				<ActionButton
 					type="submit"

@@ -12,6 +12,8 @@ import { TableHeader, TablePagination } from "../../../atoms/Table/Table";
 import Select from "../../../atoms/Form/Select";
 import useDebounce from "../../../../other/hooks/question/useDebounce";
 import { getSelectData } from "../../../../other/helper/helper";
+import ActionButton from "../../../molecules/Buttons/ActionButton";
+import { useAppNavigation } from "../../../../other/hooks/navigation/useAppNavigation";
 
 interface QuestionItemProps {
 	addQuestionToAssign: (e: React.MouseEvent<HTMLButtonElement>) => void,
@@ -53,6 +55,7 @@ const QuizBankQuestion = ({ questions, setQuestion, ownedQuestions } : QuizBankQ
 	const { list, questionTypeQuery } = useQuestion({ search : debouncedValue, type, page, pageSize, listType: 'bank' })
 	const { data: bankQuestions, status } = list
 	const { data : questionType, isPending } = questionTypeQuery
+	const { navigateTo } = useAppNavigation()
 
 	const handleSelectQuestion = (selectedQuestion: assignQuestionType) => {
 		setQuestion((prev) => [...prev, selectedQuestion]);
@@ -98,6 +101,10 @@ const QuizBankQuestion = ({ questions, setQuestion, ownedQuestions } : QuizBankQ
 							value={type === '' ? 'Tous' : type}
 							handleChange={handleTypeChange}
 						/>
+						<ActionButton
+							onClick={() => navigateTo('creation_question')}
+							interiorIcon="plus"
+						>Créer</ActionButton>
 						{
 							(debouncedValue || type !== '') &&
 							<IconButton

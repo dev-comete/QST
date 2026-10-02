@@ -7,10 +7,10 @@ interface StudentQuizListProps {
 import { useNavigate } from "react-router"
 import Box from "../../../atoms/Container/Box"
 import { Table, type Column } from "../../../atoms/Table/Table"
-import IconButton from "../../../molecules/Buttons/IconButton"
 import { useAppNavigation } from "../../../../other/hooks/navigation/useAppNavigation";
+import ActionButton from "../../../molecules/Buttons/ActionButton";
 
-const ActionCell = ({ quizId, vagueId, variant } : {
+const ActionCell = ({ quizId, vagueId } : {
 	quizId : string | number | boolean,
 	vagueId : string | number | boolean,
 	variant: 'à faire' | 'terminé',
@@ -18,19 +18,11 @@ const ActionCell = ({ quizId, vagueId, variant } : {
     const navigate = useNavigate();
 
     return (
-        <Box>
-            <IconButton
-                iconName={variant == 'terminé' ? "book" : "arrow-right"}
-                iconStyling="text-text hover:text-success"
-                action={() => {
-
-					if (variant == 'terminé')
-						navigate(`/quiz/${quizId}/revue?vague_id=${vagueId}`)
-					else
-						navigate(`/quiz/${quizId}/take?vague_id=${vagueId}`)
-                }}
-            />
-        </Box>
+		<ActionButton
+			onClick={() => {
+				navigate(`/quiz/${quizId}/take?vague_id=${vagueId}`)
+			}}
+		>Passer l'évaluation</ActionButton>
     );
 };
 
@@ -70,7 +62,11 @@ const StudentQuizList = ({ data } : StudentQuizListProps) => {
 				columns={quizTabColumn}
 				data={data}
 				rowKey={'quiz_id'}
-				onRowClick={(row) => navigateTo(`/quiz/${row.quiz_id}/revue?vague_id=${row.vague_id}`)}
+				onRowClick={(row) => {
+					if (row.termine) {
+						navigateTo(`/quiz/${row.quiz_id}/revue?vague_id=${row.vague_id}`)
+					}
+				}}
 			/>
 		</Box>
 	)
