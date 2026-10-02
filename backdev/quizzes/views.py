@@ -382,7 +382,11 @@ class ApprenantQuizListAPIView(ListAPIView):
         return UtilisateurQuiz.objects.filter(
             utilisateur=self.request.user,
             quiz__status='published'
-        ).select_related('quiz', 'quiz__formation')
+        ).select_related('quiz', 'quiz__formation', 'vague'
+        ).annotate(
+            # Pre-calculates the max points for all quizzes in a single SQL query
+            quiz_max_pts=Sum('quiz__quizquestion__bareme__pts')
+        )
     
 class TakeQuizAPIView(APIView):
     """
