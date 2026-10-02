@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import LabelInput from "./LabelInput";
 
 interface TextAreaProps {
@@ -8,6 +8,7 @@ interface TextAreaProps {
     value: string;
     placeholder?: string;
     cols?: number;
+	row?: number
     minLength?: number;
     maxLength?: number;
     readonly?: boolean;
@@ -22,6 +23,7 @@ const TextArea = ({
     value,
     placeholder,
     cols = 0,
+	row = 1,
     readonly = false,
     required = false,
     minLength = 5,
@@ -30,14 +32,13 @@ const TextArea = ({
 }: TextAreaProps) => {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-    // Recalculate height whenever value changes
-    useEffect(() => {
-        const textarea = textareaRef.current;
-        if (textarea) {
-            textarea.style.height = "auto";
-            textarea.style.height = `${textarea.scrollHeight}px`;
-        }
-    }, [value]);
+    // useEffect(() => {
+    //     const textarea = textareaRef.current;
+    //     if (textarea) {
+    //         textarea.style.height = "auto";
+    //         textarea.style.height = `${textarea.scrollHeight}px`;
+    //     }
+    // }, [value]);
 
     const styling = "bg-white border border-background p-2 w-full focus:outline-accent focus:outline-1 resize-none overflow-y-auto max-h-[7.5rem] rounded-xl"; 
 
@@ -50,7 +51,7 @@ const TextArea = ({
                 id={id}
                 name={name}
                 value={value}
-                rows={1} // Start at 1 row
+                rows={row}
                 wrap="soft"
                 cols={cols}
                 minLength={minLength}

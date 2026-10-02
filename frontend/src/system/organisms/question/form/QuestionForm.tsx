@@ -18,15 +18,6 @@ export const EnonceForm = ({ question, setQuestion, questionType} : EnonceFormPr
 
 	return (
 		<Box direction="column" className="w-full px-5 space-y-5">
-			<TextArea
-				id={"enonce"}
-				name={"enonce"}
-				label="Enoncé"
-				value={question.enonce_question}
-				onChange={formChangeHandler(setQuestion, 'enonce_question')}
-				required={true}
-				placeholder="Exemple: Comment parler à un client ?"
-			/>
 			<Box className="w-full gap-2">
 				<Box className="min-w-0 flex-1">
 					<Select
@@ -46,6 +37,16 @@ export const EnonceForm = ({ question, setQuestion, questionType} : EnonceFormPr
 					<BaremeInput onBaremeChange={() => formChangeHandler(setQuestion, 'bareme_pts')} />
 				</Box>
 			</Box>
+			<TextArea
+				id={"enonce"}
+				name={"enonce"}
+				label="Enoncé"
+				row={5}
+				value={question.enonce_question}
+				onChange={formChangeHandler(setQuestion, 'enonce_question')}
+				required={true}
+				placeholder="Exemple: Comment parler à un client ?"
+			/>
 		</Box>
 	)
 }
