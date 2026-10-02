@@ -38,11 +38,19 @@ const textColor : Record<ColorTheme, string> = {
 	'secondary': 'text-secondary',
 	'accent': 'text-accent',
 	'success': 'text-success',
+	'success-light': 'text-success-light',
+	'success-dark': 'text-success-dark',
 	'error': 'text-error',
+	'error-light': 'text-error-light',
+	'error-dark': 'text-error-dark',
 	'warning': 'text-warning',
+	'warning-light': 'text-warning-light',
+	'warning-dark': 'text-warning-dark',
 	'text': 'text-text',
 	'white': 'text-white',
 	'disabled' : 'text-disabled',
+	'disabled-light' : 'text-disabled-light',
+	'disabled-dark' : 'text-disabled-dark',
 	'transparent' : 'text-transparent'
 }
 

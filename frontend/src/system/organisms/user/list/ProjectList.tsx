@@ -21,6 +21,7 @@ const ActionCell = ({ rowId, onEdit } : {
                 iconName="edit"
                 iconStyling="text-text hover:text-success"
                 action={() => onEdit(rowId)}
+				title="Modifier"
             />
             <IconConfirmActionButton
                 iconName="trash"
@@ -28,6 +29,7 @@ const ActionCell = ({ rowId, onEdit } : {
                 action={handleDelProject}
 				confirmText="Voulez-vous vraiment supprimer le projet?"
 				isLoading={isPending}
+				title="Supprimer"
             />
         </Box>
     );
@@ -54,7 +56,7 @@ const getOrgTabColumn = (
 		}
 	},
 	{
-		header: "Action",
+		header: null,
 		key: 'id',
 		render: (value) => {
 			return <ActionCell rowId={value ? value : ''} onEdit={onEdit}/>

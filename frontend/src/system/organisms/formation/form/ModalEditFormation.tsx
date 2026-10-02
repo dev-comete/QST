@@ -1,19 +1,14 @@
-import type { Dispatch, SetStateAction } from "react";
 import { useEditFormation } from "../../../../other/hooks/formation/useFormation";
-import type { FormationPayload } from "../../../../other/types/formationType";
 import Box from "../../../atoms/Container/Box";
 import Input from "../../../atoms/Form/Input";
 import ActionButton from "../../../molecules/Buttons/ActionButton";
 import { Modal } from "../../../molecules/Modal/Modal";
 import { formChangeHandler } from "../../../../other/helper/helper";
+import type { FormationFormProps } from "./ModalFormationCreate";
 
-interface FormationEditFormProps {
-	formation: FormationPayload
-	setFormation: Dispatch<SetStateAction<FormationPayload>>
-	handleSubmit: (e: React.SubmitEvent) => void
-}
+const FormationEditForm = ({ handleSubmit, formation, setFormation } : FormationFormProps ) => {
 
-const FormationEditForm = ({ handleSubmit, formation, setFormation } : FormationEditFormProps ) => {
+	if (!formation) return
 
 	return (
 		<form

@@ -1,4 +1,5 @@
-import { useParams } from "react-router";
+import { useState } from "react";
+import { useParams, useSearchParams } from "react-router";
 import { useReviewQuiz } from "../../../../other/hooks/quiz/useReviewQuiz";
 import Box from "../../../../system/atoms/Container/Box";
 import CorrectionBloc, { CorrectionBlocNav } from "../../../../system/organisms/quiz/container/CorrectionBloc";
@@ -10,8 +11,11 @@ import { ScoreDisplay } from "../../../../system/molecules/Display/ScoreDisplay"
 const CorrectionReview = () => {
 
 	const { id : quizId } = useParams();
+	const [searchParams] = useSearchParams();
+	const vagueId = searchParams.get('vague_id') ?? '';
+	const [selectedQuestionIndex, setSelectedQuestionIndex] = useState(0);
 
-	const { review, status } = useReviewQuiz(quizId ?? '')
+	const { review, status } = useReviewQuiz(quizId ?? '', vagueId)
 
 	if (status == 'pending') return <Loading />
 
@@ -19,16 +23,23 @@ const CorrectionReview = () => {
 
 	return (
 		<BodyLayout
-			title={`Résultat du quiz : ${review.quiz_id}`}
+			title={`Résultat du quiz : ${review.quiz_titre ?? review.quiz_id}`}
 			defaultLinkBack={true}
 		>
 			<Box className='space-y-5 space-x-3 justify-between min-h-0'>
 				<Box direction="column" className="w-1/3">
-					<ScoreDisplay score={review.score_final}/>
-					<CorrectionBlocNav corrections={review.corrections}/>
+					<ScoreDisplay score={review.score_final} totalScore={review.score_possible}/>
+					<CorrectionBlocNav
+						corrections={review.corrections}
+						activeIndex={selectedQuestionIndex}
+						onSelectQuestion={setSelectedQuestionIndex}
+					/>
 				</Box>
 				<Box className="w-2/3">
-					<CorrectionBloc corrections={review.corrections}/>
+					<CorrectionBloc
+						corrections={review.corrections}
+						activeIndex={selectedQuestionIndex}
+					/>
 				</Box>
 			</Box>
 		</BodyLayout>

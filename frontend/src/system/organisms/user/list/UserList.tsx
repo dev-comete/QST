@@ -22,13 +22,15 @@ const ActionCell = ({ rowId, onEdit }: {
                 iconName="edit"
                 iconStyling="text-text hover:text-success"
                 action={() => onEdit(rowId)}
+                title="Modifier"
             />
             <IconConfirmActionButton
                 iconName="trash"
                 iconStyling="text-text hover:text-error"
                 action={handleDelUser}
-                confirmText="Voulez-vous vraiment supprimer l'utilisateur?"
+                confirmText="Voulez-vous vraiment désactiver l'utilisateur?"
                 isLoading={isPending}
+                title="Désactiver"
             />
         </Box>
     );
@@ -80,7 +82,7 @@ const getUserTabColumn = (
         }
     },
     {
-        header: "Action",
+        header: null,
         key: 'id',
         render: (value) => {
             return <ActionCell rowId={Number(value)} onEdit={onEdit} />

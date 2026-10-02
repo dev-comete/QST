@@ -16,7 +16,7 @@ const StatusBadge = ({ value } : StatusBadgeProps) => {
 			color = 'bg-warning-light text-warning'
 			break
 		default:
-			color = 'bg-disabled-light text-disabled'
+			color = 'bg-disabled-light text-disabled-dark'
 	}
 
 	return (

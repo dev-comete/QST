@@ -29,6 +29,7 @@ def get_dashboard_metrics_service(user):
     total_formations = formations.count()
     total_quiz_actifs = quizzes.filter(status='published').count()
     total_questions = questions.filter(is_active=True).count()
+    total_vagues = vagues.count()
 
     tentatives = UtilisateurQuiz.objects.filter(quiz__in=quizzes, termine=True).select_related('quiz')
     taux_reussite = "0%"
@@ -54,6 +55,7 @@ def get_dashboard_metrics_service(user):
     # (Ajustez les URL selon les vraies routes de votre frontend)
     stats = [
         {"label": "Formations", "value": str(total_formations), "change": "Actives", "tone": "harbor", "link": "/formations"},
+        {"label": "Vagues", "value": str(total_vagues), "change": "Gérées", "tone": "primary", "link": "/sessions"},
         {"label": "Quiz publiés", "value": str(total_quiz_actifs), "change": "En ligne", "tone": "success", "link": "/quizzes"},
         {"label": "Questions", "value": str(total_questions), "change": "Dans la banque", "tone": "info", "link": "/banque-questions"},
         {"label": "Taux de réussite", "value": taux_reussite, "change": "Global", "tone": "warning", "link": None}, # None car pas de page spécifique
@@ -80,7 +82,8 @@ def get_dashboard_metrics_service(user):
 
     # --- 4. Sessions à venir ---
     upcoming_sessions = []
-    for v in vagues.filter(debut__gte=now()).order_by('debut')[:3]:
+    sessions_futures = vagues.filter(debut__gte=now()).select_related('formation').order_by('debut')[:3]
+    for v in sessions_futures:
         upcoming_sessions.append({
             "id": v.id, # 🌟 NOUVEAU : Requis pour navigate(`/sessions/${session.id}`)
             "name": v.nom_vague, 

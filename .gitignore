@@ -19,6 +19,7 @@ venv/
 env/
 .venv/
 Pipfile.lock
+frontend/.env
 
 # Environment Variables
 .env
@@ -40,4 +41,6 @@ dist-ssr
 # OS specific
 .DS_Store
 Thumbs.db
+
+backdev/datadump.json
 

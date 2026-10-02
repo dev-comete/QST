@@ -8,9 +8,11 @@ import { useNavigate } from "react-router"
 import Box from "../../../atoms/Container/Box"
 import { Table, type Column } from "../../../atoms/Table/Table"
 import IconButton from "../../../molecules/Buttons/IconButton"
+import { useAppNavigation } from "../../../../other/hooks/navigation/useAppNavigation";
 
-const ActionCell = ({ rowId, variant } : {
-	rowId : string | number | boolean,
+const ActionCell = ({ quizId, vagueId, variant } : {
+	quizId : string | number | boolean,
+	vagueId : string | number | boolean,
 	variant: 'à faire' | 'terminé',
 }) => {
     const navigate = useNavigate();
@@ -23,38 +25,44 @@ const ActionCell = ({ rowId, variant } : {
                 action={() => {
 
 					if (variant == 'terminé')
-						navigate(`/quiz/${rowId}/revue`)
+						navigate(`/quiz/${quizId}/revue?vague_id=${vagueId}`)
 					else
-						navigate(`/quiz/${rowId}/take`)
+						navigate(`/quiz/${quizId}/take?vague_id=${vagueId}`)
                 }}
             />
         </Box>
     );
 };
 
-const quizTabColumn: Column<studentQuizType>[] = [
-	{
-		header: 'Formation',
-		key: "formation_nom"
-	},
-	{
-		header: 'Titre du quiz',
-		key: "quiz_titre"
-	},
-	{
-		header: "Action",
-		key: 'termine',
-		render: (value, rowId) => {
-			if (value == true)
-				return <ActionCell rowId={rowId ? rowId.quiz_id : ''} variant="terminé" />
-			else
-				return <ActionCell rowId={rowId ? rowId.quiz_id : ''} variant="à faire" />
-		}
-		
-	}
-]
-
 const StudentQuizList = ({ data } : StudentQuizListProps) => {
+	const hasCompletedQuiz = data.some((row) => row.termine === true);
+
+	const { navigateTo } = useAppNavigation()
+
+	const quizTabColumn: Column<studentQuizType>[] = [
+		{
+			header: 'Vague',
+			key: "vague_nom"
+		},
+		{
+			header: 'Titre du quiz',
+			key: "quiz_titre"
+		},
+		{
+			header: 'Formation',
+			key: "formation_nom"
+		},
+		{
+			header: hasCompletedQuiz ? 'Score' : null,
+			key: "score_obtenu",
+			render: (value, row) => {
+				if (row.termine === true) {
+					return String(value) + 'pts'
+				}
+				return <ActionCell quizId={row.quiz_id ?? ''} vagueId={row.vague_id ?? ''} variant="à faire" />
+			}
+		}
+	]
 
 	return (
 		<Box direction="column" className="w-full items-center justify-center">
@@ -62,6 +70,7 @@ const StudentQuizList = ({ data } : StudentQuizListProps) => {
 				columns={quizTabColumn}
 				data={data}
 				rowKey={'quiz_id'}
+				onRowClick={(row) => navigateTo(`/quiz/${row.quiz_id}/revue?vague_id=${row.vague_id}`)}
 			/>
 		</Box>
 	)

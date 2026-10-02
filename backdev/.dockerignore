@@ -1,0 +1,14 @@
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+.env
+datadump.json
+*.sqlite3
+
+backdev/.env
+Pipfile.lock
+

@@ -171,7 +171,7 @@ class AssignStudentToVagueAPIView(GenericAPIView):
                 status=status.HTTP_403_FORBIDDEN
             )
             
-        quizzes = Quiz.objects.filter(formation=vague.formation)
+        quizzes = vague.quizzes.all()
         students_assigned = 0
         total_quizzes_assigned = 0
 
@@ -237,6 +237,7 @@ class AssignQuizToVagueAPIView(GenericAPIView):
                 {"error": "Vous ne pouvez assigner des quiz qu'à vos propres vagues."}, 
                 status=status.HTTP_403_FORBIDDEN
             )
+        vague.quizzes.add(quiz)
             
         # 2. Fetch all students currently enrolled in this Vague
         # Using select_related speeds up the database query!
@@ -244,7 +245,7 @@ class AssignQuizToVagueAPIView(GenericAPIView):
         
         if not enrollments.exists():
             return Response(
-                {"message": "Cette vague ne contient encore aucun étudiant. Aucun quiz assigné."},
+                {"message": "Quiz ajouté au programme de la Vague. (Aucun étudiant inscrit pour le moment)."},
                 status=status.HTTP_200_OK
             )
 

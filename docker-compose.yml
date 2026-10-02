@@ -1,0 +1,42 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: qst_postgres
+    env_file:
+      - ./backdev/.env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+
+  web:
+    build: ./backdev
+    container_name: qst_django
+    command: gunicorn backdev.wsgi:application --bind 0.0.0.0:8000 --workers 3
+    volumes:
+      - ./backdev:/app 
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    env_file:
+      - ./backdev/.env
+  frontend:
+    build: ./frontend       # Points to the React folder
+    container_name: qst_react
+    ports:
+      - "5173:5173"         # Change to 5173:5173 if using Vite
+    volumes:
+      - ./frontend:/app     # Syncs React code for hot-reloading
+      - /app/node_modules
+    depends_on:
+      - web
+    env_file:
+      - ./frontend/.env
+    environment:
+      - WATCHPACK_POLLING=true
+      - CHOKIDAR_USEPOLLING=true
+      - WDS_SOCKET_PORT=0
+
+volumes:
+  postgres_data:

@@ -243,7 +243,7 @@ class SubmitQuizAPIView(APIView):
         }, status=status.HTTP_201_CREATED)
     
 class QuizReviewAPIView(APIView):
-    permission_classes = [IsAuthenticated] # Add IsApprenant if applicable
+    permission_classes = [IsAuthenticated] 
 
     def get(self, request, quiz_id):
 
@@ -298,6 +298,7 @@ class QuizReviewAPIView(APIView):
 
         return Response({
             "quiz_id": quiz_id,
+            "quiz_titre": assignment.quiz.titre,
             "vague_id": vague_id,
             "score_final": assignment.score_obtenu,
             "score_possible": total_possible,
@@ -381,7 +382,11 @@ class ApprenantQuizListAPIView(ListAPIView):
         return UtilisateurQuiz.objects.filter(
             utilisateur=self.request.user,
             quiz__status='published'
-        ).select_related('quiz', 'quiz__formation')
+        ).select_related('quiz', 'quiz__formation', 'vague'
+        ).annotate(
+            # Pre-calculates the max points for all quizzes in a single SQL query
+            quiz_max_pts=Sum('quiz__quizquestion__bareme__pts')
+        )
     
 class TakeQuizAPIView(APIView):
     """
@@ -551,7 +556,7 @@ class QuestionDetailAPIView(APIView):
         quizzes_lies = QuizQuestion.objects.filter(question=question, quiz__is_active=True)
         if quizzes_lies.exists():
             return Response(
-                {"error": "Impossible de mettre à la corbeille : cette question est actuellement assignée à un ou plusieurs quiz. Veuillez l'en retirer d'abord."},
+                {"error": "Impossible de mettre à la corbeille : cette question est actuellement assignée à un ou plusieurs quiz. Veuillez le fermer d'abord."},
                 status=status.HTTP_400_BAD_REQUEST
             )
 

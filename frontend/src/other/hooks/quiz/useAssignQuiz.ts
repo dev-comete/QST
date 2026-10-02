@@ -1,27 +1,26 @@
 import { useState } from "react"
 import type { assignQuestionType } from "../../types/questionType"
 import { useParams } from "react-router"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { QuizService } from "../../services/quizService"
-import { useAppNavigation } from "../navigation/useAppNavigation"
 
 const useAssignQuiz = () => {
 
 	const [ selectedQuestion, setSelectedQuestion ] = useState<assignQuestionType[]>([])
-
+	const queryClient = useQueryClient()
 	const { id } = useParams();
-	const { navigateTo} = useAppNavigation()
 
 	const { mutate, status } = useMutation({
 		mutationFn: QuizService.assignQuestion,
 		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ['info_question_quiz', Number(id)]})
+			queryClient.invalidateQueries({ queryKey: ['info_quiz', Number(id)]})
 			setSelectedQuestion([])
 		},
 		onError: (err) => {
 			console.error('Quiz creation failed:', err);
 		},
 	});
-
 
 	const handleAssignQuestion = () => {
 		// Validation : Vérifier que toutes les questions ont un type et un barème
@@ -35,13 +34,12 @@ const useAssignQuiz = () => {
 			quiz_id: Number(id ?? 0),
 			questions_choisies: selectedQuestion.map(q => ({
 				question_id: q.id,
-				type_id: 1,
+				type_id: q.type_id,
 				bareme_pts: q.bareme_pts
 			}))
 		};
 
 		mutate(payload)
-		navigateTo(`gestion_quiz`)
 	}
 
 

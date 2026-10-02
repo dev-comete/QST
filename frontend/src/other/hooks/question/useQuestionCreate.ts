@@ -111,7 +111,7 @@ export const useQuestionCreate = () => {
 			setQuestion((prev) => ({
 				...prev,
 				type_id: questionTypeQuery.data[0].id,
-				bareme_pts: baremeQuery.data[0].pts,
+				bareme_pts: baremeQuery.data.length != 0 ? baremeQuery.data[0].pts : 1,
 			}));
 		}
 

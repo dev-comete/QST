@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useAssignVague } from "../../../../other/hooks/vague/useAssignVague";
 import type { vagueType } from "../../../../other/types/vagueType";
 import Box from "../../../../system/atoms/Container/Box";
@@ -45,8 +46,8 @@ const VagueHeader = ({ vague } : VagueAssignProps) => {
 		<Paper className="flex flex-col relative p-5 items-center space-y-3">
 			<CustomText textTag="h1" color="primary" weight="bold">{formation}</CustomText>
 			<Box>
-				<CustomText textTag="h5">Du {formatDate(debut)}</CustomText>
-				<CustomText textTag="h5"> au {formatDate(fin)}</CustomText>
+				<CustomText textTag="h5">Du {formatDate(debut ?? '')}</CustomText>
+				<CustomText textTag="h5"> au {formatDate(fin ?? '')}</CustomText>
 			</Box>
 			<Box>
 				<HeaderBloc title={'Quiz'} content={ownedQuiz.length} icon={'file'}/>
@@ -63,9 +64,10 @@ const VagueHeader = ({ vague } : VagueAssignProps) => {
 
 const VagueAssign = () => {
 
-	const { getAllVague } = useVague()
+	const { getAllVague } = useVague({})
 	const { data: vagues, status } = getAllVague
 	const { id } = useParams()
+	const [activeTab, setActiveTab] = useState(0);
 	
 	const { 
 		quiz, setQuiz, isAssignQuizPending, handleAssignQuiz,
@@ -96,7 +98,9 @@ const VagueAssign = () => {
 			<Box direction="column" className="space-y-5 w-full">
 				<VagueHeader vague={vague} />
 				<NavigationBar
-					titles={['Quiz', 'Inscription']}				
+					titles={['Quiz', 'Inscription']}	
+					activeTab={activeTab}
+					onTabChange={setActiveTab}			
 				>
 					<QuizAssignation 
 						quiz={quiz}
@@ -104,6 +108,7 @@ const VagueAssign = () => {
 						handleAssignQuiz={handleAssignQuiz}
 						isPending={isAssignQuizPending}
 						ownedQuiz={ownedQuiz}
+						formationId={vague.formation_id}
 					/>
 					<StudentAssignation 
 						ownedStudents={ownedStudents}

@@ -2,6 +2,7 @@ import type { QuestionQuiz, quizAssignPayload, quizCreateType, QuizReview, QuizS
 import apiClient from "./apiClient";
 
 const QUIZ_CRUD_URL = import.meta.env.VITE_CRUD_QUIZ
+const QUIZ_TRASH_URL = import.meta.env.VITE_TRASH_QUIZ
 
 
 export const QuizService = {
@@ -10,13 +11,19 @@ export const QuizService = {
 		return response.data;
 	},
 
-	list: async () => {
-		const response = await apiClient.get(QUIZ_CRUD_URL);
+	list: async (listType: string) => {
+		const url = listType == 'trash' ? QUIZ_TRASH_URL : QUIZ_CRUD_URL
+		const response = await apiClient.get(url);
 		return response.data as quizType[];
 	},
 
 	delete: async (id: number) => {
 		const response = await apiClient.delete(QUIZ_CRUD_URL + id + '/');
+		return response.data;
+	},
+
+	restore: async (id: number) => {
+		const response = await apiClient.post(QUIZ_TRASH_URL + id + '/restaurer/');
 		return response.data;
 	},
 
@@ -53,9 +60,11 @@ export const QuizService = {
 		return response.data as studentQuizType[];
 	},
 
-	startQuiz: async (id: string) => {
-		const url = '/quizzes/'+ id + '/take/'
-		const response = await apiClient.get(url);
+	startQuiz: async (id: string, vagueId: string | number) => {
+		const url = '/quizzes/' + id + '/take/'
+		const response = await apiClient.get(url, {
+			params: { vague_id: vagueId }
+		});
 		return response.data;
 	},
 
@@ -65,8 +74,10 @@ export const QuizService = {
 		return response.data;
 	},
 
-	reviewQuiz: async (quizId: string) => {
-		const response = await apiClient.get(`quizzes/${quizId}/review/`);
+	reviewQuiz: async (quizId: string, vagueId: string | number) => {
+		const response = await apiClient.get(`quizzes/${quizId}/review/`, {
+			params: { vague_id: vagueId }
+		});
 		return response.data as QuizReview;
 	},
 }
