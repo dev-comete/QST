@@ -41,7 +41,7 @@ const QuestionCreateValidation = ({ questionType, responses } : QuestionCreateVa
 			<Paper className="p-5 border-primary" hasShadow>
 				<Box className="space-x-2 items-start">
 					<Box direction="column" className="space-y-1 items-start">
-						<Box>
+						<Box className="border-b border-background w-full pb-3">
 							<FAIcon name="circle-exclamation" size="xl" className="text-primary"/>
 							<CustomText
 								color="primary"
@@ -75,8 +75,8 @@ const QuestionCreateValidation = ({ questionType, responses } : QuestionCreateVa
 				</Paper>
 			{
 				questionType != 'OUV' &&
-				<Paper className="p-5">
-					<Box>
+				<Paper className="p-5 flex flex-col gap-2">
+					<Box className="border-b border-background w-full pb-3">
 						<FAIcon name="circle-info" size="xl" className="text-primary"/>
 						<CustomText
 							color="primary"
@@ -87,8 +87,7 @@ const QuestionCreateValidation = ({ questionType, responses } : QuestionCreateVa
 					<ul className="list-disc pl-5 space-y-2">
 						<li>Vous pouvez supprimer une réponse en cliquant sur le bouton 'x'.</li>
 						<li>En cochant/décochant la case, vous pouvez choisir si la question est vraie ou fausse.</li>
-						<li>Vous pouvez ajouter une réponse grâce au bouton 'Ajouter' en bas de la liste.</li>
-						<li>Veillez à bien remplir les champs 'Enoncé' et 'Explication'.</li>
+						<li>Veillez à bien remplir les champs 'Réponse' et 'Explication'.</li>
 					</ul>
 				</Paper>
 			}

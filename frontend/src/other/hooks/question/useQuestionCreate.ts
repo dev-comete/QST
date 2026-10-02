@@ -6,6 +6,7 @@ import { useQuestion } from "./useQuestion";
 import { useMutation } from "@tanstack/react-query";
 import { QuestionService } from "../../services/questionService";
 import { checkOptionValidation } from "../../helper/helper";
+import { useAppNavigation } from "../navigation/useAppNavigation";
 
 type criteria = {
 	msg: string,
@@ -87,6 +88,7 @@ export const useQuestionCreate = () => {
 	const { questionTypeQuery } = useQuestion({})
 	const { baremeQuery } = useBareme()
 	const [ isOuvert, setIsOuvert ] = useState(false)
+	const { navigateTo } = useAppNavigation()
 
 	useEffect(() => {
 		const selectedType = questionTypeQuery.data?.find((q) => q.id === question.type_id)?.code ?? 'QCM';
@@ -101,9 +103,7 @@ export const useQuestionCreate = () => {
 	const createQuestion = useMutation({
 		mutationFn: QuestionService.create,
 		onSuccess: () => {
-			setQuestion(initialQuestion)
-			setResponses([])
-			setErrorForm({msg: null, type: ''})
+			navigateTo('gestion_question')
 		},
 		onError: (err) => {
 			console.log("Erreur", err)
@@ -129,13 +129,9 @@ export const useQuestionCreate = () => {
 			return
 		}
 
-		if (isOuvert) {
-			setResponses([])
-		}
-
 		const payload = {
 			...question,
-			options: responses,
+			options: isOuvert ? [] : responses,
 		};
 
 		return await createQuestion.mutateAsync(payload)
