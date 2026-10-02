@@ -27,6 +27,7 @@ const ActionCell = ({ rowId, onEdit }: {
                 iconName="edit"
                 iconStyling="text-text hover:text-success"
                 action={() => onEdit(rowId)}
+				title="Modifier"
             />
         </Box>
     );

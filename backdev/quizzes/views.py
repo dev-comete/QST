@@ -556,7 +556,7 @@ class QuestionDetailAPIView(APIView):
         quizzes_lies = QuizQuestion.objects.filter(question=question, quiz__is_active=True)
         if quizzes_lies.exists():
             return Response(
-                {"error": "Impossible de mettre à la corbeille : cette question est actuellement assignée à un ou plusieurs quiz. Veuillez l'en retirer d'abord."},
+                {"error": "Impossible de mettre à la corbeille : cette question est actuellement assignée à un ou plusieurs quiz. Veuillez le fermer d'abord."},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
