@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { forwardRef, useRef } from "react";
 import LabelInput from "./LabelInput";
 
 interface TextAreaProps {
@@ -16,7 +16,7 @@ interface TextAreaProps {
     onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }
 
-const TextArea = ({
+const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(({
     label,
     id,
     name,
@@ -29,7 +29,7 @@ const TextArea = ({
     minLength = 5,
     maxLength = 1000,
     onChange
-}: TextAreaProps) => {
+}, forwardedRef) => {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
     // useEffect(() => {
@@ -46,7 +46,14 @@ const TextArea = ({
         <div className="flex flex-col w-full">
             {label && <LabelInput label={label} htmlFor={name} required={required}/>}
             <textarea
-                ref={textareaRef}
+                ref={(element) => {
+                    textareaRef.current = element;
+                    if (typeof forwardedRef === 'function') {
+                        forwardedRef(element);
+                    } else if (forwardedRef) {
+                        forwardedRef.current = element;
+                    }
+                }}
                 placeholder={placeholder}
                 id={id}
                 name={name}
@@ -63,6 +70,8 @@ const TextArea = ({
             />
         </div>
     );
-};
+});
+
+TextArea.displayName = 'TextArea';
 
 export default TextArea;

@@ -13,7 +13,7 @@ const Info = ({ info, variant = 'info' } : InfoProps) => {
 	return (
 		<Box className={`overflow-y-auto p-2 w-full border rounded-xl justify-center ${styling}`}>
 			{ variant == 'error' && <FAIcon name="triangle-exclamation" className="text-error"/>}
-			<CustomText textTag="h5">
+			<CustomText>
 				{info}
 			</CustomText>
 		</Box>

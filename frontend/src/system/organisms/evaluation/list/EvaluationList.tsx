@@ -8,6 +8,10 @@ import { useAppNavigation } from "../../../../other/hooks/navigation/useAppNavig
 
 const getQuizTabColumns = () : Column<DetailQuiz>[] => [
 	{
+		header: 'Titre du quiz',
+		key: "quiz_titre"
+	},
+	{
 		header: 'Quiz ID',
 		key: "quiz_id"
 	},
@@ -40,12 +44,14 @@ const EvaluationList = ({ data, vagueId } : EvaluationListProps) => {
 
 	const { navigateTo } = useAppNavigation()
 
+	const filteredData = data.filter((d) => d.statut == 'Terminé')
+
 	return (
 		<Box direction="column" className="w-full items-center justify-center">
 			<Table
 				title="Détails des évaluations"
 				columns={columns}
-				data={data}
+				data={filteredData}
 				rowKey={'quiz_id'}
 				onRowClick={(row) => navigateTo(`/quiz/${row.quiz_id}/revue?vague_id=${vagueId}`)}			/>
 		</Box>
