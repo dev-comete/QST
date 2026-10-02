@@ -1,0 +1,36 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Déploiement SSH sur le serveur
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          script: |
+            # 1. Naviguer vers le dossier du projet
+            cd /var/www/qst/QST
+
+            # 2. Récupérer les dernières modifications de la branche main
+            git fetch origin main
+            git reset --hard origin/main
+
+            # 3. Arrêter et reconstruire les conteneurs avec Docker Compose
+            docker compose down
+            docker compose up -d --build
+
+            # 4. Exécuter les migrations Django dans le conteneur backend
+            docker compose exec -T web python manage.py migrate --noinput
+
+            # 5. Nettoyer les images Docker inutilisées pour libérer l'espace disque
+            docker image prune -f
