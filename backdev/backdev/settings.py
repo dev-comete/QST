@@ -30,19 +30,17 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 
-SECRET_KEY = 'django-insecure-&4i12nu32-bcc)b@^8lc!spost6&*e1y)8=7k$9xokednjr&v%'
+SECRET_KEY = env('DJANGO_SECRET_KEY', default=None)
 GEMINI_API_KEY = env('GEMINI_API_KEY', default=None)
 
 # SECRET_KEY = env('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
 
 ALLOWED_HOSTS = [
-    '8000-cs-053069f0-3449-4470-96df-35d3150becaf.cs-asia-southeast1-fork.cloudshell.dev',
-    '8000-cs-629375525277-default.cs-asia-southeast1-palm.cloudshell.dev'
     '127.0.0.1',
     'localhost',
     '127.0.0.1:8000',
@@ -55,10 +53,7 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3001',
     'http://127.0.0.1:8000',
     'http://127.0.0.1:3001',
-    FRONTEND_URL,
-    'https://8000-cs-053069f0-3449-4470-96df-35d3150becaf.cs-asia-southeast1-fork.cloudshell.dev',
-    'https://8000-cs-629375525277-default.cs-asia-southeast1-palm.cloudshell.dev'
-  
+    FRONTEND_URL
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -67,9 +62,7 @@ CORS_TRUSTED_ORIGINS = [
     'http://localhost:8000',
     'http://127.0.0.1:8000',
     'http://127.0.0.1:3001',
-    FRONTEND_URL,
-    'https://8000-cs-053069f0-3449-4470-96df-35d3150becaf.cs-asia-southeast1-fork.cloudshell.dev',
-    'https://8000-cs-629375525277-default.cs-asia-southeast1-palm.cloudshell.dev'
+    FRONTEND_URL
 ]
 
 
@@ -161,10 +154,21 @@ DATABASES = {
 }
 
 """
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': env('DB_NAME'),
+        'USER': env('DB_USER'),
+        'PASSWORD': env('DB_PASSWORD'),
+        'HOST': env('DB_HOST', default='127.0.0.1'),
+        'PORT': env('DB_PORT', default='5433')
     }
 }
 
