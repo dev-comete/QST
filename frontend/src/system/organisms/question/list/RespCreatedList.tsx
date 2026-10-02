@@ -1,4 +1,4 @@
-import { type ChangeEvent, type Dispatch, type SetStateAction } from "react"
+import { useRef, useState, type ChangeEvent, type Dispatch, type SetStateAction } from "react"
 import type { respType } from "../../../../other/types/questionType"
 import Box from "../../../atoms/Container/Box"
 import TextArea from "../../../atoms/Form/TextArea"
@@ -12,9 +12,10 @@ interface RespItemProps {
     handleRemove: () => void;
     handleSelectTrue: (e: ChangeEvent<HTMLInputElement>) => void;
     handleOnChange: (field: 'reponse' | 'explication', value: string) => void;
+    textareaRef?: (element: HTMLTextAreaElement | null) => void;
 }
 
-const RespItem = ({ id, response, handleRemove, handleSelectTrue, handleOnChange }: RespItemProps) => {
+const RespItem = ({ id, response, handleRemove, handleSelectTrue, handleOnChange, textareaRef }: RespItemProps) => {
     return (
         <Box className={`border ${response.est_correct ? 'border-success bg-success-light' : 'border-background'} px-5 py-10 gap-2 w-full items-start rounded-xl relative`}>
 			<Box>
@@ -36,6 +37,7 @@ const RespItem = ({ id, response, handleRemove, handleSelectTrue, handleOnChange
 					onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleOnChange('reponse', e.target.value)}
 					required={true}
 					placeholder="Veuillez écrire la réponse"
+					ref={textareaRef}
 				/>
 				{response.est_correct && (
 					<TextArea
@@ -61,8 +63,31 @@ interface RespCreatedListProps {
 }
 
 const RespCreatedList = ({ responses, setResponses }: RespCreatedListProps) => {
+    const textareaRefs = useRef<Record<string, HTMLTextAreaElement | null>>({});
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+    const navigateToResponse = (index: number) => {
+        if (!responses.length) return;
+        const safeIndex = (index + responses.length) % responses.length;
+        setCurrentIndex(safeIndex);
+
+        queueMicrotask(() => {
+            const targetInput = textareaRefs.current[String(safeIndex)];
+            if (targetInput) {
+                targetInput.focus();
+            }
+        });
+    };
+
     const handleRemove = (index: number) => {
-        setResponses((prev) => prev.filter((_, i) => i !== index));
+        const nextResponses = responses.filter((_, i) => i !== index);
+        setResponses(nextResponses);
+        setCurrentIndex((prev) => {
+            if (nextResponses.length === 0) return 0;
+            if (prev >= nextResponses.length) return nextResponses.length - 1;
+            if (prev > index) return prev - 1;
+            return prev;
+        });
     };
 
     const handleCheckboxChange = (index: number, isChecked: boolean) => {
@@ -78,33 +103,65 @@ const RespCreatedList = ({ responses, setResponses }: RespCreatedListProps) => {
     };
 
 	const addResponse = () => {
-		setResponses((prev) => [
-			...prev,
+		const nextResponses = [
+			...responses,
 			{
 				reponse: '',
 				est_correct: false,
 				explication: ''
 			}
-		]);
+		];
+		const lastIndex = nextResponses.length - 1;
+		setResponses(nextResponses);
+		setCurrentIndex(lastIndex);
+		queueMicrotask(() => {
+			const lastInput = textareaRefs.current[String(lastIndex)];
+			if (lastInput) {
+				lastInput.focus();
+				lastInput.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+			}
+		});
 	}
 
     return (
-        <Box direction="column" className="w-full items-center justify-center space-y-3">
-            {responses.map((r, index) => (
-                <RespItem
-                    key={'resp' + index}
-                    id={index}
-                    response={r}
-                    handleRemove={() => handleRemove(index)}
-                    handleSelectTrue={(e) => handleCheckboxChange(index, e.target.checked)}
-                    handleOnChange={(field, value) => handleOnChange(index, field, value)}
-                />
-            ))}
+        <Box direction="column" className="w-full items-center justify-center space-y-2">
+            {responses.length > 1 && (
+                <Box className="w-full items-center justify-between">
+					<IconButton
+						iconName="caret-left"
+						action={() => navigateToResponse(currentIndex - 1)}
+						disabled={currentIndex <= 0 }
+					/>
+						<CustomText textTag="span" weight="bold">
+							{currentIndex + 1}/{responses.length}
+						</CustomText>
+					<IconButton
+						iconName="caret-right"
+						action={() => navigateToResponse(currentIndex + 1)}
+						disabled={currentIndex + 1 >= responses.length}
+					/>
+                </Box>
+            )}
+            {responses[currentIndex] && (
+                <div className="w-full">
+                    <RespItem
+                        id={currentIndex}
+                        response={responses[currentIndex]}
+                        handleRemove={() => handleRemove(currentIndex)}
+                        handleSelectTrue={(e) => handleCheckboxChange(currentIndex, e.target.checked)}
+                        handleOnChange={(field, value) => handleOnChange(currentIndex, field, value)}
+                        textareaRef={(element) => {
+                            textareaRefs.current[String(currentIndex)] = element;
+                        }}
+                    />
+                </div>
+            )}
 			<div
 				className={`
 					border-2 border-primary w-full items-center
 					justify-center p-5 rounded-xl cursor-pointer
 					hover:bg-background border-dashed text-center
+					sticky bottom-0 bg-white
 				`}
 				onClick={addResponse}
 			>

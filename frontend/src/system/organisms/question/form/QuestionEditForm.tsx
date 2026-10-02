@@ -23,6 +23,7 @@ interface EnonceFormProps {
 const EnonceForm = ({ question, setQuestion, questionType} : EnonceFormProps) => {
 
 	const selectionQuestionType = getSelectData(questionType, 'code')
+	const selectedQuestionTypeCode = questionType.find((q) => q.id === question.type_id)?.code ?? questionType[0]?.code ?? ''
 
 	return (
 		<Box direction="column" className="w-full px-5 space-y-5">
@@ -44,11 +45,10 @@ const EnonceForm = ({ question, setQuestion, questionType} : EnonceFormProps) =>
 						selectionValue={selectionQuestionType}
 						label="Type de question"
 						handleChange={formChangeHandler(setQuestion, 'type_id', (value) => {
-							const selected = selectionQuestionType.find((q) => q.value === value) ?? selectionQuestionType[0]
-							const realId = Number(selected.id)
-							return realId + 1
+							const realId = questionType.find((q) => q.code === value)?.id ?? questionType[0]?.id ?? 0
+							return Number(realId)
 						})}
-						value={question.type_id}
+						value={selectedQuestionTypeCode}
 					/>
 				</Box>
 				<Box className="min-w-0 flex-1">

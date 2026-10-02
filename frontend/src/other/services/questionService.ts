@@ -42,9 +42,14 @@ export const QuestionService = {
 			page_size: pageSize? pageSize.toString() : '3',
 		}).toString();
 		
-		const url = listType == 'bank' ? BANK_QUESTION_URL : TRASH_QUESTION_URL
+		const rawUrl = listType == 'bank' ? BANK_QUESTION_URL : TRASH_QUESTION_URL
 
-		const response = await apiClient.get<PaginatedData<bankQuestionType>>(`${url}?${queryParams}`);
+		// env values contained a '#' fragment (used for client-side anchors).
+		// Strip any fragment identifier before appending query params so
+		// the browser doesn't treat the rest as a fragment and drop queries.
+		// const cleanedUrl = (rawUrl || '').split('#')[0];
+
+		const response = await apiClient.get<PaginatedData<bankQuestionType>>(`${rawUrl}?${queryParams}`);
 		return response.data;
 	},
 

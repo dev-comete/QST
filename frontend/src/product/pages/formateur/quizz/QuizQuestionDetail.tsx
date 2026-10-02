@@ -21,6 +21,7 @@ const QuestionInfoDetail = ({ variant = 'type', content} : {
 				textTag="h5"
 				weight="bold"
 				color={variant == 'type' ? 'primary' : 'success'}
+				className="uppercase"
 			>{content}</CustomText>
 		</Paper>
 	)
@@ -58,7 +59,7 @@ const QuizQuestionDetail = ({ questions } : QuizQuestionDetailProps) => {
 							<Paper className="p-5" key={`ibloc-${item.question_id}-${index}`}>
 								<Box direction="column" className="space-y-5">
 									<Box className={`justify-between ${ isOpen ? 'border-b' : ''} border-background pb-2 items-center`}>
-										<Box className="items-center space-x-2">
+										<Box className="items-center space-x-2 max-w-2/3">
 											<NumerotationBadge index={index + 1}/>
 											<CustomText
 												textTag="h2"

@@ -27,7 +27,7 @@ const getSelectData = <T extends Record<string, unknown>>(
     key: keyof T
 ): SelectOption[] => {
     return data.map((item, idx) => ({
-        id: String(idx),
+        id: String(item.id ?? idx),
         value: String(item[key]),
     }));
 };
@@ -94,7 +94,7 @@ const parseDurationToMs = (durationStr: string | number | null) => {
 		days = parseInt(parts[0], 10) || 0;
 		timeStr = parts[1];
   }
-	const timeParts = timeStr.split(':');
+	const timeParts = String(timeStr).split(':');
 	if (timeParts.length >= 3) {
 		const hours = parseInt(timeParts[0], 10) || 0;
 		const minutes = parseInt(timeParts[1], 10) || 0;
@@ -122,11 +122,11 @@ const parseDurationToMs = (durationStr: string | number | null) => {
 };
 
 const formatTime = (ms: number) => {
-  if (ms <= 0) return "00:00";
-  const totalSeconds = Math.floor(ms / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+	if (ms <= 0) return "00:00";
+	const totalSeconds = Math.floor(ms / 1000);
+	const minutes = Math.floor(totalSeconds / 60);
+	const seconds = totalSeconds % 60;
+	return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 };
 
 const formatDateForInput = (dateStr?: string) => {
@@ -143,8 +143,11 @@ const formatDateForInput = (dateStr?: string) => {
     return dateStr.slice(0, 16);
 };
 
-const checkOptionValidation = (responses: respType[] | null, typeQuestion: string): boolean => {
-    if (!responses) return false;
+const checkOptionValidation = (responses: respType[], typeQuestion: string): boolean => {
+
+	if (typeQuestion == 'OUV') return true
+    
+	if (!responses) return false;
 
     const correctExplanationsValid = responses
         .filter((r) => r.est_correct)
@@ -161,9 +164,6 @@ const checkOptionValidation = (responses: respType[] | null, typeQuestion: strin
 
         case 'QCU':
             return correctCount === 1 && incorrectCount >= 1;
-
-        case 'OUV':
-            return true;
 
         default:
             return false;

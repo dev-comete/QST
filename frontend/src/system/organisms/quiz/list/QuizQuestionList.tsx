@@ -32,7 +32,7 @@ const QuizQuestionItem = ({ numero, question, onBaremeChange, onDelete } : QuizQ
 						iconSize="lg"
 					/>
 				</Box>
-				<div className="w-1/3">
+				<div className="w-full">
 					<BaremeInput onBaremeChange={onBaremeChange} labelPosition="row" />
 				</div>
 			</Box>

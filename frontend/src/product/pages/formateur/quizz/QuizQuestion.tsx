@@ -1,4 +1,4 @@
-import { useParams } from "react-router";
+import { useParams, useSearchParams } from "react-router";
 import BodyLayout from "../../../layout/common/BodyLayout";
 import { useQuiz, useQuizUpdate } from "../../../../other/hooks/quiz/useQuiz";
 import Loading from "../../../../system/atoms/Loading/Loading";
@@ -6,7 +6,6 @@ import FetchError from "../../../../system/atoms/Loading/FetchError";
 import NavigationBar from "../../../../system/molecules/Navigation/NavigationBar";
 import QuizQuestionDetail from "./QuizQuestionDetail";
 import QuizAssignForm from "../../../../system/organisms/quiz/form/QuizAssignForm";
-import { useState } from "react";
 import Box from "../../../../system/atoms/Container/Box";
 import CustomText from "../../../../system/atoms/Text/CustomText";
 import Paper from "../../../../system/atoms/Container/Paper";
@@ -99,7 +98,19 @@ const QuizQuestion = () => {
 	const { handleUpdateStatus, isPending : updateIsPending } = useQuizUpdate(Number(id), info?.status ? info.status : 'draft')
 	const { formations, formationsStatus } = useFormation()
 
-	const [ activeTab, setActiveTab ] = useState(0);
+	const [searchParams, setSearchParams] = useSearchParams();
+
+  // 1. Read activeTab from URL search params "?tab=0" (defaults to 0)
+  const tabParam = searchParams.get('tab');
+  const activeTab = tabParam ? parseInt(tabParam, 10) : 0;
+
+  // 2. Update the URL search params when changing tabs
+  const handleTabChange = (index: number) => {
+    setSearchParams((prev) => {
+      prev.set('tab', index.toString());
+      return prev;
+    });
+  };
 
 	if (isPending || infoPending || formationsStatus == 'pending') return <Loading />
 
@@ -110,7 +121,7 @@ const QuizQuestion = () => {
 	return (
 		<BodyLayout
 			title={info.titre}
-			defaultLinkBack={true}
+			linkBack="gestion_quiz"
 			titleButton={
 				<ConfirmActionButton
 					action={handleUpdateStatus}
@@ -126,7 +137,7 @@ const QuizQuestion = () => {
 				<NavigationBar
 					titles={['Détails', 'Assignation']}		
 					activeTab={activeTab}
-					onTabChange={(index) => setActiveTab(index)}				
+					onTabChange={handleTabChange}				
 				>
 					<Box className="w-full items-start">
 						<QuizInformations
