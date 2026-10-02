@@ -10,4 +10,8 @@ export default defineConfig({
     babel({ presets: [reactCompilerPreset()] }),
     tailwindcss()
   ],
+  server: {
+    host: '0.0.0.0', // This is critical for Docker
+    port: 5173,
+  }
 })

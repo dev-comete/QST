@@ -382,7 +382,11 @@ class ApprenantQuizListAPIView(ListAPIView):
         return UtilisateurQuiz.objects.filter(
             utilisateur=self.request.user,
             quiz__status='published'
-        ).select_related('quiz', 'quiz__formation')
+        ).select_related('quiz', 'quiz__formation', 'vague'
+        ).annotate(
+            # Pre-calculates the max points for all quizzes in a single SQL query
+            quiz_max_pts=Sum('quiz__quizquestion__bareme__pts')
+        )
     
 class TakeQuizAPIView(APIView):
     """
@@ -552,7 +556,7 @@ class QuestionDetailAPIView(APIView):
         quizzes_lies = QuizQuestion.objects.filter(question=question, quiz__is_active=True)
         if quizzes_lies.exists():
             return Response(
-                {"error": "Impossible de mettre à la corbeille : cette question est actuellement assignée à un ou plusieurs quiz. Veuillez l'en retirer d'abord."},
+                {"error": "Impossible de mettre à la corbeille : cette question est actuellement assignée à un ou plusieurs quiz. Veuillez le fermer d'abord."},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
