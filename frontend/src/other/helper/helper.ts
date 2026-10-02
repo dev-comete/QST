@@ -27,7 +27,7 @@ const getSelectData = <T extends Record<string, unknown>>(
     key: keyof T
 ): SelectOption[] => {
     return data.map((item, idx) => ({
-        id: String(idx),
+        id: String(item.id ?? idx),
         value: String(item[key]),
     }));
 };

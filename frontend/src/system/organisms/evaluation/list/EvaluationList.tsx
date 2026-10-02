@@ -8,6 +8,10 @@ import { useAppNavigation } from "../../../../other/hooks/navigation/useAppNavig
 
 const getQuizTabColumns = () : Column<DetailQuiz>[] => [
 	{
+		header: 'Titre du quiz',
+		key: "quiz_titre"
+	},
+	{
 		header: 'Quiz ID',
 		key: "quiz_id"
 	},
