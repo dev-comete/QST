@@ -118,7 +118,7 @@ const QuizQuestion = () => {
 					btnColor={isPublished ? 'disabled' : 'success'}
 					confirmText="Voulez-vous changer le statut du quiz?"
 					interiorIcon={isPublished ? 'arrow-down' : 'arrow-up'}
-				>{isPublished ? 'Retirer' : 'Publier'}</ConfirmActionButton>
+				>{isPublished ? 'Fermer le quiz' : 'Rendre accessible'}</ConfirmActionButton>
 			}
 		>
 			<>

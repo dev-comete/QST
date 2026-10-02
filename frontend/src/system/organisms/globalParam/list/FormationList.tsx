@@ -24,6 +24,7 @@ const ActionCell = ({ rowId, onEdit }: {
                 iconName="edit"
                 iconStyling="text-text hover:text-success"
                 action={() => onEdit(rowId)}
+				title="Modifier"
             />
             <IconConfirmActionButton
                 iconName="trash"
@@ -31,6 +32,7 @@ const ActionCell = ({ rowId, onEdit }: {
                 action={handleDelFormation}
                 confirmText="Voulez-vous vraiment supprimer la formation?"
                 isLoading={isPending}
+				title="Supprimer"
             />
         </Box>
     );

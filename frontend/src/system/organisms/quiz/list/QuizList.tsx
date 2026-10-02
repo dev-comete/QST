@@ -44,7 +44,7 @@ const ActionCell = ({ rowId, row, onEdit, listType } : {
 						action={handleUpdateStatus}
 						confirmText="Voulez-vous changer le statut du quiz?"
 						isLoading={updateIsPending}
-						title={row && row.status === 'draft' ? 'Publier' : 'Retirer'}
+						title={row && row.status === 'draft' ? 'Rendre accessible' : 'Fermer le quiz'}
 					/>
 					<IconButton
 						iconName="edit"
