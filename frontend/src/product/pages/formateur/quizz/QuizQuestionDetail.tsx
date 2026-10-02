@@ -18,7 +18,7 @@ const QuestionInfoDetail = ({ variant = 'type', content} : {
 			className={`px-3 py-2 rounded-sm flex items-center justify-center`}
 		>
 			<CustomText
-				textTag="h5"
+				textTag="h6"
 				weight="bold"
 				color={variant == 'type' ? 'primary' : 'success'}
 				className="uppercase"
@@ -62,7 +62,7 @@ const QuizQuestionDetail = ({ questions } : QuizQuestionDetailProps) => {
 										<Box className="items-center space-x-2 max-w-2/3">
 											<NumerotationBadge index={index + 1}/>
 											<CustomText
-												textTag="h2"
+												textTag="h3"
 												weight="bold"
 											>{item.enonce_question}</CustomText>
 										</Box>

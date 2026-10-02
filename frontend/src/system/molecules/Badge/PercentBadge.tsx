@@ -16,7 +16,7 @@ const PercentBadge = ({ value, lowValue = 25, highValue = 75 } : PercentBadgePro
 		color = 'bg-warning-light text-warning'
 
 	return (
-		<Box className={` rounded-xl ${color} px-2 py-1 w-fit`}>{value + '%'}</Box>
+		<Box className={` items-center shadow-sm rounded-xl ${color} px-2 py-1 w-fit`}>{value + '%'}</Box>
 	)
 }
 

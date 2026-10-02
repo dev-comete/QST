@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { UserService } from "../../services/userService"
 import { useEffect, useState } from "react"
-import type { userPayload } from "../../types/userType"
+import type { userPayload, UserTypePayload } from "../../types/userType"
 
 export interface UseUserProps {
 	role?: string;
@@ -193,5 +193,38 @@ export const useUserUpdate = (id: string) => {
 		emailError,
 		setEmailError,
 		resetError
+	}
+}
+
+export const useTypeUserCreate = () => {
+
+	const [ userType, setUserType ] = useState<UserTypePayload>({
+		type_utilisateur: '',
+	})
+	const queryClient = useQueryClient()
+
+	const createUserType = useMutation({
+		mutationFn: UserService.createType,
+		onSuccess: () => {
+			setUserType({ type_utilisateur: ''})
+			queryClient.invalidateQueries({
+                queryKey: ['type_list'],
+            });
+			
+		},
+		onError: (err) => {
+			console.error('User type creation failed:', err);
+		},
+	});
+
+	const handleCreateTypeUser = async () => {
+		if (userType.type_utilisateur.trim().length == 0) return
+		return await createUserType.mutateAsync(userType)
+	}
+
+	return {
+		userType, setUserType,
+		handleCreateTypeUser,
+		isPending : createUserType.isPending,
 	}
 }

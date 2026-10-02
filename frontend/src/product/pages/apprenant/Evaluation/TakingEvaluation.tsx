@@ -11,14 +11,12 @@ import Loading from '../../../../system/atoms/Loading/Loading';
 import FetchError from '../../../../system/atoms/Loading/FetchError';
 import Paper from '../../../../system/atoms/Container/Paper';
 import ConfirmActionButton from '../../../../system/molecules/Buttons/ConfirmActionButton';
-import { useAppNavigation } from '../../../../other/hooks/navigation/useAppNavigation';
 import ModalQuizFinished from '../../../../system/organisms/evaluation/ModalQuizFinished';
 
 export default function TakingEvaluation() {
 	const { id } = useParams();
 	const [searchParams] = useSearchParams();
 	const vagueId = searchParams.get('vague_id') ?? '';
-	const { navigateTo } = useAppNavigation();
 
 	const [quizInfo, setQuizInfo] = useState<QuizInfo | null>(null);
 	const [questions, setQuestions] = useState<Question[]>([]);
@@ -36,6 +34,7 @@ export default function TakingEvaluation() {
 	const [submitting, setSubmitting] = useState<boolean>(false);
 	const [error, setError] = useState<string>('');
 	const [timeLeft, setTimeLeft] = useState<number | null>(null);
+	const [ scoreQuiz, setScoreQuiz ] = useState<number | null>(null);
 
 	const [ open, setOpen ] = useState(false)
 
@@ -51,8 +50,10 @@ export default function TakingEvaluation() {
 				vague_id: vagueId,
 				answers: answersRef.current as AnswersMap[]
 			});
-			alert(`Temps écoulé ! Quiz soumis automatiquement.\n\nScore : ${response.score_obtenu} points.`);
-			navigateTo('/');
+			setScoreQuiz(response.score_obtenu)
+			setOpen(true)
+			// alert(`Temps écoulé ! Quiz soumis automatiquement.\n\nScore : ${response.score_obtenu} points.`);
+			// navigateTo('/');
 		} catch (err: unknown) {
 			const apiError = err as { response?: { data?: { error?: string } } };
 			setError(apiError.response?.data?.error || "Erreur lors de la soumission automatique.");
@@ -143,8 +144,10 @@ export default function TakingEvaluation() {
 				vague_id: vagueId,
 				answers: answersRef.current as AnswersMap[]
 			}));
-			alert(`Félicitations, quiz terminé !\n\nScore : ${response.score_obtenu} points.`);
-			navigateTo('/');
+			setScoreQuiz(response.score_obtenu)
+			setOpen(true)
+			// alert(`Félicitations, quiz terminé !\n\nScore : ${response.score_obtenu} points.`);
+			// navigateTo('/');
 		} catch (err: unknown) {
 			const apiError = err as { response?: { data?: { error?: string } } };
 			setError(apiError.response?.data?.error || "Erreur lors de la soumission du quiz.");
@@ -176,7 +179,7 @@ export default function TakingEvaluation() {
 	};
 
 	const onViewResults = () => {
-		navigate('/quiz/' + id + '/revue')
+		navigate('/bulletin')
 	}
 
 	if (loading) return <Loading />
@@ -190,6 +193,7 @@ export default function TakingEvaluation() {
 			footer={
 				<Paper color='white' className='p-3 w-full flex flex-col items-center'>
 					<ConfirmActionButton
+						btnColor='error'
 						action={handleSubmitManually}
 					>
 						Soumettre l'évaluation
@@ -206,9 +210,8 @@ export default function TakingEvaluation() {
 			</Box>
 			<ModalQuizFinished
 				open={open}
-				closeModal={() => setOpen(false)}
 				onViewResults={onViewResults}
-				id={String(id)}
+				scoreQuiz={scoreQuiz ? scoreQuiz : 0}
 			/>
 		</BodyLayout>
 	);

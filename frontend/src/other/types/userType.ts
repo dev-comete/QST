@@ -33,11 +33,16 @@ type ProjectPayload = {
 	is_active: boolean
 }
 
+type UserTypePayload = {
+	type_utilisateur: string
+}
+
 export type {
 	userType,
 	userPayload,
 	utilisateurType,
 	projectType,
 	ProjectPayload,
-	userWithOrganisation
+	userWithOrganisation,
+	UserTypePayload,
 }

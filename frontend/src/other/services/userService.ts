@@ -1,5 +1,5 @@
 import { USERNAME_MIN } from "../types/constant";
-import type { projectType, userPayload, userType, userWithOrganisation, utilisateurType } from "../types/userType";
+import type { projectType, userPayload, userType, UserTypePayload, userWithOrganisation, utilisateurType } from "../types/userType";
 import apiClient from "./apiClient";
 
 const USER_URL = import.meta.env.VITE_CRUD_USER
@@ -63,6 +63,12 @@ export const UserService = {
 		const url = import.meta.env.VITE_ORGANISATION
 		const response = await apiClient.get(url);
 		return response.data as projectType[];
+	},
+
+	createType: async (data: UserTypePayload) => {
+		const url = import.meta.env.VITE_TYPE_USER
+		const response = await apiClient.post(url, data);
+		return response.data;
 	},
 
 }
