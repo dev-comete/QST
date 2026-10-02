@@ -17,4 +17,4 @@ EXPOSE 5173
 
 # Start the development server
 # Use "npm run dev" if you are using Vite instead of Create React App
-CMD ["npm", "start"]
+CMD ["npm", "run", "dev"]
