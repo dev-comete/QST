@@ -71,4 +71,13 @@ export const UserService = {
 		return response.data;
 	},
 
+	confirmPasswordReset: async ({ uid, token, new_password } : { uid : any, token: any, new_password: string }) => {
+		const response = await apiClient.post('/accounts/auth/reset-password-confirm/', {
+		uid,
+		token,
+		new_password
+		});
+		
+		return response.data;
+	}
 }
