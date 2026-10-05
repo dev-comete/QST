@@ -8,7 +8,7 @@ interface DashboardStatProps {
 
 export const DashboardStat = ({ stats } : DashboardStatProps) => {
 	return (
-		<Box className="w-full">
+		<Box className="w-full flex-wrap">
 			{
 				stats.map((stat, index) => {
 					return (

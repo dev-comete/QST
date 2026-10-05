@@ -22,7 +22,7 @@ const NavigationBarButton = ({ title, isClicked, onClick } : NavigationButtonPro
             color="transparent" // Prevents Button's default primary background
             isRounded={false}   // Allows us to apply rounded-lg instead
             // [ALTERED CODE]: flex-1 ensures tabs are equal width. !px-6 !py-2.5 overrides Button's default w-fit and padding
-            className={`flex-1 flex justify-center items-center transition-all duration-300 ease-in-out !rounded-lg !px-6 !py-2.5 ${isClicked ? activeStyle : inactiveStyle}`}
+            className={`flex justify-center items-center transition-all duration-300 ease-in-out !rounded-lg !px-6 !py-2.5 ${isClicked ? activeStyle : inactiveStyle}`}
         >
             <CustomText 
                 weight={isClicked ? 'bold' : 'normal'} 

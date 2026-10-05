@@ -1,4 +1,4 @@
-import { useParams, useSearchParams } from "react-router";
+import { useParams } from "react-router";
 import BodyLayout from "../../../layout/common/BodyLayout";
 import { useQuiz, useQuizUpdate } from "../../../../other/hooks/quiz/useQuiz";
 import Loading from "../../../../system/atoms/Loading/Loading";
@@ -15,6 +15,7 @@ import ConfirmActionButton from "../../../../system/molecules/Buttons/ConfirmAct
 import { useFormation } from "../../../../other/hooks/formation/useFormation";
 import type { QuestionQuiz, quizType } from "../../../../other/types/quizType";
 import type { Formation } from "../../../../other/types/formationType";
+import { useTabNavigation } from "../../../../other/hooks/navigation/useTabNavigation";
 
 interface QuizQuestionInfo {
 	title: string
@@ -97,20 +98,7 @@ const QuizQuestion = () => {
 	const { data: info, isPending: infoPending } = infoQuiz
 	const { handleUpdateStatus, isPending : updateIsPending } = useQuizUpdate(Number(id), info?.status ? info.status : 'draft')
 	const { formations, formationsStatus } = useFormation()
-
-	const [searchParams, setSearchParams] = useSearchParams();
-
-  // 1. Read activeTab from URL search params "?tab=0" (defaults to 0)
-  const tabParam = searchParams.get('tab');
-  const activeTab = tabParam ? parseInt(tabParam, 10) : 0;
-
-  // 2. Update the URL search params when changing tabs
-  const handleTabChange = (index: number) => {
-    setSearchParams((prev) => {
-      prev.set('tab', index.toString());
-      return prev;
-    });
-  };
+	const { activeTab, handleTabChange } = useTabNavigation();
 
 	if (isPending || infoPending || formationsStatus == 'pending') return <Loading />
 
@@ -133,7 +121,6 @@ const QuizQuestion = () => {
 			}
 		>
 			<>
-				
 				<NavigationBar
 					titles={['Détails', 'Assignation']}		
 					activeTab={activeTab}
