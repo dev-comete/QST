@@ -34,6 +34,9 @@ export const useAssignVague = (vagueId: number) => {
 	const assignQuiz = useMutation({
 		mutationFn: VagueService.assignQuiz,
 		onSuccess: () => {
+			queryClient.invalidateQueries({
+                queryKey: ['vague_list'],
+            });
 			setQuiz(null)
 		},
 		onError: (err) => {
