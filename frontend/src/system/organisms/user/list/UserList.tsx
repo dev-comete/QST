@@ -9,12 +9,15 @@ import type { projectType, userType, utilisateurType } from "../../../../other/t
 import CustomText from "../../../atoms/Text/CustomText"
 import ModalUserUpdate from "../form/ModalUpdateUser"
 import { UserRoleTag } from "../../quiz/tag/StatusTag"
+import { useAuth } from "../../../../other/hooks/auth/useAuth"
 
 const ActionCell = ({ rowId, onEdit }: { 
     rowId: string | number | boolean | string[]
     onEdit: (id: string | number | boolean | string[]) => void 
 }) => {
     const { handleDelUser, isPending } = useUserDel(rowId as string)
+
+	const { authUser } = useAuth()
 
     return (
         <Box>
@@ -24,14 +27,17 @@ const ActionCell = ({ rowId, onEdit }: {
                 action={() => onEdit(rowId)}
                 title="Modifier"
             />
-            <IconConfirmActionButton
-                iconName="trash"
-                iconStyling="text-text hover:text-error"
-                action={handleDelUser}
-                confirmText="Voulez-vous vraiment désactiver l'utilisateur?"
-                isLoading={isPending}
-                title="Désactiver"
-            />
+			{
+				authUser?.id != rowId &&
+				<IconConfirmActionButton
+					iconName="trash"
+					iconStyling="text-text hover:text-error"
+					action={handleDelUser}
+					confirmText="Voulez-vous vraiment désactiver l'utilisateur?"
+					isLoading={isPending}
+					title="Désactiver"
+				/>
+			}
         </Box>
     );
 };

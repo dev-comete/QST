@@ -17,6 +17,7 @@ import MyEvaluations from "../../product/pages/apprenant/Evaluation/MyEvaluation
 import TakingEvaluation from "../../product/pages/apprenant/Evaluation/TakingEvaluation";
 import COMMON_CHILDREN from "./sharedChildren";
 import Formation from "../../product/pages/formateur/Formation";
+import SetPasswordPage from "../../product/pages/common/SetPasswordPage";
 
 export const router = createBrowserRouter([
 
@@ -24,6 +25,7 @@ export const router = createBrowserRouter([
 	{ path: '/', element: <RootRedirect />},
 	{ path: '/login', element: <Login /> },
 	{ path: '/unauthorized', element: <Unauthorized /> },
+	{ path: '/set-password/:uid/:token', element: <SetPasswordPage /> },
 
 	{
 		element: <ProtectedRoute allowedRole={['admin', 'apprenant', 'formateur', 'rfq']}/>, 

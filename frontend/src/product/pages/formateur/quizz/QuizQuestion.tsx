@@ -31,7 +31,7 @@ export const QuizQuestionCard = ({ title, value, icon, color } : QuizQuestionInf
 			</div>
 			<Box direction="column">
 				<CustomText textTag="h6">{title}</CustomText>
-				<CustomText textTag="h2" weight="bold" color={color}>{value}</CustomText>
+				<CustomText textTag="h3" weight="bold" color={color}>{value}</CustomText>
 			</Box>
 		</Box>
 	)
