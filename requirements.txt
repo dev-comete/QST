@@ -14,6 +14,7 @@ django-cors-headers==4.9.0
 django-environ==0.14.0
 djangorestframework==3.17.1
 djangorestframework_simplejwt==5.5.1
+et_xmlfile==2.0.0
 google-ai-generativelanguage==0.6.15
 google-api-core==2.33.0
 google-api-python-client==2.200.0
@@ -32,7 +33,8 @@ httplib2==0.32.0
 httpx==0.28.1
 idna==3.18
 lxml==6.1.1
-#mysqlclient==2.2.8
+mysqlclient==2.2.8
+openpyxl==3.1.5
 oscrypto==1.3.0
 pillow==12.3.0
 proto-plus==1.28.2
@@ -70,5 +72,5 @@ uritools==6.1.2
 urllib3==2.7.0
 webencodings==0.5.1
 websockets==16.1.1
-whitenoise>=6.6.0
+whitenoise==6.12.0
 xhtml2pdf==0.2.17
