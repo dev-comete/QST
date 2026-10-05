@@ -28,6 +28,7 @@ type vagueType = {
 	formation_nom: string,
 	debut: string | null,
 	fin: string | null,
+	nom_vague: string,
 	etudiants: etudiantType[]
 	quiz_assignes_ids: number[]
 	quizzes_assignes: vagueQuiz[]

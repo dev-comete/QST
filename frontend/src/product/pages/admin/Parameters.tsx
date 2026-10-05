@@ -15,6 +15,7 @@ import ModalFormationCreate from "../../../system/organisms/formation/form/Modal
 import { useTypeUser } from "../../../other/hooks/user/useUser";
 import ModalTypeUserCreate from "../../../system/organisms/user/form/ModalTypeUserCreate";
 import UserTypeList from "../../../system/organisms/user/list/UserTypeList";
+import { useTabNavigation } from "../../../other/hooks/navigation/useTabNavigation";
 
 const Parameters = () => {
 	const [ openUser, setOpenUser ] = useState(false)
@@ -22,11 +23,13 @@ const Parameters = () => {
 	const [ openFormation, setOpenFormation ] = useState(false)
 	const [ openType, setOpenType ] = useState(false)
 
-	const [ activeTab, setActiveTab ] = useState(0);
+	const { activeTab, handleTabChange } = useTabNavigation();
+
 	const { projectQuery } = useProject()
 	const { data: projects, status : projectStatus } = projectQuery
 	const { formations, formationsStatus } = useFormation()
 	const { userTypes, userTypePending } = useTypeUser()
+	
 
 	if (projectStatus == 'pending' || formationsStatus == 'pending' || userTypePending)
 		return <Loading />
@@ -65,7 +68,7 @@ const Parameters = () => {
 				<NavigationBar
 					titles={['Utilisateurs', 'Types d\'utilisateur', 'Projets', 'Formations']}
 					activeTab={activeTab}
-                    onTabChange={(index) => setActiveTab(index)}				
+                    onTabChange={handleTabChange}				
 				>
 					<UserList projects={projects}/>
 					<UserTypeList userType={userTypes} />

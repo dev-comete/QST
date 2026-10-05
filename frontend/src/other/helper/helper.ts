@@ -170,6 +170,11 @@ const checkOptionValidation = (responses: respType[], typeQuestion: string): boo
     }
 };
 
+const padZero = (value: number | string | null | undefined, targetLength = 2): string => {
+	if (value === null || value === undefined) return '0'.padStart(targetLength, '0');
+	return String(value).padStart(targetLength, '0');
+};
+
 
 export {
 	formChangeHandler,
@@ -179,4 +184,5 @@ export {
 	parseDurationToMs,
 	formatDateForInput,
 	checkOptionValidation,
+	padZero
 }
