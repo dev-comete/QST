@@ -1,9 +1,14 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import Utilisateur, TypeUtilisateur
+from .models import Utilisateur, TypeUtilisateur, Organisation
+
 
 # Register the TypeUtilisateur normally
 admin.site.register(TypeUtilisateur)
+
+@admin.register(Organisation)
+class OrganisationAdmin(admin.ModelAdmin):
+    list_display = ('id', 'nom', 'date_creation')
 
 # Register the custom Utilisateur using Django's built-in UserAdmin
 @admin.register(Utilisateur)

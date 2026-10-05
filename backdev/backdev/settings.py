@@ -86,11 +86,12 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware', # Toujours en premier, c'est parfait
+    'corsheaders.middleware.CorsMiddleware', 
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware', # ⬅️ Déplacé ici (DOIT être avant CSRF)
-    'django.middleware.common.CommonMiddleware',            # ⬅️ Déplacé ici
-    'django.middleware.csrf.CsrfViewMiddleware',            # ⬅️ Déplacé ici (Sécurise la session)
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware', 
+    'django.middleware.common.CommonMiddleware',         
+    'django.middleware.csrf.CsrfViewMiddleware',            
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -209,6 +210,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # settings.py
 
 # Tells Django to use the 'Utilisateur' model in the 'accounts' app for authentication

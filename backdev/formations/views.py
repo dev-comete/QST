@@ -146,73 +146,79 @@ class MesVaguesAPIView(APIView):
         return Response(data)
 
 
-class AssignStudentToVagueAPIView(GenericAPIView):
+class AssignStudentToVagueAPIView(APIView):
     """
-    Allows a Formateur (or Admin) to enroll multiple students into a specific Vague.
-    Automatically assigns all existing quizzes for that Formation to the new students.
+    Enrolls multiple students into a specific Vague and automatically
+    assigns all associated quizzes.
     """
     permission_classes = [IsFormateurOrAdminOrReadOnly]
-    serializer_class = AssignStudentToVagueSerializer
 
     def post(self, request):
-        serializer = self.get_serializer(data=request.data)
+        serializer = AssignStudentToVagueSerializer(data=request.data)
         
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             
-        vague = serializer.validated_data['vague_id']
-        students = serializer.validated_data['etudiant_ids'] # ⬅️ Ceci est maintenant une liste d'objets Utilisateur
+        # DRF deserializes PrimaryKeyRelatedField directly into Model Instances
+        vague_obj = serializer.validated_data['vague_id']
+        students = serializer.validated_data['etudiant_ids']
         
-        # 1. SECURITY CHECK: Does this Formateur own the Formation?
+        # 1. SECURITY CHECK: Formateur ownership
         is_admin = request.user.is_staff or request.user.is_superuser
-        if not is_admin and vague.formation.createur != request.user:
+        if not is_admin and vague_obj.formation.createur != request.user:
             return Response(
                 {"error": "Vous ne pouvez assigner des étudiants qu'à vos propres vagues."}, 
                 status=status.HTTP_403_FORBIDDEN
             )
-            
-        quizzes = vague.quizzes.all()
-        students_assigned = 0
-        total_quizzes_assigned = 0
 
-        # 🌟 NOUVEAU : On sécurise l'opération en base de données
-        with transaction.atomic():
-            for student in students:
-                # 2. ROLE CHECK
-                if not student.type_utilisateur or student.type_utilisateur.type_utilisateur != 'apprenant':
-                    # Si un seul étudiant n'est pas valide, la transaction annule tout
-                    return Response(
-                        {"error": f"L'utilisateur {student.username} n'a pas le rôle 'apprenant'."},
-                        status=status.HTTP_400_BAD_REQUEST
-                    )
-                
-                # 3. ENROLL THE STUDENT
-                assignment, created = UtilisateurVague.objects.get_or_create(
-                    vague=vague,
-                    utilisateur=student
-                )
+        try:
+            quizzes = vague_obj.quizzes.all()
+            students_assigned = 0
+            total_quizzes_assigned = 0
 
-                if created:
-                    students_assigned += 1
-                    student.organisation.add(vague.formation.organisation)
-                
-                    # 4. THE AUTO-SYNC MAGIC
-                    for quiz in quizzes:
-                        _, quiz_created = UtilisateurQuiz.objects.get_or_create(
-                            utilisateur=student,
-                            quiz=quiz,
-                            vague=vague,
-                            defaults={
-                                'score_obtenu': 0.0,
-                                'termine': False
-                            }
+            with transaction.atomic():
+                for student in students:
+                    # 2. ROLE CHECK
+                    if not hasattr(student, 'type_utilisateur') or student.type_utilisateur.type_utilisateur != 'apprenant':
+                        return Response(
+                            {"error": f"L'utilisateur {student.username} n'a pas le rôle 'apprenant'."},
+                            status=status.HTTP_400_BAD_REQUEST
                         )
-                        if quiz_created:
-                            total_quizzes_assigned += 1
-            
-        return Response({
-            "message": f"{students_assigned} étudiant(s) assigné(s) à la vague {vague.id}. {total_quizzes_assigned} quiz auto-assignés au total."
-        }, status=status.HTTP_201_CREATED)
+                    
+                    # 3. ENROLL STUDENT
+                    _, created = UtilisateurVague.objects.get_or_create(
+                        vague=vague_obj,
+                        utilisateur=student
+                    )
+
+                    if created:
+                        students_assigned += 1
+                        if vague_obj.formation.organisation:
+                            student.organisation.add(vague_obj.formation.organisation)
+                    
+                        # 4. AUTO-ASSIGN QUIZZES
+                        for quiz in quizzes:
+                            _, quiz_created = UtilisateurQuiz.objects.get_or_create(
+                                utilisateur=student,
+                                quiz=quiz,
+                                vague=vague_obj,
+                                defaults={
+                                    'score_obtenu': 0.0,
+                                    'termine': False
+                                }
+                            )
+                            if quiz_created:
+                                total_quizzes_assigned += 1
+
+            return Response({
+                "message": f"{students_assigned} étudiant(s) assigné(s) à la vague {vague_obj.id}. {total_quizzes_assigned} quiz auto-assignés au total."
+            }, status=status.HTTP_201_CREATED)
+
+        except Exception as e:
+            return Response(
+                {"error": f"Une erreur s'est produite lors de l'assignation: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 class AssignQuizToVagueAPIView(GenericAPIView):
     """
