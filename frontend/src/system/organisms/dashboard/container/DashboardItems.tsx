@@ -3,6 +3,7 @@ import type { RecentQuiz, Session } from "../../../../other/types/dashboardType"
 import Box from "../../../atoms/Container/Box"
 import CustomText from "../../../atoms/Text/CustomText"
 import { PercentageBar } from "../../../molecules/Display/PercentageBar"
+import StatusBadge from "../../../molecules/Badge/StatusBadge"
 
 const DashboardItemBox = ({ children } : { children : ReactNode }) => {
 	return (
@@ -21,7 +22,7 @@ export const RecentQuizItem = ({ item } : { item : RecentQuiz}) => {
 			<Box direction="column" className="w-full">
 				<Box className="items-center justify-between">
 					<CustomText textTag="h3" weight="bold">{item.name}</CustomText>
-					<CustomText textTag="h6" className="border border-background shadow-sm p-2 rounded-xl">{item.status}</CustomText>
+					<StatusBadge value={item.status}/>
 				</Box>
 				<PercentageBar score={score}/>
 			</Box>

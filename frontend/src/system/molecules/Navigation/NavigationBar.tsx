@@ -49,7 +49,8 @@ const NavigationBar = ({ titles, children, activeTab, onTabChange } : Navigation
     const currentPage = pages[activeTab] ?? pages[0] ?? null;
 
     return (
-        <Box direction="column" className="space-y-2 w-full">
+        <Box direction="column" className="w-full">
+			<div className="sticky top-0 z-10 w-full py-2">
             <Paper className='flex w-full md:w-fit !bg-slate-100/80 !p-1.5 !rounded-xl !border !border-slate-200/50 !shadow-none'>
                 {
                     titles.map((value, i) => {
@@ -64,6 +65,7 @@ const NavigationBar = ({ titles, children, activeTab, onTabChange } : Navigation
                     })
                 }
             </Paper>
+			</div>
             <Box direction="column" className="w-full animation-fade-in">
                 {currentPage}
             </Box>

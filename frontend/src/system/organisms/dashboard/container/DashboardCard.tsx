@@ -1,29 +1,39 @@
+import { padZero } from "../../../../other/helper/helper";
+import type { ColorTheme } from "../../../../other/types/common";
+import Box from "../../../atoms/Container/Box";
 import Paper from "../../../atoms/Container/Paper";
 import FAIcon from "../../../atoms/Icon/FAIcon";
 import CustomText from "../../../atoms/Text/CustomText";
 
-interface CardProps {
-	title: string,
+export interface CardProps {
+	title: string
 	icon?: string
-	value: string | number,
+	value: string | number
 	info?: string
+	infoDirection?: 'column' | 'row'
 	variant?: 'lg' | 'sm'
+	color?: ColorTheme
 }
 
-const DashboardCard = ({ title, icon, value, info, variant = 'sm' } : CardProps) => {
+const DashboardCard = ({ title, icon, value, info, variant = 'sm', color, infoDirection = 'row' } : CardProps) => {
 
 	const textTag = variant == 'sm' ? 'h6' : 'h4'
+	const valueTextSize = variant == 'sm' ? '' : 'text-[35px]'
 
 	return (
 		<Paper className={`
-			flex flex-col space-y-2 items-center justify-center p-3 sm:p-4 flex-1
-			w-full min-w-0 ${variant === 'sm' ? 'min-h-32 sm:min-h-40' : 'min-h-64 sm:min-h-80'}
+			flex flex-col space-y-2 items-start justify-center flex-1 p-5
+			w-full min-w-0 min-h-35 sm:min-h-40'}
 			transition-all duration-200
 		`}>
-			{icon && <FAIcon name={icon} size={`${variant == 'sm' ? 'sm' : 'xl'}`}/>}
-			<CustomText textTag={textTag}>{title}</CustomText>
-			<CustomText textTag="h1" weight="bold" color="primary">{value}</CustomText>
-			{info && <CustomText textTag={textTag}>{info}</CustomText>}
+			<Box className="items-center">
+				{icon && <FAIcon name={icon} size='sm' className={`text-${color} border border-background p-3 rounded-xl`}/>}
+				<CustomText textTag={textTag}>{title}</CustomText>
+			</Box>
+			<Box direction={infoDirection} className="items-center">
+				<CustomText textTag="h1" weight="bold" color={color} className={valueTextSize}>{padZero(value)}</CustomText>
+				{info && <CustomText textTag={textTag}>{info}</CustomText>}
+			</Box>
 		</Paper>
 	)
 }

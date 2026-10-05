@@ -12,7 +12,7 @@ export interface SideBarConfig {
 const ROLE_CONFIGS: Record<string, SideBarConfig> = {
 	admin: {
 		navItem: [
-			{ label: 'Tableau de bord', link: '/admin/tableau_de_bord', icon:'chart-column' },
+			{ label: 'Tableau de bord', link: '/admin/tableau_de_bord', icon:'chart-simple' },
 			{ label: 'Paramètres généraux', link: '/admin/parametre_general', icon:'sliders' },
 			{ label: 'Banque de questions', link: '/admin/gestion_question', icon: 'circle-question' },
 			{ label: 'Quiz', link: '/admin/gestion_quiz', icon:'file-circle-question' },
@@ -22,7 +22,7 @@ const ROLE_CONFIGS: Record<string, SideBarConfig> = {
 
 	formateur: {
 		navItem: [
-			{ label: 'Tableau de bord', link: '/formateur/tableau_de_bord', icon:'chart-column' },
+			{ label: 'Tableau de bord', link: '/formateur/tableau_de_bord', icon:'chart-simple' },
 			{ label: 'Formation', link: '/formateur/formation', icon:'book' },
 			{ label: 'Banque de questions', link: '/formateur/gestion_question', icon: 'circle-question' },
 			{ label: 'Quiz', link: '/formateur/gestion_quiz', icon:'file-circle-question' },

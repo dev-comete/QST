@@ -19,8 +19,6 @@ const ActionCell = ({ rowId, onEdit }: {
 	onEdit: (id: string | number | boolean | string[]) => void
 }) => {   
 
-	// const { handleDelVague } = useVagueDel(rowId as number)
-
     return (
         <Box>
 			<IconButton

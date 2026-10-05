@@ -1,62 +1,88 @@
-import { useState } from "react";
 import { useAssignVague } from "../../../../other/hooks/vague/useAssignVague";
-import type { vagueType } from "../../../../other/types/vagueType";
 import Box from "../../../../system/atoms/Container/Box";
 import NavigationBar from "../../../../system/molecules/Navigation/NavigationBar";
 import { StudentAssignation } from "./StudentAssignation";
 import QuizAssignation from "./QuizAssignation";
-import Paper from "../../../../system/atoms/Container/Paper";
-import CustomText from "../../../../system/atoms/Text/CustomText";
-import { formatDate } from "../../../../other/helper/helper";
 import { useVague } from "../../../../other/hooks/vague/useVague";
 import { useParams } from "react-router";
 import FetchError from "../../../../system/atoms/Loading/FetchError";
 import Loading from "../../../../system/atoms/Loading/Loading";
 import BodyLayout from "../../../layout/common/BodyLayout";
-import ActionButton from "../../../../system/molecules/Buttons/ActionButton";
-import FAIcon from "../../../../system/atoms/Icon/FAIcon";
-import { useAppNavigation } from "../../../../other/hooks/navigation/useAppNavigation";
-
-const HeaderBloc = ({ title, content, icon } : { title: string, content : string | number, icon: string}) => {
-	return (
-		<Box className="border border-background px-3 py-2 rounded-xl min-w-30">
-			<FAIcon name={icon}/><CustomText textTag="h4">{`${title} : ${content}`}</CustomText>
-		</Box>
-	)
-}
+import { useTabNavigation } from "../../../../other/hooks/navigation/useTabNavigation";
+import VagueStat from "./VagueStat";
+import type { CardProps } from "../../../../system/organisms/dashboard/container/DashboardCard";
+import type { vagueType } from "../../../../other/types/vagueType";
+import { formatDate } from "../../../../other/helper/helper";
+import { QuizQuestionCard } from "../quizz/QuizQuestion";
+import Paper from "../../../../system/atoms/Container/Paper";
 
 interface VagueAssignProps {
 	vague: vagueType
 }
 
-const VagueHeader = ({ vague } : VagueAssignProps) => {
+const VagueInfo = ({ vague } : VagueAssignProps) => {
 
-	const { 
-		id,
-		formation_nom: formation,
+	const {
 		debut,
 		fin,
+		formation_nom,
 		etudiants: ownedStudents,
 		quizzes_assignes: ownedQuiz 
 	} = vague
 
-	const { navigateTo } = useAppNavigation()
+	const vagueInfoDetail : CardProps[] = [
+		{
+			title: 'Début',
+			value:formatDate(debut),
+			icon: 'calendar',
+			// color: 'primary',
+		},
+		{
+			title: 'Fin',
+			value:formatDate(fin),
+			icon: 'calendar',
+			// color: 'error',
+		},
+		{
+			title: 'Formation',
+			value: formation_nom,
+			icon: 'book',
+			// color: 'text',
+		},
+		{
+			title: 'Quiz',
+			value: ownedQuiz.length,
+			info: 'assignés',
+			icon: 'file-circle-question',
+			// color: 'warning',
+		},
+		{
+			title: 'Etudiants',
+			value: ownedStudents.length,
+			info: 'inscrits',
+			icon: 'user',
+			// color: 'success',
+		},
+
+	]
 
 	return (
-		<Paper className="flex flex-col relative p-5 items-center space-y-3">
-			<CustomText textTag="h1" color="primary" weight="bold">{formation}</CustomText>
-			<Box>
-				<CustomText textTag="h5">Du {formatDate(debut ?? '')}</CustomText>
-				<CustomText textTag="h5"> au {formatDate(fin ?? '')}</CustomText>
-			</Box>
-			<Box>
-				<HeaderBloc title={'Quiz'} content={ownedQuiz.length} icon={'file'}/>
-				<HeaderBloc title={'Etudiants'} content={ownedStudents.length} icon={'user-graduate'}/>
-				{
-					ownedStudents.length != 0 && <ActionButton onClick={() => navigateTo('/vagues/' + id + '/statistique')}>
-						<FAIcon name="magnifying-glass-chart"/>Statistiques
-					</ActionButton>
+		<Paper className="p-3">
+			<Box className="w-full flex-wrap justify-between">
+			{
+				vagueInfoDetail.map((stat, index) => {
+					return (
+						<QuizQuestionCard 
+							title={stat.title}
+							value={stat.value}
+							icon={stat.icon}
+							color={stat.color}
+							key={'stat-' + index + stat.title}
+						/>
+					)
 				}
+				)
+			}
 			</Box>
 		</Paper>
 	)
@@ -67,8 +93,8 @@ const VagueAssign = () => {
 	const { getAllVague } = useVague({})
 	const { data: vagues, status } = getAllVague
 	const { id } = useParams()
-	const [activeTab, setActiveTab] = useState(0);
-	
+	const { activeTab, handleTabChange } = useTabNavigation();
+
 	const { 
 		quiz, setQuiz, isAssignQuizPending, handleAssignQuiz,
 		students, setStudents, isAssignStudPending, handleAssignStudent
@@ -87,21 +113,24 @@ const VagueAssign = () => {
 
 	const { 
 		etudiants: ownedStudents,
-		quizzes_assignes: ownedQuiz 
+		quizzes_assignes: ownedQuiz,
 	} = vague
 
 	return (
 		<BodyLayout
-			title="Assignation de la vague"
+			title={vague.nom_vague}
 			defaultLinkBack
 		>
 			<Box direction="column" className="space-y-5 w-full">
-				<VagueHeader vague={vague} />
 				<NavigationBar
-					titles={['Quiz', 'Inscription']}	
+					titles={['Statistique', 'Quiz', 'Inscription']}	
 					activeTab={activeTab}
-					onTabChange={setActiveTab}			
+					onTabChange={handleTabChange}			
 				>
+					<Box direction="column">
+						<VagueInfo vague={vague} />
+						<VagueStat vagueId={String(id)} />
+					</Box>
 					<QuizAssignation 
 						quiz={quiz}
 						setQuiz={setQuiz}

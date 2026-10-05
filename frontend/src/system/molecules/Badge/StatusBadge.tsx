@@ -10,6 +10,7 @@ const StatusBadge = ({ value } : StatusBadgeProps) => {
 
 	switch(value) {
 		case 'Terminé' :
+		case 'Validé' :
 			color = 'bg-success-light text-success'
 			break
 		case 'En cours' :
@@ -20,7 +21,7 @@ const StatusBadge = ({ value } : StatusBadgeProps) => {
 	}
 
 	return (
-		<Box className={` rounded-xl ${color} px-2 py-1 w-fit`}>{value}</Box>
+		<Box className={` rounded-xl ${color} px-2 py-1 w-fit shadow-sm`}>{value}</Box>
 	)
 }
 
