@@ -6,6 +6,9 @@ set -e
 echo "Applying database migrations..."
 python manage.py migrate
 
+echo "Collecting static files..."
+python manage.py collectstatic --no-input
+
 echo "Starting the Django server..."
 # This executes the CMD passed from the Dockerfile
 exec "$@"
