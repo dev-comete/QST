@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import type { respType, questionType } from "../../types/questionType";
 import { initialQuestion } from "../../types/constant";
 import { useBareme } from "../bareme/useBareme";
-import { useQuestion } from "./useQuestion";
 import { useMutation } from "@tanstack/react-query";
 import { QuestionService } from "../../services/questionService";
 import { checkOptionValidation } from "../../helper/helper";
 import { useAppNavigation } from "../navigation/useAppNavigation";
+import { useQuestionType } from "./useQuestionType";
 
 type criteria = {
 	msg: string,
@@ -85,7 +85,7 @@ export const useQuestionCreate = () => {
 		setErrorForm({ msg, type })
 	}
 
-	const { questionTypeQuery } = useQuestion({})
+	const { questionTypeQuery } = useQuestionType()
 	const { baremeQuery } = useBareme()
 	const [ isOuvert, setIsOuvert ] = useState(false)
 	const { navigateTo } = useAppNavigation()

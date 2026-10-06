@@ -16,24 +16,52 @@ import { useTypeUser } from "../../../other/hooks/user/useUser";
 import ModalTypeUserCreate from "../../../system/organisms/user/form/ModalTypeUserCreate";
 import UserTypeList from "../../../system/organisms/user/list/UserTypeList";
 import { useTabNavigation } from "../../../other/hooks/navigation/useTabNavigation";
+import ModalQuestionTypeCreate from "../../../system/organisms/question/form/ModalQuestionTypeCreate";
+import QuestionTypeList from "../../../system/organisms/question/list/QuestionTypeList";
+import { useQuestionType } from "../../../other/hooks/question/useQuestionType";
+
+type ValidModalKey = 'user' | 'project' | 'formation' | 'typeUser' | 'typeQuestion';
+type ModalKey = ValidModalKey | null;
+
+const tabActions: Record<number, { label: string; modalKey: ModalKey }> = {	
+	0: { label: "+ Créer un utilisateur", modalKey: "user" },
+	1: { label: "+ Créer un type d'utilisateur", modalKey: "typeUser" },
+	2: { label: "+ Créer un projet", modalKey: "project" },
+	3: { label: "+ Créer une formation", modalKey: "formation" },
+	4: { label: "+ Créer un type de question", modalKey: "typeQuestion" },
+};
 
 const Parameters = () => {
-	const [ openUser, setOpenUser ] = useState(false)
-	const [ openProject, setOpenProject ] = useState(false)
-	const [ openFormation, setOpenFormation ] = useState(false)
-	const [ openType, setOpenType ] = useState(false)
-
 	const { activeTab, handleTabChange } = useTabNavigation();
 
 	const { projectQuery } = useProject()
 	const { data: projects, status : projectStatus } = projectQuery
 	const { formations, formationsStatus } = useFormation()
 	const { userTypes, userTypePending } = useTypeUser()
-	
+	const { questionTypeQuery } = useQuestionType()
+	const { data: questionTypes, isPending: questionTypePending } = questionTypeQuery
 
-	if (projectStatus == 'pending' || formationsStatus == 'pending' || userTypePending)
+	const [modals, setModals] = useState<Record<ValidModalKey, boolean>>({
+		user: false,
+		project: false,
+		formation: false,
+		typeUser: false,
+		typeQuestion: false,
+	});
+
+	const openModal = (key: ModalKey) => {
+        if (!key) return;
+        setModals((prev) => ({ ...prev, [key]: true }));
+    };
+
+	const closeModal = (key: keyof typeof modals) => 
+		setModals((prev) => ({ ...prev, [key]: false }));
+
+	const currentAction = tabActions[activeTab];
+
+	if (projectStatus == 'pending' || formationsStatus == 'pending' || userTypePending || questionTypePending)
 		return <Loading />
-	if (!projects || !formations || !userTypes)
+	if (!projects || !formations || !userTypes || !questionTypes)
 		return <FetchError />
 
     return (
@@ -41,32 +69,15 @@ const Parameters = () => {
 			<BodyLayout
 				title={"Paramètres généraux"}
 				titleButton={
-					<>
-						{activeTab === 0 && (
-                            <ActionButton
-                                onClick={() => setOpenUser(true)}
-                            >{"+ Créer un utilisateur"}</ActionButton>
-                        )}
-						{activeTab === 1 && (
-                            <ActionButton
-                                onClick={() => setOpenType(true)}
-                            >{"+ Créer un type"}</ActionButton>
-                        )}
-                        {activeTab === 2 && (
-                            <ActionButton
-                                onClick={() => setOpenProject(true)}
-                            >{"+ Créer un projet"}</ActionButton>
-                        )}
-						{activeTab === 3 && (
-                            <ActionButton
-                                onClick={() => setOpenFormation(true)}
-                            >{"+ Créer une formation"}</ActionButton>
-                        )}
-					</>
+					tabActions[activeTab] && (
+						<ActionButton onClick={() => openModal(currentAction.modalKey)}>
+							{tabActions[activeTab].label}
+						</ActionButton>
+					)
 				}
 			>
 				<NavigationBar
-					titles={['Utilisateurs', 'Types d\'utilisateur', 'Projets', 'Formations']}
+					titles={['Utilisateurs', 'Types d\'utilisateur', 'Projets', 'Formations', 'Types de question']}
 					activeTab={activeTab}
                     onTabChange={handleTabChange}				
 				>
@@ -74,24 +85,29 @@ const Parameters = () => {
 					<UserTypeList userType={userTypes} />
 					<ProjectList projects={projects}/>
 					<FormationList formations={formations} />
+					<QuestionTypeList questionTypes={questionTypes} />
 				</NavigationBar>
 			</BodyLayout>
 			<ModalUserCreate
-				open={openUser}
-				closeModal={() => setOpenUser(false)}
+				open={modals.user}
+				closeModal={() => closeModal("user")}
 				listProject={projects}
 			/>
 			<ModalProjectCreate
-				open={openProject}
-				closeModal={() => setOpenProject(false)}
+				open={modals.project}
+				closeModal={() => closeModal("project")}
 			/>
 			<ModalFormationCreate
-				open={openFormation}
-				closeModal={() => setOpenFormation(false)}
+				open={modals.formation}
+				closeModal={() => closeModal("formation")}
 			/>
 			<ModalTypeUserCreate
-				open={openType}
-				closeModal={() => setOpenType(false)}
+				open={modals.typeUser}
+				closeModal={() => closeModal("typeUser")}
+			/>
+			<ModalQuestionTypeCreate
+				open={modals.typeQuestion}
+				closeModal={() => closeModal("typeQuestion")}
 			/>
 		</>
     )
