@@ -1,15 +1,18 @@
 import { useEffect } from "react";
 import confetti from "canvas-confetti";
 import { Modal } from "../../molecules/Modal/Modal";
+import ActionButton from "../../molecules/Buttons/ActionButton";
+// import { PercentageRing } from "../../molecules/Display/PercentRing";
+import CustomText from "../../atoms/Text/CustomText";
+import Box from "../../atoms/Container/Box";
 
 interface ModalQuizFinishedProps {
     open: boolean;
-    closeModal: () => void;
-    id: string;
+    scoreQuiz: number;
     onViewResults?: () => void;
 }
 
-const ModalQuizFinished = ({ open, closeModal, onViewResults }: ModalQuizFinishedProps) => {
+const ModalQuizFinished = ({ open, onViewResults, scoreQuiz }: ModalQuizFinishedProps) => {
     useEffect(() => {
         if (open) {
             // Trigger confetti burst
@@ -26,35 +29,28 @@ const ModalQuizFinished = ({ open, closeModal, onViewResults }: ModalQuizFinishe
         if (onViewResults) {
             onViewResults();
         }
-        closeModal();
     };
 
     return (
         <Modal
-            title="Quiz terminé !"
+            title="Quiz terminé"
             isOpen={open}
-            closeModal={closeModal}
+			footer={
+				<ActionButton onClick={handleViewResults}>Voir les bulletins</ActionButton>
+			}
         >
-            <div className="flex flex-col items-center text-center p-4 space-y-6">
-                <div className="space-y-2">
-                    <h3 className="text-xl font-semibold text-gray-900">
-                        Félicitations !
-                    </h3>
-                    <p className="text-sm text-gray-600">
-                        Vous avez terminé le quiz. Cliquez sur le bouton ci-dessous pour découvrir votre score et le détail de vos réponses.
-                    </p>
-                </div>
-
-                <div className="w-full pt-4 border-t border-gray-100 flex justify-end">
-                    <button
-                        type="button"
-                        onClick={handleViewResults}
-                        className="w-full sm:w-auto px-5 py-2.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-300 transition-colors"
-                    >
-                        Voir le résultat
-                    </button>
-                </div>
-            </div>
+			<Box direction="column" className="space-y-2 items-center w-full">
+				{/* <PercentageRing
+					score={scoreQuiz}
+					size={100}
+				/> */}
+				<CustomText textTag="h3">
+					Félicitations !
+				</CustomText>
+				<CustomText textTag="h3">
+					Vous avez obtenu {scoreQuiz} points au quiz.
+				</CustomText>
+			</Box>
         </Modal>
     );
 };

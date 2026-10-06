@@ -1,13 +1,11 @@
 import { createBrowserRouter, Navigate } from "react-router";
 import FormateurTemplate from "../../product/layout/role/FormateurTemplate";
-import Dashboard from "../../product/pages/formateur/Dashboard";
 import AdminTemplate from "../../product/layout/role/AdminTemplate";
 import ApprenantTemplate from "../../product/layout/role/ApprenantTemplate";
 import Parameters from "../../product/pages/admin/Parameters";
 import BulletinReview from "../../product/pages/apprenant/Bulletin/BulletinReview";
 import Home from "../../product/pages/common/Home";
 import Login from "../../product/pages/common/Login";
-import AdminDashboard from "../../product/pages/admin/AdminDashboard";
 import ProtectedRoute from "../../product/layout/common/ProtectedRoute";
 import Unauthorized from "../../product/pages/common/Unauthorized";
 import { RootRedirect } from "../../product/layout/common/RootRedirect";
@@ -17,6 +15,7 @@ import MyEvaluations from "../../product/pages/apprenant/Evaluation/MyEvaluation
 import TakingEvaluation from "../../product/pages/apprenant/Evaluation/TakingEvaluation";
 import COMMON_CHILDREN from "./sharedChildren";
 import Formation from "../../product/pages/formateur/Formation";
+import SetPasswordPage from "../../product/pages/common/SetPasswordPage";
 
 export const router = createBrowserRouter([
 
@@ -24,6 +23,7 @@ export const router = createBrowserRouter([
 	{ path: '/', element: <RootRedirect />},
 	{ path: '/login', element: <Login /> },
 	{ path: '/unauthorized', element: <Unauthorized /> },
+	{ path: '/set-password/:uid/:token', element: <SetPasswordPage /> },
 
 	{
 		element: <ProtectedRoute allowedRole={['admin', 'apprenant', 'formateur', 'rfq']}/>, 
@@ -45,7 +45,7 @@ export const router = createBrowserRouter([
 				children: [
 					{ index: true, element: <Navigate to="tableau_de_bord" replace /> },
 					{ path: 'parametre_general', element: <Parameters /> },
-					{ path: 'tableau_de_bord', element: <AdminDashboard /> },
+					// { path: 'tableau_de_bord', element: <AdminDashboard /> },
 					...COMMON_CHILDREN,
 				]
 			},
@@ -63,7 +63,7 @@ export const router = createBrowserRouter([
 					{ index: true, element: <Navigate to="tableau_de_bord" replace /> },
 					...COMMON_CHILDREN,
 					{ path: "formation", element: <Formation /> },
-					{ path: "tableau_de_bord", element: <Dashboard /> },
+					// { path: "tableau_de_bord", element: <Dashboard /> },
 				],
 			}
 		]

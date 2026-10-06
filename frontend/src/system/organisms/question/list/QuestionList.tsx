@@ -131,7 +131,7 @@ const QuestionList = ({ listType = 'bank'} : { listType?: 'bank' | 'trash'}) => 
 						hasNextPage={next != null}
 						emptyTitle={
 							search.length === 0 ?
-							"Il n'y a pas encore de question, veuillez en créer"
+							listType == 'bank' ? "Il n'y a pas encore de question, veuillez en créer" : "La corbeille est vide"
 							: "Aucune question ne correspond à votre recherche "
 						}
 						search={search}

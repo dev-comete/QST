@@ -36,11 +36,13 @@ const RankingCard = ({ students, variant = 'top' } : RankingCardProps) => {
 
 	const icon = variant == 'top' ? 'trophy' : 'ranking-star'
 
+	const iconColor = variant == 'top' ? 'success' : 'error'
+
 	return (
 			<Paper className="flex flex-col space-y-2 items-center px-3 py-2 flex-1 min-w-0 min-h-30 w-full">
 				<Box className="border-b border-background p-3 w-full justify-center">
-					<FAIcon name={icon}/>
-					<CustomText textTag="h6" >{title}</CustomText>
+					<FAIcon name={icon} className={"text-" + iconColor}/>
+					<CustomText textTag="h6" color={variant == 'top' ? 'success' : 'error'}  >{title}</CustomText>
 				</Box>
 				<Box direction="column" className="items-center justify-center w-full">
 					{

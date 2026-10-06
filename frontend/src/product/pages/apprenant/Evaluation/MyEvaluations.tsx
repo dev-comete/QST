@@ -7,12 +7,13 @@ import Box from '../../../../system/atoms/Container/Box';
 import Loading from '../../../../system/atoms/Loading/Loading';
 import FetchError from '../../../../system/atoms/Loading/FetchError';
 import NavigationBar from '../../../../system/molecules/Navigation/NavigationBar';
+import { useTabNavigation } from '../../../../other/hooks/navigation/useTabNavigation';
 
 export default function MyEvaluations() {
 	const [quizzes, setQuizzes] = useState<studentQuizType[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState('');
-	const [activeTab, setActiveTab] = useState(0);
+	const { activeTab, handleTabChange } = useTabNavigation();
 
 	useEffect(() => {
 	const fetchDashboardData = async () => {
@@ -44,7 +45,7 @@ export default function MyEvaluations() {
 				<NavigationBar 
 					titles={['Calendrier', 'Historique']}
 					activeTab={activeTab}
-					onTabChange={setActiveTab}
+					onTabChange={handleTabChange}
 				>
 					<StudentQuizList data={quizzesAFaire}/>
 					<StudentQuizList data={quizzesTermines}/>

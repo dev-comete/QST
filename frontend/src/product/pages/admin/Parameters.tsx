@@ -12,20 +12,28 @@ import ModalProjectCreate from "../../../system/organisms/user/form/ModalProject
 import FormationList from "../../../system/organisms/globalParam/list/FormationList";
 import { useFormation } from "../../../other/hooks/formation/useFormation";
 import ModalFormationCreate from "../../../system/organisms/formation/form/ModalFormationCreate";
+import { useTypeUser } from "../../../other/hooks/user/useUser";
+import ModalTypeUserCreate from "../../../system/organisms/user/form/ModalTypeUserCreate";
+import UserTypeList from "../../../system/organisms/user/list/UserTypeList";
+import { useTabNavigation } from "../../../other/hooks/navigation/useTabNavigation";
 
 const Parameters = () => {
 	const [ openUser, setOpenUser ] = useState(false)
 	const [ openProject, setOpenProject ] = useState(false)
 	const [ openFormation, setOpenFormation ] = useState(false)
+	const [ openType, setOpenType ] = useState(false)
 
-	const [ activeTab, setActiveTab ] = useState(0);
+	const { activeTab, handleTabChange } = useTabNavigation();
+
 	const { projectQuery } = useProject()
 	const { data: projects, status : projectStatus } = projectQuery
 	const { formations, formationsStatus } = useFormation()
+	const { userTypes, userTypePending } = useTypeUser()
 	
-	if (projectStatus == 'pending' || formationsStatus == 'pending')
+
+	if (projectStatus == 'pending' || formationsStatus == 'pending' || userTypePending)
 		return <Loading />
-	if (!projects || !formations)
+	if (!projects || !formations || !userTypes)
 		return <FetchError />
 
     return (
@@ -39,12 +47,17 @@ const Parameters = () => {
                                 onClick={() => setOpenUser(true)}
                             >{"+ Créer un utilisateur"}</ActionButton>
                         )}
-                        {activeTab === 1 && (
+						{activeTab === 1 && (
+                            <ActionButton
+                                onClick={() => setOpenType(true)}
+                            >{"+ Créer un type"}</ActionButton>
+                        )}
+                        {activeTab === 2 && (
                             <ActionButton
                                 onClick={() => setOpenProject(true)}
                             >{"+ Créer un projet"}</ActionButton>
                         )}
-						{activeTab === 2 && (
+						{activeTab === 3 && (
                             <ActionButton
                                 onClick={() => setOpenFormation(true)}
                             >{"+ Créer une formation"}</ActionButton>
@@ -53,11 +66,12 @@ const Parameters = () => {
 				}
 			>
 				<NavigationBar
-					titles={['Utilisateurs', 'Projets', 'Formations']}
+					titles={['Utilisateurs', 'Types d\'utilisateur', 'Projets', 'Formations']}
 					activeTab={activeTab}
-                    onTabChange={(index) => setActiveTab(index)}				
+                    onTabChange={handleTabChange}				
 				>
 					<UserList projects={projects}/>
+					<UserTypeList userType={userTypes} />
 					<ProjectList projects={projects}/>
 					<FormationList formations={formations} />
 				</NavigationBar>
@@ -74,6 +88,10 @@ const Parameters = () => {
 			<ModalFormationCreate
 				open={openFormation}
 				closeModal={() => setOpenFormation(false)}
+			/>
+			<ModalTypeUserCreate
+				open={openType}
+				closeModal={() => setOpenType(false)}
 			/>
 		</>
     )
