@@ -68,8 +68,6 @@ const QuestionDetail = () => {
 
 	if (!question) return <FetchError />
 
-	console.log("Question", question)
-
 	return (
 		<BodyLayout
 			title={"Détails de la question"}
