@@ -68,7 +68,12 @@ export const QuestionService = {
 
 	info: async (id: string) => {
 		console.log("Question info", id)
-		const response = await apiClient.get<bankQuestionType>(BANK_QUESTION_URL + id + '/');
+		// Ensure BANK_QUESTION_URL ends with a slash when concatenating in production
+		const base = BANK_QUESTION_URL || ''
+		const slashBase = base.endsWith('/') ? base : base + '/'
+		const trimmedId = id ? String(id).replace(/^\//, '') : ''
+		const url = trimmedId ? `${slashBase}${trimmedId}/` : slashBase
+		const response = await apiClient.get<bankQuestionType>(url);
 		return response.data;
 	},
 
