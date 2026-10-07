@@ -16,7 +16,7 @@ const Box = ({
 
 	const flexDirection = direction === 'column' 
     ? "flex-col" 
-    : "flex-col md:flex-row";
+    : "flex-row";
 
 	return (
 		<div

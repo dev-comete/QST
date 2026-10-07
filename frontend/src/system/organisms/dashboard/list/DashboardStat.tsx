@@ -27,16 +27,22 @@ export const DashboardStat = ({ stats } : DashboardStatProps) => {
 			{
 				stats.map((stat, index) => {
 					return (
-						<DashboardCard 
-							title={stat.label}
-							value={stat.value}
-							info={stat.change}
-							icon={DashboardMetricIcon[index].icon}
-							color={DashboardMetricIcon[index].color}
-							key={'stat-' + index + stat.label}
-							variant="lg"
-							link={DashboardMetricIcon[index].link}
-						/>
+						<div 
+                key={'stat-' + index + stat.label}
+                className="w-full flex-1 min-w-[150x] min-h-[100px]"
+            >
+				<DashboardCard 
+					title={stat.label}
+					value={stat.value}
+					info={stat.change}
+					icon={DashboardMetricIcon[index].icon}
+					color={DashboardMetricIcon[index].color}
+					key={'stat-' + index + stat.label}
+					variant="lg"
+					link={DashboardMetricIcon[index].link}
+				/>
+
+			</div>
 					)
 				}
 				)

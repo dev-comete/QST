@@ -62,13 +62,7 @@ export const QuestionService = {
 		}).toString();
 		
 		const rawUrl = listType == 'bank' ? BANK_QUESTION_URL : TRASH_QUESTION_URL
-
-		// env values contained a '#' fragment (used for client-side anchors).
-		// Strip any fragment identifier before appending query params so
-		// the browser doesn't treat the rest as a fragment and drop queries.
-		// const cleanedUrl = (rawUrl || '').split('#')[0];
-
-		const response = await apiClient.get<PaginatedData<bankQuestionType>>(`${rawUrl}?${queryParams}`);
+		const response = await apiClient.get<PaginatedData<bankQuestionType>>(rawUrl + '?' + queryParams);
 		return response.data;
 	},
 

@@ -68,6 +68,8 @@ const QuestionDetail = () => {
 
 	if (!question) return <FetchError />
 
+	console.log("Question", question)
+
 	return (
 		<BodyLayout
 			title={"Détails de la question"}
@@ -78,7 +80,7 @@ const QuestionDetail = () => {
 					<CustomText
 						textTag="h2"
 						weight="bold"
-						className={`${question.reponses.length == 0 ? '' : 'border-b'} border-background pb-3`}
+						className={`${question.reponses && question.reponses.length == 0 ? '' : 'border-b'} border-background pb-3`}
 					>{question.enonce_question}</CustomText>
 					<OptionItem id={question.id} item={question.reponses}/>
 				</Box>
