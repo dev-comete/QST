@@ -16,14 +16,14 @@ const SideBar = ({ navList } : SideBarProps ) => {
     // [NEW CODE ADDED]: State to control whether the sidebar is expanded or collapsed
 	const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
         if (typeof window !== "undefined") {
-            return window.innerWidth >= 768;
+            return window.innerWidth >= 1024;
         }
         return true;
     });
 
     // Sync sidebar state automatically when resizing across the md breakpoint
     useEffect(() => {
-        const mediaQuery = window.matchMedia("(min-width: 768px)");
+        const mediaQuery = window.matchMedia("(min-width: 1024px)");
         
         const handleBreakpointChange = (e: MediaQueryListEvent) => {
             setIsSidebarOpen(e.matches);
@@ -36,9 +36,15 @@ const SideBar = ({ navList } : SideBarProps ) => {
     }, []);
 
     return (
-       
-        <div className={`flex flex-col ${isSidebarOpen ? 'w-[280px]' : 'w-[88px]'} shrink-0 bg-white min-h-screen border-r border-slate-100 shadow-[2px_0_8px_-4px_rgba(0,0,0,0.05)] pt-6 transition-all duration-300 relative overflow-x-visible`}>
-            
+
+        <div className={`
+				hidden md:flex flex-col 
+				${isSidebarOpen ? 'w-[280px]' : 'w-[88px]'}
+				shrink-0 bg-white min-h-screen
+				border-r border-slate-100 shadow-[2px_0_8px_-4px_rgba(0,0,0,0.05)]
+				pt-6 transition-all duration-300 relative overflow-x-visible
+			`}>
+
             <div className="absolute -right-3 top-8 z-50">
                 <IconButton 
                     iconName={isSidebarOpen ? "chevron-left" : "chevron-right"} 
