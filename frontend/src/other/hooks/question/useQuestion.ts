@@ -75,7 +75,7 @@ const useQuestion = ({ id, search, type, page, pageSize , listType } : UseQuesti
 	const infoQuestionQuery = useQuery({
 		queryKey: ['question_info', id],
 		queryFn: () => QuestionService.info(id ? id : ''),
-		enabled: !!id
+		enabled: Boolean(id),
 	})
 
 	return {
