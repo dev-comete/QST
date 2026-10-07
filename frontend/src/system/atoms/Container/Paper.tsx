@@ -8,6 +8,7 @@ interface PaperProps {
 	hasShadow?: boolean,
 	position?: 'absolute' | 'sticky' |'relative' | 'fixed',
 	className?: string
+	onClick?: () => void
 }
 
 const Paper = ({
@@ -15,13 +16,15 @@ const Paper = ({
 	color = "white",
 	hasShadow = false,
 	position,
-	className
+	className,
+	onClick
 } : PaperProps) => {
 
 	const boxShadow = hasShadow === true ? "shadow-md" : null ;
 
 	return (
 		<div
+			onClick={onClick}
 			className={`${backgroundColor[color]} ${boxShadow} ${position} ${className} rounded-xl`}
 		>{children}</div>
 	)

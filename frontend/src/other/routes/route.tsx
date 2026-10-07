@@ -6,7 +6,6 @@ import Parameters from "../../product/pages/admin/Parameters";
 import BulletinReview from "../../product/pages/apprenant/Bulletin/BulletinReview";
 import Login from "../../product/pages/common/Login";
 import ProtectedRoute from "../../product/layout/common/ProtectedRoute";
-import Unauthorized from "../../product/pages/common/Unauthorized";
 import { RootRedirect } from "../../product/layout/common/RootRedirect";
 import CorrectionReview from "../../product/pages/apprenant/Evaluation/CorrectionReview";
 import Bulletin from "../../product/pages/apprenant/Bulletin/Bulletin";
@@ -15,16 +14,18 @@ import TakingEvaluation from "../../product/pages/apprenant/Evaluation/TakingEva
 import COMMON_CHILDREN from "./sharedChildren";
 import Formation from "../../product/pages/formateur/Formation";
 import SetPasswordPage from "../../product/pages/common/SetPasswordPage";
+import ErrorPage from "../../product/pages/common/ErrorPage";
 
 export const router = createBrowserRouter([
 
 	// Public routes
 	{ path: '/', element: <RootRedirect />},
 	{ path: '/login', element: <Login /> },
-	{ path: '/unauthorized', element: <Unauthorized /> },
+	{ path: '/unauthorized', element: <ErrorPage msg="Vous ne pouvez pas accéder à la page" statusCode={403} /> },
+	// { path: '/set-password/:uid/:token', element: <SetPasswordPage /> },
 
 	{
-		element: <ProtectedRoute allowedRole={['admin', 'apprenant', 'formateur', 'rfq']}/>, 
+		element: <ProtectedRoute allowedRole={[]}/>, 
 		children: [
 			{
 				path: '/set-password/:uid/:token',
@@ -117,5 +118,8 @@ export const router = createBrowserRouter([
 			}
 		]
 	},
+
+	{ path: '*', element: <ErrorPage msg="La page est introuvable" statusCode={404} /> },
+
 ]);
 
