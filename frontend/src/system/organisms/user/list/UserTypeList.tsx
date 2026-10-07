@@ -32,32 +32,16 @@ import type { utilisateurType } from "../../../../other/types/userType"
 const getUserTypeTabColumn = (
 ): Column<utilisateurType>[] => [
 	{
-		header: 'Type d\'utilisateur',
-		key: "type_utilisateur"
-	},
-	{
 		header: 'ID',
 		key: "id"
 	},
-	// {
-	// 	header: null,
-	// 	key: 'id',
-	// 	render: (value) => {
-	// 		return <ActionCell rowId={value ? value : ''} onEdit={onEdit}/>
-	// 	}
-		
-	// }
+	{
+		header: 'Type d\'utilisateur',
+		key: "type_utilisateur"
+	},
 ]
 
 const UserTypeList = ({ userType } : { userType : utilisateurType[]}) => {
-
-	// const [selectedId, setSelectedId] = useState<string>('')
-	// const [isModalOpen, setIsModalOpen] = useState(false)
-
-	// const handleOpenEditModal = (id: string | number | boolean | string[]) => {
-	// 	setSelectedId(id as string)
-	// 	setIsModalOpen(true)
-	// }
 
 	return (
 		<Box direction="column" className="w-full items-center justify-center">
@@ -66,11 +50,6 @@ const UserTypeList = ({ userType } : { userType : utilisateurType[]}) => {
 				data={userType}
 				rowKey={'id'}
 			/>
-			{/* <ModalProjectEdit 
-				id={selectedId}
-				open={isModalOpen}
-				closeModal={() => setIsModalOpen(false)}
-			/> */}
 		</Box>
 	)
 }
