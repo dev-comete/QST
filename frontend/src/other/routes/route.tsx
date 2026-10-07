@@ -4,7 +4,6 @@ import AdminTemplate from "../../product/layout/role/AdminTemplate";
 import ApprenantTemplate from "../../product/layout/role/ApprenantTemplate";
 import Parameters from "../../product/pages/admin/Parameters";
 import BulletinReview from "../../product/pages/apprenant/Bulletin/BulletinReview";
-import Home from "../../product/pages/common/Home";
 import Login from "../../product/pages/common/Login";
 import ProtectedRoute from "../../product/layout/common/ProtectedRoute";
 import Unauthorized from "../../product/pages/common/Unauthorized";
@@ -23,14 +22,13 @@ export const router = createBrowserRouter([
 	{ path: '/', element: <RootRedirect />},
 	{ path: '/login', element: <Login /> },
 	{ path: '/unauthorized', element: <Unauthorized /> },
-	{ path: '/set-password/:uid/:token', element: <SetPasswordPage /> },
 
 	{
 		element: <ProtectedRoute allowedRole={['admin', 'apprenant', 'formateur', 'rfq']}/>, 
 		children: [
 			{
-				path: '/home',
-				element: <Home />
+				path: '/set-password/:uid/:token',
+				element: <SetPasswordPage /> 
 			}
 		]
 	},
@@ -63,7 +61,6 @@ export const router = createBrowserRouter([
 					{ index: true, element: <Navigate to="tableau_de_bord" replace /> },
 					...COMMON_CHILDREN,
 					{ path: "formation", element: <Formation /> },
-					// { path: "tableau_de_bord", element: <Dashboard /> },
 				],
 			}
 		]

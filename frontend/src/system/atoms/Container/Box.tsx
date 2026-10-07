@@ -14,14 +14,18 @@ const Box = ({
 	style
 } : BoxProps) => {
 
-	const flexDirection = direction === 'column' ? "flex-col" : "flex-row";
+	const flexDirection = direction === 'column' 
+    ? "flex-col" 
+    : "flex-col md:flex-row";
 
 	return (
 		<div
-			className={`flex ${flexDirection} gap-2 ${className}`}
+			className={`flex gap-2 ${flexDirection} ${className}`}
 			style={style}
-		>{children}</div>		
-	)
+		>
+			{children}
+		</div>
+	);
 }
 
 export default Box;
