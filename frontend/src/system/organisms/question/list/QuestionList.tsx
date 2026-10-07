@@ -88,9 +88,8 @@ const QuestionList = ({ listType = 'bank'} : { listType?: 'bank' | 'trash'}) => 
 	const isLoading = status === 'pending' || isPending
 
 	const { navigateTo } = useAppNavigation()
-	const handleRowClick = listType === 'trash'
-		? undefined
-		: (row: bankQuestionType) => navigateTo('gestion_question/' + row.id)
+
+	const handleRowClick = (row: bankQuestionType) => navigateTo('gestion_question/' + row.id)
 
 	const resetFilters = () => {
 		setSearch('')

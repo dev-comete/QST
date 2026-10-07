@@ -67,9 +67,9 @@ export const QuestionService = {
 	},
 
 	info: async (id: string) => {
-		const response = await apiClient.get(BANK_QUESTION_URL + id + '/');
-		const result = response.data as bankQuestionType
-		return result;
+		console.log("Question info", id)
+		const response = await apiClient.get<bankQuestionType>(BANK_QUESTION_URL + id + '/');
+		return response.data;
 	},
 
 	detail: async (id: string) => {
