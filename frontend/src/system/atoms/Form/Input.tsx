@@ -46,6 +46,14 @@ const Input = ({
 }: InputProps) => {
 
 	const basicStyle = `flex p-2 rounded-xl ${type != 'checkbox' && 'border'} border-background w-full items-center justify-center focus:outline focus:outline-primary`
+	const hasCustomBackground = Boolean(className?.match(/(^|\s)bg-(?:\[[^\]]+\]|[A-Za-z0-9/-]+)/))
+	const inputClasses = [
+		'w-full pr-12 [&::-webkit-search-cancel-button]:appearance-none',
+		basicStyle,
+		!hasCustomBackground && 'bg-white',
+		readOnly && !hasCustomBackground && 'bg-error/10',
+		className,
+	].filter(Boolean).join(' ')
 
 	return (
 		<div className={`flex ${labelPosition == 'col' ? 'flex-col' : 'flex-row items-center space-x-2'} w-full relative`}>
@@ -60,7 +68,7 @@ const Input = ({
 					type={type}
 					id={id}
 					name={name}
-					className={`w-full bg-white pr-12 [&::-webkit-search-cancel-button]:appearance-none ${basicStyle} ${className}`}
+					className={inputClasses}
 					onChange={onChange}
 					step={step}
 					checked={checked}

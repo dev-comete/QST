@@ -102,7 +102,7 @@ export const useEditFormation = (id: string) => {
 	const updateFormation = useMutation({
 		mutationFn: ({ id, data }: { id: string; data: FormationPayload }) => FormationService.update(id, data),
 		onSuccess: () => {
-		queryClient.invalidateQueries({
+			queryClient.invalidateQueries({
 			queryKey: ['formation_list'],
 		});
 		},

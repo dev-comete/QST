@@ -10,6 +10,11 @@ type questionIdType  = {
 	code : string
 }
 
+type QuestionTypePayload = {
+	type_question: string
+	code: string
+}
+
 type baremeType = {
 	id: number,
 	pts: number
@@ -46,8 +51,9 @@ export type {
 	questionType,
 	respType,
 	questionIdType,
+	QuestionTypePayload,
 	baremeType,
 	bankQuestionType,
 	assignQuestionType,
-	bankQuestionResp
+	bankQuestionResp,
 }

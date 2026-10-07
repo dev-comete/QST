@@ -1,17 +1,11 @@
-import Box from "../Container/Box";
-import Paper from "../Container/Paper";
-import CustomText from "../Text/CustomText";
+import ErrorPage from "../../../product/pages/common/ErrorPage";
 
 const FetchError = () => {
 
-	const msg = "Une erreur de téléchargement s'est produite. Veuillez réessayer plus tard"
+	const msg = "Une erreur de téléchargement s'est produite."
 
 	return (
-		<Box className="w-full items-center justify-center p-5">
-			<Paper className="p-10" hasShadow>
-				<CustomText color="error" weight="bold">{msg}</CustomText>
-			</Paper>
-		</Box>
+		<ErrorPage msg={msg} info="Veuillez réessayer plus tard"/>
 	)
 }
 

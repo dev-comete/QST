@@ -4,10 +4,8 @@ import AdminTemplate from "../../product/layout/role/AdminTemplate";
 import ApprenantTemplate from "../../product/layout/role/ApprenantTemplate";
 import Parameters from "../../product/pages/admin/Parameters";
 import BulletinReview from "../../product/pages/apprenant/Bulletin/BulletinReview";
-import Home from "../../product/pages/common/Home";
 import Login from "../../product/pages/common/Login";
 import ProtectedRoute from "../../product/layout/common/ProtectedRoute";
-import Unauthorized from "../../product/pages/common/Unauthorized";
 import { RootRedirect } from "../../product/layout/common/RootRedirect";
 import CorrectionReview from "../../product/pages/apprenant/Evaluation/CorrectionReview";
 import Bulletin from "../../product/pages/apprenant/Bulletin/Bulletin";
@@ -16,21 +14,22 @@ import TakingEvaluation from "../../product/pages/apprenant/Evaluation/TakingEva
 import COMMON_CHILDREN from "./sharedChildren";
 import Formation from "../../product/pages/formateur/Formation";
 import SetPasswordPage from "../../product/pages/common/SetPasswordPage";
+import ErrorPage from "../../product/pages/common/ErrorPage";
 
 export const router = createBrowserRouter([
 
 	// Public routes
 	{ path: '/', element: <RootRedirect />},
 	{ path: '/login', element: <Login /> },
-	{ path: '/unauthorized', element: <Unauthorized /> },
-	{ path: '/set-password/:uid/:token', element: <SetPasswordPage /> },
+	{ path: '/unauthorized', element: <ErrorPage msg="Vous ne pouvez pas accéder à la page" statusCode={403} /> },
+	// { path: '/set-password/:uid/:token', element: <SetPasswordPage /> },
 
 	{
-		element: <ProtectedRoute allowedRole={['admin', 'apprenant', 'formateur', 'rfq']}/>, 
+		element: <ProtectedRoute allowedRole={[]}/>, 
 		children: [
 			{
-				path: '/home',
-				element: <Home />
+				path: '/set-password/:uid/:token',
+				element: <SetPasswordPage /> 
 			}
 		]
 	},
@@ -63,7 +62,6 @@ export const router = createBrowserRouter([
 					{ index: true, element: <Navigate to="tableau_de_bord" replace /> },
 					...COMMON_CHILDREN,
 					{ path: "formation", element: <Formation /> },
-					// { path: "tableau_de_bord", element: <Dashboard /> },
 				],
 			}
 		]
@@ -120,5 +118,8 @@ export const router = createBrowserRouter([
 			}
 		]
 	},
+
+	{ path: '*', element: <ErrorPage msg="La page est introuvable" statusCode={404} /> },
+
 ]);
 

@@ -1,4 +1,5 @@
 import { padZero } from "../../../../other/helper/helper";
+import { useAppNavigation } from "../../../../other/hooks/navigation/useAppNavigation";
 import type { ColorTheme } from "../../../../other/types/common";
 import Box from "../../../atoms/Container/Box";
 import Paper from "../../../atoms/Container/Paper";
@@ -13,19 +14,35 @@ export interface CardProps {
 	infoDirection?: 'column' | 'row'
 	variant?: 'lg' | 'sm'
 	color?: ColorTheme
+	link?: string
 }
 
-const DashboardCard = ({ title, icon, value, info, variant = 'sm', color, infoDirection = 'row' } : CardProps) => {
+const DashboardCard = ({ 
+	title,
+	icon,
+	value,
+	info,
+	variant = 'sm',
+	color,
+	infoDirection = 'row',
+	link
+} : CardProps) => {
 
 	const textTag = variant == 'sm' ? 'h6' : 'h4'
 	const valueTextSize = variant == 'sm' ? '' : 'text-[35px]'
 
+	const { navigateTo } = useAppNavigation()
+
 	return (
-		<Paper className={`
-			flex flex-col space-y-2 items-start justify-center flex-1 p-5
-			w-full min-w-0 min-h-35 sm:min-h-40'}
-			transition-all duration-200
-		`}>
+		<Paper
+			onClick={() => link && navigateTo(link)}
+			className={`
+				flex flex-col space-y-2 items-start justify-center flex-1 p-5
+				w-full min-w-0 min-h-35 sm:min-h-40'}
+				transition-all duration-200
+				${link && 'cursor-pointer hover:-translate-y-1.5'}
+			`}
+		>
 			<Box className="items-center">
 				{icon && <FAIcon name={icon} size='sm' className={`text-${color} border border-background p-3 rounded-xl`}/>}
 				<CustomText textTag={textTag}>{title}</CustomText>

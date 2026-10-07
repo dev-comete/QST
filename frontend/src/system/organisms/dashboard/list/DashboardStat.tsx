@@ -10,13 +10,14 @@ interface DashboardStatProps {
 interface DashboardMetricItem {
 	icon: string,
 	color: ColorTheme
+	link?: string
 }
 
 const DashboardMetricIcon : DashboardMetricItem[] = [
-	{ icon: 'book', color: 'warning'},
-	{ icon: 'users', color: 'success'},
-	{ icon: 'file-circle-question', color: 'text'},
-	{ icon: 'circle-question', color: 'error'},
+	{ icon: 'book', color: 'warning', link: 'parametre_general?tab=3'},
+	{ icon: 'users', color: 'success', link: 'gestion_vague'},
+	{ icon: 'file-circle-question', color: 'text', link: 'gestion_quiz'},
+	{ icon: 'circle-question', color: 'error', link: 'gestion_question'},
 	{ icon: 'star', color: 'primary'},
 ]
 
@@ -34,6 +35,7 @@ export const DashboardStat = ({ stats } : DashboardStatProps) => {
 							color={DashboardMetricIcon[index].color}
 							key={'stat-' + index + stat.label}
 							variant="lg"
+							link={DashboardMetricIcon[index].link}
 						/>
 					)
 				}

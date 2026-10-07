@@ -1,5 +1,5 @@
 import type { PaginatedData } from "../types/common";
-import type { bankQuestionType, questionIdType, questionType } from "../types/questionType";
+import type { bankQuestionType, questionIdType, questionType, QuestionTypePayload } from "../types/questionType";
 import apiClient from "./apiClient";
 
 const QUESTION_URL = import.meta.env.VITE_CRUD_QUESTION
@@ -21,6 +21,7 @@ export const QuestionService = {
 		return response.data;
 	},
 
+	// Not operationnal yet
 	edit : async ( data : questionType) => {
 		const url = import.meta.env.VITE_CREATE_QUESTION
 		const response = await apiClient.put(url, data);
@@ -31,6 +32,24 @@ export const QuestionService = {
 		const url = import.meta.env.VITE_TYPE_QUESTION
 		const response = await apiClient.get(url);
 		return response.data as questionIdType[];
+	},
+
+	infoTypeQuestion : async (id: number) => {
+		const url = import.meta.env.VITE_TYPE_QUESTION + id
+		const response = await apiClient.get(url);
+		return response.data as questionIdType;
+	},
+
+	createTypeQuestion: async ( data : QuestionTypePayload) => {
+		const url = import.meta.env.VITE_TYPE_QUESTION
+		const response = await apiClient.post(url, data);
+		return response.data;
+	},
+
+	editTypeQuestion: async ( id: number, data : QuestionTypePayload) => {
+		const url = import.meta.env.VITE_TYPE_QUESTION + id
+		const response = await apiClient.put(url, data);
+		return response.data;
 	},
 
 	list: async ({ search, type, page, pageSize, listType }: BankQuestionParams) => {

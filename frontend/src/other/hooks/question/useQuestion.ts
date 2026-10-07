@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient , keepPreviousData} from "@tansta
 import { QuestionService } from "../../services/questionService";
 import { useEffect, useState } from "react";
 import type { bankQuestionType, respType } from "../../types/questionType";
+import { useQuestionType } from "./useQuestionType";
 
 export const useQuestionDel = (id: number) => {
 
@@ -63,15 +64,12 @@ type UseQuestionParams = {
 
 const useQuestion = ({ id, search, type, page, pageSize , listType } : UseQuestionParams) => {
 
+	const { questionTypeQuery } = useQuestionType()
+
 	const list = useQuery({
 		queryKey: ['bank_question', search, type, page, pageSize, listType],
 		queryFn: () => QuestionService.list({ search, type, page, pageSize,listType }),
 		placeholderData: keepPreviousData,
-	})
-
-	const questionTypeQuery = useQuery({
-		queryKey: ['question_type_list'],
-		queryFn: QuestionService.getTypeQuestion,
 	})
 
 	const infoQuestionQuery = useQuery({
