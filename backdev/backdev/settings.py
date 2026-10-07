@@ -69,6 +69,7 @@ CORS_TRUSTED_ORIGINS = [
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -79,10 +80,13 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
+    'channels',
+    'whitenoise.runserver_nostatic',
     'accounts',
     'formations',
     'quizzes',
-    'ia'
+    'ia',
+    'chat'
 ]
 
 MIDDLEWARE = [
@@ -134,6 +138,17 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'backdev.wsgi.application'
+ASGI_APPLICATION = 'backdev.asgi.application'
+
+REDIS_HOST = env('REDIS_HOST', default='127.0.0.1')
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [(REDIS_HOST, 6379)],
+        },
+    },
+}
 
 
 # Database

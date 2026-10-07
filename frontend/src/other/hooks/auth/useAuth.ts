@@ -53,18 +53,22 @@ const useLogin = () => {
 
 	const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
 		e.preventDefault();
+		e.stopPropagation();
+
 		const formData = new FormData(e.currentTarget);
-		const username = formData.get('username') as string;
-		const password = formData.get('password') as string;
-		if (username.trim().length == 0) {
-			setError("Le nom d'utilisateur est obligatoire")
-			return
+		const username = (formData.get('username') ?? '').toString().trim();
+		const password = (formData.get('password') ?? '').toString().trim();
+
+		if (username.length === 0) {
+			setError("Le nom d'utilisateur est obligatoire");
+			return;
 		}
-		if (password.trim().length == 0) {
-			setError("Le mot de passe est obligatoire")
-			return
+		if (password.length === 0) {
+			setError("Le mot de passe est obligatoire");
+			return;
 		}
-		setError(null)
+
+		setError(null);
 		mutate({ username, password });
 	};
 

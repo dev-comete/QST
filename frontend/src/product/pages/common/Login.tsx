@@ -1,4 +1,5 @@
-import { Navigate } from "react-router";
+import { useEffect } from "react";
+import { useNavigate } from "react-router";
 import { useAuth, useLogin } from "../../../other/hooks/auth/useAuth";
 import Box from "../../../system/atoms/Container/Box";
 import Paper from "../../../system/atoms/Container/Paper";
@@ -13,7 +14,14 @@ const Login = () => {
     const { handleSubmit, isPending, error } = useLogin();
 	const { authUser } = useAuth()
 
-	if (authUser) return <Navigate to="/" replace />;
+	const navigate = useNavigate();
+
+    // Redirect ONLY if the user is already authenticated
+    useEffect(() => {
+        if (authUser) {
+            navigate("/", { replace: true });
+        }
+    }, [authUser, navigate]);
 
     return (
         <Box
@@ -31,7 +39,7 @@ const Login = () => {
 							<Logo />
 							<CustomText textTag="h6" isItalic={true}>{"Connectez-vous pour accéder à votre espace."}</CustomText>
 						</Box>
-						<form onSubmit={handleSubmit} className="w-full">
+						<form onSubmit={handleSubmit} noValidate className="w-full">
 							<Box direction="column" className="space-y-4 items-center w-full">
 								<Input
 									id="username"
