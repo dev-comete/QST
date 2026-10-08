@@ -15,6 +15,7 @@ import MyEvaluations from "../../product/pages/apprenant/Evaluation/MyEvaluation
 import TakingEvaluation from "../../product/pages/apprenant/Evaluation/TakingEvaluation";
 import COMMON_CHILDREN from "./sharedChildren";
 import Formation from "../../product/pages/formateur/Formation";
+import ChatPage from "../../product/pages/formateur/ChatPage";
 import SetPasswordPage from "../../product/pages/common/SetPasswordPage";
 
 export const router = createBrowserRouter([
@@ -63,6 +64,7 @@ export const router = createBrowserRouter([
 					{ index: true, element: <Navigate to="tableau_de_bord" replace /> },
 					...COMMON_CHILDREN,
 					{ path: "formation", element: <Formation /> },
+					{ path: "chat", element: <ChatPage /> },
 					// { path: "tableau_de_bord", element: <Dashboard /> },
 				],
 			}
