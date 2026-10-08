@@ -1,7 +1,8 @@
 import type { DashboardMetric } from "../types/dashboardType";
 import apiClient from "./apiClient";
+import { ENDPOINTS } from "./endpoint";
 
-const METRIC_URL = import.meta.env.VITE_DASHBOARD_METRIC
+const METRIC_URL = ENDPOINTS.DASHBOARD.METRICS
 
 export const DashboardService = {
 

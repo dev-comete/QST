@@ -1,7 +1,8 @@
 import type { baremeType } from "../types/questionType";
 import apiClient from "./apiClient";
+import { ENDPOINTS } from "./endpoint";
 
-const BAREME_URL = import.meta.env.VITE_BAREME
+const BAREME_URL = ENDPOINTS.QUESTION.BAREME
 
 export const BaremeService = {
 
