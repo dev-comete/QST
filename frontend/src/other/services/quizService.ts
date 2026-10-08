@@ -1,9 +1,12 @@
 import type { QuestionQuiz, quizAssignPayload, quizCreateType, QuizReview, QuizSubmitPayload, quizType, studentQuizType } from "../types/quizType";
 import apiClient from "./apiClient";
+import { ENDPOINTS } from "./endpoint";
 
-const QUIZ_CRUD_URL = import.meta.env.VITE_CRUD_QUIZ
-const QUIZ_TRASH_URL = import.meta.env.VITE_TRASH_QUIZ
-
+const QUIZ_CRUD_URL = ENDPOINTS.QUIZ.CRUD
+const QUIZ_TRASH_URL = ENDPOINTS.QUIZ.TRASH
+const QUIZ_QUESTION_URL = ENDPOINTS.QUIZ.ASSIGN_QUESTION
+const QUIZ_EVAL_URL = ENDPOINTS.QUIZ.EVAL
+const QUIZ_SUBMIT_URL = ENDPOINTS.QUIZ.SUBMIT
 
 export const QuizService = {
 	create : async ( data : quizCreateType) => {
@@ -43,8 +46,7 @@ export const QuizService = {
 	},
 
 	assignQuestion: async(data : quizAssignPayload) => {
-		const url = import.meta.env.VITE_ASSIGN_QUESTION_QUIZ
-		const response = await apiClient.post(url, data);
+		const response = await apiClient.post(QUIZ_QUESTION_URL, data);
 		return response.data;
 	},
 
@@ -55,8 +57,7 @@ export const QuizService = {
 	},
 
 	evalList: async () => {
-		const url = import.meta.env.VITE_EVAL_QUIZ
-		const response = await apiClient.get(url);
+		const response = await apiClient.get(QUIZ_EVAL_URL);
 		return response.data as studentQuizType[];
 	},
 
@@ -69,8 +70,7 @@ export const QuizService = {
 	},
 
 	submitQuiz: async ( data : QuizSubmitPayload) => {
-		const url = import.meta.env.VITE_EVAL_SUBMIT
-		const response = await apiClient.post(url, data);
+		const response = await apiClient.post(QUIZ_SUBMIT_URL, data);
 		return response.data;
 	},
 

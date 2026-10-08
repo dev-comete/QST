@@ -1,8 +1,12 @@
 import { USERNAME_MIN } from "../types/constant";
 import type { projectType, userPayload, userType, UserTypePayload, userWithOrganisation, utilisateurType } from "../types/userType";
 import apiClient from "./apiClient";
+import { ENDPOINTS } from "./endpoint";
 
-const USER_URL = import.meta.env.VITE_CRUD_USER
+const USER_URL = ENDPOINTS.USER.CRUD
+const TYPE_USER_URL = ENDPOINTS.USER.TYPE
+const PROJECT_URL = ENDPOINTS.PROJECT
+const PASS_URL = ENDPOINTS.AUTH.SETPASS
 
 const userValidationPayload = (data: userPayload) => {
 	if (!data.username || data.username.trim().length < USERNAME_MIN) {
@@ -54,28 +58,25 @@ export const UserService = {
 	},
 
 	type :  async () => {
-		const url = import.meta.env.VITE_TYPE_USER
-		const response = await apiClient.get(url);
+		const response = await apiClient.get(TYPE_USER_URL);
 		return response.data as utilisateurType[];
 	},
 
 	projectList :  async () => {
-		const url = import.meta.env.VITE_ORGANISATION
-		const response = await apiClient.get(url);
+		const response = await apiClient.get(PROJECT_URL);
 		return response.data as projectType[];
 	},
 
 	createType: async (data: UserTypePayload) => {
-		const url = import.meta.env.VITE_TYPE_USER
-		const response = await apiClient.post(url, data);
+		const response = await apiClient.post(TYPE_USER_URL, data);
 		return response.data;
 	},
 
-	confirmPasswordReset: async ({ uid, token, new_password } : { uid : any, token: any, new_password: string }) => {
-		const response = await apiClient.post('/accounts/auth/reset-password-confirm/', {
-		uid,
-		token,
-		new_password
+	confirmPasswordReset: async ({ uid, token, new_password } : { uid : string, token: string, new_password: string }) => {
+		const response = await apiClient.post(PASS_URL, {
+			uid,
+			token,
+			new_password
 		});
 		
 		return response.data;
