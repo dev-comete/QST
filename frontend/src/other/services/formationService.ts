@@ -1,8 +1,9 @@
 import type { formationType } from "../types/common";
 import type { Formation, FormationPayload } from "../types/formationType";
 import apiClient from "./apiClient";
+import { ENDPOINTS } from "./endpoint";
 
-const FORMATION_URL = import.meta.env.VITE_CRUD_FORMATION
+const FORMATION_URL = ENDPOINTS.FORMATION
 
 export const FormationService = {
 
