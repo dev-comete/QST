@@ -36,4 +36,9 @@ class Message(models.Model):
         ordering = ['created_at'] # Oldest messages first, typical for chat UI
 
     def __str__(self):
+        # If the message hasn't been saved to the database yet, 
+        # it doesn't have an ID or a timestamp.
+        if not self.id:
+            return "New Message"
+            
         return f"[{self.created_at.strftime('%H:%M')}] {self.sender}: {self.content[:30]}"
