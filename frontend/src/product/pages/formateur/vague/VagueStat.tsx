@@ -4,8 +4,6 @@ import FetchError from "../../../../system/atoms/Loading/FetchError";
 import RankingCard from "../../../../system/organisms/dashboard/container/RankingCard";
 import Box from "../../../../system/atoms/Container/Box";
 import DashboardCard from "../../../../system/organisms/dashboard/container/DashboardCard";
-import CustomText from "../../../../system/atoms/Text/CustomText";
-import Paper from "../../../../system/atoms/Container/Paper";
 import VagueStatList from "../../../../system/organisms/vague/list/VagueStatList";
 import NavigationBar from "../../../../system/molecules/Navigation/NavigationBar";
 import { useTabNavigation } from "../../../../other/hooks/navigation/useTabNavigation";

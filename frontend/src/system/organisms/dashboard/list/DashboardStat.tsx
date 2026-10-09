@@ -10,13 +10,14 @@ interface DashboardStatProps {
 interface DashboardMetricItem {
 	icon: string,
 	color: ColorTheme
+	link?: string
 }
 
 const DashboardMetricIcon : DashboardMetricItem[] = [
-	{ icon: 'book', color: 'warning'},
-	{ icon: 'users', color: 'success'},
-	{ icon: 'file-circle-question', color: 'text'},
-	{ icon: 'circle-question', color: 'error'},
+	{ icon: 'book', color: 'warning', link: 'parametre_general?tab=3'},
+	{ icon: 'users', color: 'success', link: 'gestion_vague'},
+	{ icon: 'file-circle-question', color: 'text', link: 'gestion_quiz'},
+	{ icon: 'circle-question', color: 'error', link: 'gestion_question'},
 	{ icon: 'star', color: 'primary'},
 ]
 
@@ -26,15 +27,22 @@ export const DashboardStat = ({ stats } : DashboardStatProps) => {
 			{
 				stats.map((stat, index) => {
 					return (
-						<DashboardCard 
-							title={stat.label}
-							value={stat.value}
-							info={stat.change}
-							icon={DashboardMetricIcon[index].icon}
-							color={DashboardMetricIcon[index].color}
-							key={'stat-' + index + stat.label}
-							variant="lg"
-						/>
+						<div 
+                key={'stat-' + index + stat.label}
+                className="w-full flex-1 min-w-[150x] min-h-[100px]"
+            >
+				<DashboardCard 
+					title={stat.label}
+					value={stat.value}
+					info={stat.change}
+					icon={DashboardMetricIcon[index].icon}
+					color={DashboardMetricIcon[index].color}
+					key={'stat-' + index + stat.label}
+					variant="lg"
+					link={DashboardMetricIcon[index].link}
+				/>
+
+			</div>
 					)
 				}
 				)

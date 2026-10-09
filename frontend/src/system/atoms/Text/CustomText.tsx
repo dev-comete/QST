@@ -48,10 +48,20 @@ const textColor : Record<ColorTheme, string> = {
 	'warning-dark': 'text-warning-dark',
 	'text': 'text-text',
 	'white': 'text-white',
-	'disabled' : 'text-disabled',
-	'disabled-light' : 'text-disabled-light',
-	'disabled-dark' : 'text-disabled-dark',
-	'transparent' : 'text-transparent'
+	'disabled': 'text-disabled',
+	'disabled-light': 'text-disabled-light',
+	'disabled-dark': 'text-disabled-dark',
+	'transparent': 'text-transparent',
+	"background-light": "",
+	"background-dark": "",
+	"primary-light": "",
+	"primary-dark": "",
+	"secondary-light": "",
+	"secondary-dark": "",
+	"accent-light": "",
+	"accent-dark": "",
+	"text-light": "",
+	"text-dark": ""
 }
 
 const CustomText = ({

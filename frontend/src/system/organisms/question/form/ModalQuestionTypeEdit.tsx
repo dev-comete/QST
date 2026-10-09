@@ -1,0 +1,108 @@
+import type { Dispatch, SetStateAction } from "react";
+import Input from "../../../atoms/Form/Input";
+import ActionButton from "../../../molecules/Buttons/ActionButton";
+import { Modal } from "../../../molecules/Modal/Modal";
+import { formChangeHandler } from "../../../../other/helper/helper";
+import { useEditQuestionType } from "../../../../other/hooks/question/useQuestionType";
+import type { QuestionTypePayload } from "../../../../other/types/questionType";
+import { CancelButton } from "../../../molecules/Buttons/CustomizedButton";
+import Box from "../../../atoms/Container/Box";
+
+export interface QuestionTypeFormProps {
+	questionType: QuestionTypePayload
+	setQuestionType: Dispatch<SetStateAction<QuestionTypePayload>>
+	handleSubmit: (e: React.SubmitEvent) => void
+}
+
+const QuestionTypeForm = ({ handleSubmit, questionType, setQuestionType } : QuestionTypeFormProps ) => {
+
+	return (
+		<form
+			id="questionTypeCreateForm"
+			className="flex flex-col space-y-5 justify-center w-[80%] m-auto"
+			onSubmit={handleSubmit}
+		>
+			<Input 
+				id="type_question"
+				name="type_question"
+				label="Type de question"
+				onChange={formChangeHandler(setQuestionType, 'type_question')}
+				required={true}
+				value={questionType.type_question}
+			/>
+			<Input 
+				id="code"
+				name="code"
+				label="Code"
+				onChange={formChangeHandler(setQuestionType, 'code')}
+				value={questionType.code}
+				readOnly
+				className="bg-background"
+			/>
+		</form>
+	)
+}
+
+interface ModalQuestionTypeCreateProps {
+	open: boolean;
+	closeModal: () => void,
+	id: number
+}
+
+const ModalQuestionTypeEdit = ({ open, closeModal, id } : ModalQuestionTypeCreateProps) => {
+	const {
+		questionType,
+		setQuestionType,
+		handleEditQuestionType,
+		isPending,
+	} = useEditQuestionType(id)
+
+	const handleOnCloseModal = () => {
+		closeModal()
+	}
+
+	const handleSubmit = async (e: React.SubmitEvent) => {
+		e.preventDefault()
+		try {
+			await handleEditQuestionType()
+			handleOnCloseModal()
+		} catch (error) {
+			console.log("Error", error)
+		}
+	}
+
+	return (
+		<Modal
+			title="Modification du type de question"
+			isOpen={open}
+			closeModal={handleOnCloseModal}
+			footer={
+				<Box>
+					<CancelButton
+						onClick={handleOnCloseModal}
+						text="Annuler"
+					/>
+					<ActionButton
+						type="submit"
+						form="questionTypeCreateForm"
+						btnColor="primary"
+						textColor="white"
+						isLoading={isPending}
+						disabled={questionType.type_question.trim().length == 0
+							|| questionType.code.trim().length == 0}
+					>
+						Modifier
+					</ActionButton>
+				</Box>
+			}
+		>
+			<QuestionTypeForm
+				questionType={questionType}
+				setQuestionType={setQuestionType}
+				handleSubmit={handleSubmit}
+			/>
+		</Modal>
+	)
+}
+
+export default ModalQuestionTypeEdit;

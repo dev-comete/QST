@@ -123,7 +123,6 @@ const QuestionEditForm = () => {
 					<RespCreatedList 
 						responses={responses}
 						setResponses={setResponses}
-						errorMsg={errorForm.type == 'response' ? errorForm.msg : null}
 					/>
 				</>
 			}

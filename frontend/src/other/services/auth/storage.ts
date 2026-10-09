@@ -55,7 +55,6 @@ export const TokenStorage = {
 		return apiClient(originalRequest);
 
 		} catch (refreshError) {
-			console.error("Session expirée. Veuillez vous reconnecter.");
 			TokenStorage.clear();
 			
 			// Redirection forcée vers le login (adaptez l'URL selon votre routeur)
@@ -64,6 +63,11 @@ export const TokenStorage = {
 		}
 	}
 
-	return Promise.reject(error);
+	if (error.response && error.response.status === 403) {
+		window.location.reload();
+		return Promise.reject(error);
+	}
+
+		return Promise.reject(error);
 	}
 );

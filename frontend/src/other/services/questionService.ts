@@ -1,10 +1,13 @@
 import type { PaginatedData } from "../types/common";
-import type { bankQuestionType, questionIdType, questionType } from "../types/questionType";
+import type { bankQuestionType, questionIdType, questionType, QuestionTypePayload } from "../types/questionType";
 import apiClient from "./apiClient";
+import { ENDPOINTS } from "./endpoint";
 
-const QUESTION_URL = import.meta.env.VITE_CRUD_QUESTION
-const BANK_QUESTION_URL = import.meta.env.VITE_BANK_QUESTION
-const TRASH_QUESTION_URL = import.meta.env.VITE_TRASH_QUESTION
+const QUESTION_URL = ENDPOINTS.QUESTION.CRUD
+const QUESTION_FULL_CREATE_URL = ENDPOINTS.QUESTION.CREATE
+const BANK_QUESTION_URL = ENDPOINTS.QUESTION.BANK
+const TRASH_QUESTION_URL = ENDPOINTS.QUESTION.TRASH
+const TYPE_QUESTION_URL = ENDPOINTS.QUESTION.TYPES
 
 export interface BankQuestionParams {
 	search?: string;
@@ -16,21 +19,35 @@ export interface BankQuestionParams {
 
 export const QuestionService = {
 	create : async ( data : questionType) => {
-		const url = import.meta.env.VITE_CREATE_QUESTION
-		const response = await apiClient.post(url, data);
+		const response = await apiClient.post(QUESTION_FULL_CREATE_URL, data);
 		return response.data;
 	},
 
+	// Not operationnal yet
 	edit : async ( data : questionType) => {
-		const url = import.meta.env.VITE_CREATE_QUESTION
-		const response = await apiClient.put(url, data);
+		const response = await apiClient.put(QUESTION_FULL_CREATE_URL, data);
 		return response.data;
 	},
 
 	getTypeQuestion : async () => {
-		const url = import.meta.env.VITE_TYPE_QUESTION
-		const response = await apiClient.get(url);
+		const response = await apiClient.get(TYPE_QUESTION_URL);
 		return response.data as questionIdType[];
+	},
+
+	infoTypeQuestion : async (id: number) => {
+		const response = await apiClient.get(TYPE_QUESTION_URL + id);
+		return response.data as questionIdType;
+	},
+
+	createTypeQuestion: async ( data : QuestionTypePayload) => {
+		const response = await apiClient.post(TYPE_QUESTION_URL, data);
+		return response.data;
+	},
+
+	editTypeQuestion: async ( id: number, data : QuestionTypePayload) => {
+		const url = TYPE_QUESTION_URL + id
+		const response = await apiClient.put(url, data);
+		return response.data;
 	},
 
 	list: async ({ search, type, page, pageSize, listType }: BankQuestionParams) => {
@@ -43,25 +60,17 @@ export const QuestionService = {
 		}).toString();
 		
 		const rawUrl = listType == 'bank' ? BANK_QUESTION_URL : TRASH_QUESTION_URL
-
-		// env values contained a '#' fragment (used for client-side anchors).
-		// Strip any fragment identifier before appending query params so
-		// the browser doesn't treat the rest as a fragment and drop queries.
-		// const cleanedUrl = (rawUrl || '').split('#')[0];
-
-		const response = await apiClient.get<PaginatedData<bankQuestionType>>(`${rawUrl}?${queryParams}`);
+		const response = await apiClient.get<PaginatedData<bankQuestionType>>(rawUrl + '?' + queryParams);
 		return response.data;
 	},
 
 	info: async (id: string) => {
-		const response = await apiClient.get(BANK_QUESTION_URL + id + '/');
-		const result = response.data as bankQuestionType
-		return result;
+		const response = await apiClient.get<bankQuestionType>(BANK_QUESTION_URL + id);
+		return response.data;
 	},
 
 	detail: async (id: string) => {
-		const url = import.meta.env.VITE_CREATE_QUESTION
-		const response = await apiClient.get(url + id + '/');
+		const response = await apiClient.get(QUESTION_FULL_CREATE_URL + id + '/');
 		const result = response.data as bankQuestionType
 		return result;
 	},

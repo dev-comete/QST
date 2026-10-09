@@ -1,7 +1,8 @@
 import type { ProjectPayload, projectType } from "../types/userType";
 import apiClient from "./apiClient";
+import { ENDPOINTS } from "./endpoint";
 
-const PROJECT_URL = import.meta.env.VITE_PROJECT
+const PROJECT_URL = ENDPOINTS.PROJECT
 
 export const ProjectService = {
 
