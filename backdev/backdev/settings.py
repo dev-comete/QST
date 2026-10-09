@@ -140,12 +140,11 @@ TEMPLATES = [
 WSGI_APPLICATION = 'backdev.wsgi.application'
 ASGI_APPLICATION = 'backdev.asgi.application'
 
-REDIS_HOST = env('REDIS_HOST', default='127.0.0.1')
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [(REDIS_HOST, 6379)],
+            "hosts": [("redis", 6379)],
         },
     },
 }
