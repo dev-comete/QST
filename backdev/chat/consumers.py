@@ -33,54 +33,41 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
     # ------------------------------------------------------------------ lifecycle
     async def connect(self):
         self.user = self.scope['user']
-        self.conversation_id = None
-        self.room_group_name = None
         self._sent_at = deque()
 
-        # Accept FIRST, then close with a custom code. Closing before accept
-        # makes browsers see a generic 1006 and they can't tell "server down"
-        # from "not allowed".
+        # Accept FIRST, then close with a custom code if needed
         await self.accept()
 
         if not self.user.is_authenticated:
             await self.close(code=CloseCode.UNAUTHENTICATED)
             return
-        if not await database_sync_to_async(is_formateur)(self.user):
+            
+        has_perm = await database_sync_to_async(is_formateur)(self.user)
+        if not has_perm:
             await self.close(code=CloseCode.FORBIDDEN)
             return
 
-        kwargs = self.scope['url_route']['kwargs']
-        chat_type = kwargs.get('chat_type')
+        # 1. Join Personal Group (Receives all 1-on-1 Direct Messages)
+        self.personal_group = f'chat_user_{self.user.id}'
+        await self.channel_layer.group_add(self.personal_group, self.channel_name)
 
-        if chat_type == 'general':
-            self.conversation_id = await self._get_general_conversation_id()
-        elif chat_type == 'direct':
-            target_id = int(kwargs['user_id'])
-            if target_id == self.user.id:
-                await self.close(code=CloseCode.BAD_REQUEST)
-                return
-            if not await self._is_valid_target(target_id):
-                await self.close(code=CloseCode.NOT_FOUND)
-                return
-            self.conversation_id = await self._get_direct_conversation_id(self.user.id, target_id)
-        else:
-            await self.close(code=CloseCode.BAD_REQUEST)
-            return
+        # 2. Join General Group (Receives all General Room Messages)
+        self.general_id = await self._get_general_conversation_id()
+        self.general_group = f'chat_conversation_{self.general_id}'
+        await self.channel_layer.group_add(self.general_group, self.channel_name)
 
-        self.room_group_name = f'chat_conversation_{self.conversation_id}'
-        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
-
-        # Tell the client which conversation this socket is bound to (a first
-        # DM is created server-side, the client can't know its id otherwise).
-        await self.send_json({'type': 'ready', 'conversation_id': self.conversation_id})
+        # Tell the client which conversation ID represents the general room
+        await self.send_json({'type': 'ready', 'conversation_id': self.general_id})
 
     async def disconnect(self, close_code):
-        if self.room_group_name:
-            await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+        if hasattr(self, 'personal_group'):
+            await self.channel_layer.group_discard(self.personal_group, self.channel_name)
+        if hasattr(self, 'general_group'):
+            await self.channel_layer.group_discard(self.general_group, self.channel_name)
 
     # ------------------------------------------------------------------ incoming
     async def receive(self, text_data=None, bytes_data=None, **kwargs):
-        if not text_data or self.conversation_id is None:
+        if not text_data:
             return
         try:
             content = json.loads(text_data)
@@ -104,6 +91,9 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 
         text = content.get('message')
         client_id = content.get('client_id')
+        conversation_id = content.get('conversation_id')
+        target_user_id = content.get('target_user_id')
+
         if not isinstance(client_id, str) or not (0 < len(client_id) <= 64):
             client_id = None
 
@@ -117,16 +107,34 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             await self._error('rate_limited', 'Too many messages, slow down.', client_id)
             return
 
-        data, created = await self._save_message(text, client_id)
+        # Resolve conversation ID if it's a brand new Direct Message
+        if not conversation_id and target_user_id:
+            if target_user_id == self.user.id or not await self._is_valid_target(target_user_id):
+                await self._error('bad_request', 'Invalid target user.', client_id)
+                return
+            conversation_id = await self._get_direct_conversation_id(self.user.id, target_user_id)
+
+        if not conversation_id:
+            return
+
+        data, created, participants = await self._save_message(text, client_id, conversation_id)
 
         if created:
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {'type': 'chat.message', 'message': data, 'client_id': client_id},
-            )
+            if conversation_id == self.general_id:
+                # Broadcast to everyone in General
+                await self.channel_layer.group_send(
+                    self.general_group,
+                    {'type': 'chat.message', 'message': data, 'client_id': client_id}
+                )
+            else:
+                # Broadcast directly to BOTH participants' personal streams for Direct Chat
+                for p_id in participants:
+                    await self.channel_layer.group_send(
+                        f'chat_user_{p_id}',
+                        {'type': 'chat.message', 'message': data, 'client_id': client_id}
+                    )
         else:
-            # Duplicate re-send (e.g. after a reconnect): it was already
-            # broadcast the first time, just acknowledge it to the sender.
+            # Re-send exact same duplicate msg ack
             await self.send_json({'type': 'message', 'message': data, 'client_id': client_id})
 
     # ------------------------------------------------------------------ outgoing
@@ -154,7 +162,9 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
     @database_sync_to_async
     def _is_valid_target(self, target_id):
         target = User.objects.filter(pk=target_id, is_active=True).first()
-        return target is not None and is_formateur(target)
+        if not target:
+            return False
+        return is_formateur(target)
 
     @database_sync_to_async
     def _get_general_conversation_id(self):
@@ -191,27 +201,29 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             return conv.id
 
     @database_sync_to_async
-    def _save_message(self, content, client_id):
-        """Returns (serialized_message, created). Idempotent on (sender, client_id)."""
+    def _save_message(self, content, client_id, conv_id):
+        """Returns (serialized_message, created, participants_list)."""
         if client_id:
             existing = (Message.objects.select_related('sender')
                         .filter(sender=self.user, client_id=client_id).first())
             if existing:
-                return MessageSerializer(existing).data, False
+                conv = Conversation.objects.get(pk=conv_id)
+                return MessageSerializer(existing).data, False, list(conv.participants.values_list('id', flat=True))
 
         try:
             with transaction.atomic():
                 message = Message.objects.create(
-                    conversation_id=self.conversation_id,
+                    conversation_id=conv_id,
                     sender=self.user,
                     content=content,
                     client_id=client_id,
                 )
-                # .update() bypasses auto_now, so set the timestamp explicitly.
-                Conversation.objects.filter(pk=self.conversation_id).update(updated_at=timezone.now())
-        except IntegrityError:  # two identical client_ids raced
+                Conversation.objects.filter(pk=conv_id).update(updated_at=timezone.now())
+                conv = Conversation.objects.prefetch_related('participants').get(pk=conv_id)
+        except IntegrityError:
             existing = Message.objects.select_related('sender').get(sender=self.user, client_id=client_id)
-            return MessageSerializer(existing).data, False
+            conv = Conversation.objects.get(pk=conv_id)
+            return MessageSerializer(existing).data, False, list(conv.participants.values_list('id', flat=True))
 
-        message.sender = self.user  # avoid an extra query in the serializer
-        return MessageSerializer(message).data, True
+        message.sender = self.user
+        return MessageSerializer(message).data, True, list(conv.participants.values_list('id', flat=True))
