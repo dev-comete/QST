@@ -8,6 +8,12 @@ services:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5434:5432"
+  
+  redis:
+    image: redis:7-alpine
+    container_name: qst_redis
+    ports:
+      - "6379:6379"
 
   web:
     build: ./backdev
@@ -15,19 +21,35 @@ services:
     command: gunicorn backdev.wsgi:application --bind 0.0.0.0:8000 --workers 3
     volumes:
       - ./backdev:/app 
+      - static_volume:/app/staticfiles
     ports:
       - "8000:8000"
     depends_on:
       - db
+      - redis
     env_file:
       - ./backdev/.env
+  
+  daphne:
+    build: ./backdev
+    container_name: qst_daphne
+    command: daphne -b 0.0.0.0 -p 8001 backdev.asgi:application
+    volumes:
+      - ./backdev:/app
+    ports:
+      - "8001:8001"
+    env_file:
+      - ./backdev/.env
+    depends_on:
+      - redis
+
   frontend:
-    build: ./frontend       # Points to the React folder
+    build: ./frontend      
     container_name: qst_react
     ports:
-      - "5173:5173"         # Change to 5173:5173 if using Vite
+      - "5173:5173"         
     volumes:
-      - ./frontend:/app     # Syncs React code for hot-reloading
+      - ./frontend:/app    
       - /app/node_modules
     depends_on:
       - web
@@ -40,3 +62,4 @@ services:
 
 volumes:
   postgres_data:
+  static_volume:

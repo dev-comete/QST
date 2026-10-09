@@ -24,6 +24,7 @@ const ROLE_CONFIGS: Record<string, SideBarConfig> = {
 		navItem: [
 			{ label: 'Tableau de bord', link: '/formateur/tableau_de_bord', icon:'chart-simple' },
 			{ label: 'Formation', link: '/formateur/formation', icon:'book' },
+			{ label: 'Messagerie', link: '/formateur/chat', icon:'comments' },
 			{ label: 'Banque de questions', link: '/formateur/gestion_question', icon: 'circle-question' },
 			{ label: 'Quiz', link: '/formateur/gestion_quiz', icon:'file-circle-question' },
 			{ label: 'Vagues', link: '/formateur/gestion_vague', icon: 'users' },
