@@ -150,6 +150,7 @@ const ChatPage = () => {
     loadMessages(nextConversation?.id ?? null);
   }, [conversationsQuery.data, currentUserId, loadMessages, selectedRoom, targetUserId]);
 
+  // WebSocket Auto-Reconnect Effect
   useEffect(() => {
     if (!token || !currentUserId) {
       return;
@@ -162,84 +163,108 @@ const ChatPage = () => {
       return;
     }
 
-    if (socketRef.current) {
-      socketRef.current.close();
-    }
+    let isMounted = true;
+    let reconnectTimer: ReturnType<typeof setTimeout>;
 
-    const baseUrl = (import.meta.env.VITE_WS_BASE_URL || `${window.location.protocol === "https:" ? "wss" : "ws"}://${window.location.hostname}:8001`).replace(/\/$/, "");
-    const wsUrl =
-      selectedRoom === "general"
-        ? `${baseUrl}/ws/chat/general/?token=${encodeURIComponent(token)}`
-        : `${baseUrl}/ws/chat/direct/${targetUserId}/?token=${encodeURIComponent(token)}`;
-
-    const socket = new WebSocket(wsUrl);
-    socketRef.current = socket;
-    setSocketStatus("connecting");
-
-    socket.onopen = () => {
-      setSocketStatus("connected");
-
-      if (selectedRoom === "general") {
-        loadMessages(generalConversation?.id ?? null);
-      } else if (targetUserId) {
-        const nextConversation = directConversationMap.get(targetUserId);
-        loadMessages(nextConversation?.id ?? null);
-      }
-    };
-
-    socket.onmessage = (event) => {
-      const payload = JSON.parse(event.data) as {
-        message?: string;
-        sender_id?: number;
-        sender_email?: string;
-        created_at?: string;
-      };
-
-      if (!payload.message || !payload.created_at) {
-        return;
+    const connectWebSocket = () => {
+      if (socketRef.current && socketRef.current.readyState !== WebSocket.CLOSED) {
+        socketRef.current.close(1000, "Reconnecting");
       }
 
-      const newMessage: ChatMessage = {
-        id: Date.now() + Math.random(),
-        conversation: selectedConversationId ?? 0,
-        sender: {
-          id: payload.sender_id ?? 0,
-          username: payload.sender_email ?? "Formateur",
-          email: payload.sender_email ?? "",
-        },
-        content: payload.message,
-        created_at: payload.created_at,
-        is_read: true,
+      const baseUrl = (import.meta.env.VITE_WS_BASE_URL || `${window.location.protocol === "https:" ? "wss" : "ws"}://${window.location.hostname}:8001`).replace(/\/$/, "");
+      const wsUrl =
+        selectedRoom === "general"
+          ? `${baseUrl}/ws/chat/general/?token=${encodeURIComponent(token)}`
+          : `${baseUrl}/ws/chat/direct/${targetUserId}/?token=${encodeURIComponent(token)}`;
+
+      const socket = new WebSocket(wsUrl);
+      socketRef.current = socket;
+      
+      if (isMounted) setSocketStatus("connecting");
+
+      socket.onopen = () => {
+        if (!isMounted) return;
+        setSocketStatus("connected");
+
+        if (selectedRoom === "general") {
+          loadMessages(generalConversation?.id ?? null);
+        } else if (targetUserId) {
+          const nextConversation = directConversationMap.get(targetUserId);
+          loadMessages(nextConversation?.id ?? null);
+        }
       };
 
-      setMessages((previous) => {
-        const alreadyPresent = previous.some(
-          (message) =>
-            message.content === payload.message &&
-            message.created_at === payload.created_at &&
-            message.sender.id === (payload.sender_id ?? 0)
-        );
+      socket.onmessage = (event) => {
+        const payload = JSON.parse(event.data) as {
+          message?: string;
+          sender_id?: number;
+          sender_email?: string;
+          created_at?: string;
+        };
 
-        if (alreadyPresent) {
-          return previous;
+        if (!payload.message || !payload.created_at) {
+          return;
         }
 
-        return [...previous, newMessage];
-      });
+        const newMessage: ChatMessage = {
+          id: Date.now() + Math.random(),
+          conversation: selectedConversationId ?? 0,
+          sender: {
+            id: payload.sender_id ?? 0,
+            username: payload.sender_email ?? "Formateur",
+            email: payload.sender_email ?? "",
+          },
+          content: payload.message,
+          created_at: payload.created_at,
+          is_read: true,
+        };
+
+        setMessages((previous) => {
+          const alreadyPresent = previous.some(
+            (message) =>
+              message.content === payload.message &&
+              message.created_at === payload.created_at &&
+              message.sender.id === (payload.sender_id ?? 0)
+          );
+
+          if (alreadyPresent) {
+            return previous;
+          }
+
+          return [...previous, newMessage];
+        });
+      };
+
+      socket.onerror = () => {
+        if (!isMounted) return;
+        setSocketStatus("error");
+      };
+
+      socket.onclose = (event) => {
+        if (!isMounted) return;
+        setSocketStatus("closed");
+
+        // Auto-reconnect if it wasn't a deliberate closure (1000)
+        if (event.code !== 1000) {
+          console.log("WebSocket dropped. Reconnecting in 3 seconds...");
+          reconnectTimer = setTimeout(() => {
+            connectWebSocket();
+          }, 3000);
+        }
+      };
     };
 
-    socket.onerror = () => {
-      setSocketStatus("error");
-    };
-
-    socket.onclose = () => {
-      setSocketStatus("closed");
-    };
+    connectWebSocket();
 
     return () => {
-      socket.close();
+      isMounted = false;
+      clearTimeout(reconnectTimer);
+      if (socketRef.current) {
+        // Pass 1000 to indicate intentional closure
+        socketRef.current.close(1000, "Room changed or unmounted");
+      }
     };
-  }, [currentUserId, directConversationMap, generalConversation?.id, loadMessages, selectedRoom, targetUserId, token]);
+  }, [currentUserId, directConversationMap, generalConversation?.id, loadMessages, selectedConversationId, selectedRoom, targetUserId, token]);
 
   const roomList = useMemo<ChatRoomItem[]>(() => {
     const items: ChatRoomItem[] = [
