@@ -38,7 +38,7 @@ const Header = ({ navList } : HeaderProps) => {
 
 			<div 
 				className={`
-					fixed top-16 left-0 right-0 z-40 bg-white border-b border-slate-200 shadow-xl transition-all duration-300 md:hidden overflow-hidden
+					fixed top-16 left-0 right-0 z-200 bg-white border-b border-slate-200 shadow-xl transition-all duration-300 md:hidden overflow-hidden
 					${isMobileMenuOpen ? "max-h-[calc(100vh-4rem)] opacity-100 py-4" : "max-h-0 opacity-0 py-0 pointer-events-none"}
 				`}
 			>

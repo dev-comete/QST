@@ -24,7 +24,7 @@ const NavigationBarButton = ({ title, isClicked, onClick } : NavigationButtonPro
             // [ALTERED CODE]: flex-1 ensures tabs are equal width. !px-6 !py-2.5 overrides Button's default w-fit and padding
             className={`flex justify-center items-center transition-all duration-300 ease-in-out !rounded-lg !px-6 !py-2.5 ${isClicked ? activeStyle : inactiveStyle}`}
         >
-            <CustomText 
+            <CustomText
                 weight={isClicked ? 'bold' : 'normal'} 
                 textTag="p" 
                 color={isClicked ? 'primary' : 'disabled'}
@@ -50,21 +50,20 @@ const NavigationBar = ({ titles, children, activeTab, onTabChange } : Navigation
 
     return (
         <Box direction="column" className="w-full">
-			<div className="sticky top-0 z-10 w-full py-2">
-            <Paper className='flex w-full md:w-fit !bg-slate-100/80 !p-1.5 !rounded-xl !border !border-slate-200/50 !shadow-none'>
-                {
-                    titles.map((value, i) => {
-                        return (
-                            <NavigationBarButton
-                                key={'nav' + i + value}
-                                title={value}
-                                isClicked={i === activeTab}
-                                onClick={() => onTabChange(i)}
-                            />
-                        )
-                    })
-                }
-            </Paper>
+			<div className="sticky top-0 z-100 w-fit md:w-full py-2">
+				<Paper className='flex w-full max-w-full overflow-x-auto no-scrollbar !bg-slate-100/80 !p-1.5 !rounded-xl !border !border-slate-200/50 !shadow-none'>					{
+						titles.map((value, i) => {
+							return (
+								<NavigationBarButton
+									key={'nav' + i + value}
+									title={value}
+									isClicked={i === activeTab}
+									onClick={() => onTabChange(i)}
+								/>
+							)
+						})
+					}
+				</Paper>
 			</div>
             <Box direction="column" className="w-full animation-fade-in">
                 {currentPage}

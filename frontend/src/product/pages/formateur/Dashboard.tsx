@@ -27,7 +27,7 @@ const Dashboard = () => {
 				onTabChange={handleTabChange}			
 			>
 				<DashboardStat stats={metric.stats}/>
-				<Box>
+				<Box flexDirection="flex-col md:flex-row">
 					<DashboardBloc 
 						title="Suivi des quiz récents"
 						emptyText="Il n'y a pas encore de quiz publié"

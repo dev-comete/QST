@@ -20,7 +20,7 @@ export const RecentQuizItem = ({ item } : { item : RecentQuiz}) => {
 	return (
 		<DashboardItemBox>
 			<Box direction="column" className="w-full">
-				<Box className="items-center justify-between">
+				<Box flexDirection="md:flex-row flex-col" className="items-center justify-between">
 					<CustomText textTag="h3" weight="bold">{item.name}</CustomText>
 					<StatusBadge value={item.status}/>
 				</Box>
