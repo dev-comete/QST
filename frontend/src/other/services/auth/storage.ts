@@ -64,7 +64,12 @@ export const TokenStorage = {
 	}
 
 	if (error.response && error.response.status === 403) {
-		window.location.reload();
+		// Avoid forcing a full reload on 403 which can create a reload loop
+		// (e.g. when an endpoint returns 403 repeatedly while the page reinitializes
+		// and re-requests). Clear auth and redirect to a dedicated unauthorized page
+		// so the app can render a proper message instead of reloading indefinitely.
+		TokenStorage.clear();
+		window.location.href = '/unauthorized';
 		return Promise.reject(error);
 	}
 
