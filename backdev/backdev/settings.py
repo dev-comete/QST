@@ -145,6 +145,8 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
             "hosts": [("redis", 6379)],
+            'capacity': 1500,  
+            'expiry': 10,
         },
     },
 }
@@ -229,6 +231,11 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Tells Django to use the 'Utilisateur' model in the 'accounts' app for authentication
 AUTH_USER_MODEL = 'accounts.Utilisateur'
+
+# The user model stores its role in `type_utilisateur` (FK -> TypeUtilisateur).
+# Point the chat permission check to that field so `is_formateur` works correctly.
+CHAT_ROLE_FIELD = 'type_utilisateur'
+CHAT_ALLOWED_ROLES = ('formateur',)
 
 # Configuration SMTP pour Gmail
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
