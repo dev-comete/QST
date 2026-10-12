@@ -23,17 +23,7 @@ export const router = createBrowserRouter([
 	{ path: '/', element: <RootRedirect />},
 	{ path: '/login', element: <Login /> },
 	{ path: '/unauthorized', element: <ErrorPage msg="Vous ne pouvez pas accéder à la page" statusCode={403} /> },
-	// { path: '/set-password/:uid/:token', element: <SetPasswordPage /> },
-
-	{
-		element: <ProtectedRoute allowedRole={[]}/>, 
-		children: [
-			{
-				path: '/set-password/:uid/:token',
-				element: <SetPasswordPage /> 
-			}
-		]
-	},
+	{ path: '/set-password/:uid/:token', element: <SetPasswordPage /> },
 
 	//Admin routes
 	{
