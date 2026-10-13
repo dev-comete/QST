@@ -1,5 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import type { FormEvent } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import apiClient from "../../../other/services/apiClient";
 import { TokenStorage } from "../../../other/services/auth/storage";
@@ -15,35 +14,25 @@ import type {
 	ChatMessage,
 	MessagePage,
 	MessagesCache,
-	ServerEvent,
 } from "../../../other/types/chatType";
 
-import { useChatSocket } from "./useChatSocket";
 import ChatLog from "../../../system/organisms/chat/ChatLog";
+import { useChat, useChatRealtime } from "../../../other/hooks/chat/useChat";
+import { useChatLog } from "../../../other/hooks/chat/useChatLog";
+import { useChatConversation } from "../../../other/hooks/chat/useChatConversation";
 
 const PAGE_SIZE = 50;
-const MAX_MESSAGE_LENGTH = 2000;
 const EMPTY_MESSAGES: ChatMessage[] = [];
 const CONVERSATIONS_KEY = ["chat-conversations"] as const;
 const messagesKey = (conversationId: number | null) => ["chat-messages", conversationId] as const;
 
-const ERROR_TEXT: Record<string, string> = {
-	too_long: `Message trop long (${MAX_MESSAGE_LENGTH} caractères max).`,
-	rate_limited: "Trop de messages envoyés, ralentissez un peu.",
-	bad_json: "Message invalide.",
-	bad_payload: "Message invalide.",
-};
-
-const STATUS_LABEL = {
+const STATUS_LABEL : Record<string, string> = {
 	idle: "",
 	connecting: "Connexion...",
 	connected: "Connecté",
 	reconnecting: "Reconnexion...",
 	closed: "Déconnecté",
 } as const;
-
-const newClientId = () =>
-	globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 
 	// ---------------------------------------------------------------- message helpers
 
@@ -54,44 +43,26 @@ const newClientId = () =>
 
 	const firstServerId = (list: ChatMessage[]) => list.find((m) => m.id > 0)?.id ?? 0;
 
-	function upsertMessage(list: ChatMessage[], incoming: ChatMessage, clientId?: string | null): ChatMessage[] {
-		const key = clientId ?? incoming.client_id ?? null;
-		if (key) {
-			const index = list.findIndex((m) => m.client_id === key);
-			if (index !== -1) {
-				const next = [...list];
-				next[index] = { ...incoming, client_id: key, status: undefined };
-				return next;
-			}
-		}
-		if (list.some((m) => m.id === incoming.id)) return list;
-		return [...list, incoming];
-	}
-
-	function sortMessages(list: ChatMessage[]): ChatMessage[] {
-		return [...list].sort((a, b) => {
-			const aPending = a.id < 0;
-			const bPending = b.id < 0;
-			if (aPending && bPending) return b.id - a.id;
-			if (aPending) return 1;
-			if (bPending) return -1;
-			return a.id - b.id;
-		});
-	}
+	const sortMessages = (list: ChatMessage[]) => [...list].sort((a, b) => {
+		const aPending = a.id < 0;
+		const bPending = b.id < 0;
+		if (aPending && bPending) return b.id - a.id;
+		if (aPending) return 1;
+		if (bPending) return -1;
+		return a.id - b.id;
+	});
 
 	// ---------------------------------------------------------------- component
 
-	const ChatPage = () => {
+const ChatPage = () => {
 	const queryClient = useQueryClient();
 
 	const currentUser = (TokenStorage.getUser() ?? null) as { id: number; username: string; email: string } | null;
 	const currentUserId = currentUser?.id ?? 0;
-	const token = TokenStorage.getAccessToken();
 
 	const [selectedRoom, setSelectedRoom] = useState<"general" | "direct">("general");
 	const [targetUserId, setTargetUserId] = useState<number | null>(null);
 	const [live, setLive] = useState<{ roomPath: string; id: number } | null>(null);
-	const [draft, setDraft] = useState("");
 	const [notice, setNotice] = useState<string | null>(null);
 	const [isLoadingOlder, setIsLoadingOlder] = useState(false);
 	const [isVisible, setIsVisible] = useState(document.visibilityState === "visible");
@@ -99,49 +70,18 @@ const newClientId = () =>
 	const scrollRef = useRef<HTMLDivElement | null>(null);
 	const atBottomRef = useRef(true);
 	const restoreScrollRef = useRef<number | null>(null);
-	const tempIdRef = useRef(0);
 	const lastReadRef = useRef(new Map<number, number>());
 
 	// ------------------------------------------------------------ data
 
-	const formateursQuery = useQuery({
-		queryKey: ["chat-formateurs"],
-		queryFn: async () => {
-			const { data } = await apiClient.get("/quizzes/crud/utilisateurs/", { params: { role: "formateur" } });
-			return data as { id: number; username: string; email: string }[];
-		},
-		enabled: Boolean(currentUserId),
+	const { formateursQuery, conversationsQuery } = useChat();
+	const { roomList, activeRoomLabel, directConversationMap, generalConversation } = useChatLog({
+		currentUserId,
+		selectedRoom,
+		targetUserId,
+		formateursQuery,
+		conversationsQuery,
 	});
-
-	const conversationsQuery = useQuery({
-		queryKey: CONVERSATIONS_KEY,
-		queryFn: async () => {
-			const { data } = await apiClient.get<ChatConversation[]>("/chat/conversations/");
-			return data;
-		},
-		enabled: Boolean(token),
-		refetchInterval: 30_000,
-	});
-
-	const otherFormateurs = useMemo(
-		() => (formateursQuery.data ?? []).filter((user) => user.id !== currentUserId),
-		[formateursQuery.data, currentUserId]
-	);
-
-	const generalConversation = useMemo(
-		() => (conversationsQuery.data ?? []).find((c) => c.type === "general") ?? null,
-		[conversationsQuery.data]
-	);
-
-	const directConversationMap = useMemo(() => {
-		const map = new Map<number, ChatConversation>();
-		(conversationsQuery.data ?? []).forEach((conversation) => {
-			if (conversation.type !== "direct") return;
-			const other = conversation.participants.find((person) => person.id !== currentUserId);
-			if (other) map.set(other.id, conversation);
-		});
-		return map;
-	}, [conversationsQuery.data, currentUserId]);
 
 	// Connect once. Always.
 	const roomPath = currentUserId ? "/ws/chat/stream/" : null;
@@ -156,21 +96,21 @@ const newClientId = () =>
 	const conversationId = live && live.roomPath === roomPath ? live.id : knownConversationId;
 
 	const messagesQuery = useQuery({
-	queryKey: messagesKey(conversationId),
-	queryFn: async (): Promise<MessagesCache> => {
-			const { data } = await apiClient.get<MessagePage>(`/chat/conversations/${conversationId}/messages/`, {
-			params: { limit: PAGE_SIZE },
-			});
-			const existing = queryClient.getQueryData<MessagesCache>(messagesKey(conversationId));
-			const pending = (existing?.messages ?? []).filter(
-				(m) => m.id < 0 && !data.results.some((r) => r.client_id && r.client_id === m.client_id)
-			);
-			return { messages: [...data.results, ...pending], hasMore: data.has_more };
-		},
-		enabled: conversationId !== null,
-		staleTime: Infinity,
-		refetchOnWindowFocus: false,
-		refetchOnReconnect: false,
+		queryKey: messagesKey(conversationId),
+		queryFn: async (): Promise<MessagesCache> => {
+				const { data } = await apiClient.get<MessagePage>(`/chat/conversations/${conversationId}/messages/`, {
+				params: { limit: PAGE_SIZE },
+				});
+				const existing = queryClient.getQueryData<MessagesCache>(messagesKey(conversationId));
+				const pending = (existing?.messages ?? []).filter(
+					(m) => m.id < 0 && !data.results.some((r) => r.client_id && r.client_id === m.client_id)
+				);
+				return { messages: [...data.results, ...pending], hasMore: data.has_more };
+			},
+			enabled: conversationId !== null,
+			staleTime: Infinity,
+			refetchOnWindowFocus: false,
+			refetchOnReconnect: false,
 	});
 
 	const messages = messagesQuery.data?.messages ?? EMPTY_MESSAGES;
@@ -185,119 +125,16 @@ const newClientId = () =>
 		);
 	};
 
-	const catchUp = async (convId: number) => {
-	const key = messagesKey(convId);
-	const cached = queryClient.getQueryData<MessagesCache>(key);
-	if (!cached) {
-		await queryClient.invalidateQueries({ queryKey: key });
-		return;
-	}
-	let afterId = lastServerId(cached.messages);
-	for (let page = 0; page < 10; page += 1) {
-		const { data } = await apiClient.get<MessagePage>(`/chat/conversations/${convId}/messages/`, {
-			params: { after_id: afterId, limit: 100 },
-		});
-		if (data.results.length === 0) break;
-		queryClient.setQueryData<MessagesCache>(key, (old) =>
-		old
-			? {
-				...old,
-				messages: sortMessages(data.results.reduce((acc, m) => upsertMessage(acc, m, m.client_id), old.messages)),
-			}
-			: old
-		);
-		afterId = data.results[data.results.length - 1].id;
-		if (!data.has_more) break;
-	}
-	};
-
 	// ------------------------------------------------------------ socket
 
-	const handleEvent = (event: ServerEvent) => {
-		switch (event.type) {
-			case "ready": {
-				setLive({ roomPath: roomPath ?? "", id: event.conversation_id });
-				const known = (queryClient.getQueryData<ChatConversation[]>(CONVERSATIONS_KEY) ?? []).some(
-					(c) => c.id === event.conversation_id
-			);
-			if (!known) queryClient.invalidateQueries({ queryKey: CONVERSATIONS_KEY });
-				return;
-			}
-			case "message": {
-				const incoming = event.message;
-				const key = messagesKey(incoming.conversation);
-				const cached = queryClient.getQueryData<MessagesCache>(key);
-			
-			if (cached) {
-				queryClient.setQueryData<MessagesCache>(key, {
-				...cached,
-				messages: upsertMessage(cached.messages, incoming, event.client_id),
-				});
-			} else {
-				queryClient.invalidateQueries({ queryKey: key });
-			}
-			
-			queryClient.setQueryData<ChatConversation[]>(CONVERSATIONS_KEY, (old) => {
-				if (!old) return old;
-				
-				const exists = old.some((c) => c.id === incoming.conversation);
-				if (!exists) {
-					queryClient.invalidateQueries({ queryKey: CONVERSATIONS_KEY });
-					return old;
-				}
-
-				return old.map((c) => {
-				if (c.id === incoming.conversation) {
-					const isUnread = incoming.sender.id !== currentUserId && conversationId !== incoming.conversation;
-					return { 
-					...c, 
-					last_message: incoming, 
-					updated_at: incoming.created_at,
-					unread_count: isUnread ? (c.unread_count || 0) + 1 : c.unread_count
-					};
-				}
-				return c;
-				});
-			});
-			return;
-			}
-			case "error": {
-				setNotice(ERROR_TEXT[event.code] ?? event.detail ?? "Une erreur est survenue.");
-				if (event.client_id && conversationId !== null) {
-					patchMessage(conversationId, event.client_id, { status: "failed" });
-				}
-				return;
-			}
-			default:
-			return;
-		}
-	};
-
-	const handleOpen = ({ isReconnect, send: sendFn }: { isReconnect: boolean; send: (p: object) => boolean }) => {
-	if (!isReconnect || conversationId === null) return;
-	const convId = conversationId;
-	void (async () => {
-		try {
-			await catchUp(convId);
-		} catch {
-		// next reconnect will try again
-		}
-		const cached = queryClient.getQueryData<MessagesCache>(messagesKey(convId));
-		cached?.messages
-		.filter((m) => m.status === "sending" && m.client_id)
-		.forEach((m) => sendFn({ 
-			type: "message", 
-			message: m.content, 
-			client_id: m.client_id,
-			conversation_id: convId
-		}));
-	})();
-	};
-
-	const { status: socketStatus, send, reconnect } = useChatSocket({
+	const { socketStatus, send, reconnect } = useChatRealtime({
 		roomPath,
-		onEvent: handleEvent,
-		onOpen: handleOpen,
+		conversationId,
+		currentUserId,
+		queryClient,
+		setNotice,
+		setLive,
+		messagesKey,
 	});
 
 	// ------------------------------------------------------------ effects
@@ -343,43 +180,42 @@ const newClientId = () =>
 	}, [messages, currentUserId]);
 
 	const handleScroll = () => {
-	const element = scrollRef.current;
-	if (!element) return;
-		atBottomRef.current = element.scrollHeight - element.scrollTop - element.clientHeight < 80;
+		const element = scrollRef.current;
+		if (!element) return;
+			atBottomRef.current = element.scrollHeight - element.scrollTop - element.clientHeight < 80;
 	};
 
 	// ------------------------------------------------------------ actions
 
 	const loadOlder = async () => {
-	if (conversationId === null || isLoadingOlder) return;
-	const cached = queryClient.getQueryData<MessagesCache>(messagesKey(conversationId));
-	const beforeId = cached ? firstServerId(cached.messages) : 0;
-	if (!cached?.hasMore || !beforeId) return;
+		if (conversationId === null || isLoadingOlder) return;
+		const cached = queryClient.getQueryData<MessagesCache>(messagesKey(conversationId));
+		const beforeId = cached ? firstServerId(cached.messages) : 0;
+		if (!cached?.hasMore || !beforeId) return;
 
-	setIsLoadingOlder(true);
-	const previousHeight = scrollRef.current?.scrollHeight ?? 0;
-	try {
-		const { data } = await apiClient.get<MessagePage>(`/chat/conversations/${conversationId}/messages/`, {
-		params: { limit: PAGE_SIZE, before_id: beforeId },
-		});
-		restoreScrollRef.current = previousHeight;
-		queryClient.setQueryData<MessagesCache>(messagesKey(conversationId), (old) =>
-		old
-			? {
-				hasMore: data.has_more,
-				messages: sortMessages([
-				...data.results.filter((r) => !old.messages.some((m) => m.id === r.id)),
-				...old.messages,
-				]),
-			}
-			: old
-		);
-	} catch {
-		restoreScrollRef.current = null;
-		setNotice("Impossible de charger les messages précédents.");
-	} finally {
-		setIsLoadingOlder(false);
-	}
+		setIsLoadingOlder(true);
+		const previousHeight = scrollRef.current?.scrollHeight ?? 0;
+		try {
+			const { data } = await apiClient.get<MessagePage>(`/chat/conversations/${conversationId}/messages/`, {
+			params: { limit: PAGE_SIZE, before_id: beforeId }});
+			restoreScrollRef.current = previousHeight;
+			queryClient.setQueryData<MessagesCache>(messagesKey(conversationId), (old) =>
+			old
+				? {
+					hasMore: data.has_more,
+					messages: sortMessages([
+					...data.results.filter((r) => !old.messages.some((m) => m.id === r.id)),
+					...old.messages,
+					]),
+				}
+				: old
+			);
+		} catch {
+			restoreScrollRef.current = null;
+			setNotice("Impossible de charger les messages précédents.");
+		} finally {
+			setIsLoadingOlder(false);
+		}
 	};
 
 	const handleRoomSelect = (room: { type: "general" | "direct"; userId?: number }) => {
@@ -395,101 +231,17 @@ const newClientId = () =>
 	};
 
 	const canSend = socketStatus === "connected" && (conversationId !== null || targetUserId !== null);
-
-	const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-		event.preventDefault();
-		const text = draft.trim();
-		if (!text || !canSend) return;
-		if (text.length > MAX_MESSAGE_LENGTH) {
-			setNotice(ERROR_TEXT.too_long);
-			return;
-		}
-
-		const clientId = newClientId();
-		if (!send({ 
-			type: "message", 
-			message: text, 
-			client_id: clientId,
-			conversation_id: conversationId,
-			target_user_id: conversationId === null ? targetUserId : undefined
-		})) return;
-
-	// Optimistic UI for existing conversations
-	if (conversationId !== null) {
-		tempIdRef.current += 1;
-		const optimistic: ChatMessage = {
-			id: -tempIdRef.current,
-			conversation: conversationId,
-			sender: { id: currentUserId, username: currentUser?.username ?? "Moi", email: currentUser?.email ?? "" },
-			content: text,
-			created_at: new Date().toISOString(),
-			client_id: clientId,
-			status: "sending",
-		};
-		queryClient.setQueryData<MessagesCache>(messagesKey(conversationId), (old) => ({
-		hasMore: old?.hasMore ?? false,
-		messages: [...(old?.messages ?? []), optimistic],
-		}));
-	}
-
-		atBottomRef.current = true;
-		setDraft("");
-	};
-
-	const retryMessage = (message: ChatMessage) => {
-	if (!message.client_id || conversationId === null) return;
-	if (send({ 
-		type: "message", 
-		message: message.content, 
-		client_id: message.client_id,
-		conversation_id: conversationId,
-		target_user_id: conversationId === null ? targetUserId : undefined
-	})) {
-		patchMessage(conversationId, message.client_id, { status: "sending" });
-	}
-	};
-
-	// ------------------------------------------------------------ sidebar
-
-	const roomList = useMemo(() => {
-		const general = {
-			key: "general-room",
-			type: "general" as const,
-			label: "Général formateurs",
-			subtitle: generalConversation?.last_message?.content ?? "Salle commune",
-			unread: generalConversation?.unread_count ?? 0,
-			active: selectedRoom === "general",
-			userId: undefined as number | undefined,
-			lastAt: generalConversation?.last_message?.created_at ?? null,
-		};
-
-		const direct = otherFormateurs.map((user) => {
-			const conversation = directConversationMap.get(user.id);
-			return {
-				key: `direct-${user.id}`,
-				type: "direct" as const,
-				label: user.username || user.email,
-				subtitle: conversation?.last_message?.content ?? user.email,
-				unread: conversation?.unread_count ?? 0,
-				active: selectedRoom === "direct" && targetUserId === user.id,
-				userId: user.id as number | undefined,
-				lastAt: conversation?.last_message?.created_at ?? null,
-			};
-		});
-
-		direct.sort((a, b) => {
-			if (a.lastAt && b.lastAt) return b.lastAt.localeCompare(a.lastAt);
-			if (a.lastAt) return -1;
-			if (b.lastAt) return 1;
-			return a.label.localeCompare(b.label);
-		});
-
-		return [general, ...direct];
-	}, [directConversationMap, generalConversation, otherFormateurs, selectedRoom, targetUserId]);
-
-	const activeRoomLabel = selectedRoom === "general"
-		? "Général formateurs"
-		: (otherFormateurs.find((user) => user.id === targetUserId)?.username ?? "Conversation directe");
+	const { draft, setDraft, handleSubmit, retryMessage } = useChatConversation({
+		currentUser,
+		currentUserId,
+		conversationId,
+		targetUserId,
+		canSend,
+		send,
+		queryClient,
+		setNotice,
+		patchMessage,
+	});
 
 	// ------------------------------------------------------------ render
 

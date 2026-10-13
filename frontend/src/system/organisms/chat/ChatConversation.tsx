@@ -5,7 +5,20 @@ import Input from "../../atoms/Form/Input";
 import CustomText from "../../atoms/Text/CustomText";
 import ActionButton from "../../molecules/Buttons/ActionButton";
 
-interface ChatProps {
+const PAGE_SIZE = 50;
+const EMPTY_MESSAGES: ChatMessage[] = [];
+const CONVERSATIONS_KEY = ["chat-conversations"] as const;
+const messagesKey = (conversationId: number | null) => ["chat-messages", conversationId] as const;
+
+const STATUS_LABEL : Record<string, string> = {
+	idle: "",
+	connecting: "Connexion...",
+	connected: "Connecté",
+	reconnecting: "Reconnexion...",
+	closed: "Déconnecté",
+} as const;
+
+interface ChatConversationProps {
 	activeRoomLabel,
 	socketStatus,
 	roomPath,
@@ -23,7 +36,7 @@ export const ChatConversation = ({
 	messagesQuery,
 	notice,
 	handleSubmit,
-} : ChatProps) => {
+} : ChatConversationProps) => {
 
 	const scrollRef = useRef<HTMLDivElement | null>(null);
 	const atBottomRef = useRef(true);
