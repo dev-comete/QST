@@ -1,14 +1,10 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import Box from "../../atoms/Container/Box";
 import Paper from "../../atoms/Container/Paper";
 import Input from "../../atoms/Form/Input";
 import CustomText from "../../atoms/Text/CustomText";
 import ActionButton from "../../molecules/Buttons/ActionButton";
-
-const PAGE_SIZE = 50;
-const EMPTY_MESSAGES: ChatMessage[] = [];
-const CONVERSATIONS_KEY = ["chat-conversations"] as const;
-const messagesKey = (conversationId: number | null) => ["chat-messages", conversationId] as const;
+import { useChatMessages } from "../../../other/hooks/chat/useChatMessages";
 
 const STATUS_LABEL : Record<string, string> = {
 	idle: "",
@@ -19,36 +15,46 @@ const STATUS_LABEL : Record<string, string> = {
 } as const;
 
 interface ChatConversationProps {
+	conversationId,
 	activeRoomLabel,
 	socketStatus,
 	roomPath,
 	reconnect,
-	messageQuery,
-	notice,
-	handleSubmit
 }
 
-export const ChatConversation = ({
+export const ChatMessages = ({
 	activeRoomLabel,
 	socketStatus,
 	roomPath,
 	reconnect,
-	messagesQuery,
-	notice,
-	handleSubmit,
+	conversationId
 } : ChatConversationProps) => {
-
+	const [isLoadingOlder, setIsLoadingOlder] = useState(false);
+	const [isVisible, setIsVisible] = useState(document.visibilityState === "visible");
 	const scrollRef = useRef<HTMLDivElement | null>(null);
 	const atBottomRef = useRef(true);
 	const restoreScrollRef = useRef<number | null>(null);
-	const tempIdRef = useRef(0);
 	const lastReadRef = useRef(new Map<number, number>());
+	const tempIdRef = useRef(0);
+	const [notice, setNotice] = useState<string | null>(null);
 
-	const handleScroll = () => {
-		const element = scrollRef.current;
-		if (!element) return;
-		atBottomRef.current = element.scrollHeight - element.scrollTop - element.clientHeight < 80;
-	};
+	const canSend = socketStatus === "connected" && (conversationId !== null || targetUserId !== null);
+
+	const {
+		messagesQuery,
+		draft,
+		setDraft,
+		handleSubmit,
+		retryMessage
+	} = useChatMessages({
+		currentUser,
+		currentUserId,
+		conversationId,
+		targetUserId,
+		canSend,
+		send,
+		setNotice,
+	});
 
 	return (
 		<Paper className="flex-1 overflow-hidden p-0" hasShadow>
