@@ -10,11 +10,11 @@ const VagueManagement = () => {
 
 	return (
 		<BodyLayout
-			title={"Gestion des vagues"}
+			title={"Gestion des équipes"}
 			titleButton={
 				<ActionButton
 					onClick={(e) => { e.preventDefault(); setOpen(true)}}
-				>{"+ Créer une vague "}</ActionButton>
+				>{"+ Créer une équipe "}</ActionButton>
 			}
 		>
 			<VagueList />

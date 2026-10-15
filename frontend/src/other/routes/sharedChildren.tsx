@@ -11,7 +11,7 @@ import QuizBin from "../../product/pages/formateur/quizz/QuizBin";
 import Dashboard from "../../product/pages/formateur/Dashboard";
 
 const COMMON_CHILDREN = [
-	{ path: "gestion_vague", element: <VagueManagement /> },
+	{ path: "gestion_equipe", element: <VagueManagement /> },
 	{ path: "gestion_question", element: <QuestionManagement /> },
 	{ path: "gestion_question/corbeille", element: <QuestionBin /> },
 	{ path: "gestion_question/:id/edit", element: <QuestionEdit /> },
@@ -20,7 +20,7 @@ const COMMON_CHILDREN = [
 	{ path: ":id/quiz_questions", element: <QuizQuestion /> },
 	{ path: "gestion_quiz", element: <QuizManagement /> },
 	{ path: "gestion_quiz/corbeille", element: <QuizBin /> },
-	{ path: "vagues/:id", element: <VagueAssign /> },
+	{ path: "equipes/:id", element: <VagueAssign /> },
 	// { path: "vagues/:id/statistique", element: <VagueStat /> },
 	{ path: 'tableau_de_bord', element: <Dashboard /> },
 ];

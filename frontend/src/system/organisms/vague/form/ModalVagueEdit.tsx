@@ -35,7 +35,7 @@ const ModalVagueEdit = ({ open, closeModal, id } : ModalVagueEditProps) => {
 
 	return (
 		<Modal
-			title="Modification vague"
+			title="Modification de l'équipe"
 			isOpen={open}
 			closeModal={closeModal}
 		>
@@ -46,7 +46,7 @@ const ModalVagueEdit = ({ open, closeModal, id } : ModalVagueEditProps) => {
 				<Input
 					id={"nom_vague"}
 					name={"nom_vague"}
-					label="Nom de la vague"
+					label="Nom de l'équipe"
 					onChange={formChangeHandler(setVague, 'nom_vague')}
 					required
 					value={vague.nom_vague ?? ''}
