@@ -33,7 +33,7 @@ const ModalVagueCreate = ({ open, closeModal } : ModalsProps) => {
 
 	return (
 		<Modal
-			title="Création de vague"
+			title="Création de l'équipe"
 			isOpen={open}
 			closeModal={closeModal}
 		>
@@ -44,7 +44,7 @@ const ModalVagueCreate = ({ open, closeModal } : ModalsProps) => {
 				<Input
 					id={"nom_vague"}
 					name={"nom_vague"}
-					label="Nom de la vague"
+					label="Nom de l'équipe"
 					onChange={formChangeHandler(setVague, 'nom_vague')}
 					required
 				/>
