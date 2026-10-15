@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState, type FormEvent } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type FormEvent } from "react";
 import type { ChatMessage, MessagesCache } from "../../types/chatType";
 
 const PAGE_SIZE = 50;
@@ -24,7 +24,11 @@ export const useChatMessages = ({
 	send: (payload: object) => boolean;
 	setNotice: (value: string | null) => void;
 }) => {
-	const [draft, setDraft] = useState("");
+	const [isLoadingOlder, setIsLoadingOlder] = useState(false);
+	const atBottomRef = useRef(true);
+	const restoreScrollRef = useRef<number | null>(null);
+	const lastReadRef = useRef(new Map<number, number>());
+	const tempIdRef = useRef(0);
 
 	const queryClient = useQueryClient()
 

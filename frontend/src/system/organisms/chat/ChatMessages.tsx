@@ -20,6 +20,8 @@ interface ChatConversationProps {
 	socketStatus,
 	roomPath,
 	reconnect,
+	notice: string,
+	targetUserId: string,
 }
 
 export const ChatMessages = ({
@@ -27,16 +29,12 @@ export const ChatMessages = ({
 	socketStatus,
 	roomPath,
 	reconnect,
-	conversationId
+	conversationId,
+	notice,
+	targetUserId
 } : ChatConversationProps) => {
-	const [isLoadingOlder, setIsLoadingOlder] = useState(false);
-	const [isVisible, setIsVisible] = useState(document.visibilityState === "visible");
 	const scrollRef = useRef<HTMLDivElement | null>(null);
-	const atBottomRef = useRef(true);
-	const restoreScrollRef = useRef<number | null>(null);
-	const lastReadRef = useRef(new Map<number, number>());
-	const tempIdRef = useRef(0);
-	const [notice, setNotice] = useState<string | null>(null);
+
 
 	const canSend = socketStatus === "connected" && (conversationId !== null || targetUserId !== null);
 
@@ -45,7 +43,8 @@ export const ChatMessages = ({
 		draft,
 		setDraft,
 		handleSubmit,
-		retryMessage
+		retryMessage,
+		handleScroll,
 	} = useChatMessages({
 		currentUser,
 		currentUserId,

@@ -22,6 +22,10 @@ const ChatPage = () => {
 	const [live, setLive] = useState<{ roomPath: string; id: number } | null>(null);
 	const atBottomRef = useRef(true);
 
+	const [draft, setDraft] = useState("");
+	const [isVisible, setIsVisible] = useState(document.visibilityState === "visible");
+	const [notice, setNotice] = useState<string | null>(null);
+
 	// ------------------------------------------------------------ data
 
 	const { formateursQuery, conversationsQuery } = useChat();
@@ -91,9 +95,9 @@ const ChatPage = () => {
 	return (
 		<Box className="h-[calc(100vh-110px)] w-full gap-4 p-4" direction="row">
 			<ChatLog roomList={roomList} handleRoomSelect={handleRoomSelect}/>
-			<ChatMessages
-			
-			
+			<ChatMessages {...{ socketStatus, send, reconnect,
+				draft, setDraft, isVisible, notice,
+				}}
 			/>
 		</Box>
 	);
