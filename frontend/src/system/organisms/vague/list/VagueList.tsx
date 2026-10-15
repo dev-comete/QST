@@ -131,7 +131,7 @@ const VagueList = () => {
 					columns={getVagueTabColumn(handleOpenEditModal)}
 					data={vagues ?? []}
 					rowKey={'id'}
-					onRowClick={(row) => navigateTo('vagues/' + row.id)}
+					onRowClick={(row) => navigateTo('equipes/' + row.id)}
 					filters={
 						<Box className="flex items-center self-start">
 							<Select 
