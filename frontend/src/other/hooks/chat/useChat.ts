@@ -149,16 +149,19 @@ export const useChatRealtime = ({
 				// next reconnect will try again
 			}
 			const cached = queryClient.getQueryData<MessagesCache>(messagesKey(convId));
-			cached?.messages
-				.filter((m) => m.status === "sending" && m.client_id)
-				.forEach((m) =>
-					sendFn({
-						type: "message",
-						message: m.content,
-						client_id: m.client_id,
-						conversation_id: convId,
-					}),
-				);
+
+			if (cached && cached.messages) {
+				cached?.messages
+					.filter((m) => m.status === "sending" && m.client_id)
+					.forEach((m) =>
+						sendFn({
+							type: "message",
+							message: m.content,
+							client_id: m.client_id,
+							conversation_id: convId,
+						}),
+					);
+			}
 		})();
 	}, [catchUp, conversationId, messagesKey, queryClient]);
 

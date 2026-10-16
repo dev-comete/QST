@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useLayoutEffect, useRef, useState, type Dispatch, type FormEvent, type SetStateAction } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type Dispatch, type RefObject, type SetStateAction, type SubmitEventHandler } from "react";
 import type { ChatConversation, ChatMessage, MessagesCache } from "../../types/chatType";
 import { ChatService, type MarkReadParams } from "../../services/chatService";
 import { firstServerId, lastServerId, newClientId, sortMessages } from "../../helper/chatHelper";
@@ -26,10 +26,11 @@ interface useChatMessagesParam {
 	canSend: boolean;
 	send: (payload: object) => boolean;
 	setNotice: (value: string | null) => void;
-	notice : string
+	notice : string | null
 	isVisible: boolean
 	draft: string
 	setDraft: Dispatch<SetStateAction<string>>
+	scrollRef: RefObject<HTMLDivElement | null>;
 }
 
 export const useChatMessages = ({
@@ -41,12 +42,12 @@ export const useChatMessages = ({
 	isVisible,
 	notice, setNotice,
 	draft, setDraft,
+	scrollRef,
 }: useChatMessagesParam ) => {
 	const [isLoadingOlder, setIsLoadingOlder] = useState(false);
 	const atBottomRef = useRef(true);
 	const restoreScrollRef = useRef<number | null>(null);
 	const lastReadRef = useRef<Map<number | string, number | string>>(new Map());
-	const scrollRef = useRef<HTMLDivElement | null>(null);
 	const tempIdRef = useRef(0);
 
 	// ------------------------------------------------------------ query and mutation
@@ -148,7 +149,7 @@ export const useChatMessages = ({
 		if (atBottomRef.current || last?.sender.id === currentUserId) {
 			element.scrollTop = element.scrollHeight;
 		}
-	}, [messages, currentUserId]);
+	}, [messages, currentUserId, scrollRef]);
 
 	// ------------------------------------------------------------ actions
 
@@ -188,7 +189,7 @@ export const useChatMessages = ({
 		}
 	};
 
-	const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+	const handleSubmit : SubmitEventHandler<HTMLFormElement> = (event) => {
 		event.preventDefault();
 		const text = draft.trim();
 		if (!text || !canSend) return;
@@ -210,20 +211,19 @@ export const useChatMessages = ({
 		if (conversationId !== null) {
 			tempIdRef.current += 1;
 			const optimistic: ChatMessage = {
-				id: -tempIdRef.current,
-				conversation: conversationId,
-				sender: { id: currentUserId, username: currentUser?.username ?? "Moi", email: currentUser?.email ?? "" },
-				content: text,
-				created_at: new Date().toISOString(),
-				client_id: clientId,
-				status: "sending",
-			};
-			queryClient.setQueryData<MessagesCache>(messagesKey(conversationId), (old) => ({
-			hasMore: old?.hasMore ?? false,
-			messages: [...(old?.messages ?? []), optimistic],
+					id: -tempIdRef.current,
+					conversation: conversationId,
+					sender: { id: currentUserId, username: currentUser?.username ?? "Moi", email: currentUser?.email ?? "" },
+					content: text,
+					created_at: new Date().toISOString(),
+					client_id: clientId,
+					status: "sending",
+				};
+				queryClient.setQueryData<MessagesCache>(messagesKey(conversationId), (old) => ({
+				hasMore: old?.hasMore ?? false,
+				messages: [...(old?.messages ?? []), optimistic],
 			}));
 		}
-
 		atBottomRef.current = true;
 		setDraft("");
 	};

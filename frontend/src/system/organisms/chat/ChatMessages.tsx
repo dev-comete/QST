@@ -19,11 +19,11 @@ interface ChatConversationProps {
 	conversationId: number | null
 	activeRoomLabel: string
 	socketStatus: SocketStatus
-	roomPath : string
+	roomPath : string | null
 	reconnect : () => void
-	notice: string
+	notice: string | null
 	setNotice: (value: string | null) => void
-	targetUserId: number
+	targetUserId: number | null
 	isVisible: boolean
 	currentUserId: number
 	currentUser: { id: number; username: string; email: string } | null
@@ -33,41 +33,23 @@ interface ChatConversationProps {
 }
 
 export const ChatMessages = ({
-	activeRoomLabel,
-	socketStatus,
-	roomPath,
-	reconnect,
-	conversationId,
-	notice, setNotice,
-	isVisible,
-	send,
-	draft, setDraft,
-	currentUser, currentUserId, targetUserId
+	activeRoomLabel, socketStatus, roomPath, reconnect,
+	conversationId, currentUser, currentUserId, targetUserId,
+	notice, setNotice, isVisible, send, draft, setDraft,
 } : ChatConversationProps) => {
 	const scrollRef = useRef<HTMLDivElement | null>(null);
 
-
 	const canSend = socketStatus === "connected" && (conversationId !== null || targetUserId !== null);
 
+	// console.log("Conversation Id", conversationId)
+
 	const {
-		messagesQuery,
-		messages,
-		handleSubmit,
-		retryMessage,
-		handleScroll,
+		messagesQuery, messages, hasMore,
+		handleSubmit, retryMessage, handleScroll,
 		loadOlder, isLoadingOlder,
-		hasMore
 	} = useChatMessages({
-		isVisible,
-		currentUser,
-		currentUserId,
-		conversationId,
-		targetUserId,
-		canSend,
-		send,
-		setNotice,
-		notice,
-		draft, setDraft
+		isVisible, currentUser, currentUserId, targetUserId, conversationId,
+		canSend, send, notice, setNotice, draft, setDraft, scrollRef,
 	});
 
 	return (

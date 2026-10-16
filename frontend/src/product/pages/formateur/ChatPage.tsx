@@ -29,7 +29,7 @@ const ChatPage = () => {
 	// ------------------------------------------------------------ data
 
 	const { formateursQuery, conversationsQuery } = useChat();
-	const { roomList, directConversationMap, generalConversation } = useChatLog({
+	const { roomList, directConversationMap, generalConversation, activeRoomLabel } = useChatLog({
 		currentUserId,
 		selectedRoom,
 		targetUserId,
@@ -95,8 +95,9 @@ const ChatPage = () => {
 	return (
 		<Box className="h-[calc(100vh-110px)] w-full gap-4 p-4" direction="row">
 			<ChatLog roomList={roomList} handleRoomSelect={handleRoomSelect}/>
-			<ChatMessages {...{ socketStatus, send, reconnect,
-				draft, setDraft, isVisible, notice,
+			<ChatMessages {...{ socketStatus, send, reconnect, draft, setDraft, isVisible, notice,
+					conversationId, activeRoomLabel, roomPath, setNotice,
+					currentUser, currentUserId, targetUserId,
 				}}
 			/>
 		</Box>
