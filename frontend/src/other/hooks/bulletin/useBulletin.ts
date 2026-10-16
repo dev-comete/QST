@@ -5,7 +5,7 @@ export const useBulletin = (vagueId?: string) => {
 
 	const { data : bulletinList, status : bulletinListStatus } = useQuery({
 		queryKey: ['bulletin_list'],
-		queryFn: () => BulletinService.list()
+		queryFn: BulletinService.list
 	})
 
 	const { data : myBulletin, status : myBulletinStatus } = useQuery({

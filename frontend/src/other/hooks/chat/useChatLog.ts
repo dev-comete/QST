@@ -3,19 +3,21 @@ import type { ChatConversation } from "../../types/chatType";
 import type { useUser } from "../user/useUser";
 import { useMemo } from "react";
 
+interface useChatLogParam {
+	currentUserId: number;
+	selectedRoom: "general" | "direct";
+	targetUserId: number | null;
+	formateursQuery: ReturnType<typeof useUser>["getUserQuery"];
+	conversationsQuery: ReturnType<typeof useQuery<ChatConversation[]>>;
+}
+
 export const useChatLog = ({
 	currentUserId,
 	selectedRoom,
 	targetUserId,
 	formateursQuery,
 	conversationsQuery,
-}: {
-	currentUserId: number;
-	selectedRoom: "general" | "direct";
-	targetUserId: number | null;
-	formateursQuery: ReturnType<typeof useUser>["getUserQuery"];
-	conversationsQuery: ReturnType<typeof useQuery<ChatConversation[]>>;
-}) => {
+}: useChatLogParam ) => {
 	const otherFormateurs = useMemo(
 		() => (formateursQuery.data ?? []).filter((user) => user.id !== currentUserId),
 		[formateursQuery.data, currentUserId],

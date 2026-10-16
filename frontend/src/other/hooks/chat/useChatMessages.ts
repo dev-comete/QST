@@ -1,21 +1,24 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useLayoutEffect, useRef, useState, type FormEvent } from "react";
-import type { ChatMessage, MessagesCache } from "../../types/chatType";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useLayoutEffect, useRef, useState, type Dispatch, type FormEvent, type SetStateAction } from "react";
+import type { ChatConversation, ChatMessage, MessagesCache } from "../../types/chatType";
+import { ChatService, type MarkReadParams } from "../../services/chatService";
+import { firstServerId, lastServerId, newClientId, sortMessages } from "../../helper/chatHelper";
 
 const PAGE_SIZE = 50;
+const MAX_MESSAGE_LENGTH = 2000;
 const EMPTY_MESSAGES: ChatMessage[] = [];
 const CONVERSATIONS_KEY = ["chat-conversations"] as const;
 const messagesKey = (conversationId: number | null) => ["chat-messages", conversationId] as const;
 
-export const useChatMessages = ({
-	currentUser,
-	currentUserId,
-	conversationId,
-	targetUserId,
-	canSend,
-	send,
-	setNotice,
-}: {
+const ERROR_TEXT: Record<string, string> = {
+	too_long: `Message trop long (${MAX_MESSAGE_LENGTH} caractères max).`,
+	rate_limited: "Trop de messages envoyés, ralentissez un peu.",
+	bad_json: "Message invalide.",
+	bad_payload: "Message invalide.",
+};
+
+
+interface useChatMessagesParam {
 	currentUser: { id: number; username: string; email: string } | null;
 	currentUserId: number;
 	conversationId: number | null;
@@ -23,31 +26,75 @@ export const useChatMessages = ({
 	canSend: boolean;
 	send: (payload: object) => boolean;
 	setNotice: (value: string | null) => void;
-}) => {
+	notice : string
+	isVisible: boolean
+	draft: string
+	setDraft: Dispatch<SetStateAction<string>>
+}
+
+export const useChatMessages = ({
+	currentUser,
+	currentUserId,
+	conversationId,
+	targetUserId,
+	canSend,send,
+	isVisible,
+	notice, setNotice,
+	draft, setDraft,
+}: useChatMessagesParam ) => {
 	const [isLoadingOlder, setIsLoadingOlder] = useState(false);
 	const atBottomRef = useRef(true);
 	const restoreScrollRef = useRef<number | null>(null);
-	const lastReadRef = useRef(new Map<number, number>());
+	const lastReadRef = useRef<Map<number | string, number | string>>(new Map());
+	const scrollRef = useRef<HTMLDivElement | null>(null);
 	const tempIdRef = useRef(0);
+
+	// ------------------------------------------------------------ query and mutation
 
 	const queryClient = useQueryClient()
 
 	const messagesQuery = useQuery({
 		queryKey: messagesKey(conversationId),
-		queryFn: async (): Promise<MessagesCache> => {
-				const { data } = await apiClient.get<MessagePage>(`/chat/conversations/${conversationId}/messages/`, {
-				params: { limit: PAGE_SIZE },
-				});
-				const existing = queryClient.getQueryData<MessagesCache>(messagesKey(conversationId));
-				const pending = (existing?.messages ?? []).filter(
-					(m) => m.id < 0 && !data.results.some((r) => r.client_id && r.client_id === m.client_id)
-				);
-				return { messages: [...data.results, ...pending], hasMore: data.has_more };
-			},
-			enabled: conversationId !== null,
-			staleTime: Infinity,
-			refetchOnWindowFocus: false,
-			refetchOnReconnect: false,
+		queryFn: () => ChatService.fetchMessages(conversationId, 10),
+		enabled: conversationId !== null,
+		staleTime: Infinity,
+		refetchOnWindowFocus: false,
+		refetchOnReconnect: false,
+		select: (serverData) => {
+			const existing = queryClient.getQueryData<MessagesCache>(messagesKey(conversationId));
+			const pending = (existing?.messages ?? []).filter(
+				(m: ChatMessage) =>
+				m.id < 0 &&
+				!serverData.results.some((r) => r.client_id && r.client_id === m.client_id)
+			);
+
+			return {
+				messages: [...serverData.results, ...pending],
+				hasMore: serverData.has_more,
+			};	
+		},
+	});
+
+	const markAsReadMutation = useMutation({
+		mutationFn: () => ChatService.sendLastServerId({ conversationId, newestServerId }),
+		onMutate: async ({conversationId} : MarkReadParams) => {
+			await queryClient.cancelQueries({ queryKey: CONVERSATIONS_KEY });
+
+			const previousConversations = queryClient.getQueryData<ChatConversation[]>(CONVERSATIONS_KEY);
+
+			queryClient.setQueryData<ChatConversation[]>(CONVERSATIONS_KEY, (old) =>
+				old?.map((c) => (c.id === conversationId ? { ...c, unread_count: 0 } : c))
+			);
+
+			return { previousConversations };
+		},
+		onError: (_err, variables, context) => {
+			if (variables.conversationId) lastReadRef.current.delete(variables.conversationId);
+
+			if (context?.previousConversations) {
+				queryClient.setQueryData(CONVERSATIONS_KEY, context.previousConversations);
+			}
+		},
 	});
 
 	// ------------------------------------------------------------ cache helpers
@@ -64,6 +111,9 @@ export const useChatMessages = ({
 		atBottomRef.current = element.scrollHeight - element.scrollTop - element.clientHeight < 80;
 	};
 
+	// ------------------------------------------------------------ data
+
+
 	const messages = messagesQuery.data?.messages ?? EMPTY_MESSAGES;
 	const hasMore = messagesQuery.data?.hasMore ?? false;
 	const newestServerId = lastServerId(messages);
@@ -74,20 +124,16 @@ export const useChatMessages = ({
 		if (!notice) return;
 		const timer = window.setTimeout(() => setNotice(null), 4000);
 		return () => window.clearTimeout(timer);
-	}, [notice]);
+	}, [notice, setNotice]);
 
 	useEffect(() => {
 		if (conversationId === null || !newestServerId || !isVisible) return;
 		if (lastReadRef.current.get(conversationId) === newestServerId) return;
-
+	
 		lastReadRef.current.set(conversationId, newestServerId);
-		apiClient
-			.post(`/chat/conversations/${conversationId}/read/`, { last_id: newestServerId })
-			.catch(() => lastReadRef.current.delete(conversationId));
-		queryClient.setQueryData<ChatConversation[]>(CONVERSATIONS_KEY, (old) =>
-			old?.map((c) => (c.id === conversationId ? { ...c, unread_count: 0 } : c))
-		);
-	}, [conversationId, newestServerId, isVisible, queryClient]);
+	
+		markAsReadMutation.mutate({ conversationId, newestServerId });
+	}, [conversationId, newestServerId, isVisible, markAsReadMutation]);
 
 	useLayoutEffect(() => {
 		const element = scrollRef.current;
@@ -111,23 +157,28 @@ export const useChatMessages = ({
 		const cached = queryClient.getQueryData<MessagesCache>(messagesKey(conversationId));
 		const beforeId = cached ? firstServerId(cached.messages) : 0;
 		if (!cached?.hasMore || !beforeId) return;
-
+	
 		setIsLoadingOlder(true);
 		const previousHeight = scrollRef.current?.scrollHeight ?? 0;
+	
 		try {
-			const { data } = await apiClient.get<MessagePage>(`/chat/conversations/${conversationId}/messages/`, {
-			params: { limit: PAGE_SIZE, before_id: beforeId }});
+			const data = await queryClient.fetchQuery({
+				queryKey: ['messages', conversationId, beforeId],
+				queryFn: () => ChatService.fetchMessages(conversationId, PAGE_SIZE, beforeId),
+			});
+	
 			restoreScrollRef.current = previousHeight;
+	
 			queryClient.setQueryData<MessagesCache>(messagesKey(conversationId), (old) =>
-			old
-				? {
-					hasMore: data.has_more,
-					messages: sortMessages([
-					...data.results.filter((r) => !old.messages.some((m) => m.id === r.id)),
-					...old.messages,
-					]),
-				}
-				: old
+				old
+					? {
+						hasMore: data.has_more,
+						messages: sortMessages([
+							...data.results.filter((r) => !old.messages.some((m) => m.id === r.id)),
+							...old.messages,
+						]),
+					}
+					: old
 			);
 		} catch {
 			restoreScrollRef.current = null;
@@ -141,23 +192,25 @@ export const useChatMessages = ({
 		event.preventDefault();
 		const text = draft.trim();
 		if (!text || !canSend) return;
-		if (text.length > 2000) {
-			setNotice(`Message trop long (2000 caractères max).`);
+		if (text.length > MAX_MESSAGE_LENGTH) {
+			setNotice(ERROR_TEXT.too_long);
 			return;
 		}
 
-		const clientId = globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
-		if (!send({
-			type: "message",
-			message: text,
+		const clientId = newClientId();
+		if (!send({ 
+			type: "message", 
+			message: text, 
 			client_id: clientId,
 			conversation_id: conversationId,
-			target_user_id: conversationId === null ? targetUserId : undefined,
+			target_user_id: conversationId === null ? targetUserId : undefined
 		})) return;
 
+		// Optimistic UI for existing conversations
 		if (conversationId !== null) {
+			tempIdRef.current += 1;
 			const optimistic: ChatMessage = {
-				id: -Date.now(),
+				id: -tempIdRef.current,
 				conversation: conversationId,
 				sender: { id: currentUserId, username: currentUser?.username ?? "Moi", email: currentUser?.email ?? "" },
 				content: text,
@@ -165,14 +218,16 @@ export const useChatMessages = ({
 				client_id: clientId,
 				status: "sending",
 			};
-			queryClient.setQueryData<MessagesCache>(["chat-messages", conversationId], (old) => ({
-				hasMore: old?.hasMore ?? false,
-				messages: [...(old?.messages ?? []), optimistic],
+			queryClient.setQueryData<MessagesCache>(messagesKey(conversationId), (old) => ({
+			hasMore: old?.hasMore ?? false,
+			messages: [...(old?.messages ?? []), optimistic],
 			}));
 		}
 
+		atBottomRef.current = true;
 		setDraft("");
 	};
+
 
 	const retryMessage = (message: ChatMessage) => {
 		if (!message.client_id || conversationId === null) return;
@@ -188,10 +243,12 @@ export const useChatMessages = ({
 	};
 
 	return {
-		draft,
-		setDraft,
 		handleSubmit,
 		retryMessage,
+		messages,
 		messagesQuery,
+		handleScroll,
+		loadOlder, isLoadingOlder,
+		hasMore,
 	};
 };

@@ -1,10 +1,11 @@
-import { useRef, useState } from "react";
+import { useRef, type Dispatch, type SetStateAction } from "react";
 import Box from "../../atoms/Container/Box";
 import Paper from "../../atoms/Container/Paper";
 import Input from "../../atoms/Form/Input";
 import CustomText from "../../atoms/Text/CustomText";
 import ActionButton from "../../molecules/Buttons/ActionButton";
 import { useChatMessages } from "../../../other/hooks/chat/useChatMessages";
+import type { SocketStatus } from "../../../other/hooks/chat/useChatSocket";
 
 const STATUS_LABEL : Record<string, string> = {
 	idle: "",
@@ -15,13 +16,20 @@ const STATUS_LABEL : Record<string, string> = {
 } as const;
 
 interface ChatConversationProps {
-	conversationId,
-	activeRoomLabel,
-	socketStatus,
-	roomPath,
-	reconnect,
-	notice: string,
-	targetUserId: string,
+	conversationId: number | null
+	activeRoomLabel: string
+	socketStatus: SocketStatus
+	roomPath : string
+	reconnect : () => void
+	notice: string
+	setNotice: (value: string | null) => void
+	targetUserId: number
+	isVisible: boolean
+	currentUserId: number
+	currentUser: { id: number; username: string; email: string } | null
+	draft: string
+	setDraft: Dispatch<SetStateAction<string>>
+	send: (payload: object) => boolean
 }
 
 export const ChatMessages = ({
@@ -30,8 +38,11 @@ export const ChatMessages = ({
 	roomPath,
 	reconnect,
 	conversationId,
-	notice,
-	targetUserId
+	notice, setNotice,
+	isVisible,
+	send,
+	draft, setDraft,
+	currentUser, currentUserId, targetUserId
 } : ChatConversationProps) => {
 	const scrollRef = useRef<HTMLDivElement | null>(null);
 
@@ -40,12 +51,14 @@ export const ChatMessages = ({
 
 	const {
 		messagesQuery,
-		draft,
-		setDraft,
+		messages,
 		handleSubmit,
 		retryMessage,
 		handleScroll,
+		loadOlder, isLoadingOlder,
+		hasMore
 	} = useChatMessages({
+		isVisible,
 		currentUser,
 		currentUserId,
 		conversationId,
@@ -53,6 +66,8 @@ export const ChatMessages = ({
 		canSend,
 		send,
 		setNotice,
+		notice,
+		draft, setDraft
 	});
 
 	return (

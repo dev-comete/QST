@@ -1,13 +1,23 @@
-import type { ChatConversation, MessagePage, MessagesCache } from "../types/chatType";
+import type { ChatConversation, ChatMessage, MessagePage, MessagesCache } from "../types/chatType";
 import apiClient from "./apiClient";
 
 const CHAT_URL = '/chat/conversations/';
 
+export interface MarkReadParams {
+    conversationId: number | null;
+    newestServerId: number | string;
+}
+
+// export interface Message {
+// 	messages: ChatMessage[]
+// 	hasMore: boolean
+// }
+
 export const ChatService = {
-	fetchMessages: async (conversationId: string, limit: number) => {
+	fetchMessages: async (conversationId: number | null, limit: number, beforeId?: number) => {
 		const response = await apiClient.get<MessagePage>(
 			`${CHAT_URL}${conversationId}/messages/`,
-			{ params: { limit } }
+			{ params: { limit, before_id: beforeId } }
 		);
 		return response.data;
 	},
@@ -22,7 +32,7 @@ export const ChatService = {
 		existingCache?: MessagesCache
 	): MessagesCache => {
 		const pending = (existingCache?.messages ?? []).filter(
-		(m: Message) =>
+		(m: ChatMessage) =>
 		m.id < 0 &&
 		!serverData.results.some((r) => r.client_id && r.client_id === m.client_id)
 	);
@@ -34,11 +44,16 @@ export const ChatService = {
 	},
 
 	getMessagesWithPending: async (
-		conversationId: string,
+		conversationId: number,
 		limit: number,
 		existingCache?: MessagesCache
 	) => {
 		const data = await ChatService.fetchMessages(conversationId, limit);
 		return ChatService.reconcilePendingMessages(data, existingCache);
 	},
+
+	sendLastServerId: async ({ conversationId, newestServerId }: MarkReadParams) => {
+		const resp = apiClient.post(`${CHAT_URL}${conversationId}/read/`, {last_id: newestServerId })
+		return resp
+	}
 };

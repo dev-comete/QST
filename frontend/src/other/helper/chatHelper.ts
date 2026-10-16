@@ -31,3 +31,5 @@ export function sortMessages(list: ChatMessage[]): ChatMessage[] {
 		return a.id - b.id;
 	});
 }
+
+export const newClientId = () => globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
