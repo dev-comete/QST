@@ -20,6 +20,7 @@ export const useChat = () => {
 		queryFn: ChatService.fetchConversation,
 		enabled: Boolean(token),
 		refetchInterval: 30_000,
+		meta: { suppressToast: true }
 	});
 
 	return {

@@ -6,14 +6,7 @@ import CustomText from "../../atoms/Text/CustomText";
 import ActionButton from "../../molecules/Buttons/ActionButton";
 import { useChatMessages } from "../../../other/hooks/chat/useChatMessages";
 import type { SocketStatus } from "../../../other/hooks/chat/useChatSocket";
-
-const STATUS_LABEL : Record<string, string> = {
-	idle: "",
-	connecting: "Connexion...",
-	connected: "Connecté",
-	reconnecting: "Reconnexion...",
-	closed: "Déconnecté",
-} as const;
+import ChatStatusBadge from "../../molecules/Badge/ChatStatusBadge";
 
 interface ChatConversationProps {
 	conversationId: number | null
@@ -38,10 +31,7 @@ export const ChatMessages = ({
 	notice, setNotice, isVisible, send, draft, setDraft,
 } : ChatConversationProps) => {
 	const scrollRef = useRef<HTMLDivElement | null>(null);
-
 	const canSend = socketStatus === "connected" && (conversationId !== null || targetUserId !== null);
-
-	// console.log("Conversation Id", conversationId)
 
 	const {
 		messagesQuery, messages, hasMore,
@@ -60,9 +50,7 @@ export const ChatMessages = ({
 						{activeRoomLabel}
 					</CustomText>
 					<span className="flex items-center gap-2">
-						<CustomText color="disabled" textTag="span" className="text-xs">
-						{STATUS_LABEL[socketStatus]}
-						</CustomText>
+						<ChatStatusBadge status={socketStatus}/>
 						{socketStatus === "closed" && roomPath && (
 						<button type="button" onClick={reconnect} className="text-xs underline">
 							Réessayer
@@ -117,8 +105,8 @@ export const ChatMessages = ({
 					const isMine = message.sender.id === currentUserId;
 					return (
 						<Box
-						key={message.client_id ?? `srv-${message.id}`}
-						className={`w-full ${isMine ? "justify-end" : "justify-start"}`}
+							key={message.client_id ?? `srv-${message.id}`}
+							className={`w-full ${isMine ? "justify-end" : "justify-start"}`}
 						>
 						<Paper
 							className={`max-w-[75%] p-3 ${isMine ? "bg-primary text-white" : "bg-background-light"} ${

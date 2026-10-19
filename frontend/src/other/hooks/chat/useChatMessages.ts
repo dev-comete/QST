@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useLayoutEffect, useRef, useState, type Dispatch, type RefObject, type SetStateAction, type SubmitEventHandler } from "react";
-import type { ChatConversation, ChatMessage, MessagesCache } from "../../types/chatType";
+import type { ChatConversation, ChatMessage, MessagePage, MessagesCache } from "../../types/chatType";
 import { ChatService, type MarkReadParams } from "../../services/chatService";
 import { firstServerId, lastServerId, newClientId, sortMessages } from "../../helper/chatHelper";
 
@@ -9,6 +9,14 @@ const MAX_MESSAGE_LENGTH = 2000;
 const EMPTY_MESSAGES: ChatMessage[] = [];
 const CONVERSATIONS_KEY = ["chat-conversations"] as const;
 const messagesKey = (conversationId: number | null) => ["chat-messages", conversationId] as const;
+
+const normalizeMessagesData = (data?: MessagePage | MessagesCache) => {
+	if (!data) return { results: [] as ChatMessage[], hasMore: false };
+	if ("results" in data) {
+		return { results: data.results, hasMore: data.has_more };
+	}
+	return { results: data.messages, hasMore: data.hasMore };
+};
 
 const ERROR_TEXT: Record<string, string> = {
 	too_long: `Message trop long (${MAX_MESSAGE_LENGTH} caractères max).`,
@@ -62,17 +70,18 @@ export const useChatMessages = ({
 		refetchOnWindowFocus: false,
 		refetchOnReconnect: false,
 		select: (serverData) => {
+			const normalized = normalizeMessagesData(serverData as MessagePage | MessagesCache);
 			const existing = queryClient.getQueryData<MessagesCache>(messagesKey(conversationId));
 			const pending = (existing?.messages ?? []).filter(
 				(m: ChatMessage) =>
 				m.id < 0 &&
-				!serverData.results.some((r) => r.client_id && r.client_id === m.client_id)
+				!normalized.results.some((r) => r.client_id && r.client_id === m.client_id)
 			);
 
 			return {
-				messages: [...serverData.results, ...pending],
-				hasMore: serverData.has_more,
-			};	
+				messages: [...normalized.results, ...pending],
+				hasMore: normalized.hasMore,
+			};
 		},
 	});
 
@@ -96,6 +105,7 @@ export const useChatMessages = ({
 				queryClient.setQueryData(CONVERSATIONS_KEY, context.previousConversations);
 			}
 		},
+		meta: { suppressToast: true }
 	});
 
 	// ------------------------------------------------------------ cache helpers
@@ -129,6 +139,7 @@ export const useChatMessages = ({
 
 	useEffect(() => {
 		if (conversationId === null || !newestServerId || !isVisible) return;
+	
 		if (lastReadRef.current.get(conversationId) === newestServerId) return;
 	
 		lastReadRef.current.set(conversationId, newestServerId);
@@ -155,7 +166,13 @@ export const useChatMessages = ({
 
 	const loadOlder = async () => {
 		if (conversationId === null || isLoadingOlder) return;
-		const cached = queryClient.getQueryData<MessagesCache>(messagesKey(conversationId));
+
+		const getCached = queryClient.getQueryData<MessagePage>(messagesKey(conversationId));
+		const cached = {
+			hasMore: getCached?.has_more,
+			messages: getCached?.results ?? []
+		}
+
 		const beforeId = cached ? firstServerId(cached.messages) : 0;
 		if (!cached?.hasMore || !beforeId) return;
 	
@@ -166,21 +183,38 @@ export const useChatMessages = ({
 			const data = await queryClient.fetchQuery({
 				queryKey: ['messages', conversationId, beforeId],
 				queryFn: () => ChatService.fetchMessages(conversationId, PAGE_SIZE, beforeId),
+				meta: { suppressToast: true }
 			});
 	
 			restoreScrollRef.current = previousHeight;
-	
-			queryClient.setQueryData<MessagesCache>(messagesKey(conversationId), (old) =>
-				old
-					? {
-						hasMore: data.has_more,
-						messages: sortMessages([
-							...data.results.filter((r) => !old.messages.some((m) => m.id === r.id)),
-							...old.messages,
-						]),
-					}
-					: old
-			);
+
+			queryClient.setQueryData<MessagesCache>(messagesKey(conversationId), (old) => {
+			
+				// Provide default fallback values for new data
+				const newResults = data?.results ?? [];
+				const hasMore = data?.has_more ?? false;
+			
+				// Handle initial state if old cache is empty/undefined
+				if (!old) {
+					return {
+						hasMore,
+						messages: sortMessages([...newResults]),
+					};
+				}
+			
+				const existingMessages = old.messages ?? [];
+			
+				// Filter out duplicates safely
+				const uniqueNewMessages = newResults.filter(
+					(r) => !existingMessages.some((m) => m.id === r.id)
+				);
+			
+				return {
+					hasMore,
+					messages: sortMessages([...uniqueNewMessages, ...existingMessages]),
+				};
+			});
+
 		} catch {
 			restoreScrollRef.current = null;
 			setNotice("Impossible de charger les messages précédents.");

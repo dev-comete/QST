@@ -5,7 +5,7 @@ export const lastServerId = (list: ChatMessage[]) => {
 	return 0;
 };
 
-export const firstServerId = (list: ChatMessage[]) => list.find((m) => m.id > 0)?.id ?? 0;
+export const firstServerId = (list: ChatMessage[]) => list ? list.find((m) => m.id > 0)?.id : 0;
 
 export function upsertMessage(list: ChatMessage[], incoming: ChatMessage, clientId?: string | null): ChatMessage[] {
 	const key = clientId ?? incoming.client_id ?? null;

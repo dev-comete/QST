@@ -8,11 +8,6 @@ export interface MarkReadParams {
     newestServerId: number | string;
 }
 
-// export interface Message {
-// 	messages: ChatMessage[]
-// 	hasMore: boolean
-// }
-
 export const ChatService = {
 	fetchMessages: async (conversationId: number | null, limit: number, beforeId?: number) => {
 		const response = await apiClient.get<MessagePage>(

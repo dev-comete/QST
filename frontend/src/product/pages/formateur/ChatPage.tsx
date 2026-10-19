@@ -1,6 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { TokenStorage } from "../../../other/services/auth/storage";
 import Box from "../../../system/atoms/Container/Box";
 import FetchError from "../../../system/atoms/Loading/FetchError";
 import Loading from "../../../system/atoms/Loading/Loading";
@@ -8,20 +7,19 @@ import ChatLog from "../../../system/organisms/chat/ChatLog";
 import { useChat, useChatRealtime } from "../../../other/hooks/chat/useChat";
 import { useChatLog } from "../../../other/hooks/chat/useChatLog";
 import { ChatMessages } from "../../../system/organisms/chat/ChatMessages";
+import { useAuth } from "../../../other/hooks/auth/useAuth";
 
 const messagesKey = (conversationId: number | null) => ["chat-messages", conversationId] as const;
 
 const ChatPage = () => {
 	const queryClient = useQueryClient();
 
-	const currentUser = (TokenStorage.getUser() ?? null) as { id: number; username: string; email: string } | null;
+	const { authUser: currentUser } = useAuth();
 	const currentUserId = currentUser?.id ?? 0;
 
 	const [selectedRoom, setSelectedRoom] = useState<"general" | "direct">("general");
 	const [targetUserId, setTargetUserId] = useState<number | null>(null);
 	const [live, setLive] = useState<{ roomPath: string; id: number } | null>(null);
-	const atBottomRef = useRef(true);
-
 	const [draft, setDraft] = useState("");
 	const [isVisible, setIsVisible] = useState(document.visibilityState === "visible");
 	const [notice, setNotice] = useState<string | null>(null);
@@ -47,7 +45,8 @@ const ChatPage = () => {
 		? (directConversationMap.get(targetUserId)?.id ?? null)
 		: null;
 
-	const conversationId = live && live.roomPath === roomPath ? live.id : knownConversationId;
+	// const conversationId = live && live.roomPath === roomPath ? live.id : knownConversationId;
+	const conversationId = live && knownConversationId;
 
 	// ------------------------------------------------------------ socket
 
@@ -70,8 +69,8 @@ const ChatPage = () => {
 	}, []);
 
 	const handleRoomSelect = (room: { type: "general" | "direct"; userId?: number }) => {
-		atBottomRef.current = true;
 		setDraft("");
+		setLive(null);
 		if (room.type === "general") {
 			setSelectedRoom("general");
 			setTargetUserId(null);
