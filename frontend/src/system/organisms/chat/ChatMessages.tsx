@@ -1,12 +1,14 @@
 import { useRef, type Dispatch, type SetStateAction } from "react";
 import Box from "../../atoms/Container/Box";
 import Paper from "../../atoms/Container/Paper";
-import Input from "../../atoms/Form/Input";
 import CustomText from "../../atoms/Text/CustomText";
 import ActionButton from "../../molecules/Buttons/ActionButton";
 import { useChatMessages } from "../../../other/hooks/chat/useChatMessages";
 import type { SocketStatus } from "../../../other/hooks/chat/useChatSocket";
 import ChatStatusBadge from "../../molecules/Badge/ChatStatusBadge";
+import FAIcon from "../../atoms/Icon/FAIcon";
+import TextArea from "../../atoms/Form/TextArea";
+// import Loading from "../../atoms/Loading/Loading";
 
 interface ChatConversationProps {
 	conversationId: number | null
@@ -26,7 +28,7 @@ interface ChatConversationProps {
 }
 
 export const ChatMessages = ({
-	activeRoomLabel, socketStatus, roomPath, reconnect,
+	activeRoomLabel, socketStatus, roomPath,
 	conversationId, currentUser, currentUserId, targetUserId,
 	notice, setNotice, isVisible, send, draft, setDraft,
 } : ChatConversationProps) => {
@@ -49,14 +51,7 @@ export const ChatMessages = ({
 					<CustomText textTag="h3" weight="bold">
 						{activeRoomLabel}
 					</CustomText>
-					<span className="flex items-center gap-2">
-						<ChatStatusBadge status={socketStatus}/>
-						{socketStatus === "closed" && roomPath && (
-						<button type="button" onClick={reconnect} className="text-xs underline">
-							Réessayer
-						</button>
-						)}
-					</span>
+					<ChatStatusBadge status={socketStatus}/>
 				</Box>
 
 				{(socketStatus === "reconnecting" || socketStatus === "closed") && roomPath && (
@@ -142,20 +137,20 @@ export const ChatMessages = ({
 				{notice && <div className="w-full bg-background-light px-4 py-2 text-xs">{notice}</div>}
 
 				{/* Chat Input */}
-				<form onSubmit={handleSubmit} className="w-full">
-					<Box className="w-full items-center gap-2 border-t border-background p-4">
+				<form id="sendMessage" onSubmit={handleSubmit} className="w-full">
+					<Box className="w-full items-center gap-2 border-t border-background p-5">
 						<div className="flex-1">
-						<Input
-							id="chat-message"
-							name="chat-message"
-							value={draft}
-							onChange={(event) => setDraft(event.target.value)}
-							placeholder="Écrire un message..."
-							className="border-0 bg-background-light"
-						/>
+							<TextArea
+								id="chat-message"
+								name="chat-message"
+								value={draft}
+								onChange={(event) => setDraft(event.target.value)}
+								placeholder="Écrire un message..."
+								row={3}
+							/>
 						</div>
-						<ActionButton type="submit" disabled={!canSend || draft.trim().length === 0}>
-						Envoyer
+						<ActionButton type="submit" disabled={!canSend || draft.trim().length === 0} interiorIcon="paper-plane">
+							Envoyer
 						</ActionButton>
 					</Box>
 				</form>

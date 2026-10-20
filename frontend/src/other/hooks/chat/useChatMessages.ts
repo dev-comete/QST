@@ -132,6 +132,10 @@ export const useChatMessages = ({
 	// ------------------------------------------------------------ effects
 
 	useEffect(() => {
+		console.log("Conversation Id", conversationId)
+	}, [conversationId])
+
+	useEffect(() => {
 		if (!notice) return;
 		const timer = window.setTimeout(() => setNotice(null), 4000);
 		return () => window.clearTimeout(timer);

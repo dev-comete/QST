@@ -46,7 +46,7 @@ const ChatPage = () => {
 		: null;
 
 	// const conversationId = live && live.roomPath === roomPath ? live.id : knownConversationId;
-	const conversationId = live && knownConversationId;
+	const conversationId = knownConversationId;
 
 	// ------------------------------------------------------------ socket
 
@@ -92,7 +92,7 @@ const ChatPage = () => {
 	}
 
 	return (
-		<Box className="h-[calc(100vh-110px)] w-full gap-4 p-4" direction="row">
+		<Box className="w-full h-screen gap-4 p-4" direction="row">
 			<ChatLog roomList={roomList} handleRoomSelect={handleRoomSelect}/>
 			<ChatMessages {...{ socketStatus, send, reconnect, draft, setDraft, isVisible, notice,
 					conversationId, activeRoomLabel, roomPath, setNotice,
