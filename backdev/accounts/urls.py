@@ -2,6 +2,7 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
 from .views_auth import CustomLoginAPIView, LogoutAPIView , ConfirmPasswordResetAPIView
+from .views import MyBasicProfileAPIView
 
 urlpatterns = [
     # Login endpoint
@@ -13,4 +14,6 @@ urlpatterns = [
     path('auth/logout/', LogoutAPIView.as_view(), name='api-logout'),
 
     path('auth/reset-password-confirm/', ConfirmPasswordResetAPIView.as_view(), name='api_password_reset_confirm'),
+
+    path('profile/me/', MyBasicProfileAPIView.as_view(), name='my-basic-profile'),
 ]
