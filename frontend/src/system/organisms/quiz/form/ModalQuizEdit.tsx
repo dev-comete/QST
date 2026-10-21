@@ -79,7 +79,12 @@ const QuizForm = ({ closeModal, id } : { closeModal : () => void, id: number }) 
 						(formations.find((q) => String(q.id) === String(quiz.formation))?.nom_formation) ?? formations[0].nom_formation
 					}
 				/>
-				<DurationPicking duree={duree} onChange={dateChangeHandler(setQuiz, 'duree', toDuration, setDuree)} />
+				<DurationPicking
+					id="quiz_duree"
+					label="Durée du quiz"
+					duree={duree}
+					onChange={dateChangeHandler(setQuiz, 'duree', toDuration, setDuree)}
+				/>
 				<Select 
 					id="status"
 					name="status"

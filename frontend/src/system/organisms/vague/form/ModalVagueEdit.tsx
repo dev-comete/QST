@@ -79,26 +79,6 @@ const ModalVagueEdit = ({ open, closeModal, id } : ModalVagueEditProps) => {
 					date={dateFin}
 					onChange={dateChangeHandler(setVague, 'fin', toDateTime, setDateFin)}
 				/>
-				{/* <Input
-					id={"debut"}
-					name={"debut"}
-					label="Date de début"
-					type="datetime-local"
-					step={60}
-					onChange={formChangeHandler(setVague, 'debut')}
-					required
-					value={formatDateForInput(vague.debut ?? '')}
-				/>
-				<Input
-					id={"fin"}
-					name={"fin"}
-					label="Date de fin"
-					type="datetime-local"
-					step={60}
-					onChange={formChangeHandler(setVague, 'fin')}
-					required
-					value={formatDateForInput(vague.fin ?? '')}
-				/> */}
 				<ActionButton
 					type="submit"
 					btnStyling="w-full"
