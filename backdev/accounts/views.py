@@ -5,11 +5,11 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.urls import reverse
 
-from rest_framework import viewsets
+from rest_framework import viewsets, generics
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from django.contrib.auth import get_user_model
 
-from .serializers import UtilisateurSerializer, TypeUtilisateurSerializer , OrganisationSerializer
+from .serializers import UserBasicProfileSerializer, UtilisateurSerializer, TypeUtilisateurSerializer , OrganisationSerializer
 from .models import TypeUtilisateur, Organisation
 
 User = get_user_model()
@@ -100,3 +100,14 @@ class UtilisateurViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(type_utilisateur__type_utilisateur=role)
             
         return queryset
+
+class MyBasicProfileAPIView(generics.RetrieveUpdateAPIView):
+    """
+    Vue permettant à un utilisateur connecté de consulter (GET) 
+    et de modifier (PUT/PATCH) ses informations de base.
+    """
+    serializer_class = UserBasicProfileSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
