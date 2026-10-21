@@ -6,11 +6,11 @@ import Box from "../../../../system/atoms/Container/Box";
 import FetchError from "../../../../system/atoms/Loading/FetchError";
 import Loading from "../../../../system/atoms/Loading/Loading";
 import type {
-  ChatConversation,
-  ChatMessage,
-  MessagePage,
-  MessagesCache,
-  ServerEvent,
+	ChatConversation,
+	ChatMessage,
+	MessagePage,
+	MessagesCache,
+	ServerEvent,
 } from "../../../../other/types/chatType";
 import { useChatSocket } from "../../../../other/hooks/chat/useChatSocket";
 import ChatLog from "./ChatLog";
@@ -25,10 +25,10 @@ const MESSAGES_ROOT_KEY = ["chat-messages"] as const;
 const messagesKey = (conversationId: number | null) => ["chat-messages", conversationId] as const;
 
 const ERROR_TEXT: Record<string, string> = {
-  too_long: `Message trop long (${MAX_MESSAGE_LENGTH} caractères max).`,
-  rate_limited: "Trop de messages envoyés, ralentissez un peu.",
-  bad_json: "Message invalide.",
-  bad_payload: "Message invalide.",
+	too_long: `Message trop long (${MAX_MESSAGE_LENGTH} caractères max).`,
+	rate_limited: "Trop de messages envoyés, ralentissez un peu.",
+	bad_json: "Message invalide.",
+	bad_payload: "Message invalide.",
 };
 
 const newClientId = () =>
@@ -482,7 +482,7 @@ const ChatPage = () => {
   }
 
   return (
-    <Box className="h-[calc(100vh-110px)] w-full gap-4 p-4" direction="row">
+    <Box className="h-screen w-full gap-4 p-4" direction="row">
       <ChatLog rooms={roomList} onSelectRoom={handleRoomSelect} />
 
       {/* key = the SELECTION (not conversationId): switching rooms remounts the window
