@@ -1,3 +1,4 @@
+import type { EvolutionChartResponse } from "../types/dashboardType";
 import type { assignQuizPayload, assignStudentPayload, vagueInfo, vaguePayload, vagueStat, vagueType } from "../types/vagueType";
 import apiClient from "./apiClient";
 import { ENDPOINTS } from "./endpoint";
@@ -8,6 +9,7 @@ const VAGUE_LIST_URL = ENDPOINTS.VAGUE.LIST
 const VAGUE_ASSIGN_STUD_URL = ENDPOINTS.VAGUE.ASSIGN_STUDENT
 const VAGUE_ASSIGN_QUIZ_URL = ENDPOINTS.VAGUE.ASSIGN_QUIZ
 const VAGUE_STAT_URL = ENDPOINTS.VAGUE.ANALYTICS
+const VAGUE_CHART_URL = ENDPOINTS.VAGUE.CHART_EVOLUTION
 
 export interface VagueListParam {
 	formation?: string
@@ -61,5 +63,16 @@ export const VagueService = {
 	info: async (id: string) => {
 		const response = await apiClient.get(VAGUE_CRUD_URL + id + '/');
 		return response.data as vagueInfo;
+	},
+
+	evolutionChart: async (vagueId: number, studentIds: number[] = []) => {
+		const queryParams = studentIds.length
+			? `?etudiants=${studentIds.join(',')}`
+			: ''
+
+		const response = await apiClient.get(
+			`${VAGUE_CHART_URL}${vagueId}/chart-evolution/${queryParams}`
+		)
+		return response.data as EvolutionChartResponse
 	},
 }
