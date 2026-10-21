@@ -1,4 +1,5 @@
-import { formatDateForInput, formChangeHandler } from "../../../../other/helper/helper";
+import { useEffect, useState } from "react";
+import { dateChangeHandler, formatDateForInput, formChangeHandler, fromDateTime, toDateTime } from "../../../../other/helper/helper";
 import { useFormation } from "../../../../other/hooks/formation/useFormation";
 import { useVagueEdit } from "../../../../other/hooks/vague/useVague";
 import Input from "../../../atoms/Form/Input";
@@ -6,6 +7,7 @@ import FetchError from "../../../atoms/Loading/FetchError";
 import Loading from "../../../atoms/Loading/Loading";
 import ActionButton from "../../../molecules/Buttons/ActionButton";
 import { Modal } from "../../../molecules/Modal/Modal";
+import { DatePicking } from "../../../atoms/Form/TimePicking";
 
 interface ModalVagueEditProps {
 	open: boolean,
@@ -17,6 +19,13 @@ const ModalVagueEdit = ({ open, closeModal, id } : ModalVagueEditProps) => {
 	
 	const { vague, setVague, handleVagueEdit, isPending } = useVagueEdit(id)
 	const { formations, formationsStatus } = useFormation()
+	const [dateDebut, setDateDebut] = useState<Date | null>(null)
+	const [dateFin, setDateFin] = useState<Date | null>(null)
+
+	useEffect(() => {
+		setDateDebut(fromDateTime(vague.debut))
+		setDateFin(fromDateTime(vague.fin))
+	}, [vague])
 
 	if (formationsStatus == 'pending')
 		return <Loading />
@@ -58,7 +67,19 @@ const ModalVagueEdit = ({ open, closeModal, id } : ModalVagueEditProps) => {
 					value={formations.find((q) => q.id == vague.formation_id)?.nom_formation}
 					readOnly
 				/>
-				<Input
+				<DatePicking
+					id="date_debut"
+					label="Date de début"
+					date={dateDebut}
+					onChange={dateChangeHandler(setVague, 'debut', toDateTime, setDateDebut)}
+				/>
+				<DatePicking
+					id="date_fin"
+					label="Date de fin"
+					date={dateFin}
+					onChange={dateChangeHandler(setVague, 'fin', toDateTime, setDateFin)}
+				/>
+				{/* <Input
 					id={"debut"}
 					name={"debut"}
 					label="Date de début"
@@ -77,7 +98,7 @@ const ModalVagueEdit = ({ open, closeModal, id } : ModalVagueEditProps) => {
 					onChange={formChangeHandler(setVague, 'fin')}
 					required
 					value={formatDateForInput(vague.fin ?? '')}
-				/>
+				/> */}
 				<ActionButton
 					type="submit"
 					btnStyling="w-full"

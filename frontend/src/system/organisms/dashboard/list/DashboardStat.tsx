@@ -41,7 +41,7 @@ export const DashboardStat = ({ stats, type } : DashboardStatProps) => {
                 className="w-full flex-1 min-w-[150x] min-h-[100px]"
             >
 				<DashboardCard 
-					title={stat.label}
+					title={stat.label == 'Vagues' ? 'Equipes' : stat.label}
 					value={stat.value}
 					info={stat.change}
 					icon={dashboardStyle[index].icon}
