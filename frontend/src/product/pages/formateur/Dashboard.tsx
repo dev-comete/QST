@@ -8,41 +8,52 @@ import { RecentQuizItem, SessionsItem } from "../../../system/organisms/dashboar
 import { DashboardStat } from "../../../system/organisms/dashboard/list/DashboardStat"
 import BodyLayout from "../../layout/common/BodyLayout"
 import { useTabNavigation } from "../../../other/hooks/navigation/useTabNavigation"
+import InteractiveEvolutionChart from "../../../system/organisms/dashboard/container/InteractiveEvolutionChart"
 
 const Dashboard = () => {
-	const { metric, metricPending } = useDashboard()
-	const { activeTab, handleTabChange } = useTabNavigation();
+    const { metric, metricPending } = useDashboard()
+    const { activeTab, handleTabChange } = useTabNavigation();
 
-	if (metricPending) return <Loading />
+    if (metricPending) return <Loading />
 
-	if (!metric) return <FetchError />
+    if (!metric) return <FetchError />
 
     return (
-		<BodyLayout
-			title="Tableau de bord"
-		>
-			<NavigationBar
-				titles={['Global', 'Quiz et vague']}
-				activeTab={activeTab}
-				onTabChange={handleTabChange}			
-			>
-				<DashboardStat stats={metric.stats}/>
-				<Box flexDirection="flex-col md:flex-row">
-					<DashboardBloc 
-						title="Suivi des quiz récents"
-						emptyText="Il n'y a pas encore de quiz publié"
-						data={metric.recentQuizzes}
-						Item={RecentQuizItem}
-					/>
-					<DashboardBloc 
-						title="Prochaines sessions"
-						emptyText="Il n'y a pas encore de session plannifié"
-						data={metric.upcomingSessions}
-						Item={SessionsItem}
-					/>
-				</Box>
-			</NavigationBar>
-		</BodyLayout>
+        <BodyLayout
+            title="Tableau de bord"
+        >
+            <NavigationBar
+                titles={['Global', 'Quiz et vague']}
+                activeTab={activeTab}
+                onTabChange={handleTabChange}           
+            >
+                {/* Global Tab Content (Index 0) */}
+                {activeTab === 0 && (
+                    <>
+                        <DashboardStat stats={metric.stats}/>
+                        <InteractiveEvolutionChart />
+                    </>
+                )}
+                
+                {/* Quiz et vague Tab Content (Index 1) */}
+                {activeTab === 1 && (
+                    <Box>
+                        <DashboardBloc 
+                            title="Suivi des quiz récents"
+                            emptyText="Il n'y a pas encore de quiz publié"
+                            data={metric.recentQuizzes}
+                            Item={RecentQuizItem}
+                        />
+                        <DashboardBloc 
+                            title="Prochaines sessions"
+                            emptyText="Il n'y a pas encore de session plannifié"
+                            data={metric.upcomingSessions}
+                            Item={SessionsItem}
+                        />
+                    </Box>
+                )}
+            </NavigationBar>
+        </BodyLayout>
     )
 }
 
