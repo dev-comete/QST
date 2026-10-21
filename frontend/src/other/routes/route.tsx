@@ -13,7 +13,7 @@ import MyEvaluations from "../../product/pages/apprenant/Evaluation/MyEvaluation
 import TakingEvaluation from "../../product/pages/apprenant/Evaluation/TakingEvaluation";
 import COMMON_CHILDREN from "./sharedChildren";
 import Formation from "../../product/pages/formateur/Formation";
-import ChatPage from "../../product/pages/formateur/ChatPage";
+import ChatPage from "../../product/pages/formateur/chat/ChatPage";
 import SetPasswordPage from "../../product/pages/common/SetPasswordPage";
 import ErrorPage from "../../product/pages/common/ErrorPage";
 
