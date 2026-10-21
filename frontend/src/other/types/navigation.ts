@@ -16,7 +16,7 @@ const ROLE_CONFIGS: Record<string, SideBarConfig> = {
 			{ label: 'Paramètres généraux', link: '/admin/parametre_general', icon:'sliders' },
 			{ label: 'Banque de questions', link: '/admin/gestion_question', icon: 'circle-question' },
 			{ label: 'Quiz', link: '/admin/gestion_quiz', icon:'file-circle-question' },
-			{ label: 'Vagues', link: '/admin/gestion_equipe', icon: 'users' },
+			{ label: 'Equipes', link: '/admin/gestion_equipe', icon: 'users' },
 		]
 	},
 

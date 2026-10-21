@@ -16,6 +16,8 @@ import Formation from "../../product/pages/formateur/Formation";
 import ChatPage from "../../product/pages/formateur/ChatPage";
 import SetPasswordPage from "../../product/pages/common/SetPasswordPage";
 import ErrorPage from "../../product/pages/common/ErrorPage";
+import AdminDashboard from "../../product/pages/admin/AdminDashboard";
+import Dashboard from "../../product/pages/formateur/Dashboard";
 
 export const router = createBrowserRouter([
 
@@ -45,7 +47,7 @@ export const router = createBrowserRouter([
 				children: [
 					{ index: true, element: <Navigate to="tableau_de_bord" replace /> },
 					{ path: 'parametre_general', element: <Parameters /> },
-					// { path: 'tableau_de_bord', element: <AdminDashboard /> },
+					{ path: 'tableau_de_bord', element: <AdminDashboard /> },
 					...COMMON_CHILDREN,
 				]
 			},
@@ -61,10 +63,10 @@ export const router = createBrowserRouter([
 				element: <FormateurTemplate />,
 				children: [
 					{ index: true, element: <Navigate to="tableau_de_bord" replace /> },
+					{ path: "tableau_de_bord", element: <Dashboard /> },
 					...COMMON_CHILDREN,
 					{ path: "formation", element: <Formation /> },
 					{ path: "chat", element: <ChatPage /> },
-					// { path: "tableau_de_bord", element: <Dashboard /> },
 				],
 			}
 		]
