@@ -9,6 +9,11 @@ export const AuthService = {
 		return response.data as authData;
 	},
 
+	getMyProfile: async () => {
+		const response = await apiClient.get("accounts/profile/me/");
+		return response.data;
+	},
+
 	//logout if necessary
 
 };
