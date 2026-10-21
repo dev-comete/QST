@@ -21,9 +21,31 @@ type DashboardMetric = {
 	upcomingSessions: Session[]
 }
 
+type EvolutionChartPoint = {
+	quiz_id: number
+	quiz_titre: string
+	moyenne_classe: number
+	[key: string]: number | string | null
+}
+
+type EvolutionChartResponse = {
+	legendes: Record<string, string>
+	chart_data: EvolutionChartPoint[]
+}
+
+type EvolutionChartSeries = {
+	key: string
+	label: string
+	color: string
+	dashed?: boolean
+}
+
 export type {
 	StatMetric,
 	Session,
 	RecentQuiz,
-	DashboardMetric
+	DashboardMetric,
+	EvolutionChartPoint,
+	EvolutionChartResponse,
+	EvolutionChartSeries
 }

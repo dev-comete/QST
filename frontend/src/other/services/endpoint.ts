@@ -26,6 +26,7 @@ export const ENDPOINTS = {
 		ASSIGN_QUIZ: '/formation/vagues/assign-quiz/',
 		ANALYTICS: '/quizzes/analytics/vague/',
 		CRUD: '/quizzes/crud/vagues/',
+		CHART_EVOLUTION: '/quizzes/vagues/',
 	},
 	USER: {
 		CRUD: 'quizzes/crud/utilisateurs/',
