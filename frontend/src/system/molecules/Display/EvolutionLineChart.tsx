@@ -94,12 +94,19 @@ const EvolutionLineChart = ({
 					<Legend
 						wrapperStyle={{ paddingTop: 8, fontSize: 12, cursor: "pointer" }}
 						iconType="circle"
-						onClick={(legendProps: { dataKey?: string | number }) => {
-							const seriesKey = legendProps?.dataKey
-							if (seriesKey !== undefined && onToggleSeries) {
-								onToggleSeries(String(seriesKey))
-							}
-						}}
+						// onClick={(legendProps: { dataKey?: string | number }) => {
+						// 	const seriesKey = legendProps?.dataKey
+						// 	if (seriesKey !== undefined && onToggleSeries) {
+						// 		onToggleSeries(String(seriesKey))
+						// 	}
+						// }}
+
+						onClick={(payload) => {
+						const seriesKey = payload?.dataKey;
+						if ((typeof seriesKey === 'string' || typeof seriesKey === 'number') && onToggleSeries) {
+							onToggleSeries(String(seriesKey));
+						}
+					}}
 					/>
 					{series.map((item) => {
 						const isHidden = Boolean(hiddenSeries[item.key])
