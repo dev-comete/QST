@@ -10,6 +10,7 @@ export const ENDPOINTS = {
 		BAREME: '/quizzes/crud/baremes/',
 		BANK: '/quizzes/banque-questions/',
 		TRASH: '/quizzes/corbeille/questions/',
+		IA_DISTRACTOR: '/ia/distracteurs/',
 	},
 	QUIZ: {
 		CRUD: '/quizzes/crud/quizzes/',
