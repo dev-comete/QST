@@ -18,17 +18,24 @@ type ResetRequest = {
 const PasswordResetList = () => {
     const queryClient = useQueryClient();
 
-    const { data: requests, isPending } = useQuery({
+    const { data: requests = [], isPending, isError } = useQuery({
         queryKey: ["password-resets", "pending"],
         queryFn: async () => {
-            const { data } = await apiClient.get<ResetRequest[]>("admin/password-resets/?status=pending");
-            return data;
+            const response = await apiClient.get("accounts/admin/password-resets/?status=pending");
+            // Gère le cas de la pagination DRF (response.data.results) et le cas du tableau direct (response.data)
+            if (Array.isArray(response.data)) {
+                return response.data as ResetRequest[];
+            }
+            if (response.data && Array.isArray(response.data.results)) {
+                return response.data.results as ResetRequest[];
+            }
+            return [];
         }
     });
 
     const approveMutation = useMutation({
         mutationFn: async (id: number) => {
-            const { data } = await apiClient.post(`admin/password-resets/${id}/approve/`);
+            const { data } = await apiClient.post(`accounts/admin/password-resets/${id}/approve/`);
             return data;
         },
         onSuccess: () => {
@@ -38,7 +45,7 @@ const PasswordResetList = () => {
 
     const rejectMutation = useMutation({
         mutationFn: async (id: number) => {
-            await apiClient.post(`admin/password-resets/${id}/reject/`);
+            await apiClient.post(`accounts/admin/password-resets/${id}/reject/`);
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["password-resets", "pending"] });
@@ -46,6 +53,16 @@ const PasswordResetList = () => {
     });
 
     if (isPending) return <Loading message="Chargement des demandes..." />;
+
+    if (isError) {
+        return (
+            <Paper className="w-full p-6">
+                <CustomText color="disabled">Impossible de charger les demandes de réinitialisation.</CustomText>
+            </Paper>
+        );
+    }
+
+    const safeRequests = Array.isArray(requests) ? requests : [];
 
     return (
         <Paper className="w-full p-6">
@@ -58,12 +75,12 @@ const PasswordResetList = () => {
                 </Box>
 
                 <Box direction="column" className="gap-4">
-                    {requests?.length === 0 ? (
+                    {safeRequests.length === 0 ? (
                         <Box className="p-6 justify-center bg-slate-50 rounded-xl border border-dashed border-slate-200">
                             <CustomText color="disabled">Aucune demande en attente.</CustomText>
                         </Box>
                     ) : (
-                        requests?.map((req) => (
+                        safeRequests.map((req) => (
                             <Box key={req.id} className="p-4 border border-background rounded-xl items-center justify-between flex-wrap gap-4">
                                 <Box direction="column" className="gap-1">
                                     <CustomText textTag="p" weight="bold">
@@ -76,7 +93,7 @@ const PasswordResetList = () => {
                                 
                                 <Box className="gap-2">
                                     <Button 
-                                        variant="outline" 
+                                        variant="outline"
                                         className="border-red-200 text-red-600 hover:bg-red-50"
                                         onClick={() => rejectMutation.mutate(req.id)}
                                         disabled={approveMutation.isPending || rejectMutation.isPending}

@@ -84,7 +84,7 @@ const Parameters = () => {
                         'Projets', 
                         'Formations', 
                         'Types de question', 
-                        'Réinitialisations'
+                        'Sécurité'
                     ]}
                     activeTab={activeTab}
                     onTabChange={handleTabChange}               

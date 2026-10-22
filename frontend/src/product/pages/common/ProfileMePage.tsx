@@ -10,6 +10,7 @@ import NavigationBar from "../../../system/molecules/Navigation/NavigationBar";
 import BodyLayout from "../../layout/common/BodyLayout";
 
 import ProfileDetailsCard from "../../../system/organisms/profile/ProfileDetailsCard"; 
+import PasswordResetRequestCard from "../../../system/organisms/profile/PasswordResetRequestCard";
 
 type ProfileMeResponse = {
     id: number;
@@ -47,6 +48,7 @@ const ProfileMePage = () => {
     const role = profile.role || authUser?.role || "apprenant";
     const displayName = [profile.first_name, profile.last_name].filter(Boolean).join(" ") || profile.username;
     const initial = (displayName || profile.username || "U").charAt(0).toUpperCase();
+    const isAdmin = role === "admin";
 
     return (
         <BodyLayout title="Paramètres">
@@ -64,22 +66,48 @@ const ProfileMePage = () => {
                     />
 
                     {/* ONGLET 2 : PARAMÈTRES */}
-                    <Paper className="w-full p-6">
-                        <Box direction="column" className="w-full gap-4">
-                            <CustomText textTag="h3" weight="bold">Options de compte</CustomText>
-                            <CustomText textTag="h6" color="disabled">
-                                Ajoutez ici les réglages à venir : sécurité, préférences, notifications, etc.
-                            </CustomText>
-                            <Box direction="column" className="w-full gap-2">
-                                <div className="rounded-xl border border-background bg-slate-50 p-3">
-                                    <CustomText textTag="p" weight="bold">Sécurité</CustomText>
-                                </div>
-                                <div className="rounded-xl border border-background bg-slate-50 p-3">
-                                    <CustomText textTag="p" weight="bold">Notifications</CustomText>
-                                </div>
+                    <Box direction="column" className="w-full gap-6">
+                        <Paper className="w-full p-6">
+                            <Box direction="column" className="w-full gap-4">
+                                <Box direction="column" className="gap-1">
+                                    <CustomText textTag="h3" weight="bold">Options de compte</CustomText>
+                                    <CustomText textTag="h6" color="disabled">
+                                        Gérez vos préférences de sécurité et vos paramètres de compte.
+                                    </CustomText>
+                                </Box>
+
+                                <Box direction="column" className="w-full gap-6 mt-2">
+                                    {/* SECTION SÉCURITÉ (Masquée pour les admins) */}
+                                    {!isAdmin && (
+                                        <Box direction="column" className="w-full gap-3">
+                                            <div className="rounded-xl border border-background bg-slate-50 p-3">
+                                                <CustomText textTag="p" weight="bold" className="text-primary">
+                                                    Sécurité
+                                                </CustomText>
+                                            </div>
+                                            
+                                            {/* Carte de demande accessible uniquement aux Formateurs & Apprenants */}
+                                            <PasswordResetRequestCard />
+                                        </Box>
+                                    )}
+
+                                    {/* SECTION NOTIFICATIONS */}
+                                    <Box direction="column" className="w-full gap-3">
+                                        <div className="rounded-xl border border-background bg-slate-50 p-3">
+                                            <CustomText textTag="p" weight="bold" color="disabled">
+                                                Notifications
+                                            </CustomText>
+                                        </div>
+                                        <Paper className="p-4 border border-dashed border-slate-200">
+                                            <CustomText color="disabled" className="text-sm">
+                                                Les options de notification seront bientôt disponibles.
+                                            </CustomText>
+                                        </Paper>
+                                    </Box>
+                                </Box>
                             </Box>
-                        </Box>
-                    </Paper>
+                        </Paper>
+                    </Box>
                 </NavigationBar>
             </Box>
         </BodyLayout>

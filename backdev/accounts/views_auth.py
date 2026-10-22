@@ -1,34 +1,52 @@
-# views.py (or auth_views.py)
-from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework import status, viewsets
-
-
-from .serializers_auth import CustomLoginSerializer, ResetPasswordConfirmSerializer, PasswordResetRequestSerializer
-
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.permissions import AllowAny
-
-from django.utils.http import urlsafe_base64_decode
-from django.utils.encoding import force_str
-from django.contrib.auth.tokens import default_token_generator
+import threading
+from django.conf import settings
 from django.contrib.auth import get_user_model
-
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import send_mail
 from django.utils import timezone
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
-
-from .models import PasswordResetRequest
-
-from .serializers_auth import ResetPasswordConfirmSerializer
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from quizzes.permissions import IsAdminUser
+from .models import PasswordResetRequest
+from .serializers_auth import (
+    CustomLoginSerializer,
+    PasswordResetRequestSerializer,
+    ResetPasswordConfirmSerializer,
+)
 
 User = get_user_model()
+
+
+class EmailThread(threading.Thread):
+    """Envoie l'e-mail dans un thread séparé pour éviter de bloquer l'API."""
+    def __init__(self, subject, message, from_email, recipient_list):
+        self.subject = subject
+        self.message = message
+        self.from_email = from_email
+        self.recipient_list = recipient_list
+        threading.Thread.__init__(self)
+
+    def run(self):
+        try:
+            send_mail(
+                self.subject,
+                self.message,
+                self.from_email,
+                self.recipient_list,
+                fail_silently=False,
+            )
+        except Exception as e:
+            print(f" Erreur lors de l'envoi de l'e-mail en arrière-plan : {e}")
+
 
 class CustomLoginAPIView(TokenObtainPairView):
     """
@@ -37,28 +55,21 @@ class CustomLoginAPIView(TokenObtainPairView):
     """
     serializer_class = CustomLoginSerializer
 
+
 class LogoutAPIView(APIView):
-    # L'utilisateur doit être connecté pour pouvoir se déconnecter
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
         try:
-            # On récupère le refresh token envoyé par React
             refresh_token = request.data["refresh"]
             token = RefreshToken(refresh_token)
-            
-            # On le met sur liste noire
             token.blacklist()
-            
-            # 205 Reset Content indique au frontend qu'il doit vider ses données
             return Response(status=status.HTTP_205_RESET_CONTENT)
-            
-        except Exception as e:
-            # Si le token est invalide ou absent, on renvoie une erreur 400
+        except Exception:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+
 class ConfirmPasswordResetAPIView(APIView):
-    # Endpoint public : l'utilisateur n'est pas encore connecté
     permission_classes = [AllowAny]
 
     def post(self, request):
@@ -72,18 +83,14 @@ class ConfirmPasswordResetAPIView(APIView):
         new_password = serializer.validated_data['new_password']
 
         try:
-            # 1. On décode l'ID de l'utilisateur
             uid = force_str(urlsafe_base64_decode(uidb64))
             user = User.objects.get(pk=uid)
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
             user = None
 
-        # 2. On vérifie le token généré lors de la création
         if user is not None and default_token_generator.check_token(user, token):
-            # 3. Le token est valide, on enregistre le nouveau mot de passe
             user.set_password(new_password)
             user.save()
-            
             return Response(
                 {"message": "Mot de passe défini avec succès. Vous pouvez maintenant vous connecter."}, 
                 status=status.HTTP_200_OK
@@ -94,35 +101,32 @@ class ConfirmPasswordResetAPIView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+
 class SubmitPasswordResetRequestView(APIView):
     """
-    Point d'entrée public pour qu'un utilisateur (non-admin) 
+    Point d'entrée sécurisé pour qu'un utilisateur authentifié (non-admin) 
     demande la réinitialisation de son mot de passe.
     """
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        email = request.data.get('email')
+        email = request.data.get('email') or request.user.email
         if not email:
-            return Response({'detail': 'L\'adresse email est requise.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': "L'adresse email est requise."}, status=status.HTTP_400_BAD_REQUEST)
 
         user = User.objects.filter(email=email).first()
         
-        # Sécurité : On retourne toujours 200 pour ne pas divulguer si l'email existe en base
         if not user:
             return Response({'detail': 'Si cette adresse existe, une demande a été envoyée.'}, status=status.HTTP_200_OK)
 
-        # 1. Empêcher les administrateurs d'utiliser ce formulaire
         if user.is_staff or user.is_superuser or (user.type_utilisateur and user.type_utilisateur.type_utilisateur == 'admin'):
             return Response({'detail': 'Les administrateurs ne peuvent pas utiliser ce formulaire.'}, status=status.HTTP_403_FORBIDDEN)
 
-        # 2. Vérifier s'il y a déjà une demande en attente
         if PasswordResetRequest.objects.filter(user=user, status='pending').exists():
             return Response({'detail': 'Une demande est déjà en attente pour ce compte.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # 3. Créer la demande
         PasswordResetRequest.objects.create(user=user)
-        return Response({'detail': 'Demande de réinitialisation envoyée à l\'administrateur.'}, status=status.HTTP_201_CREATED)
+        return Response({'detail': "Demande de réinitialisation envoyée à l'administrateur."}, status=status.HTTP_201_CREATED)
 
 
 class AdminPasswordResetViewSet(viewsets.ModelViewSet):
@@ -149,18 +153,17 @@ class AdminPasswordResetViewSet(viewsets.ModelViewSet):
             return Response({'detail': 'Cette demande a déjà été traitée.'}, status=status.HTTP_400_BAD_REQUEST)
 
         user = reset_req.user
+        if not user:
+            return Response({'detail': 'Utilisateur introuvable pour cette demande.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # 1. Création du Token sécurisé (Même logique que perform_create)
+        # 1. Création du Token sécurisé
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         token = default_token_generator.make_token(user)
 
-        frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:3000')
-        # On utilise la même route que l'activation de compte puisque ConfirmPasswordResetAPIView s'en occupe
+        frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:5173')
         reset_link = f"{frontend_url}/set-password/{uid}/{token}"
 
-        print(f"\n🔗 LIEN DIRECT RESET (SANS ENCODAGE) : {reset_link}\n")
-
-        # 2. Préparation et envoi de l'e-mail
+        # 2. Préparation de l'e-mail
         subject = "Réinitialisation de votre mot de passe QST"
         message = (
             f"Bonjour {user.username},\n\n"
@@ -171,18 +174,10 @@ class AdminPasswordResetViewSet(viewsets.ModelViewSet):
             f"À bientôt !"
         )
         
-        from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@comete.ai')
+        from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', getattr(settings, 'EMAIL_HOST_USER', 'noreply@comete.ai'))
 
-        try:
-            send_mail(
-                subject,
-                message,
-                from_email,
-                [user.email],
-                fail_silently=False, 
-            )
-        except Exception as e:
-            return Response({'detail': f"Erreur lors de l'envoi de l'email : {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        # Envoi asynchrone pour une réponse HTTP immédiate côté Admin
+        EmailThread(subject, message, from_email, [user.email]).start()
 
         # 3. Clôture de la requête en base de données
         reset_req.status = 'approved'
@@ -191,7 +186,7 @@ class AdminPasswordResetViewSet(viewsets.ModelViewSet):
         reset_req.save()
 
         return Response({
-            'detail': 'Demande approuvée. Un email contenant le lien de réinitialisation a été envoyé à l\'utilisateur.',
+            'detail': "Demande approuvée. Un e-mail contenant le lien de réinitialisation est en cours d'envoi à l'utilisateur.",
         }, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['post'])
@@ -201,7 +196,6 @@ class AdminPasswordResetViewSet(viewsets.ModelViewSet):
         if reset_req.status != 'pending':
             return Response({'detail': 'Cette demande a déjà été traitée.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # On marque la demande comme rejetée sans envoyer de lien
         reset_req.status = 'rejected'
         reset_req.resolved_at = timezone.now()
         reset_req.resolved_by = request.user

@@ -15,7 +15,6 @@ import COMMON_CHILDREN from "./sharedChildren";
 import Formation from "../../product/pages/formateur/Formation";
 import ChatPage from "../../product/pages/formateur/chat/ChatPage";
 import SetPasswordPage from "../../product/pages/common/SetPasswordPage";
-import RequestPasswordResetPage from "../../product/pages/common/RequestPasswordResetPage";
 import ErrorPage from "../../product/pages/common/ErrorPage";
 import AdminDashboard from "../../product/pages/admin/AdminDashboard";
 import Dashboard from "../../product/pages/formateur/Dashboard";
@@ -27,7 +26,6 @@ export const router = createBrowserRouter([
     // Public routes
     { path: '/', element: <RootRedirect />},
     { path: '/login', element: <Login /> },
-    { path: '/request-password-reset', element: <RequestPasswordResetPage /> },
     { path: '/unauthorized', element: <ErrorPage msg="Vous ne pouvez pas accéder à la page" statusCode={403} /> },
     { path: '/set-password/:uid/:token', element: <SetPasswordPage /> },
 
@@ -66,7 +64,7 @@ export const router = createBrowserRouter([
         ]
     },
 
-    // Apprenant routes
+    // Apprenant & Profile routes
     {
         path: '/profile',
         element: <ProtectedRoute allowedRole={['admin', 'formateur', 'apprenant']} />,
