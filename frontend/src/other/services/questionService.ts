@@ -8,6 +8,7 @@ const QUESTION_FULL_CREATE_URL = ENDPOINTS.QUESTION.CREATE
 const BANK_QUESTION_URL = ENDPOINTS.QUESTION.BANK
 const TRASH_QUESTION_URL = ENDPOINTS.QUESTION.TRASH
 const TYPE_QUESTION_URL = ENDPOINTS.QUESTION.TYPES
+const IA_DISTRACTOR_URL = ENDPOINTS.QUESTION.IA_DISTRACTOR
 
 export interface BankQuestionParams {
 	search?: string;
@@ -85,5 +86,13 @@ export const QuestionService = {
 		const response = await apiClient.post(TRASH_QUESTION_URL + id + '/restaurer/');
 		const result = response.data
 		return result;
+	},
+
+	generateDistractors: async (enonce: string, bonne_reponse: string): Promise<string[]> => {
+		const { data } = await apiClient.post(IA_DISTRACTOR_URL, {
+			enonce,
+			bonne_reponse
+		});
+		return data.distracteurs;
 	},
 }

@@ -125,56 +125,58 @@ const QuestionCreate = () => {
 	}
 
 	return (
-		<BodyLayout
-			title={"Création de question"}
-			defaultLinkBack
-			titleButton={
-				<ActionButton
-					type="submit"
-					form="createQuestion"
-					disabled={question.enonce_question.length == 0 || !checkOptionValidation(responses, selectedQuestionType)}
-					isLoading={isPending}
-				>{"Créer la question"}</ActionButton>
-			}
-		>
-			<Box direction="column" className="w-full">
-				{errorForm.msg && <Info info={errorForm.msg} variant="error"/>}
-				<form
-					id="createQuestion"
-					onSubmit={handleSubmit}
-				>
-					<NavigationBar
-						titles={['Enoncé', 'Options']}
-						activeTab={activeTab}
-						onTabChange={(index) => setActiveTab(index)}
-					>
-						<Paper className="p-5 w-2/3 m-auto">
-							<EnonceForm
-								question={question}
-								setQuestion={setQuestion}
-								questionType={questionType}
-							/>
-						</Paper>
-						<Box className="items-start justify-start gap-4">
-							<QuestionCreateValidation 
-								questionType={selectedQuestionType}
-								responses={responses}
-							/>
-							{
-								!isOuvert && 
-									<Paper className="p-5 min-w-0 flex-1">
-										<RespCreatedList 
-											responses={responses}
-											setResponses={setResponses}
-										/>
-								</Paper>
-							}
-						</Box>
-					</NavigationBar>
-				</form>
-			</Box>
-		</BodyLayout>
-	)
+        <BodyLayout
+            title={"Création de question"}
+            defaultLinkBack
+            titleButton={
+                <ActionButton
+                    type="submit"
+                    form="createQuestion"
+                    disabled={question.enonce_question.length == 0 || !checkOptionValidation(responses, selectedQuestionType)}
+                    isLoading={isPending}
+                >{"Créer la question"}</ActionButton>
+            }
+        >
+            <Box direction="column" className="w-full">
+                {errorForm.msg && <Info info={errorForm.msg} variant="error"/>}
+                <form
+                    id="createQuestion"
+                    onSubmit={handleSubmit}
+                >
+                    <NavigationBar
+                        titles={['Enoncé', 'Options']}
+                        activeTab={activeTab}
+                        onTabChange={(index) => setActiveTab(index)}
+                    >
+                        <Paper className="p-5 w-2/3 m-auto">
+                            <EnonceForm
+                                question={question}
+                                setQuestion={setQuestion}
+                                questionType={questionType}
+                                responses={responses}       // <-- AJOUTÉ
+                                setResponses={setResponses} // <-- AJOUTÉ
+                            />
+                        </Paper>
+                        <Box className="items-start justify-start gap-4">
+                            <QuestionCreateValidation 
+                                questionType={selectedQuestionType}
+                                responses={responses}
+                            />
+                            {
+                                !isOuvert && 
+                                    <Paper className="p-5 min-w-0 flex-1">
+                                        <RespCreatedList 
+                                            responses={responses}
+                                            setResponses={setResponses}
+                                        />
+                                </Paper>
+                            }
+                        </Box>
+                    </NavigationBar>
+                </form>
+            </Box>
+        </BodyLayout>
+    )
 }
 
 export default QuestionCreate;
