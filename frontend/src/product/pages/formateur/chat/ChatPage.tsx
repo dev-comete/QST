@@ -483,7 +483,7 @@ const ChatPage = () => {
 
   return (
     <Box className="h-screen w-full gap-4 p-4" direction="row">
-      <ChatLog rooms={roomList} onSelectRoom={handleRoomSelect} />
+      <ChatLog rooms={roomList} onSelectRoom={handleRoomSelect} socketStatus={socketStatus} />
 
       {/* key = the SELECTION (not conversationId): switching rooms remounts the window
           (fresh draft + scroll state), but a new direct conversation getting its id does not. */}
@@ -504,6 +504,7 @@ const ChatPage = () => {
         onRetryFetch={() => void messagesQuery.refetch()}
         onReconnect={reconnect}
         onSend={handleSend}
+		channelType={selectedRoom !== 'general'}
       />
     </Box>
   );

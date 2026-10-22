@@ -29,6 +29,21 @@ export const router = createBrowserRouter([
 	{ path: '/unauthorized', element: <ErrorPage msg="Vous ne pouvez pas accéder à la page" statusCode={403} /> },
 	{ path: '/set-password/:uid/:token', element: <SetPasswordPage /> },
 
+	// Common protected routes
+	{
+		path: '/profile',
+		element: <ProtectedRoute allowedRole={['admin', 'formateur', 'apprenant']} />,
+		children: [
+			{
+				path: 'me',
+				element: <ProfileRouteLayout />,
+				children: [
+					{ index: true, element: <ProfileMePage /> },
+				],
+			}
+		]
+	},
+
 	//Admin routes
 	{
 		path: '/admin',
@@ -56,28 +71,15 @@ export const router = createBrowserRouter([
 				children: [
 					{ index: true, element: <Navigate to="tableau_de_bord" replace /> },
 					{ path: "tableau_de_bord", element: <Dashboard /> },
-					...COMMON_CHILDREN,
 					{ path: "formation", element: <Formation /> },
 					{ path: "chat", element: <ChatPage /> },
+					...COMMON_CHILDREN,
 				],
 			}
 		]
 	},
 
 	// Apprenant routes
-	{
-		path: '/profile',
-		element: <ProtectedRoute allowedRole={['admin', 'formateur', 'apprenant']} />,
-		children: [
-			{
-				path: 'me',
-				element: <ProfileRouteLayout />,
-				children: [
-					{ index: true, element: <ProfileMePage /> },
-				],
-			}
-		]
-	},
 	{
 		path: '/my_eval',
 		element: <ProtectedRoute allowedRole={['apprenant']}/>,
