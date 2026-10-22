@@ -4,9 +4,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework import status
+from rest_framework import status, viewsets
 
-from .serializers_auth import CustomLoginSerializer
+
+from .serializers_auth import CustomLoginSerializer, ResetPasswordConfirmSerializer, PasswordResetRequestSerializer
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -18,7 +19,14 @@ from django.utils.encoding import force_str
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth import get_user_model
 
+from django.utils import timezone
+from rest_framework.decorators import action
+
+from .models import PasswordResetRequest
+
 from .serializers_auth import ResetPasswordConfirmSerializer
+
+from quizzes.permissions import IsAdminUser
 
 User = get_user_model()
 
@@ -85,3 +93,118 @@ class ConfirmPasswordResetAPIView(APIView):
                 {"error": "Ce lien d'activation est invalide ou a déjà été utilisé."}, 
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+class SubmitPasswordResetRequestView(APIView):
+    """
+    Point d'entrée public pour qu'un utilisateur (non-admin) 
+    demande la réinitialisation de son mot de passe.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        email = request.data.get('email')
+        if not email:
+            return Response({'detail': 'L\'adresse email est requise.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = User.objects.filter(email=email).first()
+        
+        # Sécurité : On retourne toujours 200 pour ne pas divulguer si l'email existe en base
+        if not user:
+            return Response({'detail': 'Si cette adresse existe, une demande a été envoyée.'}, status=status.HTTP_200_OK)
+
+        # 1. Empêcher les administrateurs d'utiliser ce formulaire
+        if user.is_staff or user.is_superuser or (user.type_utilisateur and user.type_utilisateur.type_utilisateur == 'admin'):
+            return Response({'detail': 'Les administrateurs ne peuvent pas utiliser ce formulaire.'}, status=status.HTTP_403_FORBIDDEN)
+
+        # 2. Vérifier s'il y a déjà une demande en attente
+        if PasswordResetRequest.objects.filter(user=user, status='pending').exists():
+            return Response({'detail': 'Une demande est déjà en attente pour ce compte.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 3. Créer la demande
+        PasswordResetRequest.objects.create(user=user)
+        return Response({'detail': 'Demande de réinitialisation envoyée à l\'administrateur.'}, status=status.HTTP_201_CREATED)
+
+
+class AdminPasswordResetViewSet(viewsets.ModelViewSet):
+    """
+    Interface réservée aux Administrateurs pour valider ou rejeter 
+    les demandes de réinitialisation de mot de passe.
+    """
+    permission_classes = [IsAdminUser]
+    serializer_class = PasswordResetRequestSerializer
+    queryset = PasswordResetRequest.objects.all()
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        req_status = self.request.query_params.get('status')
+        if req_status:
+            queryset = queryset.filter(status=req_status)
+        return queryset
+
+    @action(detail=True, methods=['post'])
+    def approve(self, request, pk=None):
+        reset_req = self.get_object()
+        
+        if reset_req.status != 'pending':
+            return Response({'detail': 'Cette demande a déjà été traitée.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = reset_req.user
+
+        # 1. Création du Token sécurisé (Même logique que perform_create)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        token = default_token_generator.make_token(user)
+
+        frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:3000')
+        # On utilise la même route que l'activation de compte puisque ConfirmPasswordResetAPIView s'en occupe
+        reset_link = f"{frontend_url}/set-password/{uid}/{token}"
+
+        print(f"\n🔗 LIEN DIRECT RESET (SANS ENCODAGE) : {reset_link}\n")
+
+        # 2. Préparation et envoi de l'e-mail
+        subject = "Réinitialisation de votre mot de passe QST"
+        message = (
+            f"Bonjour {user.username},\n\n"
+            f"Votre demande de réinitialisation de mot de passe a été approuvée par un administrateur.\n"
+            f"Veuillez cliquer sur le lien ci-dessous pour choisir un nouveau mot de passe :\n\n"
+            f"{reset_link}\n\n"
+            f"Si vous n'avez pas fait cette demande, veuillez contacter un administrateur immédiatement.\n\n"
+            f"À bientôt !"
+        )
+        
+        from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@comete.ai')
+
+        try:
+            send_mail(
+                subject,
+                message,
+                from_email,
+                [user.email],
+                fail_silently=False, 
+            )
+        except Exception as e:
+            return Response({'detail': f"Erreur lors de l'envoi de l'email : {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        # 3. Clôture de la requête en base de données
+        reset_req.status = 'approved'
+        reset_req.resolved_at = timezone.now()
+        reset_req.resolved_by = request.user
+        reset_req.save()
+
+        return Response({
+            'detail': 'Demande approuvée. Un email contenant le lien de réinitialisation a été envoyé à l\'utilisateur.',
+        }, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['post'])
+    def reject(self, request, pk=None):
+        reset_req = self.get_object()
+        
+        if reset_req.status != 'pending':
+            return Response({'detail': 'Cette demande a déjà été traitée.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # On marque la demande comme rejetée sans envoyer de lien
+        reset_req.status = 'rejected'
+        reset_req.resolved_at = timezone.now()
+        reset_req.resolved_by = request.user
+        reset_req.save()
+
+        return Response({'detail': 'Demande rejetée avec succès.'}, status=status.HTTP_200_OK)

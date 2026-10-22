@@ -1,5 +1,22 @@
 from rest_framework import permissions
 
+class IsAdminUser(permissions.BasePermission):
+    """
+    Custom permission to only allow administrators to access the view.
+    Checks both Django's native staff/superuser flags and the custom type_utilisateur.
+    """
+    def has_permission(self, request, view):
+        if not request.user or not request.user.is_authenticated:
+            return False
+            
+        is_django_admin = request.user.is_staff or request.user.is_superuser
+        is_custom_admin = (
+            request.user.type_utilisateur is not None and 
+            request.user.type_utilisateur.type_utilisateur == 'admin'
+        )
+        
+        return is_django_admin or is_custom_admin
+
 class IsOwnerOrAdminOrReadOnly(permissions.BasePermission):
     """
     Object-level permission to only allow the creator of an object to edit it.
@@ -11,7 +28,12 @@ class IsOwnerOrAdminOrReadOnly(permissions.BasePermission):
             return True
 
         # 2. Admins can do whatever they want
-        if request.user.is_staff or request.user.is_superuser:
+        is_django_admin = request.user.is_staff or request.user.is_superuser
+        is_custom_admin = (
+            request.user.type_utilisateur is not None and 
+            request.user.type_utilisateur.type_utilisateur == 'admin'
+        )
+        if is_django_admin or is_custom_admin:
             return True
 
         # 3. For editing (PUT/PATCH/DELETE), the user MUST be the creator
@@ -37,9 +59,13 @@ class IsFormateurOrAdminOrReadOnly(permissions.BasePermission):
             request.user.type_utilisateur is not None and 
             request.user.type_utilisateur.type_utilisateur == 'formateur'
         )
-        is_admin = request.user.is_staff or request.user.is_superuser
+        is_django_admin = request.user.is_staff or request.user.is_superuser
+        is_custom_admin = (
+            request.user.type_utilisateur is not None and 
+            request.user.type_utilisateur.type_utilisateur == 'admin'
+        )
         
-        return is_formateur or is_admin
+        return is_formateur or is_django_admin or is_custom_admin
 
 class IsApprenant(permissions.BasePermission):
     """

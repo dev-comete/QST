@@ -1,6 +1,7 @@
 # serializers_auth.py
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import serializers
+from .models import PasswordResetRequest
 
 class CustomLoginSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
@@ -53,3 +54,19 @@ class ResetPasswordConfirmSerializer(serializers.Serializer):
         min_length=8,
         help_text="Le nouveau mot de passe (8 caractères minimum)."
     )
+
+class PasswordResetRequestSerializer(serializers.ModelSerializer):
+    user_email = serializers.EmailField(source='user.email', read_only=True)
+    user_name = serializers.CharField(source='user.username', read_only=True)
+    role = serializers.SerializerMethodField()
+
+    class Meta:
+        model = PasswordResetRequest
+        fields = ['id', 'user_email', 'user_name', 'role', 'status', 'requested_at', 'resolved_at']
+        read_only_fields = ['id', 'requested_at', 'resolved_at']
+
+    def get_role(self, obj):
+        # Récupération sécurisée du rôle via votre modèle TypeUtilisateur
+        if obj.user and getattr(obj.user, 'type_utilisateur', None):
+            return obj.user.type_utilisateur.type_utilisateur
+        return "Non défini"
