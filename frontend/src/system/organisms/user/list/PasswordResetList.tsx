@@ -1,4 +1,3 @@
-import React from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Box from "../../../atoms/Container/Box";
 import Paper from "../../../atoms/Container/Paper";
