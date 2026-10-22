@@ -8,6 +8,7 @@ import ActionButton from "../../../../system/molecules/Buttons/ActionButton";
 import type { ChatMessage } from "../../../../other/types/chatType";
 import type { SocketStatus } from "../../../../other/hooks/chat/useChatSocket";
 import AvatarBadge from "../../../../system/molecules/Avatar/AvatarBadge";
+import { formatDate } from "../../../../other/helper/helper";
 
 // const STATUS_LABEL: Record<SocketStatus, string> = {
 //   idle: "",
@@ -197,10 +198,7 @@ const ChatMessages = ({
                       </span>
                     </Paper>
                     <span className={`italic text-[9px] ${isMine ? "self-start" : "self-end"}`}>
-                      {new Date(message.created_at).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+						{formatDate(message.created_at)}
                     </span>
                   </div>
                 );
