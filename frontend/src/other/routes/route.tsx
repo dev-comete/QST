@@ -18,6 +18,8 @@ import SetPasswordPage from "../../product/pages/common/SetPasswordPage";
 import ErrorPage from "../../product/pages/common/ErrorPage";
 import AdminDashboard from "../../product/pages/admin/AdminDashboard";
 import Dashboard from "../../product/pages/formateur/Dashboard";
+import ProfileRouteLayout from "../../product/layout/common/ProfileRouteLayout";
+import ProfileMePage from "../../product/pages/common/ProfileMePage";
 
 export const router = createBrowserRouter([
 
@@ -63,6 +65,19 @@ export const router = createBrowserRouter([
 	},
 
 	// Apprenant routes
+	{
+		path: '/profile',
+		element: <ProtectedRoute allowedRole={['admin', 'formateur', 'apprenant']} />,
+		children: [
+			{
+				path: 'me',
+				element: <ProfileRouteLayout />,
+				children: [
+					{ index: true, element: <ProfileMePage /> },
+				],
+			}
+		]
+	},
 	{
 		path: '/my_eval',
 		element: <ProtectedRoute allowedRole={['apprenant']}/>,

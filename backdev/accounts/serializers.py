@@ -60,3 +60,11 @@ class UtilisateurSerializer(serializers.ModelSerializer):
             instance.save()
             
         return instance
+
+class UserBasicProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'type_utilisateur']
+        
+        # On empêche la modification de ces champs via cette API
+        read_only_fields = ['id', 'email', 'type_utilisateur']

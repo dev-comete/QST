@@ -17,6 +17,7 @@ const ROLE_CONFIGS: Record<string, SideBarConfig> = {
 			{ label: 'Banque de questions', link: '/admin/gestion_question', icon: 'circle-question' },
 			{ label: 'Quiz', link: '/admin/gestion_quiz', icon:'file-circle-question' },
 			{ label: 'Equipes', link: '/admin/gestion_equipe', icon: 'users' },
+			{ label: 'Paramètres', link: '/profile/me', icon: 'gear' },
 		]
 	},
 
@@ -27,6 +28,7 @@ const ROLE_CONFIGS: Record<string, SideBarConfig> = {
 			{ label: 'Banque de questions', link: '/formateur/gestion_question', icon: 'circle-question' },
 			{ label: 'Quiz', link: '/formateur/gestion_quiz', icon:'file-circle-question' },
 			{ label: 'Equipes', link: '/formateur/gestion_equipe', icon: 'users' },
+			{ label: 'Paramètres', link: '/profile/me', icon: 'gear' },
 			{ label: 'Messagerie', link: '/formateur/chat', icon:'comments' },
 		]
 	
@@ -36,6 +38,7 @@ const ROLE_CONFIGS: Record<string, SideBarConfig> = {
 		navItem: [
 			{ label: 'Mes évaluations', link: '/my_eval', title: 'Mes évaluations', icon: 'calendar' },
 			{ label: 'Mes bulletins de note', link: '/bulletin', title: 'Bulletin de notes', icon: 'graduation-cap' },
+			{ label: 'Paramètres', link: '/profile/me', icon: 'gear' },
 		]	
 	}
 }

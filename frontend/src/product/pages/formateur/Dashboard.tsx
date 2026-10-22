@@ -23,7 +23,7 @@ const Dashboard = () => {
             title="Tableau de bord"
         >
             <NavigationBar
-                titles={['Global', 'Quiz et vague']}
+                titles={['Global', 'Quiz et Sessions']}
                 activeTab={activeTab}
                 onTabChange={handleTabChange}           
             >
