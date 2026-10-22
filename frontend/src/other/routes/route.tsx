@@ -23,11 +23,26 @@ import ProfileMePage from "../../product/pages/common/ProfileMePage";
 
 export const router = createBrowserRouter([
 
-    // Public routes
-    { path: '/', element: <RootRedirect />},
-    { path: '/login', element: <Login /> },
-    { path: '/unauthorized', element: <ErrorPage msg="Vous ne pouvez pas accéder à la page" statusCode={403} /> },
-    { path: '/set-password/:uid/:token', element: <SetPasswordPage /> },
+	// Public routes
+	{ path: '/', element: <RootRedirect />},
+	{ path: '/login', element: <Login /> },
+	{ path: '/unauthorized', element: <ErrorPage msg="Vous ne pouvez pas accéder à la page" statusCode={403} /> },
+	{ path: '/set-password/:uid/:token', element: <SetPasswordPage /> },
+
+	// Common protected routes
+	{
+		path: '/profile',
+		element: <ProtectedRoute allowedRole={['admin', 'formateur', 'apprenant']} />,
+		children: [
+			{
+				path: 'me',
+				element: <ProfileRouteLayout />,
+				children: [
+					{ index: true, element: <ProfileMePage /> },
+				],
+			}
+		]
+	},
 
     // Admin routes
     {
@@ -46,88 +61,75 @@ export const router = createBrowserRouter([
         ]
     },
 
-    // Formateur routes
-    {
-        path: '/formateur',
-        element: <ProtectedRoute allowedRole={['formateur']}/>,
-        children: [
-            { 
-                element: <FormateurTemplate />,
-                children: [
-                    { index: true, element: <Navigate to="tableau_de_bord" replace /> },
-                    { path: "tableau_de_bord", element: <Dashboard /> },
-                    ...COMMON_CHILDREN,
-                    { path: "formation", element: <Formation /> },
-                    { path: "chat", element: <ChatPage /> },
-                ],
-            }
-        ]
-    },
+	//Formateur routes
+	{
+		path: '/formateur',
+		element: <ProtectedRoute allowedRole={['formateur']}/>,
+		children: [
+			{ 
+				element: <FormateurTemplate />,
+				children: [
+					{ index: true, element: <Navigate to="tableau_de_bord" replace /> },
+					{ path: "tableau_de_bord", element: <Dashboard /> },
+					{ path: "formation", element: <Formation /> },
+					{ path: "chat", element: <ChatPage /> },
+					...COMMON_CHILDREN,
+				],
+			}
+		]
+	},
 
-    // Apprenant & Profile routes
-    {
-        path: '/profile',
-        element: <ProtectedRoute allowedRole={['admin', 'formateur', 'apprenant']} />,
-        children: [
-            {
-                path: 'me',
-                element: <ProfileRouteLayout />,
-                children: [
-                    { index: true, element: <ProfileMePage /> },
-                ],
-            }
-        ]
-    },
-    {
-        path: '/my_eval',
-        element: <ProtectedRoute allowedRole={['apprenant']}/>,
-        children: [
-            {
-                element: <ApprenantTemplate />,
-                children: [ { index: true, element: <MyEvaluations /> } ],
-            }
-        ]
-    },
-    {
-        path: '/bulletin',
-        element: <ProtectedRoute allowedRole={['apprenant']}/>,
-        children: [
-            {
-                element: <ApprenantTemplate />,
-                children: [ { index: true, element: <BulletinReview /> } ],
-            }
-        ]
-    },
-    {
-        path: '/quiz/:id/take',
-        element: <ProtectedRoute allowedRole={['apprenant']}/>,
-        children: [
-            {
-                element: <ApprenantTemplate />,
-                children: [ { index: true, element: <TakingEvaluation /> } ],
-            }
-        ]
-    },
-    {
-        path: '/quiz/:id/revue',
-        element: <ProtectedRoute allowedRole={['apprenant']}/>,
-        children: [
-            {
-                element: <ApprenantTemplate />,
-                children: [ { index: true, element: <CorrectionReview /> } ],
-            }
-        ]
-    },
-    {
-        path: '/vague/:id/bulletin',
-        element: <ProtectedRoute allowedRole={['apprenant']}/>,
-        children: [
-            {
-                element: <ApprenantTemplate />,
-                children: [ { index: true, element: <Bulletin /> } ],
-            }
-        ]
-    },
+	// Apprenant routes
+	{
+		path: '/my_eval',
+		element: <ProtectedRoute allowedRole={['apprenant']}/>,
+		children: [
+			{
+				element: <ApprenantTemplate />,
+				children: [ { index: true, element: <MyEvaluations /> } ],
+			}
+		]
+	},
+	{
+		path: '/bulletin',
+		element: <ProtectedRoute allowedRole={['apprenant']}/>,
+		children: [
+			{
+				element: <ApprenantTemplate />,
+				children: [ { index: true, element: <BulletinReview /> } ],
+			}
+		]
+	},
+	{
+		path: '/quiz/:id/take',
+		element: <ProtectedRoute allowedRole={['apprenant']}/>,
+		children: [
+			{
+				element: <ApprenantTemplate />,
+				children: [ { index: true, element: <TakingEvaluation /> } ],
+			}
+		]
+	},
+	{
+		path: '/quiz/:id/revue',
+		element: <ProtectedRoute allowedRole={['apprenant']}/>,
+		children: [
+			{
+				element: <ApprenantTemplate />,
+				children: [ { index: true, element: <CorrectionReview /> } ],
+			}
+		]
+	},
+	{
+		path: '/vague/:id/bulletin',
+		element: <ProtectedRoute allowedRole={['apprenant']}/>,
+		children: [
+			{
+				element: <ApprenantTemplate />,
+				children: [ { index: true, element: <Bulletin /> } ],
+			}
+		]
+	},
 
     { path: '*', element: <ErrorPage msg="La page est introuvable" statusCode={404} /> },
 

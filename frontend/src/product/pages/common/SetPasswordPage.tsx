@@ -1,106 +1,111 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { UserService } from '../../../other/services/userService';
 import Logo from '../../../system/molecules/Logo/Logo';
 import { useAuth } from '../../../other/hooks/auth/useAuth';
 import Unauthorized from './Unauthorized';
+import PasswordInput from '../../../system/molecules/Input/PasswordInput';
+import Box from '../../../system/atoms/Container/Box';
+import ActionButton from '../../../system/molecules/Buttons/ActionButton';
+import Info from '../../../system/atoms/Form/Info';
+import CustomText from '../../../system/atoms/Text/CustomText';
 
 export default function SetPasswordPage() {
-  const { uid, token } = useParams();
-  const navigate = useNavigate();
-  const { authUser } = useAuth()
-  
-  const [passwords, setPasswords] = useState({ new_password: '', confirm_password: '' });
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+	const { uid, token } = useParams();
+	const navigate = useNavigate();
+	const { authUser } = useAuth()
 
-  if (authUser) return <Unauthorized />
+	const [passwords, setPasswords] = useState({ new_password: '', confirm_password: '' });
+	const [error, setError] = useState('');
+	const [loading, setLoading] = useState(false);
 
-  const handleChange = (e : any) => {
-    setPasswords({ ...passwords, [e.target.name]: e.target.value });
-  };
+	if (authUser) return <Unauthorized />
 
-  const handleSubmit = async (e : any) => {
-    e.preventDefault();
-    setError('');
+	const handleChange = (e : any) => {
+		setPasswords({ ...passwords, [e.target.name]: e.target.value });
+	};
 
-    if (passwords.new_password !== passwords.confirm_password) {
-      return setError("Les mots de passe ne correspondent pas.");
-    }
+	const handleSubmit = async (e : any) => {
+		e.preventDefault();
+		setError('');
 
-    setLoading(true);
-    try {
-      // Appel à votre endpoint Django qui valide l'UID, le Token et sauvegarde le MDP
-      await UserService.confirmPasswordReset({
-        uid,
-        token,
-        new_password: passwords.new_password
-      });
-      
-    //   notify({ type: 'success', message: 'Votre compte est activé ! Vous pouvez vous connecter.' });
-      navigate('/login');
-    } catch (err) {
-      setError("Le lien est invalide ou a expiré.");
-    } finally {
-      setLoading(false);
-    }
-  };
+		if (passwords.new_password !== passwords.confirm_password) {
+			return setError("Les mots de passe ne correspondent pas.");
+		}
 
-  return (
-    <div className="flex w-full items-center justify-center h-[100vh] bg-background">
-      <div className="flex flex-col w-1/2 m-auto space-y-5 bg-white rounded-xl p-5">
-        <div className="flex flex-col items-center gap-3">
-          
-          <div className="flex flex-col items-center gap-5">
-            <div className="lms-brandmark">
+		setLoading(true);
+		try {
+			// Appel à votre endpoint Django qui valide l'UID, le Token et sauvegarde le MDP
+			await UserService.confirmPasswordReset({
+				uid,
+				token,
+				new_password: passwords.new_password
+			});
+			
+		//   notify({ type: 'success', message: 'Votre compte est activé ! Vous pouvez vous connecter.' });
+			navigate('/login');
+		} catch (err) {
+			setError("Le lien est invalide ou a expiré.");
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	const checkPasswordValidation = () => {
+		if (!passwords.new_password || !passwords.confirm_password)
+			return false
+		if (passwords.new_password.length < 8 || passwords.confirm_password.length < 8)
+			return false
+		if (passwords.new_password != passwords.confirm_password)
+			return false
+		return true
+	}
+
+	return (
+	<div className="flex w-full items-center justify-center h-[100vh] bg-background">
+		<div className="flex flex-col w-1/2 m-auto space-y-5 bg-white rounded-xl p-5">			
+			<div className="flex flex-col items-center gap-5 w-full">
 				<Logo />
-            </div>
-            
-            <h1 className="text-primary font-bold uppercase" style={{ textAlign: 'center', marginBottom: 'var(--space-6)' }}>
-              Activez votre compte
-            </h1>
-
-            {error && <div style={{ color: 'var(--color-danger)', marginBottom: 'var(--space-4)', fontSize: 'var(--text-sm)' }}>{error}</div>}
-
-            <form onSubmit={handleSubmit} className='flex flex-col gap-3 items-start'>
-              <div className="flex gap-2">
-                <label className="lms-label">Nouveau mot de passe</label>
-                <input 
-                  type="password" 
-                  name="new_password" 
-                  value={passwords.new_password} 
-                  onChange={handleChange} 
-                  required 
-                  className="border border-background"
-                  minLength={8}
-                />
-              </div>
-
-              <div className="flex gap-2 items-center">
-                <label className="lms-label">Confirmez le mot de passe</label>
-                <input 
-                  type="password" 
-                  name="confirm_password" 
-                  value={passwords.confirm_password} 
-                  onChange={handleChange} 
-                  required 
-                  className="border border-background"
-                />
-              </div>
-
-              <button 
-                type="submit" 
-                className="bg-primary rounded-xl p-2 text-white self-center" 
-                disabled={loading}
-                style={{ marginTop: 'var(--space-2)' }}
-              >
-                {loading ? 'Activation...' : 'Valider et me connecter'}
-              </button>
-            </form>
-          </div>
-
-        </div>
-      </div>
-    </div>
-  );
+				<CustomText className='uppercase' weight='bold' textTag='h3' color='primary'>Activez votre compte</CustomText>
+				<CustomText isItalic>Veuillez créez votre mot de passe. Il doit contenir au moins 8 caractères. </CustomText>
+				<div>
+					{ error && <Info info={error} variant="error"/>}
+				</div>
+				<form onSubmit={handleSubmit}>
+					<Box direction='column' className='gap-5 items-center'>
+						<PasswordInput
+							id="new_password"
+							name="new_password"
+							type="password"
+							label="Nouveau mot de passe"
+							className="w-full"
+							required
+							onChange={handleChange}
+							value={passwords.new_password}
+							min={8}
+						/>
+						<PasswordInput
+							id="confirm_password"
+							name="confirm_password"
+							type="password"
+							label="Confirmation du mot de passe"
+							className="w-full"
+							required
+							onChange={handleChange}
+							value={passwords.confirm_password}
+							min={8}
+						/>
+						<ActionButton
+							type='submit'
+							isLoading={loading}
+							disabled={checkPasswordValidation() == false}
+						>
+							Valider et me connecter
+						</ActionButton>
+					</Box>
+				</form>
+			</div>
+		</div>
+	</div>
+	);
 }
