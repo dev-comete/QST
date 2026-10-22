@@ -47,12 +47,17 @@ function formatDate(value?: unknown): string {
 		year: 'numeric',
 		hour: '2-digit',
 		minute: '2-digit',
-		// second: '2-digit',
 		hourCycle: 'h23',
 		timeZone: 'UTC'
 	})
 	.format(date)
 	.replace(',', '');
+}
+
+function formatDuration(value?: unknown): string {
+	if (typeof value !== 'string' || !value) return '-';
+	// "HH:mm:ss" -> "HH:mm"
+	return value.split(':').slice(0, 2).join(':');
 }
 
 // 🌟 CORRECTION 1 : Gère parfaitement le format DRF ("00:30:00", "1 02:30:00", "00:30:00.123")
@@ -175,14 +180,57 @@ const padZero = (value: number | string | null | undefined, targetLength = 2): s
 	return String(value).padStart(targetLength, '0');
 };
 
+const dateChangeHandler = <T, K extends keyof T>(
+    setter: React.Dispatch<React.SetStateAction<T>>,
+    field: K,
+    transform: (date: Date | null) => T[K],
+    onDate?: (date: Date | null) => void
+) => {
+    return (date: Date | null) => {
+        onDate?.(date)
+        setter((prev) => ({
+            ...prev,
+            [field]: transform(date),
+        }));
+    };
+};
+
+const toDuration = (date: Date | null): string =>
+	date
+		? [date.getHours(), date.getMinutes(), date.getSeconds()]
+				.map((n) => String(n).padStart(2, "0"))
+				.join(":")
+		: ""
+
+const fromDuration = (value?: string): Date | null => {
+	if (!value) return null
+	const [h = 0, m = 0, s = 0] = value.split(":").map(Number)
+	if ([h, m, s].some(Number.isNaN)) return null
+	const d = new Date()
+	d.setHours(h, m, s, 0)
+	return d
+}
+
+const toDateTime = (date: Date | null): string =>
+	date ? date.toISOString() : ""
+
+const fromDateTime = (value?: string | null): Date | null => {
+	if (!value) return null
+	const d = new Date(value)
+	return isNaN(d.getTime()) ? null : d
+}
 
 export {
 	formChangeHandler,
 	getSelectData,
 	formatDate,
 	formatTime,
+	formatDuration,
 	parseDurationToMs,
 	formatDateForInput,
 	checkOptionValidation,
-	padZero
+	padZero,
+	dateChangeHandler,
+	toDuration, fromDuration,
+	toDateTime, fromDateTime
 }

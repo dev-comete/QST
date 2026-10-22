@@ -30,7 +30,7 @@ const Dashboard = () => {
                 {/* Global Tab Content (Index 0) */}
                 {activeTab === 0 && (
                     <>
-                        <DashboardStat stats={metric.stats}/>
+                        <DashboardStat stats={metric.stats} type="formateur"/>
                         <InteractiveEvolutionChart />
                     </>
                 )}

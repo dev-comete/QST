@@ -2,14 +2,19 @@ import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { UserService } from '../../../other/services/userService';
 import Logo from '../../../system/molecules/Logo/Logo';
+import { useAuth } from '../../../other/hooks/auth/useAuth';
+import Unauthorized from './Unauthorized';
 
 export default function SetPasswordPage() {
   const { uid, token } = useParams();
   const navigate = useNavigate();
+  const { authUser } = useAuth()
   
   const [passwords, setPasswords] = useState({ new_password: '', confirm_password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  if (authUser) return <Unauthorized />
 
   const handleChange = (e : any) => {
     setPasswords({ ...passwords, [e.target.name]: e.target.value });

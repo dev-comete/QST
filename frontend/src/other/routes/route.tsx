@@ -13,7 +13,7 @@ import MyEvaluations from "../../product/pages/apprenant/Evaluation/MyEvaluation
 import TakingEvaluation from "../../product/pages/apprenant/Evaluation/TakingEvaluation";
 import COMMON_CHILDREN from "./sharedChildren";
 import Formation from "../../product/pages/formateur/Formation";
-import ChatPage from "../../product/pages/formateur/ChatPage";
+import ChatPage from "../../product/pages/formateur/chat/ChatPage";
 import SetPasswordPage from "../../product/pages/common/SetPasswordPage";
 import ErrorPage from "../../product/pages/common/ErrorPage";
 import AdminDashboard from "../../product/pages/admin/AdminDashboard";
@@ -27,17 +27,7 @@ export const router = createBrowserRouter([
 	{ path: '/', element: <RootRedirect />},
 	{ path: '/login', element: <Login /> },
 	{ path: '/unauthorized', element: <ErrorPage msg="Vous ne pouvez pas accéder à la page" statusCode={403} /> },
-	// { path: '/set-password/:uid/:token', element: <SetPasswordPage /> },
-
-	{
-		element: <ProtectedRoute allowedRole={[]}/>, 
-		children: [
-			{
-				path: '/set-password/:uid/:token',
-				element: <SetPasswordPage /> 
-			}
-		]
-	},
+	{ path: '/set-password/:uid/:token', element: <SetPasswordPage /> },
 
 	//Admin routes
 	{

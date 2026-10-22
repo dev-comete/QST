@@ -1,4 +1,5 @@
-import { formChangeHandler, getSelectData } from "../../../../other/helper/helper";
+import { useState } from "react";
+import { dateChangeHandler, formChangeHandler, getSelectData, toDateTime } from "../../../../other/helper/helper";
 import { useFormation } from "../../../../other/hooks/formation/useFormation";
 import { useVagueCreate } from "../../../../other/hooks/vague/useVague";
 import type { ModalsProps } from "../../../../other/types/common";
@@ -8,11 +9,15 @@ import FetchError from "../../../atoms/Loading/FetchError";
 import Loading from "../../../atoms/Loading/Loading";
 import ActionButton from "../../../molecules/Buttons/ActionButton";
 import { Modal } from "../../../molecules/Modal/Modal";
+import { DatePicking } from "../../../atoms/Form/TimePicking";
 
 const ModalVagueCreate = ({ open, closeModal } : ModalsProps) => {
 	
 	const { setVague, handleCreateVague, isPending } = useVagueCreate()
 	const { formations, formationsStatus } = useFormation()
+	const [dateDebut, setDateDebut] = useState<Date | null>(null)
+	const [dateFin, setDateFin] = useState<Date | null>(null)
+	
 
 	if (formationsStatus == 'pending')
 		return <Loading />
@@ -59,23 +64,17 @@ const ModalVagueCreate = ({ open, closeModal } : ModalsProps) => {
 					})}
 					required
 				/>
-				<Input
-					id={"debut"}
-					name={"debut"}
+				<DatePicking
+					id="date_debut"
 					label="Date de début"
-					type="datetime-local"
-					step={60}
-					onChange={formChangeHandler(setVague, 'debut')}
-					required
+					date={dateDebut}
+					onChange={dateChangeHandler(setVague, 'debut', toDateTime, setDateDebut)}
 				/>
-				<Input
-					id={"debut"}
-					name={"debut"}
-					label="Date de début"
-					type="datetime-local"
-					step={60}
-					onChange={formChangeHandler(setVague, 'fin')}
-					required
+				<DatePicking
+					id="date_fin"
+					label="Date de fin"
+					date={dateFin}
+					onChange={dateChangeHandler(setVague, 'fin', toDateTime, setDateFin)}
 				/>
 				<ActionButton
 					type="submit"

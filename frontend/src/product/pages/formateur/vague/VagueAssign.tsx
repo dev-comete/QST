@@ -35,33 +35,33 @@ const VagueInfo = ({ vague } : VagueAssignProps) => {
 			title: 'Début',
 			value:formatDate(debut),
 			icon: 'calendar',
-			// color: 'primary',
+			color: 'success',
 		},
 		{
 			title: 'Fin',
 			value:formatDate(fin),
 			icon: 'calendar',
-			// color: 'error',
+			color: 'error',
 		},
 		{
 			title: 'Formation',
 			value: formation_nom,
 			icon: 'book',
-			// color: 'text',
+			color: 'text',
 		},
 		{
 			title: 'Quiz',
 			value: ownedQuiz.length,
 			info: 'assignés',
 			icon: 'file-circle-question',
-			// color: 'warning',
+			color: 'purple',
 		},
 		{
 			title: 'Etudiants',
 			value: ownedStudents.length,
 			info: 'inscrits',
 			icon: 'user',
-			// color: 'success',
+			color: 'primary',
 		},
 
 	]
