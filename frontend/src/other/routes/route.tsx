@@ -44,22 +44,22 @@ export const router = createBrowserRouter([
 		]
 	},
 
-	//Admin routes
-	{
-		path: '/admin',
-		element: <ProtectedRoute allowedRole={['admin']}/>,
-		children: [
-			{	
-				element: <AdminTemplate />,
-				children: [
-					{ index: true, element: <Navigate to="tableau_de_bord" replace /> },
-					{ path: 'parametre_general', element: <Parameters /> },
-					{ path: 'tableau_de_bord', element: <AdminDashboard /> },
-					...COMMON_CHILDREN,
-				]
-			},
-		]
-	},
+    // Admin routes
+    {
+        path: '/admin',
+        element: <ProtectedRoute allowedRole={['admin']}/>,
+        children: [
+            {   
+                element: <AdminTemplate />,
+                children: [
+                    { index: true, element: <Navigate to="tableau_de_bord" replace /> },
+                    { path: 'parametre_general', element: <Parameters /> },
+                    { path: 'tableau_de_bord', element: <AdminDashboard /> },
+                    ...COMMON_CHILDREN,
+                ]
+            },
+        ]
+    },
 
 	//Formateur routes
 	{
@@ -131,7 +131,6 @@ export const router = createBrowserRouter([
 		]
 	},
 
-	{ path: '*', element: <ErrorPage msg="La page est introuvable" statusCode={404} /> },
+    { path: '*', element: <ErrorPage msg="La page est introuvable" statusCode={404} /> },
 
 ]);
-

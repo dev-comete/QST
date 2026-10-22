@@ -6,6 +6,7 @@ import Spinner from "../Loading/Spinner";
 interface ButtonProps {
     children?: React.ReactNode;
     color?: ColorTheme;
+    variant?: 'contained' | 'outline';
     className?: string;
     paddingX?: number;
     paddingY?: number;
@@ -21,6 +22,7 @@ interface ButtonProps {
 const Button = ({
     children,
     color = 'primary',
+    variant = 'contained',
     isRounded = true,
     className = "",
     disabled = false,
@@ -43,9 +45,13 @@ const Button = ({
         ? "disabled:opacity-50 disabled:cursor-not-allowed" 
         : `cursor-pointer ${hoverEffect} transition-all duration-200`;
 
+    const variantStyle = variant === 'outline'
+        ? "bg-transparent border border-current"
+        : backgroundColor[color];
+
     return (
         <button 
-            className={`${backgroundColor[color]} focus:outline focus:outline-accent px-3 py-2 ${roundParam} w-fit ${isDisable} ${className}`}
+            className={`${variantStyle} focus:outline focus:outline-accent px-3 py-2 ${roundParam} w-fit ${isDisable} ${className}`}
             disabled={disabled}
             onClick={action}
             type={type}
