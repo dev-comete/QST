@@ -26,7 +26,7 @@ const BodyLayout = ({
     return (
         <Box direction="column" className="h-full min-h-0 w-full space-y-3">
 
-            <Box direction="column" className="flex-none w-full px-10 pt-10">
+            <Box direction="column" className="flex-none w-full px-5 md:px-10 pt-3 md:pt-10">
                 <Title
                     title={title}
                     sideButton={titleButton}
@@ -37,7 +37,7 @@ const BodyLayout = ({
                 />
             </Box>
 
-            <Box direction="column" className="flex-1 min-h-0 w-full overflow-y-auto px-10">
+            <Box direction="column" className="flex-1 min-h-0 w-full overflow-y-auto px-5 md:px-10 items-center">
                 {children}
             </Box>
 

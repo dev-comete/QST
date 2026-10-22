@@ -1,4 +1,5 @@
-import { formatDateForInput, formChangeHandler } from "../../../../other/helper/helper";
+import { useEffect, useState } from "react";
+import { dateChangeHandler, formChangeHandler, fromDateTime, toDateTime } from "../../../../other/helper/helper";
 import { useFormation } from "../../../../other/hooks/formation/useFormation";
 import { useVagueEdit } from "../../../../other/hooks/vague/useVague";
 import Input from "../../../atoms/Form/Input";
@@ -6,6 +7,7 @@ import FetchError from "../../../atoms/Loading/FetchError";
 import Loading from "../../../atoms/Loading/Loading";
 import ActionButton from "../../../molecules/Buttons/ActionButton";
 import { Modal } from "../../../molecules/Modal/Modal";
+import { DatePicking } from "../../../atoms/Form/TimePicking";
 
 interface ModalVagueEditProps {
 	open: boolean,
@@ -17,6 +19,13 @@ const ModalVagueEdit = ({ open, closeModal, id } : ModalVagueEditProps) => {
 	
 	const { vague, setVague, handleVagueEdit, isPending } = useVagueEdit(id)
 	const { formations, formationsStatus } = useFormation()
+	const [dateDebut, setDateDebut] = useState<Date | null>(null)
+	const [dateFin, setDateFin] = useState<Date | null>(null)
+
+	useEffect(() => {
+		setDateDebut(fromDateTime(vague.debut))
+		setDateFin(fromDateTime(vague.fin))
+	}, [vague])
 
 	if (formationsStatus == 'pending')
 		return <Loading />
@@ -58,25 +67,18 @@ const ModalVagueEdit = ({ open, closeModal, id } : ModalVagueEditProps) => {
 					value={formations.find((q) => q.id == vague.formation_id)?.nom_formation}
 					readOnly
 				/>
-				<Input
-					id={"debut"}
-					name={"debut"}
+				<DatePicking
+					id="date_debut"
 					label="Date de début"
-					type="datetime-local"
-					step={60}
-					onChange={formChangeHandler(setVague, 'debut')}
-					required
-					value={formatDateForInput(vague.debut ?? '')}
+					date={dateDebut}
+					onChange={dateChangeHandler(setVague, 'debut', toDateTime, setDateDebut)}
 				/>
-				<Input
-					id={"fin"}
-					name={"fin"}
+				<DatePicking
+					id="date_fin"
 					label="Date de fin"
-					type="datetime-local"
-					step={60}
-					onChange={formChangeHandler(setVague, 'fin')}
+					date={dateFin}
+					onChange={dateChangeHandler(setVague, 'fin', toDateTime, setDateFin)}
 					required
-					value={formatDateForInput(vague.fin ?? '')}
 				/>
 				<ActionButton
 					type="submit"

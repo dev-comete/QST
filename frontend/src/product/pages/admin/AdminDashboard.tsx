@@ -31,7 +31,7 @@ const AdminDashboard = () => {
                 {/* Global Tab */}
                 {activeTab === 0 && (
                     <>
-                        <DashboardStat stats={metric.stats}/>
+                        <DashboardStat stats={metric.stats} type="admin"/>
                         <InteractiveEvolutionChart />
                     </>
                 )}

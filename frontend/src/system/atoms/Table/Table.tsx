@@ -173,7 +173,7 @@ export const Table = <T,>({
 				<>
 					<div className="w-full max-h-[60vh] overflow-y-auto">
 						<table className="w-full border-collapse text-left text-sm text-slate-700">
-							<thead className="sticky top-0 z-10">
+							<thead className="sticky top-0">
 								<tr className="border-b border-slate-200 bg-secondary text-xs font-semibold uppercase tracking-wider text-slate-500">
 									{columns.map((col, index) => (
 										<th key={index} className="px-6 py-3.5 text-center align-middle bg-secondary sticky top-0">

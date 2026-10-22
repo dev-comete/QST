@@ -6,8 +6,10 @@ import useCreateQuiz from "../../../../other/hooks/quiz/useCreateQuiz";
 import Select from "../../../atoms/Form/Select";
 import Loading from "../../../atoms/Loading/Loading";
 import FetchError from "../../../atoms/Loading/FetchError";
-import { formChangeHandler, getSelectData } from "../../../../other/helper/helper";
+import { dateChangeHandler, formChangeHandler, getSelectData, toDuration } from "../../../../other/helper/helper";
 import { useFormation } from "../../../../other/hooks/formation/useFormation";
+import { useState } from "react";
+import {DurationPicking} from "../../../atoms/Form/TimePicking";
 
 interface ModalQuizCreateProps {
 	open: boolean;
@@ -18,6 +20,7 @@ const QuizForm = ({ closeModal } : { closeModal : () => void }) => {
 	
 	const { handleQuizSubmit, setQuiz, isPending } = useCreateQuiz()
 	const { formations, formationsStatus } = useFormation()
+	const [duree, setDuree] = useState<Date | null>(null)
 
 	const statusValue = [
 		{ id: 'draft', value: 'Brouillon' },
@@ -66,15 +69,7 @@ const QuizForm = ({ closeModal } : { closeModal : () => void }) => {
 						return String(selected.id)
 					})}
 				/>
-				<Input
-					id={"duree"}
-					name={"duree"}
-					label="Durée"
-					type="time"
-					step={1}
-					onChange={formChangeHandler(setQuiz, 'duree')}
-					required={true}
-				/>
+				<DurationPicking duree={duree} onChange={dateChangeHandler(setQuiz, 'duree', toDuration, setDuree)} />
 				<Select 
 					id="status"
 					name="status"

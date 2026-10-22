@@ -11,10 +11,10 @@ const Loading = ({ message = "En cours de chargement..." }: LoadingProps) => {
 
 			{/* Loading message */}
 			<div className="flex flex-col items-center gap-1 text-center">
-				<p className="text-sm font-medium text-slate-700 dark:text-slate-300 animate-pulse">
+				<p className="text-sm font-medium animate-pulse">
 					{message}
 				</p>
-				<p className="text-xs text-slate-400 dark:text-slate-500">
+				<p className="text-xs text-slate-500 dark:text-slate-500">
 					Veuillez patienter un instant
 				</p>
 			</div>

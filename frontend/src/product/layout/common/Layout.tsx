@@ -12,7 +12,7 @@ const Layout = ({ navList } : LayoutProps ) => {
 		<div className="flex flex-col md:flex-row justify-between gap-2 h-screen w-full">
 			<Header navList={navList}/>
 			<SideBar navList={navList}/>
-			<main className="flex-1 overflow-y-auto pt-16 md:pt-0">
+			<main className="flex-1 overflow-y-auto">
 				<Outlet />
 			</main>
 		</div>

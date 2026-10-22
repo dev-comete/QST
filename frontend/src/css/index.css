@@ -76,4 +76,14 @@
 	--color-disabled-light: #f8fafc;
 	--color-disabled: #94a3b8;
 	--color-disabled-dark: #64748b;
+
+	/* Primary Metrics (Modern Purple) */
+    --color-purple-light: #f3e8ff;
+    --color-purple: #8b5cf6;
+    --color-purple-dark: #6d28d9;
+
+    /* Highlights / Special Badges (Modern Fuchsia) */
+    --color-highlight-light: #fdf4ff;
+    --color-highlight: #d946ef;
+    --color-highlight-dark: #a21caf;
 }

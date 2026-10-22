@@ -34,7 +34,7 @@ const Input = ({
         'w-full pr-12 [&::-webkit-search-cancel-button]:appearance-none',
         basicStyle,
         !hasCustomBackground && 'bg-white',
-        rest.readOnly && !hasCustomBackground && 'bg-error/10',
+        rest.readOnly && !hasCustomBackground && 'bg-disabled-light border-disabled text-text-light cursor-not-allowed',
         className,
     ].filter(Boolean).join(' ')
 

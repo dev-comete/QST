@@ -45,7 +45,7 @@ const SideBar = ({ navList } : SideBarProps ) => {
 				pt-6 transition-all duration-300 relative overflow-x-visible
 			`}>
 
-            <div className="absolute -right-3 top-8 z-50">
+            <div className="hidden lg:block absolute -right-3 top-8 z-50">
                 <IconButton 
                     iconName={isSidebarOpen ? "chevron-left" : "chevron-right"} 
                     action={() => setIsSidebarOpen(!isSidebarOpen)}
