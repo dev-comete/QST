@@ -7,26 +7,28 @@ import CustomText from "../../../../system/atoms/Text/CustomText";
 import ActionButton from "../../../../system/molecules/Buttons/ActionButton";
 import type { ChatMessage } from "../../../../other/types/chatType";
 import type { SocketStatus } from "../../../../other/hooks/chat/useChatSocket";
+import AvatarBadge from "../../../../system/molecules/Avatar/AvatarBadge";
 
-const STATUS_LABEL: Record<SocketStatus, string> = {
-  idle: "",
-  connecting: "Connexion...",
-  connected: "Connecté",
-  reconnecting: "Reconnexion...",
-  closed: "Déconnecté",
-};
+// const STATUS_LABEL: Record<SocketStatus, string> = {
+//   idle: "",
+//   connecting: "Connexion...",
+//   connected: "Connecté",
+//   reconnecting: "Reconnexion...",
+//   closed: "Déconnecté",
+// };
 
 interface ChatMessagesProps {
   title: string;
   messages: ChatMessage[];
   currentUserId: number;
-  socketStatus: SocketStatus;
   notice: string | null;
   canSend: boolean;
+  socketStatus: SocketStatus;
   hasMore: boolean;
   isLoadingOlder: boolean;
   isFetching: boolean;
   isError: boolean;
+  channelType?: boolean;
   /** Must call `beforeApply` right before the older messages are written to the cache. */
   onLoadOlder: (beforeApply: () => void) => Promise<void>;
   onRetryMessage: (message: ChatMessage) => void;
@@ -40,9 +42,9 @@ const ChatMessages = ({
   title,
   messages,
   currentUserId,
-  socketStatus,
   notice,
   canSend,
+  socketStatus,
   hasMore,
   isLoadingOlder,
   isFetching,
@@ -52,6 +54,7 @@ const ChatMessages = ({
   onRetryFetch,
   onReconnect,
   onSend,
+  channelType = true,
 }: ChatMessagesProps) => {
   const [draft, setDraft] = useState("");
 
@@ -101,13 +104,16 @@ const ChatMessages = ({
     <Paper className="flex-1 overflow-hidden p-0" hasShadow>
       <Box direction="column" className="h-full w-full">
         <Box className="w-full items-center justify-between border-b border-background p-4">
-          <CustomText textTag="h3" weight="bold">
-            {title}
-          </CustomText>
+			<Box className="items-center">
+		  		<AvatarBadge name={channelType ? title : '#'}/>
+				<CustomText textTag="h3" weight="bold">
+				{title}
+				</CustomText>
+			</Box>
           <span className="flex items-center gap-2">
-            <CustomText color="disabled" textTag="span" className="text-xs">
+            {/* <CustomText color="disabled" textTag="span" className="text-xs">
               {STATUS_LABEL[socketStatus]}
-            </CustomText>
+            </CustomText> */}
             {socketStatus === "closed" && (
               <button type="button" onClick={onReconnect} className="text-xs underline">
                 Réessayer
@@ -158,41 +164,48 @@ const ChatMessages = ({
               </CustomText>
             </Paper>
           ) : (
-            messages.map((message) => {
-              const isMine = message.sender.id === currentUserId;
-              return (
-                <Box
-                  key={message.client_id ?? `srv-${message.id}`}
-                  className={`w-full ${isMine ? "justify-end" : "justify-start"}`}
-                >
-                  <Paper
-                    className={`max-w-[75%] p-3 ${isMine ? "bg-primary text-white" : "bg-background-light"} ${
-                      message.status === "sending" ? "opacity-70" : ""
-                    }`}
-                  >
-                    {!isMine && (
-                      <CustomText textTag="span" weight="bold" className="mb-1 block text-xs">
-                        {message.sender.username || message.sender.email || "Formateur"}
+            <Box direction="column" className="w-full gap-5">
+              {messages.map((message) => {
+                const isMine = message.sender.id === currentUserId;
+                return (
+					<div
+						key={message.client_id ?? `srv-${message.id}`}
+						className={`flex flex-col gap-1 max-w-[75%] ${isMine ? "self-end" : "self-start"}`}
+						
+					>
+					  {!isMine && (
+						<CustomText textTag="span" weight="bold" className="mb-1 block text-xs">
+						  {message.sender.username || message.sender.email || "Formateur"}
+						</CustomText>
+					  )}
+                    <Paper
+                      color={isMine === true ? "background" : "primary-light"}
+                      className={` p-3 ${
+                        message.status === "sending" ? "opacity-70" : ""
+                      }`}
+                    >
+                      <CustomText textTag="span" color={isMine ? 'text' : 'white'} className="block whitespace-pre-wrap break-words">
+                        {message.content}
                       </CustomText>
-                    )}
-                    <CustomText textTag="span" className="block whitespace-pre-wrap break-words">
-                      {message.content}
-                    </CustomText>
-                    <span className="mt-2 flex items-center gap-2 text-[10px] opacity-75">
-                      <span>
-                        {new Date(message.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                      <span className="mt-2 flex items-center gap-2 text-[10px] opacity-75">
+                        {message.status === "sending" && <span>Envoi…</span>}
+                        {message.status === "failed" && (
+                          <button type="button" className="underline" onClick={() => onRetryMessage(message)}>
+                            Échec · Réessayer
+                          </button>
+                        )}
                       </span>
-                      {message.status === "sending" && <span>Envoi…</span>}
-                      {message.status === "failed" && (
-                        <button type="button" className="underline" onClick={() => onRetryMessage(message)}>
-                          Échec · Réessayer
-                        </button>
-                      )}
+                    </Paper>
+                    <span className={`italic text-[9px] ${isMine ? "self-start" : "self-end"}`}>
+                      {new Date(message.created_at).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
                     </span>
-                  </Paper>
-                </Box>
-              );
-            })
+                  </div>
+                );
+              })}
+            </Box>
           )}
         </div>
 

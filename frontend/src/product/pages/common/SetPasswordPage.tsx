@@ -21,7 +21,6 @@ export default function SetPasswordPage() {
 
 	if (authUser) return <Unauthorized />
 
-
 	const handleChange = (e : any) => {
 		setPasswords({ ...passwords, [e.target.name]: e.target.value });
 	};
