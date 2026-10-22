@@ -48,7 +48,17 @@ const backgroundColor : Record<ColorTheme, string> = {
 		'disabled-dark': 'bg-disabled-dark',
 
 		'white': 'bg-white',
-		'transparent' : 'bg-transparent'
+		'transparent' : 'bg-transparent',
+
+		// Purple / Accent
+        'purple-light': 'bg-purple-light',
+        'purple': 'bg-purple',
+        'purple-dark': 'bg-purple-dark',
+
+        // Highlight / Fuchsia
+        'highlight-light': 'bg-highlight-light',
+        'highlight': 'bg-highlight',
+        'highlight-dark': 'bg-highlight-dark',
 }
 
 

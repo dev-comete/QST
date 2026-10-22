@@ -43,13 +43,14 @@ interface DurationPickingProps {
 	label: string
 	id: string
 	date?: Date | null
+	required?: boolean
 	onChange: (date: Date | null, event?: SyntheticEvent<any> | undefined) => void
 }
 
-export const DatePicking = ({ label, id, date, onChange } : DurationPickingProps) => {
+export const DatePicking = ({ label, id, date, onChange, required = true } : DurationPickingProps) => {
 	return (
 		<div className="flex flex-col gap-1 w-full">
-			<label htmlFor="date_debut">{label}</label>
+			<label htmlFor="date_debut">{`${label} ${required ? "*" : ''}`}</label>
 			<DatePicker
 				id={id}
 				selected={date}
@@ -61,7 +62,7 @@ export const DatePicking = ({ label, id, date, onChange } : DurationPickingProps
 				timeFormat="HH:mm"
 				placeholderText="jj/mm/aaaa HH:mm"
 				autoComplete="off"
-				required
+				required={required}
 				wrapperClassName="w-full"
 				className="w-full bg-white rounded-xl border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
 				popperPlacement="bottom-start"

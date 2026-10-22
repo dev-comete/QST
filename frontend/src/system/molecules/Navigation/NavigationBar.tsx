@@ -50,7 +50,7 @@ const NavigationBar = ({ titles, children, activeTab, onTabChange } : Navigation
 
     return (
         <Box direction="column" className="w-full">
-			<div className="sticky top-0 z-100 w-fit md:w-full py-2">
+			<div className="sticky top-0 z-100 w-fit py-2">
 				<Paper className='flex w-full max-w-full overflow-x-auto no-scrollbar !bg-slate-100/80 !p-1.5 !rounded-xl !border !border-slate-200/50 !shadow-none'>					{
 						titles.map((value, i) => {
 							return (

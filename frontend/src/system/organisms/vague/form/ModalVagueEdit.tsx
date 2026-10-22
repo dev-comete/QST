@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { dateChangeHandler, formatDateForInput, formChangeHandler, fromDateTime, toDateTime } from "../../../../other/helper/helper";
+import { dateChangeHandler, formChangeHandler, fromDateTime, toDateTime } from "../../../../other/helper/helper";
 import { useFormation } from "../../../../other/hooks/formation/useFormation";
 import { useVagueEdit } from "../../../../other/hooks/vague/useVague";
 import Input from "../../../atoms/Form/Input";
@@ -78,6 +78,7 @@ const ModalVagueEdit = ({ open, closeModal, id } : ModalVagueEditProps) => {
 					label="Date de fin"
 					date={dateFin}
 					onChange={dateChangeHandler(setVague, 'fin', toDateTime, setDateFin)}
+					required
 				/>
 				<ActionButton
 					type="submit"

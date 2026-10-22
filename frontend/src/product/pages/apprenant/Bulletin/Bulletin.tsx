@@ -14,7 +14,7 @@ const BulletinDisplay = ({ title, value, unit } : {
 		unit?: string
 	}) => {
 	return (
-		<Paper className="flex flex-col p-5 w-1/3 items-center">
+		<Paper className="flex flex-col p-5 min-w-1/3 h-30 text-center items-center">
 			<CustomText>{title}</CustomText>
 			<CustomText weight="bold" textTag="h1">{value}{unit}</CustomText>
 		</Paper>

@@ -38,7 +38,7 @@ export const DashboardStat = ({ stats, type } : DashboardStatProps) => {
 					return (
 						<div 
                 key={'stat-' + index + stat.label}
-                className="w-full flex-1 min-w-[150x] min-h-[100px]"
+                className="w-full flex-1 min-w-[100x] min-h-[100px]"
             >
 				<DashboardCard 
 					title={stat.label == 'Vagues' ? 'Equipes' : stat.label}

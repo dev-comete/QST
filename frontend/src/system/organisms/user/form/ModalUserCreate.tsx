@@ -50,6 +50,7 @@ const UserForm = ({ handleSubmit, setUser, listTypeUser, listProject, errors } :
 				id="role"
 				name="role"
 				label="Rôle"
+				placeholder="Sélectionnez un rôle"
 				selectionValue={selectedRole}
 				handleChange={formChangeHandler(setUser, 'type_utilisateur', (value) => {
 					const selected = listTypeUser.find((q) => q.type_utilisateur === value) ?? listTypeUser[0]
