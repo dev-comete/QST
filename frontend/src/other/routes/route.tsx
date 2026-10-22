@@ -13,7 +13,7 @@ import MyEvaluations from "../../product/pages/apprenant/Evaluation/MyEvaluation
 import TakingEvaluation from "../../product/pages/apprenant/Evaluation/TakingEvaluation";
 import COMMON_CHILDREN from "./sharedChildren";
 import Formation from "../../product/pages/formateur/Formation";
-import ChatPage from "../../product/pages/formateur/ChatPage";
+import ChatPage from "../../product/pages/formateur/chat/ChatPage";
 import SetPasswordPage from "../../product/pages/common/SetPasswordPage";
 import ErrorPage from "../../product/pages/common/ErrorPage";
 import AdminDashboard from "../../product/pages/admin/AdminDashboard";
@@ -27,54 +27,9 @@ export const router = createBrowserRouter([
 	{ path: '/', element: <RootRedirect />},
 	{ path: '/login', element: <Login /> },
 	{ path: '/unauthorized', element: <ErrorPage msg="Vous ne pouvez pas accéder à la page" statusCode={403} /> },
-	// { path: '/set-password/:uid/:token', element: <SetPasswordPage /> },
+	{ path: '/set-password/:uid/:token', element: <SetPasswordPage /> },
 
-	{
-		element: <ProtectedRoute allowedRole={[]}/>, 
-		children: [
-			{
-				path: '/set-password/:uid/:token',
-				element: <SetPasswordPage /> 
-			}
-		]
-	},
-
-	//Admin routes
-	{
-		path: '/admin',
-		element: <ProtectedRoute allowedRole={['admin']}/>,
-		children: [
-			{	
-				element: <AdminTemplate />,
-				children: [
-					{ index: true, element: <Navigate to="tableau_de_bord" replace /> },
-					{ path: 'parametre_general', element: <Parameters /> },
-					{ path: 'tableau_de_bord', element: <AdminDashboard /> },
-					...COMMON_CHILDREN,
-				]
-			},
-		]
-	},
-
-	//Formateur routes
-	{
-		path: '/formateur',
-		element: <ProtectedRoute allowedRole={['formateur']}/>,
-		children: [
-			{ 
-				element: <FormateurTemplate />,
-				children: [
-					{ index: true, element: <Navigate to="tableau_de_bord" replace /> },
-					{ path: "tableau_de_bord", element: <Dashboard /> },
-					...COMMON_CHILDREN,
-					{ path: "formation", element: <Formation /> },
-					{ path: "chat", element: <ChatPage /> },
-				],
-			}
-		]
-	},
-
-	// Apprenant routes
+	// Common protected routes
 	{
 		path: '/profile',
 		element: <ProtectedRoute allowedRole={['admin', 'formateur', 'apprenant']} />,
@@ -88,6 +43,43 @@ export const router = createBrowserRouter([
 			}
 		]
 	},
+
+    // Admin routes
+    {
+        path: '/admin',
+        element: <ProtectedRoute allowedRole={['admin']}/>,
+        children: [
+            {   
+                element: <AdminTemplate />,
+                children: [
+                    { index: true, element: <Navigate to="tableau_de_bord" replace /> },
+                    { path: 'parametre_general', element: <Parameters /> },
+                    { path: 'tableau_de_bord', element: <AdminDashboard /> },
+                    ...COMMON_CHILDREN,
+                ]
+            },
+        ]
+    },
+
+	//Formateur routes
+	{
+		path: '/formateur',
+		element: <ProtectedRoute allowedRole={['formateur']}/>,
+		children: [
+			{ 
+				element: <FormateurTemplate />,
+				children: [
+					{ index: true, element: <Navigate to="tableau_de_bord" replace /> },
+					{ path: "tableau_de_bord", element: <Dashboard /> },
+					{ path: "formation", element: <Formation /> },
+					{ path: "chat", element: <ChatPage /> },
+					...COMMON_CHILDREN,
+				],
+			}
+		]
+	},
+
+	// Apprenant routes
 	{
 		path: '/my_eval',
 		element: <ProtectedRoute allowedRole={['apprenant']}/>,
@@ -139,7 +131,6 @@ export const router = createBrowserRouter([
 		]
 	},
 
-	{ path: '*', element: <ErrorPage msg="La page est introuvable" statusCode={404} /> },
+    { path: '*', element: <ErrorPage msg="La page est introuvable" statusCode={404} /> },
 
 ]);
-

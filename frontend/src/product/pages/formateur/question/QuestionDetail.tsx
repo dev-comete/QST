@@ -73,7 +73,7 @@ const QuestionDetail = () => {
 			title={"Détails de la question"}
 			defaultLinkBack
 		>
-			<Paper className="p-5">
+			<Paper className="p-5 min-w-2/3">
 				<Box direction="column" className="space-y-3">
 					<CustomText
 						textTag="h2"

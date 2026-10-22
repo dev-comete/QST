@@ -5,9 +5,11 @@ import Input from "../../../atoms/Form/Input";
 import Select from "../../../atoms/Form/Select";
 import Loading from "../../../atoms/Loading/Loading";
 import FetchError from "../../../atoms/Loading/FetchError";
-import { formChangeHandler, getSelectData } from "../../../../other/helper/helper";
+import { dateChangeHandler, formChangeHandler, fromDuration, getSelectData, toDuration } from "../../../../other/helper/helper";
 import { useFormation } from "../../../../other/hooks/formation/useFormation";
 import { useQuizEdit } from "../../../../other/hooks/quiz/useQuiz";
+import {DurationPicking} from "../../../atoms/Form/TimePicking";
+import { useEffect, useState } from "react";
 
 interface ModalQuizEditProps {
 	open: boolean;
@@ -19,11 +21,15 @@ const QuizForm = ({ closeModal, id } : { closeModal : () => void, id: number }) 
 	
 	const { handleQuizEdit, quiz, setQuiz, isPending } = useQuizEdit(id)
 	const { formations, formationsStatus } = useFormation()
-
+	const [duree, setDuree] = useState<Date | null>(() => fromDuration(quiz.duree))
 	const statusValue = [
 		{ id: 'draft', value: 'Brouillon' },
 		{ id: 'published', value: 'Publié' },
 	]
+
+	useEffect(() => {
+		setDuree(fromDuration(quiz.duree))
+	}, [quiz.duree])
 
 	if (formationsStatus == 'pending')
 		return <Loading />
@@ -33,7 +39,7 @@ const QuizForm = ({ closeModal, id } : { closeModal : () => void, id: number }) 
 
 	const selectedFormations = getSelectData(formations, 'nom_formation')
 
-	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+	const handleSubmit = async (e: React.SubmitEvent) => {
 		e.preventDefault()
 		try {
 			await handleQuizEdit()
@@ -42,6 +48,8 @@ const QuizForm = ({ closeModal, id } : { closeModal : () => void, id: number }) 
 			console.log("Error", error)
 		}
 	}
+
+
 
 	return (
 		<Box direction="column" className="w-full items-center px-5 gap-10" >
@@ -71,15 +79,11 @@ const QuizForm = ({ closeModal, id } : { closeModal : () => void, id: number }) 
 						(formations.find((q) => String(q.id) === String(quiz.formation))?.nom_formation) ?? formations[0].nom_formation
 					}
 				/>
-				<Input
-					id={"duree"}
-					name={"duree"}
-					label="Durée"
-					type="time"
-					step={1}
-					onChange={formChangeHandler(setQuiz, 'duree')}
-					required={true}
-					value={quiz.duree}
+				<DurationPicking
+					id="quiz_duree"
+					label="Durée du quiz"
+					duree={duree}
+					onChange={dateChangeHandler(setQuiz, 'duree', toDuration, setDuree)}
 				/>
 				<Select 
 					id="status"

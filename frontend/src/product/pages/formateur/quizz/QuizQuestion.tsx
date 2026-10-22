@@ -80,7 +80,7 @@ const QuizInformations = ({ questions, info, isPublished, formations } : QuizInf
 						title="Points"
 						value={totalPoints}
 						icon="star"
-						color="success"
+						color="purple"
 					/>
 					<QuizQuestionCard
 						title="Durée"

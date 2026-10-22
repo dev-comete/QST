@@ -14,27 +14,31 @@ interface TitleProps {
 }
 
 const Title = ({ title, sideButton, linkBack, defaultLinkBack = false, info, titleTag = 'h1', subtitle } : TitleProps) => {
-	
-		return (
-			<Box className="flex flex-col w-full border-b border-text-light pb-2">
-				<Box className={`flex items-center gap-3 w-full justify-between`}>
-					<Box className="flex items-center gap-3">
-						{linkBack && <BackButton link={linkBack} />}
-						{defaultLinkBack && <BackButton />}
-						<Box>
-							<CustomText textTag={titleTag} weight="bold">{title}</CustomText>
-							{subtitle}
-						</Box>
+
+	return (
+		<Box className="flex flex-col w-full border-b border-text-light pb-2">
+			<Box flexDirection="flex-col md:flex-row" className={`items-center gap-3 w-full justify-between`}>
+				<Box className="items-center gap-3">
+					{linkBack && <BackButton link={linkBack} />}
+					{defaultLinkBack && <BackButton />}
+					<Box>
+						<CustomText textTag={titleTag} weight="bold">{title}</CustomText>
+						{subtitle}
 					</Box>
-					{sideButton && (
-						<Box className="justify-end">
-							{sideButton}
-						</Box>
-					)}
 				</Box>
-				{ info && <CustomText textTag="h6">{info}</CustomText> }
+				{sideButton && (
+					<Box className="justify-end">
+						{sideButton}
+					</Box>
+				)}
 			</Box>
-		);
+			{ info && <CustomText textTag="h6">{info}</CustomText> }
+		</Box>
+	);
 }
 
 export default Title;
+
+function useMediaQuery(arg0: string) {
+	throw new Error("Function not implemented.");
+}

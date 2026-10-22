@@ -1,0 +1,290 @@
+.
+├── architecture.txt
+├── Dockerfile
+├── eslint.config.js
+├── index.html
+├── package.json
+├── package-lock.json
+├── README.md
+├── src
+│   ├── App.tsx
+│   ├── assets
+│   │   ├── comete.jpg
+│   │   └── illustration.png
+│   ├── css
+│   │   ├── base.css
+│   │   ├── components.css
+│   │   ├── index.css
+│   │   ├── scrollbar.css
+│   │   └── utilities.css
+│   ├── main.tsx
+│   ├── other
+│   │   ├── helper
+│   │   │   └── helper.ts
+│   │   ├── hooks
+│   │   │   ├── auth
+│   │   │   │   └── useAuth.ts
+│   │   │   ├── bareme
+│   │   │   │   └── useBareme.ts
+│   │   │   ├── bulletin
+│   │   │   │   └── useBulletin.ts
+│   │   │   ├── dashboard
+│   │   │   │   ├── useDashboard.ts
+│   │   │   │   └── useEvolutionChart.ts
+│   │   │   ├── formation
+│   │   │   │   └── useFormation.ts
+│   │   │   ├── navigation
+│   │   │   │   ├── useAppNavigation.ts
+│   │   │   │   └── useTabNavigation.ts
+│   │   │   ├── question
+│   │   │   │   ├── useDebounce.ts
+│   │   │   │   ├── useQuestionCreate.ts
+│   │   │   │   ├── useQuestion.ts
+│   │   │   │   └── useQuestionType.ts
+│   │   │   ├── quiz
+│   │   │   │   ├── useAssignQuiz.ts
+│   │   │   │   ├── useCreateQuiz.ts
+│   │   │   │   ├── useQuiz.ts
+│   │   │   │   └── useReviewQuiz.ts
+│   │   │   ├── user
+│   │   │   │   ├── useProject.ts
+│   │   │   │   └── useUser.ts
+│   │   │   └── vague
+│   │   │       ├── useAssignVague.ts
+│   │   │       └── useVague.ts
+│   │   ├── lib
+│   │   │   └── queryClient.ts
+│   │   ├── routes
+│   │   │   ├── route.tsx
+│   │   │   └── sharedChildren.tsx
+│   │   ├── services
+│   │   │   ├── apiClient.ts
+│   │   │   ├── auth
+│   │   │   │   ├── authService.ts
+│   │   │   │   └── storage.ts
+│   │   │   ├── baremeService.ts
+│   │   │   ├── bulletinService.ts
+│   │   │   ├── dashboardService.ts
+│   │   │   ├── endpoint.ts
+│   │   │   ├── formationService.ts
+│   │   │   ├── projectService.ts
+│   │   │   ├── questionService.ts
+│   │   │   ├── quizService.ts
+│   │   │   ├── userService.ts
+│   │   │   └── vagueService.ts
+│   │   └── types
+│   │       ├── bulletinType.ts
+│   │       ├── common.ts
+│   │       ├── constant.ts
+│   │       ├── dashboardType.ts
+│   │       ├── formationType.ts
+│   │       ├── navigation.ts
+│   │       ├── questionType.ts
+│   │       ├── quizType.ts
+│   │       ├── userType.ts
+│   │       └── vagueType.ts
+│   ├── product
+│   │   ├── context
+│   │   │   └── AuthProvider.tsx
+│   │   ├── layout
+│   │   │   ├── common
+│   │   │   │   ├── BodyLayout.tsx
+│   │   │   │   ├── Layout.tsx
+│   │   │   │   ├── ProfileRouteLayout.tsx
+│   │   │   │   ├── ProtectedRoute.tsx
+│   │   │   │   ├── RootRedirect.tsx
+│   │   │   │   └── SideBar.tsx
+│   │   │   └── role
+│   │   │       ├── AdminTemplate.tsx
+│   │   │       ├── ApprenantTemplate.tsx
+│   │   │       └── FormateurTemplate.tsx
+│   │   └── pages
+│   │       ├── admin
+│   │       │   ├── AdminDashboard.tsx
+│   │       │   └── Parameters.tsx
+│   │       ├── apprenant
+│   │       │   ├── Bulletin
+│   │       │   │   ├── BulletinReview.tsx
+│   │       │   │   └── Bulletin.tsx
+│   │       │   └── Evaluation
+│   │       │       ├── CorrectionReview.tsx
+│   │       │       ├── MyEvaluations.tsx
+│   │       │       └── TakingEvaluation.tsx
+│   │       ├── common
+│   │       │   ├── ErrorPage.tsx
+│   │       │   ├── Home.tsx
+│   │       │   ├── Login.tsx
+│   │       │   ├── ProfileMePage.tsx
+│   │       │   ├── SetPasswordPage.tsx
+│   │       │   └── Unauthorized.tsx
+│   │       └── formateur
+│   │           ├── ChatPage.tsx
+│   │           ├── Dashboard.tsx
+│   │           ├── Formation.tsx
+│   │           ├── question
+│   │           │   ├── QuestionBin.tsx
+│   │           │   ├── QuestionCreate.tsx
+│   │           │   ├── QuestionDetail.tsx
+│   │           │   ├── QuestionEdit.tsx
+│   │           │   └── QuestionManagement.tsx
+│   │           ├── quizz
+│   │           │   ├── QuizBin.tsx
+│   │           │   ├── QuizManagement.tsx
+│   │           │   ├── QuizQuestionDetail.tsx
+│   │           │   └── QuizQuestion.tsx
+│   │           ├── types.ts
+│   │           ├── useChatSocket.ts
+│   │           └── vague
+│   │               ├── QuizAssignation.tsx
+│   │               ├── StudentAssignation.tsx
+│   │               ├── VagueAssign.tsx
+│   │               ├── VagueManagement.tsx
+│   │               └── VagueStat.tsx
+│   └── system
+│       ├── atoms
+│       │   ├── Button
+│       │   │   └── Button.tsx
+│       │   ├── Container
+│       │   │   ├── Box.tsx
+│       │   │   └── Paper.tsx
+│       │   ├── Form
+│       │   │   ├── Info.tsx
+│       │   │   ├── Input.tsx
+│       │   │   ├── LabelInput.tsx
+│       │   │   ├── Select.tsx
+│       │   │   └── TextArea.tsx
+│       │   ├── Icon
+│       │   │   └── FAIcon.tsx
+│       │   ├── Loading
+│       │   │   ├── FetchError.tsx
+│       │   │   ├── Loading.tsx
+│       │   │   └── Spinner.tsx
+│       │   ├── Table
+│       │   │   ├── TableText.tsx
+│       │   │   └── Table.tsx
+│       │   └── Text
+│       │       └── CustomText.tsx
+│       ├── molecules
+│       │   ├── Avatar
+│       │   │   └── Avatar.tsx
+│       │   ├── Badge
+│       │   │   ├── NumerotationBadge.tsx
+│       │   │   ├── PercentBadge.tsx
+│       │   │   ├── StatusBadge.tsx
+│       │   │   └── ToggleChip.tsx
+│       │   ├── Buttons
+│       │   │   ├── ActionButton.tsx
+│       │   │   ├── ConfirmActionButton.tsx
+│       │   │   ├── CustomizedButton.tsx
+│       │   │   ├── IconButton.tsx
+│       │   │   ├── LogoutBtn.tsx
+│       │   │   └── NavButton.tsx
+│       │   ├── Container
+│       │   │   ├── Card.tsx
+│       │   │   └── ErrorBloc.tsx
+│       │   ├── Display
+│       │   │   ├── EvolutionLineChart.tsx
+│       │   │   ├── PercentageBar.tsx
+│       │   │   ├── PercentRing.tsx
+│       │   │   └── ScoreDisplay.tsx
+│       │   ├── Input
+│       │   │   ├── PasswordInput.tsx
+│       │   │   └── SearchBar.tsx
+│       │   ├── LayoutElement
+│       │   │   ├── Header.tsx
+│       │   │   └── Title.tsx
+│       │   ├── Logo
+│       │   │   └── Logo.tsx
+│       │   ├── Modal
+│       │   │   └── Modal.tsx
+│       │   └── Navigation
+│       │       └── NavigationBar.tsx
+│       └── organisms
+│           ├── bulletin
+│           │   └── list
+│           │       └── BulletinList.tsx
+│           ├── dashboard
+│           │   ├── container
+│           │   │   ├── DashboardBloc.tsx
+│           │   │   ├── DashboardCard.tsx
+│           │   │   ├── DashboardItems.tsx
+│           │   │   ├── InteractiveEvolutionChart.tsx
+│           │   │   └── RankingCard.tsx
+│           │   └── list
+│           │       └── DashboardStat.tsx
+│           ├── evaluation
+│           │   ├── list
+│           │   │   ├── EvaluationList.tsx
+│           │   │   └── StudentQuizList.tsx
+│           │   └── ModalQuizFinished.tsx
+│           ├── formation
+│           │   └── form
+│           │       ├── ModalEditFormation.tsx
+│           │       └── ModalFormationCreate.tsx
+│           ├── globalParam
+│           │   ├── input
+│           │   │   └── BaremeInput.tsx
+│           │   └── list
+│           │       ├── BaremeList.tsx
+│           │       └── FormationList.tsx
+│           ├── profile
+│           │   └── ProfileDetailsCard.tsx
+│           ├── question
+│           │   ├── form
+│           │   │   ├── ModalQuestionTypeCreate.tsx
+│           │   │   ├── ModalQuestionTypeEdit.tsx
+│           │   │   ├── ModalRespCreate.tsx
+│           │   │   ├── QuestionEditForm.tsx
+│           │   │   └── QuestionForm.tsx
+│           │   └── list
+│           │       ├── QuestionList.tsx
+│           │       ├── QuestionTypeList.tsx
+│           │       └── RespCreatedList.tsx
+│           ├── quiz
+│           │   ├── container
+│           │   │   ├── AssignBloc.tsx
+│           │   │   ├── CorrectionBloc.tsx
+│           │   │   └── QuizQuestionBloc.tsx
+│           │   ├── form
+│           │   │   ├── ModalQuizCreate.tsx
+│           │   │   ├── ModalQuizEdit.tsx
+│           │   │   └── QuizAssignForm.tsx
+│           │   ├── layout
+│           │   │   └── QuizTimer.tsx
+│           │   ├── list
+│           │   │   ├── QuizBankQuestion.tsx
+│           │   │   ├── QuizList.tsx
+│           │   │   └── QuizQuestionList.tsx
+│           │   └── tag
+│           │       └── StatusTag.tsx
+│           ├── user
+│           │   ├── form
+│           │   │   ├── ModalEditProject.tsx
+│           │   │   ├── ModalProjectCreate.tsx
+│           │   │   ├── ModalTypeUserCreate.tsx
+│           │   │   ├── ModalUpdateUser.tsx
+│           │   │   ├── ModalUserCreate.tsx
+│           │   │   └── ProjetForm.tsx
+│           │   └── list
+│           │       ├── ProjectList.tsx
+│           │       ├── UserList.tsx
+│           │       └── UserTypeList.tsx
+│           └── vague
+│               ├── form
+│               │   ├── ModalVagueCreate.tsx
+│               │   └── ModalVagueEdit.tsx
+│               ├── list
+│               │   ├── OwnedQuizList.tsx
+│               │   ├── QuizVagueSelect.tsx
+│               │   ├── StudentList.tsx
+│               │   ├── VagueList.tsx
+│               │   ├── VagueStatList.tsx
+│               │   └── VagueStudentList.tsx
+│               └── modal
+│                   └── ModalVagueStat.tsx
+├── tsconfig.app.json
+├── tsconfig.json
+├── tsconfig.node.json
+└── vite.config.ts
+
+87 directories, 201 files

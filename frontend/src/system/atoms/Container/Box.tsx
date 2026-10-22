@@ -3,6 +3,7 @@ import type React from "react";
 interface BoxProps {
 	children: React.ReactNode;
 	direction?: 'column' | 'row';
+	flexDirection?: string,
 	className?: string;
 	style?: React.CSSProperties;
 }
@@ -10,17 +11,16 @@ interface BoxProps {
 const Box = ({
 	children,
 	direction = 'row',
+	flexDirection,
 	className,
 	style
 } : BoxProps) => {
 
-	const flexDirection = direction === 'column' 
-    ? "flex-col" 
-    : "flex-row";
+	const dirClass = flexDirection ?? (direction === 'row' ? 'flex-row' : 'flex-col');
 
 	return (
 		<div
-			className={`flex gap-2 ${flexDirection} ${className}`}
+			className={`flex gap-2 ${dirClass} ${className}`}
 			style={style}
 		>
 			{children}

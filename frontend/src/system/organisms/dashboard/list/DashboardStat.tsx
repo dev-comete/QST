@@ -5,6 +5,7 @@ import DashboardCard from "../container/DashboardCard"
 
 interface DashboardStatProps {
 	stats: StatMetric[]
+	type: 'admin' | 'formateur'
 }
 
 interface DashboardMetricItem {
@@ -13,15 +14,23 @@ interface DashboardMetricItem {
 	link?: string
 }
 
-const DashboardMetricIcon : DashboardMetricItem[] = [
-	{ icon: 'book', color: 'warning', link: 'formation'},
-	{ icon: 'users', color: 'success', link: 'gestion_equipe'},
-	{ icon: 'file-circle-question', color: 'text', link: 'gestion_quiz'},
-	{ icon: 'circle-question', color: 'error', link: 'gestion_question'},
-	{ icon: 'star', color: 'primary'},
-]
+const getDashboardMetricIcons = (type: 'admin' | 'formateur') => {
+	const DashboardMetricIcon : DashboardMetricItem[] = [
+		{ icon: 'book', color: 'warning', link: type == 'admin' ? 'parametre_general?tab=3' : 'formation'},
+		{ icon: 'users', color: 'success', link: 'gestion_equipe'},
+		{ icon: 'file-circle-question', color: 'text', link: 'gestion_quiz'},
+		{ icon: 'circle-question', color: 'error', link: 'gestion_question'},
+		{ icon: 'star', color: 'primary'},
+	]
+	return (
+		DashboardMetricIcon
+	)
+}
 
-export const DashboardStat = ({ stats } : DashboardStatProps) => {
+export const DashboardStat = ({ stats, type } : DashboardStatProps) => {
+
+	const dashboardStyle = getDashboardMetricIcons(type)
+
 	return (
 		<Box className="w-full flex-wrap">
 			{
@@ -29,17 +38,17 @@ export const DashboardStat = ({ stats } : DashboardStatProps) => {
 					return (
 						<div 
                 key={'stat-' + index + stat.label}
-                className="w-full flex-1 min-w-[150x] min-h-[100px]"
+                className="w-full flex-1 min-w-[100x] min-h-[100px]"
             >
 				<DashboardCard 
-					title={stat.label}
+					title={stat.label == 'Vagues' ? 'Equipes' : stat.label}
 					value={stat.value}
 					info={stat.change}
-					icon={DashboardMetricIcon[index].icon}
-					color={DashboardMetricIcon[index].color}
+					icon={dashboardStyle[index].icon}
+					color={dashboardStyle[index].color}
 					key={'stat-' + index + stat.label}
 					variant="lg"
-					link={DashboardMetricIcon[index].link}
+					link={dashboardStyle[index].link}
 				/>
 
 			</div>

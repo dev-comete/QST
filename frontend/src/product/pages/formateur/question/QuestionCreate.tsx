@@ -137,7 +137,7 @@ const QuestionCreate = () => {
 				>{"Créer la question"}</ActionButton>
 			}
 		>
-			<Box direction="column">
+			<Box direction="column" className="w-full">
 				{errorForm.msg && <Info info={errorForm.msg} variant="error"/>}
 				<form
 					id="createQuestion"
@@ -155,7 +155,7 @@ const QuestionCreate = () => {
 								questionType={questionType}
 							/>
 						</Paper>
-							<Box className="items-start justify-start gap-4">
+						<Box className="items-start justify-start gap-4">
 							<QuestionCreateValidation 
 								questionType={selectedQuestionType}
 								responses={responses}

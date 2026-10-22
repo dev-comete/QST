@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { formatDate } from "../../../../other/helper/helper";
+import { formatDate, formatDuration } from "../../../../other/helper/helper";
 import { useAppNavigation } from "../../../../other/hooks/navigation/useAppNavigation";
 import { useQuiz, useQuizDel, useQuizRestore, useQuizUpdate } from "../../../../other/hooks/quiz/useQuiz";
 import type { quizType } from "../../../../other/types/quizType";
@@ -111,7 +111,8 @@ const QuizList = ({ listType = 'default' } : { listType?: string }) => {
 		},
 		{
 			header: 'Durée',
-			key: "duree"
+			key: "duree",
+			render: (value) => formatDuration(value)
 		},
 		{
 			header: 'Date de création',

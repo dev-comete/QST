@@ -18,7 +18,7 @@ services:
   web:
     build: ./backdev
     container_name: qst_django
-    command: gunicorn backdev.wsgi:application --bind 0.0.0.0:8000 --workers 3
+    command: gunicorn backdev.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 120
     volumes:
       - ./backdev:/app 
       - static_volume:/app/staticfiles

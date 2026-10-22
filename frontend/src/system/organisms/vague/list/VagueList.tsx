@@ -13,6 +13,7 @@ import ModalVagueEdit from "../form/ModalVagueEdit";
 import Select from "../../../atoms/Form/Select";
 import { useFormation } from "../../../../other/hooks/formation/useFormation";
 import Input from "../../../atoms/Form/Input";
+import { MonthPicking } from "../../../atoms/Form/TimePicking";
 
 const ActionCell = ({ rowId, onEdit }: { 
     rowId: string | number | boolean | string[]
@@ -113,14 +114,14 @@ const VagueList = () => {
 		setFormationFilter(selectedItem ? selectedItem.id : '')
 	}
 
-	const handlePeriodChange = (e: ChangeEvent<HTMLInputElement>) => {
-		const period = e.target.value.split('-')
+	const periodValue =
+	periodFilter.year && periodFilter.month
+		? `${periodFilter.year}-${periodFilter.month.padStart(2, "0")}`
+		: ""
 
-		if (period.length == 2)
-			setPeriodFilter({
-				month: period[1],
-				year: period[0]
-			})
+	const handlePeriodChange = (e: ChangeEvent<HTMLInputElement>) => {
+		const [year = "", month = ""] = e.target.value.split("-")
+		setPeriodFilter({ month, year })
 	}
 
 	return (
@@ -145,12 +146,10 @@ const VagueList = () => {
 										: formations?.find((f) => String(f.id) === formationFilter)?.nom_formation ?? ''
 								}
 							/>
-							<Input
-								id={"debut"}
-								name={"debut"}
-								type="month"
-								onChange={handlePeriodChange}
-								required
+							<MonthPicking
+								id="vague_filter_period"
+								value={periodFilter}
+								onChange={setPeriodFilter}
 							/>
 						</Box>
 					}

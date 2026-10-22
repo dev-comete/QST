@@ -11,7 +11,7 @@ const Info = ({ info, variant = 'info' } : InfoProps) => {
 
 	const styling = variant == 'info' ? 'border border-background' : 'border-error bg-error-light'
 	return (
-		<Box className={`overflow-y-auto p-2 w-full border rounded-xl justify-center ${styling}`}>
+		<Box className={`overflow-y-auto p-2 w-full border rounded-xl items-center justify-center ${styling}`}>
 			{ variant == 'error' && <FAIcon name="triangle-exclamation" className="text-error"/>}
 			<CustomText>
 				{info}

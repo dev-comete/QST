@@ -41,7 +41,7 @@ export default function MyEvaluations() {
 		<BodyLayout
 			title={"Mes évaluations"}
 		>
-			<Box direction='column' className='space-y-5'>
+			<Box direction='column' className='space-y-5 w-full'>
 				<NavigationBar 
 					titles={['Calendrier', 'Historique']}
 					activeTab={activeTab}
