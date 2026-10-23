@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Box from "../../atoms/Container/Box";
 import Paper from "../../atoms/Container/Paper";
 import CustomText from "../../atoms/Text/CustomText";
 import Button from "../../atoms/Button/Button"; 
 import Input from "../../atoms/Form/Input";
+import FAIcon from "../../atoms/Icon/FAIcon"; // Assurez-vous du chemin
 import apiClient from "../../../other/services/apiClient";
 
 type ProfileData = {
@@ -14,6 +15,7 @@ type ProfileData = {
     last_name: string;
     email: string;
     role?: string;
+    avatar?: string | null; // <-- Ajout du champ avatar
 };
 
 interface ProfileDetailsCardProps {
@@ -25,6 +27,7 @@ interface ProfileDetailsCardProps {
 const ProfileDetailsCard: React.FC<ProfileDetailsCardProps> = ({ profile, role, initial }) => {
     const queryClient = useQueryClient();
     const [isEditing, setIsEditing] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
     
     const [formData, setFormData] = useState({
         username: profile.username || "",
@@ -38,7 +41,8 @@ const ProfileDetailsCard: React.FC<ProfileDetailsCardProps> = ({ profile, role, 
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const mutation = useMutation({
+    // 1. Mutation pour la mise à jour des infos (Texte)
+    const textMutation = useMutation({
         mutationFn: async (updatedData: typeof formData) => {
             const { data } = await apiClient.patch("accounts/profile/me/", updatedData);
             return data;
@@ -52,9 +56,27 @@ const ProfileDetailsCard: React.FC<ProfileDetailsCardProps> = ({ profile, role, 
         }
     });
 
+    // 2. Mutation spécifique pour l'image (FormData)
+    const pictureMutation = useMutation({
+        mutationFn: async (file: File) => {
+            const formData = new FormData();
+            formData.append("avatar", file); 
+            const { data } = await apiClient.patch("accounts/profile/me/", formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+            return data;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["profile-me"] });
+        },
+        onError: (error) => {
+            console.error("Erreur lors de l'upload de l'image", error);
+        }
+    });
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        mutation.mutate(formData);
+        textMutation.mutate(formData);
     };
 
     const handleCancel = () => {
@@ -66,15 +88,66 @@ const ProfileDetailsCard: React.FC<ProfileDetailsCardProps> = ({ profile, role, 
         setIsEditing(false);
     };
 
+    // Gestion de l'upload d'image
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            pictureMutation.mutate(file);
+        }
+        if (fileInputRef.current) {
+            fileInputRef.current.value = ""; // Réinitialise l'input
+        }
+    };
+
+    const triggerFileInput = () => {
+        if (!pictureMutation.isPending && fileInputRef.current) {
+            fileInputRef.current.click();
+        }
+    };
+
     return (
         <Paper className="w-full p-6">
             <form onSubmit={handleSubmit}>
                 <Box direction="column" className="w-full gap-6">
                     <Box className="items-center justify-between flex-wrap gap-4">
+                        
                         <Box className="items-center gap-5">
-                            <div className="w-20 h-20 rounded-full bg-secondary text-primary text-2xl font-bold flex items-center justify-center shadow-sm">
-                                {initial}
-                            </div>
+                            {/* --- ZONE AVATAR CLIQUABLE --- */}
+                            <Box 
+                                className="relative w-20 h-20 rounded-full flex items-center justify-center bg-secondary text-primary border-2 border-white shadow-sm overflow-hidden group cursor-pointer flex-shrink-0"
+                                onClick={triggerFileInput}
+                            >
+                                {profile.avatar ? (
+                                    <img 
+                                        src={profile.avatar} 
+                                        alt="Profile" 
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <CustomText textTag="h2" weight="bold" className="text-2xl">
+                                        {initial}
+                                    </CustomText>
+                                )}
+
+                                {/* Overlay au survol */}
+                                <Box className="absolute inset-0 bg-black/40 hidden group-hover:flex items-center justify-center transition-all duration-200">
+                                    {pictureMutation.isPending ? (
+                                        <FAIcon name="spinner" className="text-white animate-spin" />
+                                    ) : (
+                                        <FAIcon name="camera" className="text-white" />
+                                    )}
+                                </Box>
+
+                                {/* Input caché */}
+                                <input 
+                                    type="file" 
+                                    ref={fileInputRef} 
+                                    className="hidden" 
+                                    accept="image/jpeg, image/png, image/webp"
+                                    onChange={handleFileChange}
+                                />
+                            </Box>
+
                             <Box direction="column" className="gap-1">
                                 <CustomText textTag="h2" weight="bold" color="primary">
                                     {displayName}
@@ -134,11 +207,11 @@ const ProfileDetailsCard: React.FC<ProfileDetailsCardProps> = ({ profile, role, 
                                 </Box>
                                 
                                 <Box className="gap-3 mt-4 justify-end">
-                                    <Button type="button" onClick={handleCancel} disabled={mutation.isPending}>
+                                    <Button type="button" onClick={handleCancel} disabled={textMutation.isPending}>
                                         Annuler
                                     </Button>
-                                    <Button type="submit" disabled={mutation.isPending}>
-                                        {mutation.isPending ? "Enregistrement..." : "Enregistrer"}
+                                    <Button type="submit" disabled={textMutation.isPending}>
+                                        {textMutation.isPending ? "Enregistrement..." : "Enregistrer"}
                                     </Button>
                                 </Box>
                             </>

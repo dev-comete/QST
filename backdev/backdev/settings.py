@@ -228,7 +228,11 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-# settings.py
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# L'URL publique pour y accéder (ex: http://localhost:8000/media/avatars/image.jpg)
+MEDIA_URL = '/media/'
+
 
 # Tells Django to use the 'Utilisateur' model in the 'accounts' app for authentication
 AUTH_USER_MODEL = 'accounts.Utilisateur'
