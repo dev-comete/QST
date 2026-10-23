@@ -64,7 +64,7 @@ class UtilisateurSerializer(serializers.ModelSerializer):
 class UserBasicProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'type_utilisateur']
+        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'type_utilisateur', 'avatar']
         
         # On empêche la modification de ces champs via cette API
         read_only_fields = ['id', 'email', 'type_utilisateur']

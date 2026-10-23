@@ -19,6 +19,7 @@ class TypeUtilisateur(models.Model):
 class Utilisateur(AbstractUser):
     # AbstractUser already provides 'username' and 'password'.
     email = models.EmailField(unique=True)
+    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
     
     # We add your custom relationship here.
     # Note: null=True, blank=True is temporarily added so that Django's 
