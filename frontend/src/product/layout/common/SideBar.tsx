@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import type { NavItem } from "../../../other/types/navigation";
-import Avatar from "../../../system/molecules/Avatar/Avatar";
 import LogoutBtn from "../../../system/molecules/Buttons/LogoutBtn";
 import NavButton from "../../../system/molecules/Buttons/NavButton";
 import Logo from "../../../system/molecules/Logo/Logo";
@@ -58,7 +57,7 @@ const SideBar = ({ navList } : SideBarProps ) => {
             <div className="flex flex-col items-center flex-none w-full gap-5 pb-6 border-b border-slate-50 overflow-hidden">
                 <Box direction="column" className={`items-center transition-all duration-300 ${isSidebarOpen ? 'scale-100 opacity-100' : 'scale-75 opacity-70'}`}>
                     <Logo />
-                    <Avatar isSidebarOpen={isSidebarOpen}/>
+                    {/* <Avatar isSidebarOpen={isSidebarOpen}/> */}
                 </Box>
             </div>
 

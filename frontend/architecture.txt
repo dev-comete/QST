@@ -21,7 +21,8 @@
 │   ├── other
 │   │   ├── helper
 │   │   │   ├── chatHelper.ts
-│   │   │   └── helper.ts
+│   │   │   ├── helper.ts
+│   │   │   └── importHelper.ts
 │   │   ├── hooks
 │   │   │   ├── auth
 │   │   │   │   └── useAuth.ts
@@ -45,6 +46,7 @@
 │   │   │   ├── question
 │   │   │   │   ├── useDebounce.ts
 │   │   │   │   ├── useDistractor.ts
+│   │   │   │   ├── useImportQuestions.ts
 │   │   │   │   ├── useQuestionCreate.ts
 │   │   │   │   ├── useQuestion.ts
 │   │   │   │   └── useQuestionType.ts
@@ -162,6 +164,7 @@
 │       │   │   ├── Box.tsx
 │       │   │   └── Paper.tsx
 │       │   ├── Form
+│       │   │   ├── FileInput.tsx
 │       │   │   ├── Info.tsx
 │       │   │   ├── Input.tsx
 │       │   │   ├── LabelInput.tsx
@@ -188,7 +191,8 @@
 │       │   │   ├── NumerotationBadge.tsx
 │       │   │   ├── PercentBadge.tsx
 │       │   │   ├── StatusBadge.tsx
-│       │   │   └── ToggleChip.tsx
+│       │   │   ├── ToggleChip.tsx
+│       │   │   └── WarningBadge.tsx
 │       │   ├── Buttons
 │       │   │   ├── ActionButton.tsx
 │       │   │   ├── ConfirmActionButton.tsx
@@ -254,12 +258,14 @@
 │           │   └── ProfileDetailsCard.tsx
 │           ├── question
 │           │   ├── form
+│           │   │   ├── ModalQuestionImport.tsx
 │           │   │   ├── ModalQuestionTypeCreate.tsx
 │           │   │   ├── ModalQuestionTypeEdit.tsx
 │           │   │   ├── ModalRespCreate.tsx
 │           │   │   ├── QuestionEditForm.tsx
 │           │   │   └── QuestionForm.tsx
 │           │   └── list
+│           │       ├── ImportPreviewList.tsx
 │           │       ├── QuestionList.tsx
 │           │       ├── QuestionTypeList.tsx
 │           │       └── RespCreatedList.tsx
@@ -311,4 +317,4 @@
 ├── tsconfig.node.json
 └── vite.config.ts
 
-91 directories, 221 files
+91 directories, 227 files
