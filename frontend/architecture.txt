@@ -20,6 +20,7 @@
 │   ├── main.tsx
 │   ├── other
 │   │   ├── helper
+│   │   │   ├── chatHelper.ts
 │   │   │   └── helper.ts
 │   │   ├── hooks
 │   │   │   ├── auth
@@ -28,6 +29,11 @@
 │   │   │   │   └── useBareme.ts
 │   │   │   ├── bulletin
 │   │   │   │   └── useBulletin.ts
+│   │   │   ├── chat
+│   │   │   │   ├── useChatLog.ts
+│   │   │   │   ├── useChatMessages.ts
+│   │   │   │   ├── useChatSocket.ts
+│   │   │   │   └── useChat.ts
 │   │   │   ├── dashboard
 │   │   │   │   ├── useDashboard.ts
 │   │   │   │   └── useEvolutionChart.ts
@@ -38,6 +44,7 @@
 │   │   │   │   └── useTabNavigation.ts
 │   │   │   ├── question
 │   │   │   │   ├── useDebounce.ts
+│   │   │   │   ├── useDistractor.ts
 │   │   │   │   ├── useQuestionCreate.ts
 │   │   │   │   ├── useQuestion.ts
 │   │   │   │   └── useQuestionType.ts
@@ -64,6 +71,7 @@
 │   │   │   │   └── storage.ts
 │   │   │   ├── baremeService.ts
 │   │   │   ├── bulletinService.ts
+│   │   │   ├── chatService.ts
 │   │   │   ├── dashboardService.ts
 │   │   │   ├── endpoint.ts
 │   │   │   ├── formationService.ts
@@ -74,6 +82,7 @@
 │   │   │   └── vagueService.ts
 │   │   └── types
 │   │       ├── bulletinType.ts
+│   │       ├── chatType.ts
 │   │       ├── common.ts
 │   │       ├── constant.ts
 │   │       ├── dashboardType.ts
@@ -115,12 +124,18 @@
 │   │       │   ├── Home.tsx
 │   │       │   ├── Login.tsx
 │   │       │   ├── ProfileMePage.tsx
+│   │       │   ├── RequestPasswordResetPage.tsx
 │   │       │   ├── SetPasswordPage.tsx
 │   │       │   └── Unauthorized.tsx
 │   │       └── formateur
+│   │           ├── chat
+│   │           │   ├── ChatLog.tsx
+│   │           │   ├── ChatMessages.tsx
+│   │           │   └── ChatPage.tsx
 │   │           ├── ChatPage.tsx
 │   │           ├── Dashboard.tsx
 │   │           ├── Formation.tsx
+│   │           ├── OldChatPage.tsx
 │   │           ├── question
 │   │           │   ├── QuestionBin.tsx
 │   │           │   ├── QuestionCreate.tsx
@@ -132,8 +147,7 @@
 │   │           │   ├── QuizManagement.tsx
 │   │           │   ├── QuizQuestionDetail.tsx
 │   │           │   └── QuizQuestion.tsx
-│   │           ├── types.ts
-│   │           ├── useChatSocket.ts
+│   │           ├── TestChatPage.tsx
 │   │           └── vague
 │   │               ├── QuizAssignation.tsx
 │   │               ├── StudentAssignation.tsx
@@ -152,7 +166,8 @@
 │       │   │   ├── Input.tsx
 │       │   │   ├── LabelInput.tsx
 │       │   │   ├── Select.tsx
-│       │   │   └── TextArea.tsx
+│       │   │   ├── TextArea.tsx
+│       │   │   └── TimePicking.tsx
 │       │   ├── Icon
 │       │   │   └── FAIcon.tsx
 │       │   ├── Loading
@@ -166,8 +181,10 @@
 │       │       └── CustomText.tsx
 │       ├── molecules
 │       │   ├── Avatar
+│       │   │   ├── AvatarBadge.tsx
 │       │   │   └── Avatar.tsx
 │       │   ├── Badge
+│       │   │   ├── ChatStatusBadge.tsx
 │       │   │   ├── NumerotationBadge.tsx
 │       │   │   ├── PercentBadge.tsx
 │       │   │   ├── StatusBadge.tsx
@@ -179,6 +196,8 @@
 │       │   │   ├── IconButton.tsx
 │       │   │   ├── LogoutBtn.tsx
 │       │   │   └── NavButton.tsx
+│       │   ├── Chat
+│       │   │   └── ChatMessageItem.tsx
 │       │   ├── Container
 │       │   │   ├── Card.tsx
 │       │   │   └── ErrorBloc.tsx
@@ -203,6 +222,9 @@
 │           ├── bulletin
 │           │   └── list
 │           │       └── BulletinList.tsx
+│           ├── chat
+│           │   ├── ChatLog.tsx
+│           │   └── ChatMessages.tsx
 │           ├── dashboard
 │           │   ├── container
 │           │   │   ├── DashboardBloc.tsx
@@ -228,6 +250,7 @@
 │           │       ├── BaremeList.tsx
 │           │       └── FormationList.tsx
 │           ├── profile
+│           │   ├── PasswordResetRequestCard.tsx
 │           │   └── ProfileDetailsCard.tsx
 │           ├── question
 │           │   ├── form
@@ -266,6 +289,7 @@
 │           │   │   ├── ModalUserCreate.tsx
 │           │   │   └── ProjetForm.tsx
 │           │   └── list
+│           │       ├── PasswordResetList.tsx
 │           │       ├── ProjectList.tsx
 │           │       ├── UserList.tsx
 │           │       └── UserTypeList.tsx
@@ -287,4 +311,4 @@
 ├── tsconfig.node.json
 └── vite.config.ts
 
-87 directories, 201 files
+91 directories, 221 files
