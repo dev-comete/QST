@@ -40,6 +40,44 @@ type bankQuestionType = {
 	reponses: bankQuestionResp[]
 }
 
+type importWarning =
+	| 'no_correct_answer'
+	| 'too_few_options'
+	| 'all_options_correct'
+	| 'unknown_type'
+
+// One question as returned by the AI import preview
+type importedQuestionType = {
+	enonce_question: string,
+	type_code: string,
+	type_id: number | null,
+	bareme_pts: number,
+	options: respType[],
+	warnings: importWarning[]
+}
+
+type importQuestionsResponse = {
+	message: string,
+	count: number,
+	skipped: number,
+	questions: importedQuestionType[]
+}
+
+type importQuestionsPayload = {
+	fichier?: File | null,
+	texte?: string
+}
+
+// Editable copy of an imported question, living in the preview screen
+type importDraftType = {
+	uid: string,
+	selected: boolean,
+	enonce_question: string,
+	bareme_pts: number,
+	options: respType[],
+	saveError?: string
+}
+
 type assignQuestionType = {
 	id: number,
 	texte_enonce: string,
@@ -56,4 +94,9 @@ export type {
 	bankQuestionType,
 	assignQuestionType,
 	bankQuestionResp,
+	importWarning,
+	importedQuestionType,
+	importQuestionsResponse,
+	importQuestionsPayload,
+	importDraftType,
 }
