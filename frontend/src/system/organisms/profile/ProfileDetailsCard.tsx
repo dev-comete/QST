@@ -3,7 +3,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Box from "../../atoms/Container/Box";
 import Paper from "../../atoms/Container/Paper";
 import CustomText from "../../atoms/Text/CustomText";
-import Button from "../../atoms/Button/Button"; 
 import Input from "../../atoms/Form/Input";
 import FAIcon from "../../atoms/Icon/FAIcon"; // Assurez-vous du chemin
 import apiClient from "../../../other/services/apiClient";

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import type { NavItem } from "../../../other/types/navigation";
-import Avatar from "../../../system/molecules/Avatar/Avatar";
 import LogoutBtn from "../../../system/molecules/Buttons/LogoutBtn";
 import NavButton from "../../../system/molecules/Buttons/NavButton";
 import Logo from "../../../system/molecules/Logo/Logo";
