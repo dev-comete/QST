@@ -11,6 +11,7 @@ import BodyLayout from "../../layout/common/BodyLayout";
 
 import ProfileDetailsCard from "../../../system/organisms/profile/ProfileDetailsCard"; 
 import PasswordResetRequestCard from "../../../system/organisms/profile/PasswordResetRequestCard";
+import ThemeSettingsCard from "../../../system/organisms/profile/ThemeSettingsCard";
 
 type ProfileMeResponse = {
     id: number;
@@ -74,6 +75,13 @@ const ProfileMePage = () => {
                                     <CustomText textTag="h6" color="disabled">
                                         Gérez vos préférences de sécurité et vos paramètres de compte.
                                     </CustomText>
+                                </Box>
+
+                                <Box direction="column" className="w-full gap-3">
+                                    <div className="rounded-xl border border-background bg-slate-50 p-3">
+                                        <CustomText textTag="p" weight="bold" className="text-primary">Apparence</CustomText>
+                                    </div>
+                                    <ThemeSettingsCard />
                                 </Box>
 
                                 <Box direction="column" className="w-full gap-6 mt-2">

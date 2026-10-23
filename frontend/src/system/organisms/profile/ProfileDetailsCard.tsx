@@ -3,10 +3,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Box from "../../atoms/Container/Box";
 import Paper from "../../atoms/Container/Paper";
 import CustomText from "../../atoms/Text/CustomText";
-import Button from "../../atoms/Button/Button"; 
 import Input from "../../atoms/Form/Input";
 import FAIcon from "../../atoms/Icon/FAIcon"; // Assurez-vous du chemin
 import apiClient from "../../../other/services/apiClient";
+import ActionButton from "../../../system/molecules/Buttons/ActionButton";
 
 type ProfileData = {
     id: number;
@@ -159,9 +159,9 @@ const ProfileDetailsCard: React.FC<ProfileDetailsCardProps> = ({ profile, role, 
                         </Box>
                         
                         {!isEditing && (
-                            <Button type="button" onClick={() => setIsEditing(true)}>
+                            <ActionButton type="button" onClick={() => setIsEditing(true)}>
                                 Éditer le profil
-                            </Button>
+                            </ActionButton>
                         )}
                     </Box>
 
@@ -207,12 +207,12 @@ const ProfileDetailsCard: React.FC<ProfileDetailsCardProps> = ({ profile, role, 
                                 </Box>
                                 
                                 <Box className="gap-3 mt-4 justify-end">
-                                    <Button type="button" onClick={handleCancel} disabled={textMutation.isPending}>
+                                    <ActionButton type="button" onClick={handleCancel} disabled={textMutation.isPending}>
                                         Annuler
-                                    </Button>
-                                    <Button type="submit" disabled={textMutation.isPending}>
+                                    </ActionButton>
+                                    <ActionButton type="submit" disabled={textMutation.isPending}>
                                         {textMutation.isPending ? "Enregistrement..." : "Enregistrer"}
-                                    </Button>
+                                    </ActionButton>
                                 </Box>
                             </>
                         ) : (
