@@ -58,7 +58,7 @@ const SideBar = ({ navList } : SideBarProps ) => {
             <div className="flex flex-col items-center flex-none w-full gap-5 pb-6 border-b border-slate-50 overflow-hidden">
                 <Box direction="column" className={`items-center transition-all duration-300 ${isSidebarOpen ? 'scale-100 opacity-100' : 'scale-75 opacity-70'}`}>
                     <Logo />
-                    <Avatar isSidebarOpen={isSidebarOpen}/>
+                    {/* <Avatar isSidebarOpen={isSidebarOpen}/> */}
                 </Box>
             </div>
 
