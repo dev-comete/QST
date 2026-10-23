@@ -11,6 +11,7 @@ export const ENDPOINTS = {
 		BANK: '/quizzes/banque-questions/',
 		TRASH: '/quizzes/corbeille/questions/',
 		IA_DISTRACTOR: '/ia/distracteurs/',
+		IMPORT_IA: '/ia/import-questions/',
 	},
 	QUIZ: {
 		CRUD: '/quizzes/crud/quizzes/',

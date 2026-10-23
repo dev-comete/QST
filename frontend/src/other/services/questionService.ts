@@ -1,5 +1,5 @@
 import type { PaginatedData } from "../types/common";
-import type { bankQuestionType, questionIdType, questionType, QuestionTypePayload } from "../types/questionType";
+import type { bankQuestionType, importQuestionsPayload, importQuestionsResponse, questionIdType, questionType, QuestionTypePayload } from "../types/questionType";
 import apiClient from "./apiClient";
 import { ENDPOINTS } from "./endpoint";
 
@@ -9,6 +9,7 @@ const BANK_QUESTION_URL = ENDPOINTS.QUESTION.BANK
 const TRASH_QUESTION_URL = ENDPOINTS.QUESTION.TRASH
 const TYPE_QUESTION_URL = ENDPOINTS.QUESTION.TYPES
 const IA_DISTRACTOR_URL = ENDPOINTS.QUESTION.IA_DISTRACTOR
+const IMPORT_QUESTION_URL = ENDPOINTS.QUESTION.IMPORT_IA
 
 export interface BankQuestionParams {
 	search?: string;
@@ -86,6 +87,18 @@ export const QuestionService = {
 		const response = await apiClient.post(TRASH_QUESTION_URL + id + '/restaurer/');
 		const result = response.data
 		return result;
+	},
+
+	// Step 1 of the import: upload a file OR raw text, get an editable preview (nothing is saved)
+	importFromDocument: async ({ fichier, texte }: importQuestionsPayload) => {
+		const formData = new FormData();
+		if (fichier) formData.append('fichier', fichier);
+		else if (texte) formData.append('texte', texte);
+
+		const response = await apiClient.post<importQuestionsResponse>(IMPORT_QUESTION_URL, formData, {
+			headers: { 'Content-Type': 'multipart/form-data' },
+		});
+		return response.data;
 	},
 
 	generateDistractors: async (enonce: string, bonne_reponse: string): Promise<string[]> => {
