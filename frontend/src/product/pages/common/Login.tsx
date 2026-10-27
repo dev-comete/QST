@@ -8,6 +8,7 @@ import CustomText from "../../../system/atoms/Text/CustomText";
 import ActionButton from "../../../system/molecules/Buttons/ActionButton";
 import Logo from "../../../system/molecules/Logo/Logo";
 import PasswordInput from "../../../system/molecules/Input/PasswordInput";
+import illustration from "../../../assets/illustration.webp"
 
 const Login = () => {
     const { handleSubmit, isPending, error } = useLogin();
@@ -16,10 +17,13 @@ const Login = () => {
 	if (authUser) return <Navigate to="/" replace />;
 
     return (
-        <Box
-            className="flex h-screen p-10 items-center justify-between w-full overflow-hidden bg-cover bg-center bg-no-repeat"
-            style={{ backgroundImage: 'url("/src/assets/illustration.png")' }}
-        >
+        <Box className="flex relative h-screen p-10 items-center justify-between w-full overflow-hidden">
+			<img
+				src={illustration}
+				alt=""
+				fetchPriority="high"
+				className="absolute inset-0 -z-10 h-full w-full object-cover object-center"
+			/>
 			<Box className="w-full px-10">
 				<Box direction="column" className="bg-black/50 justify-center p-10 rounded-xl flex-1">
 					<h1 className="text-[50px] text-white font-bold">Bienvenue sur QST</h1>

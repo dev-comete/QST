@@ -67,7 +67,7 @@ const ProfileMePage = () => {
                     />
 
                     {/* ONGLET 2 : PARAMÈTRES */}
-                    <Box direction="column" className="w-full gap-6">
+                    <Box direction="column" className="w-1/2 m-auto gap-6">
                         <Paper className="w-full p-6">
                             <Box direction="column" className="w-full gap-4">
                                 <Box direction="column" className="gap-1">
