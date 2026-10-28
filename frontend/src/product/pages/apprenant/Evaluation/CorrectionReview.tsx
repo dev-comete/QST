@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams, useSearchParams } from "react-router";
+import { useLocation, useParams, useSearchParams } from "react-router";
 import { useReviewQuiz } from "../../../../other/hooks/quiz/useReviewQuiz";
 import Box from "../../../../system/atoms/Container/Box";
 import CorrectionBloc, { CorrectionBlocNav } from "../../../../system/organisms/quiz/container/CorrectionBloc";
@@ -14,6 +14,10 @@ const CorrectionReview = () => {
 	const [searchParams] = useSearchParams();
 	const vagueId = searchParams.get('vague_id') ?? '';
 	const [selectedQuestionIndex, setSelectedQuestionIndex] = useState(0);
+	const location = useLocation();
+
+	const showBackLink = !(location.state?.fromQuiz ?? false);
+
 
 	const { review, status } = useReviewQuiz(quizId ?? '', vagueId)
 
@@ -24,7 +28,7 @@ const CorrectionReview = () => {
 	return (
 		<BodyLayout
 			title={`Résultat du quiz : ${review.quiz_titre ?? review.quiz_id}`}
-			defaultLinkBack={true}
+			defaultLinkBack={showBackLink}
 		>
 			<Box className='space-y-5 space-x-3 justify-between min-h-0'>
 				<Box direction="column" className="w-1/3">

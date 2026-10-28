@@ -179,8 +179,10 @@ export default function TakingEvaluation() {
 	};
 
 	const onViewResults = () => {
-		navigate('/bulletin')
-	}
+		navigate(`/quiz/${id}/revue?vague_id=${vagueId}`, {
+			state: { fromQuiz: true },
+		});
+	};
 
 	if (loading) return <Loading />
 
