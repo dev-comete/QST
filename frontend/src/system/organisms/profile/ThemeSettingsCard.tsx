@@ -9,6 +9,7 @@ import PresetSwatch from '../../molecules/theme/PresetSwatch'
 import { useTheme } from '../../../other/hooks/theme/useTheme'
 import { getContrastWithWhite } from '../../../other/helper/themeHelper'
 import { THEME_PRESETS, type FontSizeId, type RadiusId } from '../../../other/types/theme'
+import IconButton from '../../molecules/Buttons/IconButton'
 
 const FONT_OPTIONS: { id: FontSizeId; label: string }[] = [
 	{ id: 'small', label: 'Petit' },
@@ -28,15 +29,14 @@ const ThemeSettingsCard = () => {
 
 	return (
 		<Paper className="w-full p-6">
-			<Box direction="column" className="w-full gap-6">
+			<Box direction="column" className="w-full gap-3">
 				<Box className="items-start justify-between flex-wrap gap-2">
-					<Box direction="column" className="gap-1">
-						<CustomText textTag="h3" weight="bold">Apparence</CustomText>
-						<CustomText textTag="h6" color="disabled">
-							Personnalisez les couleurs et l'affichage. Ces préférences sont enregistrées sur cet appareil.
-						</CustomText>
-					</Box>
-					<Button variant="outline" onClick={resetTheme}>Réinitialiser</Button>
+					<CustomText textTag="h5" color="disabled">
+						Personnalisez les couleurs et l'affichage. Ces préférences sont enregistrées sur cet appareil.
+					</CustomText>
+					<div className='border border-background rounded-xl hover:bg-disabled-light'>
+						<IconButton iconName='rotate' title='Réinitialiser' className='border p-2 border-background' action={resetTheme}/>
+					</div>
 				</Box>
 
 				<Box direction="column" className="gap-2">
