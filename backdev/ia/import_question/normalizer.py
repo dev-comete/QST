@@ -43,6 +43,7 @@ def _dedupe_options(options: list[ParsedOption]) -> list[ParsedOption]:
         key = option.text.casefold()
         if key in seen:
             seen[key].is_correct = seen[key].is_correct or option.is_correct
+            seen[key].explanation = seen[key].explanation or option.explanation
         else:
             seen[key] = option
     return list(seen.values())
@@ -80,7 +81,7 @@ def normalize(extraction: AIExtraction) -> NormalizationResult:
             continue
 
         options = [
-            ParsedOption(text=text, is_correct=o.is_correct)
+            ParsedOption(text=text, is_correct=o.is_correct, explanation=_clean(o.explanation) if o.is_correct else "")
             for o in item.options
             if (text := _clean_option(o.text))
         ]

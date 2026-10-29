@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 def _extract_with_cache(document: SourceDocument) -> AIExtraction:
     """Same file/text twice -> no second (paid) AI call."""
-    key = f"question_import:{document.fingerprint()}"
+    key = f"question_import:v2{document.fingerprint()}"
     cached = cache.get(key)
     if cached is not None:
         logger.info("cache hit %s", key)

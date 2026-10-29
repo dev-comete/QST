@@ -27,7 +27,7 @@ def to_api_payload(
                 "type_id": type_id,
                 "bareme_pts": default_points,
                 "options": [
-                    {"reponse": o.text, "est_correct": o.is_correct, "explication": ""}
+                    {"reponse": o.text, "est_correct": o.is_correct, "explication": o.explanation}
                     for o in q.options
                 ],
                 "warnings": warnings,
