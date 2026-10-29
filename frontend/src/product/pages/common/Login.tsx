@@ -44,14 +44,17 @@ const Login = () => {
 									className="w-full"
 									required
 								/>
-								<PasswordInput
-									id="password"
-									name="password"
-									type="password"
-									label="Mot de passe"
-									className="w-full"
-									required
-								/>
+								<Box direction="column" className="w-full gap-1">
+									<PasswordInput
+										id="password"
+										name="password"
+										type="password"
+										label="Mot de passe"
+										className="w-full"
+										required
+									/>
+									<CustomText className="flex self-end text-[11px] cursor-pointer hover:text-primary" textTag="span" isItalic>Mot de passe oublié?</CustomText>
+								</Box>
 								{ error && <Info info={error} variant="error"/>}
 								<ActionButton
 									type="submit"
