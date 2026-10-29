@@ -41,7 +41,7 @@ const Bulletin = () => {
 					<BulletinDisplay
 						title='Moyenne générale'
 						value={resume_global.moyenne_generale_pct}
-						unit="pts"
+						unit="%"
 					/>
 					<BulletinDisplay
 						title='Score total'
