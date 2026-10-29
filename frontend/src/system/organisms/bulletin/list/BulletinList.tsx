@@ -28,7 +28,7 @@ const ActionCell = ({ rowId } : {
 
 const quizTabColumn: Column<BulletinVague>[] = [
 	{
-		header: 'Vague',
+		header: 'Equipe',
 		key: "nom_vague"
 	},
 	{

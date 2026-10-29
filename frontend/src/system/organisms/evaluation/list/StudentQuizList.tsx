@@ -33,7 +33,7 @@ const StudentQuizList = ({ data } : StudentQuizListProps) => {
 
 	const quizTabColumn: Column<studentQuizType>[] = [
 		{
-			header: 'Vague',
+			header: 'Equipe',
 			key: "vague_nom"
 		},
 		{
