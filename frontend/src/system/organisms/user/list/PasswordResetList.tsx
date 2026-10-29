@@ -65,7 +65,7 @@ const PasswordResetList = () => {
     const safeRequests = Array.isArray(requests) ? requests : [];
 
     return (
-        <Paper className="w-full p-6">
+        <Paper className="w-2/3 m-auto p-6">
             <Box direction="column" className="w-full gap-6">
                 <Box direction="column" className="gap-1">
                     <CustomText textTag="h3" weight="bold">Demandes de réinitialisation</CustomText>
@@ -100,11 +100,11 @@ const PasswordResetList = () => {
                                     >
                                         Rejeter
                                     </Button>
-                                    <Button 
+                                    <Button
                                         onClick={() => approveMutation.mutate(req.id)}
                                         disabled={approveMutation.isPending || rejectMutation.isPending}
                                     >
-                                        Approuver et envoyer l'e-mail
+                                        <CustomText color="white">Approuver et envoyer l'e-mail</CustomText>
                                     </Button>
                                 </Box>
                             </Box>

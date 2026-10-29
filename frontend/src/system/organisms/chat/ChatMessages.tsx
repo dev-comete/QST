@@ -6,7 +6,6 @@ import ActionButton from "../../molecules/Buttons/ActionButton";
 import { useChatMessages } from "../../../other/hooks/chat/useChatMessages";
 import type { SocketStatus } from "../../../other/hooks/chat/useChatSocket";
 import ChatStatusBadge from "../../molecules/Badge/ChatStatusBadge";
-import FAIcon from "../../atoms/Icon/FAIcon";
 import TextArea from "../../atoms/Form/TextArea";
 // import Loading from "../../atoms/Loading/Loading";
 

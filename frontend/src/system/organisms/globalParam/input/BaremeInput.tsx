@@ -8,7 +8,7 @@ import ActionButton from "../../../molecules/Buttons/ActionButton";
 
 interface BaremeInputProps {
 	onBaremeChange: (value: string) => void;
-	labelPosition?: string
+	labelPosition?: 'col' | 'row'
 }
 
 export const OldBaremeInput = ({ onBaremeChange } : BaremeInputProps) => {
@@ -89,7 +89,7 @@ const BaremeInput = ({ onBaremeChange, labelPosition } : BaremeInputProps) => {
 			}}
 			required
 			value={value}
-			labelPosition={labelPosition}
+			labelPosition={labelPosition ?? 'col'}
 		/>
 	)
 }

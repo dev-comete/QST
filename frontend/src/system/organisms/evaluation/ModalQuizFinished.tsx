@@ -36,7 +36,7 @@ const ModalQuizFinished = ({ open, onViewResults, scoreQuiz }: ModalQuizFinished
             title="Quiz terminé"
             isOpen={open}
 			footer={
-				<ActionButton onClick={handleViewResults}>Voir les bulletins</ActionButton>
+				<ActionButton onClick={handleViewResults}>Voir le résultat du quiz</ActionButton>
 			}
         >
 			<Box direction="column" className="space-y-2 items-center w-full">
