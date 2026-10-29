@@ -75,4 +75,11 @@ export const VagueService = {
 		)
 		return response.data as EvolutionChartResponse
 	},
+
+	exportPdf: async (vagueId: string | number) => {
+        const response = await apiClient.get(`quizzes/bulletin/vague/${vagueId}/pdf/`, {
+            responseType: 'blob', 
+        });
+        return response.data;
+	}
 }
