@@ -35,6 +35,7 @@ class SourceDocument:
 class AIOption(BaseModel):
     text: str
     is_correct: bool
+    explanation: str = ""
 
 
 class AIQuestion(BaseModel):
@@ -52,6 +53,7 @@ class AIExtraction(BaseModel):
 class ParsedOption:
     text: str
     is_correct: bool
+    explanation: str = ""
 
 
 @dataclass
