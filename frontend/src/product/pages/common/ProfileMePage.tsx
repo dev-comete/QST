@@ -12,6 +12,7 @@ import BodyLayout from "../../layout/common/BodyLayout";
 import ProfileDetailsCard from "../../../system/organisms/profile/ProfileDetailsCard"; 
 import PasswordResetRequestCard from "../../../system/organisms/profile/PasswordResetRequestCard";
 import ThemeSettingsCard from "../../../system/organisms/profile/ThemeSettingsCard";
+import Collapse from "../../../system/molecules/Container/Collapse";
 
 type ProfileMeResponse = {
     id: number;
@@ -67,7 +68,7 @@ const ProfileMePage = () => {
                     />
 
                     {/* ONGLET 2 : PARAMÈTRES */}
-                    <Box direction="column" className="w-full gap-6">
+                    <Box direction="column" className="w-2/3 m-auto gap-6">
                         <Paper className="w-full p-6">
                             <Box direction="column" className="w-full gap-4">
                                 <Box direction="column" className="gap-1">
@@ -77,42 +78,26 @@ const ProfileMePage = () => {
                                     </CustomText>
                                 </Box>
 
-                                <Box direction="column" className="w-full gap-3">
-                                    <div className="rounded-xl border border-background bg-slate-50 p-3">
-                                        <CustomText textTag="p" weight="bold" className="text-primary">Apparence</CustomText>
-                                    </div>
-                                    <ThemeSettingsCard />
-                                </Box>
+								<Collapse iconTitle="palette" title={
+										<CustomText textTag="p" weight="bold" className="text-primary">Apparence</CustomText>
+									}
+								><ThemeSettingsCard /></Collapse>
 
-                                <Box direction="column" className="w-full gap-6 mt-2">
-                                    {/* SECTION SÉCURITÉ (Masquée pour les admins) */}
-                                    {!isAdmin && (
-                                        <Box direction="column" className="w-full gap-3">
-                                            <div className="rounded-xl border border-background bg-slate-50 p-3">
-                                                <CustomText textTag="p" weight="bold" className="text-primary">
-                                                    Sécurité
-                                                </CustomText>
-                                            </div>
-                                            
-                                            {/* Carte de demande accessible uniquement aux Formateurs & Apprenants */}
-                                            <PasswordResetRequestCard />
-                                        </Box>
-                                    )}
+								{ !isAdmin &&
+									<Collapse iconTitle="lock" title={
+											<CustomText textTag="p" weight="bold" className="text-primary">Sécurité</CustomText>
+										}
+									><PasswordResetRequestCard /></Collapse>
+								}
 
-                                    {/* SECTION NOTIFICATIONS */}
-                                    <Box direction="column" className="w-full gap-3">
-                                        <div className="rounded-xl border border-background bg-slate-50 p-3">
-                                            <CustomText textTag="p" weight="bold" color="disabled">
-                                                Notifications
-                                            </CustomText>
-                                        </div>
-                                        <Paper className="p-4 border border-dashed border-slate-200">
-                                            <CustomText color="disabled" className="text-sm">
-                                                Les options de notification seront bientôt disponibles.
-                                            </CustomText>
-                                        </Paper>
-                                    </Box>
-                                </Box>
+								<Collapse iconTitle="bell" title={
+										<CustomText textTag="p" weight="bold" className="text-primary">Notifications</CustomText>
+									}
+								>
+									<CustomText color="disabled" className="text-sm">
+										Les options de notification seront bientôt disponibles.
+                                    </CustomText>								
+								</Collapse>
                             </Box>
                         </Paper>
                     </Box>

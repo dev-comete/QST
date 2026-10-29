@@ -69,7 +69,12 @@ const QuizForm = ({ closeModal } : { closeModal : () => void }) => {
 						return String(selected.id)
 					})}
 				/>
-				<DurationPicking duree={duree} onChange={dateChangeHandler(setQuiz, 'duree', toDuration, setDuree)} />
+				<DurationPicking
+					label="duree"
+					id="duree"
+					duree={duree}
+					onChange={dateChangeHandler(setQuiz, 'duree', toDuration, setDuree)}
+				/>
 				<Select 
 					id="status"
 					name="status"

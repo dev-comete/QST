@@ -39,6 +39,3 @@ const Title = ({ title, sideButton, linkBack, defaultLinkBack = false, info, tit
 
 export default Title;
 
-function useMediaQuery(arg0: string) {
-	throw new Error("Function not implemented.");
-}
