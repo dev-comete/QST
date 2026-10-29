@@ -12,7 +12,6 @@ import { useState, type ChangeEvent } from "react";
 import ModalVagueEdit from "../form/ModalVagueEdit";
 import Select from "../../../atoms/Form/Select";
 import { useFormation } from "../../../../other/hooks/formation/useFormation";
-import Input from "../../../atoms/Form/Input";
 import { MonthPicking } from "../../../atoms/Form/TimePicking";
 
 const ActionCell = ({ rowId, onEdit }: { 
@@ -114,15 +113,15 @@ const VagueList = () => {
 		setFormationFilter(selectedItem ? selectedItem.id : '')
 	}
 
-	const periodValue =
-	periodFilter.year && periodFilter.month
-		? `${periodFilter.year}-${periodFilter.month.padStart(2, "0")}`
-		: ""
+	// const periodValue =
+	// periodFilter.year && periodFilter.month
+	// 	? `${periodFilter.year}-${periodFilter.month.padStart(2, "0")}`
+	// 	: ""
 
-	const handlePeriodChange = (e: ChangeEvent<HTMLInputElement>) => {
-		const [year = "", month = ""] = e.target.value.split("-")
-		setPeriodFilter({ month, year })
-	}
+	// const handlePeriodChange = (e: ChangeEvent<HTMLInputElement>) => {
+	// 	const [year = "", month = ""] = e.target.value.split("-")
+	// 	setPeriodFilter({ month, year })
+	// }
 
 	return (
 		<Box direction="column" className="w-full items-center justify-center">

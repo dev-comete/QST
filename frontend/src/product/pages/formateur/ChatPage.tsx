@@ -19,7 +19,7 @@ const ChatPage = () => {
 
 	const [selectedRoom, setSelectedRoom] = useState<"general" | "direct">("general");
 	const [targetUserId, setTargetUserId] = useState<number | null>(null);
-	const [live, setLive] = useState<{ roomPath: string; id: number } | null>(null);
+	const [,setLive] = useState<{ roomPath: string; id: number } | null>(null);
 	const [draft, setDraft] = useState("");
 	const [isVisible, setIsVisible] = useState(document.visibilityState === "visible");
 	const [notice, setNotice] = useState<string | null>(null);

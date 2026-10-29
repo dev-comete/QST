@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { UserService } from '../../../other/services/userService';
 import Logo from '../../../system/molecules/Logo/Logo';
@@ -36,11 +36,13 @@ export default function SetPasswordPage() {
 		setLoading(true);
 		try {
 			// Appel à votre endpoint Django qui valide l'UID, le Token et sauvegarde le MDP
-			await UserService.confirmPasswordReset({
-				uid,
-				token,
-				new_password: passwords.new_password
-			});
+			if (uid && token) {
+				await UserService.confirmPasswordReset({
+					uid,
+					token,
+					new_password: passwords.new_password
+				});
+			}
 			
 		//   notify({ type: 'success', message: 'Votre compte est activé ! Vous pouvez vous connecter.' });
 			navigate('/login');
