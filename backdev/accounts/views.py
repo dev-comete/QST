@@ -12,6 +12,8 @@ from django.contrib.auth import get_user_model
 from .serializers import UserBasicProfileSerializer, UtilisateurSerializer, TypeUtilisateurSerializer , OrganisationSerializer
 from .models import TypeUtilisateur, Organisation
 
+from .invitation_email import send_invitation_email
+
 User = get_user_model()
 
 class OrganisationViewSet(viewsets.ModelViewSet):
@@ -34,39 +36,43 @@ class UtilisateurViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminUser]
 
     def perform_create(self, serializer):
-        # 1. Sauvegarde l'utilisateur en base de données
         user = serializer.save()
+        send_invitation_email(user)
 
-        # 2. Création du Token sécurisé pour réinitialiser le mot de passe
-        uid = urlsafe_base64_encode(force_bytes(user.pk))
-        token = default_token_generator.make_token(user)
+    # def perform_create(self, serializer):
+    #     # 1. Sauvegarde l'utilisateur en base de données
+    #     user = serializer.save()
+
+    #     # 2. Création du Token sécurisé pour réinitialiser le mot de passe
+    #     uid = urlsafe_base64_encode(force_bytes(user.pk))
+    #     token = default_token_generator.make_token(user)
 
         
-        frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:3000')
-        reset_link = f"{frontend_url}/set-password/{uid}/{token}"
+    #     frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:3000')
+    #     reset_link = f"{frontend_url}/set-password/{uid}/{token}"
 
-        print(f"\n🔗 LIEN DIRECT (SANS ENCODAGE) : {reset_link}\n")
+    #     print(f"\n🔗 LIEN DIRECT (SANS ENCODAGE) : {reset_link}\n")
 
-        subject = "Invitation à rejoindre la plateforme QST"
-        message = (
-            f"Hi {user.username},\n\n"
-            f"Your account has been created. "
-            f"To activate your account and set your password, "
-            f"please click on the link below :\n\n"
-            f"{reset_link}\n\n"
-            f"If you are not the one who requested this, you can ignore this email.\n\n"
-            f"See you soon !"
-        )
+    #     subject = "Invitation à rejoindre la plateforme QST"
+    #     message = (
+    #         f"Hi {user.username},\n\n"
+    #         f"Your account has been created. "
+    #         f"To activate your account and set your password, "
+    #         f"please click on the link below :\n\n"
+    #         f"{reset_link}\n\n"
+    #         f"If you are not the one who requested this, you can ignore this email.\n\n"
+    #         f"See you soon !"
+    #     )
         
-        from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@comete.ai')
+    #     from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@comete.ai')
 
-        send_mail(
-            subject,
-            message,
-            from_email,
-            [user.email],
-            fail_silently=False, 
-        )
+    #     send_mail(
+    #         subject,
+    #         message,
+    #         from_email,
+    #         [user.email],
+    #         fail_silently=False, 
+    #     )
 
     def get_permissions(self):
         """
