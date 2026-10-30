@@ -13,6 +13,7 @@ import { CancelButton } from "../Buttons/CustomizedButton";
 interface ModalProps {
     bgColor?: ColorTheme,
     title?: string
+	titleButton?: ReactNode
     subtitle?: string[]
     children: React.ReactNode,
     isOpen?: boolean;
@@ -67,6 +68,7 @@ const ModalNav = ({ subIdx, increaseIdx, decreaseIdx, subtitle } : ModalSubtitle
 
 const Modal = ({
     title,
+	titleButton,
     subtitle,
     children,
     bgColor = "white",
@@ -112,15 +114,20 @@ const Modal = ({
 								title={title}
 								titleTag="h3"
 								sideButton={
-									closeModal ?
-										<div className="-mt-1 -mr-1">
-											<IconButton
-												action={() => { closeModal() ; setSubIdx(0)}}
-												btnColor="transparent"
-												iconName="circle-xmark"
-												iconStyling="text-slate-400 hover:text-error transition-colors text-xl"
-											/>
-										</div> : null
+									<Box>
+										{titleButton}
+										{
+											closeModal &&
+												<div className="-mt-1 -mr-1">
+													<IconButton
+														action={() => { closeModal() ; setSubIdx(0)}}
+														btnColor="transparent"
+														iconName="circle-xmark"
+														iconStyling="text-slate-400 hover:text-error transition-colors text-xl"
+													/>
+												</div>
+										}
+									</Box>
 								}
 							/>
 						}

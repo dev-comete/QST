@@ -9,12 +9,34 @@ import CustomText from "../../../atoms/Text/CustomText";
 import ActionButton from "../../../molecules/Buttons/ActionButton";
 import { Modal } from "../../../molecules/Modal/Modal";
 import ImportPreviewList from "../list/ImportPreviewList";
+import { useDownloadQuizTemplate } from "../../../../other/hooks/question/useDownloadQuizTemplate";
+import Spinner from "../../../atoms/Loading/Spinner";
 
 type ImportState = ReturnType<typeof useImportQuestions>
 
 // ---- Step 1: choose a file or paste text ----
-const ImportSourceStep = ({ imp }: { imp: ImportState }) => (
+const ImportSourceStep = ({ imp }: { imp: ImportState }) => {
+
+	const { download, isLoading } = useDownloadQuizTemplate();
+
+	return (
 	<Box direction="column" className="w-full gap-5">
+			{
+				isLoading ? <Spinner />
+				:
+				<Box direction="column" className="items-center text-center bg-secondary rounded-xl p-3">
+					<Box>
+						<FAIcon name="circle-info"/>
+						<CustomText>Vous pouvez télécharger un modèle de fichier
+							<span
+								onClick={download}
+								className="hover:text-primary hover:font-bold cursor-pointer underline"
+							> ici.</span>  
+						</CustomText>
+					</Box>
+					<CustomText isItalic>Veillez à bien remplir les champs, une bonne réponse doit avoir une explication.</CustomText>
+				</Box>
+			}
 		<FileInput
 			id="import_file"
 			name="import_file"
@@ -50,6 +72,7 @@ const ImportSourceStep = ({ imp }: { imp: ImportState }) => (
 		)}
 	</Box>
 )
+}
 
 // ---- Step 2: review and fix before saving ----
 const ImportPreviewStep = ({ imp }: { imp: ImportState }) => (
@@ -107,6 +130,7 @@ interface ModalQuestionImportProps {
 const ModalQuestionImport = ({ open, closeModal }: ModalQuestionImportProps) => {
 
 	const imp = useImportQuestions()
+
 
 	const handleClose = () => {
 		if (imp.isAnalyzing || imp.isSaving) return

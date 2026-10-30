@@ -1,5 +1,5 @@
 import { Navigate } from "react-router";
-import { useAuth, useLogin } from "../../../other/hooks/auth/useAuth";
+import { useAuth, useLogin, useResetPassword } from "../../../other/hooks/auth/useAuth";
 import Box from "../../../system/atoms/Container/Box";
 import Paper from "../../../system/atoms/Container/Paper";
 import Info from "../../../system/atoms/Form/Info";
@@ -9,10 +9,41 @@ import ActionButton from "../../../system/molecules/Buttons/ActionButton";
 import Logo from "../../../system/molecules/Logo/Logo";
 import PasswordInput from "../../../system/molecules/Input/PasswordInput";
 import illustration from "../../../assets/illustration.webp"
+import { Modal } from "../../../system/molecules/Modal/Modal";
+import { useState } from "react";
+import { CancelButton } from "../../../system/molecules/Buttons/CustomizedButton";
+
+interface ResetPasswordFormProps {
+	email: string
+	setEmail: (e: string) => void
+	success: string
+	error: string
+}
+
+const ResetPasswordForm = ({ setEmail, success, error } : ResetPasswordFormProps) => {
+	return (
+		<Box direction="column" className="gap-3 items-center w-full">
+			<Input
+				id="email-reset"
+				type="email"
+				name="email-reset"
+				label="Adresse email"
+				className="w-full"
+				onChange={(e) => setEmail(e.target.value)}
+				required
+			/>
+			{success && <Info info={success}/>}
+			{error && <Info info={error} variant='error'/>}
+		</Box>
+	)
+}
 
 const Login = () => {
     const { handleSubmit, isPending, error } = useLogin();
 	const { authUser } = useAuth()
+	const [ open, setOpen ] = useState(false)
+	const [ emailReset, setEmailReset ] = useState('')
+	const { passwordMutation, successMessage, errorMessage } = useResetPassword(emailReset)
 
 	if (authUser) return <Navigate to="/" replace />;
 
@@ -24,6 +55,22 @@ const Login = () => {
 				fetchPriority="high"
 				className="absolute inset-0 -z-10 h-full w-full object-cover object-center"
 			/>
+			<Modal
+				isOpen={open}
+				closeModal={() => setOpen(false)}
+				title="Réinitialisation de mot de passe"
+				footer={
+					<Box>
+						<CancelButton text="Annuler" onClick={() => setOpen(false)}/>
+						<ActionButton
+							isLoading={passwordMutation.isPending}
+							onClick={() => passwordMutation.mutate()}
+						>Confirmer</ActionButton>
+					</Box>
+				}
+			>
+				<ResetPasswordForm email={emailReset} setEmail={setEmailReset} success={successMessage} error={errorMessage}/>
+			</Modal>
 			<Box className="w-full px-10">
 				<Box direction="column" className="bg-black/50 justify-center p-10 rounded-xl flex-1">
 					<h1 className="text-[50px] text-white font-bold">Bienvenue sur QST</h1>
@@ -53,7 +100,12 @@ const Login = () => {
 										className="w-full"
 										required
 									/>
-									<CustomText className="flex self-end text-[11px] cursor-pointer hover:text-primary" textTag="span" isItalic>Mot de passe oublié?</CustomText>
+									{/* <span
+										className="flex self-end text-[11px] cursor-pointer hover:text-primary"
+										onClick={() => setOpen(true)}
+									>
+										Mot de passe oublié?
+									</span> */}
 								</Box>
 								{ error && <Info info={error} variant="error"/>}
 								<ActionButton

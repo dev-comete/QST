@@ -1,37 +1,14 @@
-import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
 import Paper from "../../atoms/Container/Paper";
 import Box from "../../atoms/Container/Box";
 import CustomText from "../../atoms/Text/CustomText";
 import Button from "../../atoms/Button/Button";
-import apiClient from "../../../other/services/apiClient";
-import { useAuth } from "../../../other/hooks/auth/useAuth";
+import { useAuth, useResetPassword } from "../../../other/hooks/auth/useAuth";
 
 const PasswordResetRequestCard = () => {
     const { authUser } = useAuth();
-    const [successMessage, setSuccessMessage] = useState("");
-    const [errorMessage, setErrorMessage] = useState("");
+	const { errorMessage, successMessage, passwordMutation } = useResetPassword(authUser?.email ?? '')
 
-    const mutation = useMutation({
-        mutationFn: async () => {
-            const { data } = await apiClient.post("/accounts/auth/request-password-reset/", {
-                email: authUser?.email,
-            });
-            return data;
-        },
-        onSuccess: (data) => {
-            setSuccessMessage(
-                data.detail || "Votre demande de réinitialisation a été envoyée à l'administrateur avec succès."
-            );
-            setErrorMessage("");
-        },
-        onError: (error: any) => {
-            setErrorMessage(
-                error.response?.data?.detail || "Une erreur est survenue lors de la soumission de la demande."
-            );
-            setSuccessMessage("");
-        },
-    });
+	if (!authUser?.email) return null
 
     return (
         <Paper className="w-full p-6">
@@ -64,10 +41,10 @@ const PasswordResetRequestCard = () => {
                 <Box className="pt-2">
                     <Button
                         variant="outline"
-                        onClick={() => mutation.mutate()}
-                        disabled={mutation.isPending || !!successMessage}
+                        onClick={() => passwordMutation.mutate()}
+                        disabled={passwordMutation.isPending || !!successMessage}
                     >
-                        {mutation.isPending
+                        {passwordMutation.isPending
                             ? "Envoi de la demande..."
                             : "Demander une réinitialisation de mot de passe"}
                     </Button>
