@@ -251,6 +251,8 @@ EMAIL_HOST_USER = env('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = env('EMAIL_HOST_USER') # Optionnel: remplace 'noreply@comete.ai' par votre adresse Gmail
 
+PASSWORD_RESET_TIMEOUT = 60 * 60 * 24 * 30
+
 LOGGING = {
     "version": 1,
     "handlers": {"console": {"class": "logging.StreamHandler"}},
