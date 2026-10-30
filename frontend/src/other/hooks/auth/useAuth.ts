@@ -4,6 +4,7 @@ import { useNavigate } from "react-router";
 import type { Role, User } from "../../types/common";
 import { AuthService } from "../../services/auth/authService";
 import { TokenStorage } from "../../services/auth/storage";
+import apiClient from "../../services/apiClient";
 
 interface AuthContextType {
 	authUser: User | null;
@@ -94,9 +95,38 @@ const useLogout = () => {
     };
 };
 
+const useResetPassword = (email: string) => {
+	const [successMessage, setSuccessMessage] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
+
+    const passwordMutation = useMutation({
+        mutationFn: async () => {
+            const { data } = await apiClient.post("/accounts/auth/request-password-reset/", {
+                email,
+            });
+            return data;
+        },
+        onSuccess: (data) => {
+            setSuccessMessage(
+                data.detail || "Votre demande de réinitialisation a été envoyée à l'administrateur avec succès."
+            );
+            setErrorMessage("");
+        },
+        onError: (error: any) => {
+            setErrorMessage(
+                error.response?.data?.detail || "Une erreur est survenue lors de la soumission de la demande."
+            );
+            setSuccessMessage("");
+        },
+    });
+
+	return { successMessage, errorMessage, passwordMutation }
+}
+
 export {
 	AuthContext,
 	useAuth,
 	useLogin,
-	useLogout
+	useLogout,
+	useResetPassword,
 }
