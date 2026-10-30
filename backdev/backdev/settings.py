@@ -253,6 +253,8 @@ DEFAULT_FROM_EMAIL = env('EMAIL_HOST_USER') # Optionnel: remplace 'noreply@comet
 
 PASSWORD_RESET_TIMEOUT = 60 * 60 * 24 * 30
 
+EMAIL_LOGO_URL= 'https://crm01.comete.ai/custom/coprodV1/scripts/assets/Coprod/commete.jpg'
+
 LOGGING = {
     "version": 1,
     "handlers": {"console": {"class": "logging.StreamHandler"}},

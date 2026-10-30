@@ -50,7 +50,7 @@ def _html_body(user, link, days):
     name = escape(user.username)
     logo_url = getattr(settings, 'EMAIL_LOGO_URL', None)  # public https URL of the Comete.ai logo
     if logo_url:
-        logo = f'<img src="{escape(logo_url)}" alt="Comete.ai" height="36" style="display:block;border:0;">'
+        logo = f'<img src="{escape(logo_url)}" alt="Comete.ai" height="42" style="display:block;border:0;">'
     else:
         logo = (f'<span style="font-size:28px;font-weight:800;color:{NAVY};letter-spacing:-0.5px;">Comete</span>'
                 f'<span style="font-size:20px;font-weight:700;color:{BLUE};">.ai</span>')
