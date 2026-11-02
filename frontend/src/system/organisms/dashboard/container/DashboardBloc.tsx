@@ -11,7 +11,7 @@ interface DashboardBlocProps <T>{
 
 const DashboardBloc = <T,>({ title, data, Item, emptyText } : DashboardBlocProps<T>) => {
 	return (
-		<Paper className="flex flex-col gap-3 p-5 flex-1 min-w-0 items-center">
+		<Paper className="flex flex-col gap-3 p-5 min-w-0 flex-1 items-center">
 			<CustomText weight="bold" textTag="h2" color="primary">{title}</CustomText>
 			{
 				data.length == 0 

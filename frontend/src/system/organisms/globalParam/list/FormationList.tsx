@@ -47,7 +47,7 @@ const getFormationTabColumn = (
 		key: "nom_formation"
 	},
 	{
-		header: 'Créateur',
+		header: 'Créé par',
 		key: "createur",
 		render: (value) => {
 			const role = listUser.find((t) => t.id === value)
