@@ -1,112 +1,191 @@
 # ia/services.py
+"""
+Distractor generation + legacy raw-text parsing, with provider fallback.
+
+Providers are tried in order; the next one is used when the previous one fails
+(rate limit, outage, missing key, invalid JSON...).
+
+Settings (all optional):
+    IA_LLM_PROVIDERS = ("gemini", "ollama")   # ("ollama",) = local only, ("gemini",) = Gemini only
+    GEMINI_API_KEY, GEMINI_MODEL
+    OLLAMA_BASE_URL  = "http://localhost:11434"   (replaces the old OLLAMA_API_URL)
+    OLLAMA_MODEL     = "llama3.2"
+    OLLAMA_NUM_CTX   = 8192      # Ollama's default (2048) silently cuts long prompts
+    OLLAMA_TIMEOUT   = 60
+"""
 import json
-from google import genai
-from google.genai import types
+import logging
+
+import requests
 from django.conf import settings
 
 from .prompts.prompt_distractor import DISTRACTOR_PROMPT
 from .prompts.prompt_import import IMPORT_TEXT_PROMPT
 
-client = genai.Client(api_key=settings.GEMINI_API_KEY, http_options=types.HttpOptions(
-        retry_options=types.HttpRetryOptions(
-            attempts=5,
-            initial_delay=1.0,
-            max_delay=20.0,
-            exp_base=2,
-            http_status_codes=[429, 500, 502, 503, 504],
-        )
-    ),)
-model = 'gemini-3.6-flash'
+logger = logging.getLogger(__name__)
 
-def tester_connexion_gemini():
-    try:
-        # On tente avec le modèle standard actuel
-        response = client.models.generate_content(
-            model=model, 
-            contents="Réponds par 'OK' si tu me reçois 5/5."
+_client = None
+
+
+# ---------------------------------------------------------------------------
+# Settings (read at call time, so they can be overridden in tests)
+# ---------------------------------------------------------------------------
+def _providers() -> tuple:
+    return tuple(getattr(settings, "IA_LLM_PROVIDERS", ("gemini", "ollama")))
+
+
+def _ollama_url() -> str:
+    base = getattr(settings, "OLLAMA_BASE_URL", "http://localhost:11434").rstrip("/")
+    for suffix in ("/api/generate", "/api/chat"):   # tolerate a base URL that already has the path
+        if base.endswith(suffix):
+            base = base[: -len(suffix)]
+    return f"{base}/api/generate"
+
+
+# ---------------------------------------------------------------------------
+# Providers: each takes a prompt and returns the raw text of the answer
+# ---------------------------------------------------------------------------
+def _get_gemini_client():
+    """Created on first use: a missing key no longer breaks the import of this module."""
+    global _client
+    if _client is None:
+        from google import genai
+        from google.genai import types
+
+        api_key = getattr(settings, "GEMINI_API_KEY", "")
+        if not api_key:
+            raise RuntimeError("GEMINI_API_KEY is not set")
+        _client = genai.Client(
+            api_key=api_key,
+            http_options=types.HttpOptions(
+                retry_options=types.HttpRetryOptions(
+                    attempts=3,             # was 5: fail over to Ollama faster (~3s of waiting)
+                    initial_delay=1.0,
+                    max_delay=20.0,
+                    exp_base=2,
+                    http_status_codes=[429, 500, 502, 503, 504],
+                )
+            ),
         )
-        return response.text.strip()
-        
-    except Exception as e:
-        # Si le modèle n'est pas trouvé, on demande à Google la liste des modèles autorisés
+    return _client
+
+
+def _gemini_text(prompt: str, *, json_mode: bool = True, timeout: int = 0) -> str:
+    from google.genai import types
+
+    config = types.GenerateContentConfig(
+        response_mime_type="application/json" if json_mode else "text/plain",
+        temperature=0,
+    )
+    response = _get_gemini_client().models.generate_content(
+        model=getattr(settings, "GEMINI_MODEL", "gemini-3.6-flash"),
+        contents=prompt,
+        config=config,
+    )
+    return (response.text or "").strip()
+
+
+def _ollama_text(prompt: str, *, json_mode: bool = True, timeout: int = 0) -> str:
+    payload = {
+        "model": getattr(settings, "OLLAMA_MODEL", "llama3.2"),
+        "prompt": prompt,
+        "stream": False,
+        "options": {
+            "temperature": 0,
+            "num_ctx": getattr(settings, "OLLAMA_NUM_CTX", 8192),
+        },
+    }
+    if json_mode:
+        payload["format"] = "json"
+    response = requests.post(
+        _ollama_url(),
+        json=payload,
+        timeout=timeout or getattr(settings, "OLLAMA_TIMEOUT", 60),
+    )
+    response.raise_for_status()
+    return (response.json().get("response") or "").strip()
+
+
+_PROVIDER_FUNCS = {"gemini": _gemini_text, "ollama": _ollama_text}
+
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+def _strip_markdown_fences(text: str) -> str:
+    text = text.strip()
+    if text.startswith("```json"):
+        text = text[7:]
+    elif text.startswith("```"):
+        text = text[3:]
+    if text.endswith("```"):
+        text = text[:-3]
+    return text.strip()
+
+
+def _ask_json(prompt: str):
+    """Try each provider until one returns valid JSON. Returns the parsed JSON."""
+    errors: list[Exception] = []
+
+    for name in _providers():
+        func = _PROVIDER_FUNCS.get(name)
+        if func is None:
+            logger.error("unknown provider %r in IA_LLM_PROVIDERS", name)
+            continue
         try:
-            modeles_disponibles = []
-            # On liste les modèles disponibles via l'API
-            for m in client.models.list():
-                # On filtre ceux qui font de la génération de texte
-                if 'generateContent' in m.supported_generation_methods:
-                    modeles_disponibles.append(m.name)
-            
-            return f"Modèle introuvable. Voici les modèles exacts que vous pouvez utiliser : {', '.join(modeles_disponibles)}"
-        except Exception:
-            return f"Erreur détaillée : {str(e)}"
+            raw = func(prompt, json_mode=True)
+            return json.loads(_strip_markdown_fences(raw))
+        except Exception as exc:                      # includes JSONDecodeError, network, quota...
+            logger.warning("provider %s failed: %r", name, exc)
+            errors.append(exc)
+
+    first = errors[0] if errors else RuntimeError("no provider configured")
+    if isinstance(first, json.JSONDecodeError):
+        raise ValueError("Le format renvoyé par l'IA n'est pas valide.")
+    raise Exception(f"Erreur de l'API IA : {first}")
+
+
+def _unwrap_list(data, *, allow_str_values: bool = False) -> list:
+    """
+    The AI may answer [...] or {"questions": [...]} (Ollama's format=json always returns an object).
+    allow_str_values: {"a": "x", "b": "y"} -> ["x", "y"] (distractors).
+    """
+    if isinstance(data, list):
+        return data
+    if isinstance(data, dict):
+        for value in data.values():
+            if isinstance(value, list):
+                return value
+        if allow_str_values and data and all(isinstance(v, str) for v in data.values()):
+            return list(data.values())
+        return [data]
+    return []
+
+
+# ---------------------------------------------------------------------------
+# Public API (names unchanged)
+# ---------------------------------------------------------------------------
+def tester_connexion_gemini():
+    """Kept under this name for your URLs. Tests every configured provider."""
+    results = []
+    for name in _providers():
+        func = _PROVIDER_FUNCS.get(name)
+        if func is None:
+            results.append(f"{name}: provider inconnu")
+            continue
+        try:
+            answer = func("Réponds simplement 'OK' si tu m'entends.", json_mode=False, timeout=10)
+            results.append(f"{name}: {answer[:40] or 'réponse vide'}")
+        except Exception as exc:
+            results.append(f"{name}: ERREUR ({exc})")
+    return " | ".join(results)
+
 
 def generer_distracteurs_qcm(enonce: str, bonne_reponse: str) -> list:
     prompt = DISTRACTOR_PROMPT.format(enonce=enonce, bonne_reponse=bonne_reponse)
-    
-    try:
-        response = client.models.generate_content(
-            model=model,
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                response_mime_type="application/json",
-            ),
-        )
-        
-        distracteurs = json.loads(response.text)
-        return distracteurs
-        
-    except json.JSONDecodeError:
-        # On lève une erreur claire au lieu de renvoyer un faux tableau
-        raise ValueError("Le format renvoyé par l'IA n'est pas valide.")
-    except Exception as e:
-        # On fait remonter l'erreur 503 de Google
-        raise Exception(f"Erreur de l'API IA : {str(e)}")
+    return _unwrap_list(_ask_json(prompt), allow_str_values=True)
+
 
 def parser_questions_brutes(raw_text: str) -> list:
     prompt = IMPORT_TEXT_PROMPT.replace("{raw_text}", raw_text)
-    
-    try:
-        response = client.models.generate_content(
-            model=model, 
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                response_mime_type="application/json",
-            ),
-        )
-        
-        # 🌟 1. NETTOYAGE : On retire les balises Markdown si Gemini en a généré
-        texte_ia = response.text.strip()
-        if texte_ia.startswith('```json'):
-            texte_ia = texte_ia[7:]
-        elif texte_ia.startswith('```'):
-            texte_ia = texte_ia[3:]
-            
-        if texte_ia.endswith('```'):
-            texte_ia = texte_ia[:-3]
-            
-        texte_ia = texte_ia.strip()
-        
-        # 🌟 2. PARSING
-        questions_extraites = json.loads(texte_ia)
-        
-        # 🌟 3. SÉCURITÉ : Gemini peut parfois renvoyer un objet {"questions": [...]} au lieu d'un tableau direct
-        if isinstance(questions_extraites, dict):
-            # Si c'est un dictionnaire, on essaie de trouver la liste dedans
-            for key in questions_extraites.keys():
-                if isinstance(questions_extraites[key], list):
-                    return questions_extraites[key]
-            return [questions_extraites] # Fallback
-            
-        if not isinstance(questions_extraites, list):
-            return []
-
-        return questions_extraites
-        
-    except json.JSONDecodeError as e:
-        # Affichage debug dans votre terminal
-        print("--- ERREUR DE LECTURE JSON ---")
-        print(response.text if hasattr(response, 'text') else "Aucun texte")
-        raise ValueError("Le format renvoyé par l'IA n'est pas un JSON valide.")
-    except Exception as e:
-        raise Exception(f"Erreur de l'API IA : {str(e)}")
+    return _unwrap_list(_ask_json(prompt))
