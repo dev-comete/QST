@@ -233,3 +233,26 @@ class PublicPasswordResetRequestView(APIView):
             {'detail': "Votre demande a été envoyée aux administrateurs. Vous recevrez un nouveau lien par e-mail une fois validée."}, 
             status=status.HTTP_201_CREATED
         )
+
+class VerifyPasswordResetTokenAPIView(APIView):
+    """
+    Vérifie simplement si le couple uid/token est toujours valide 
+    sans modifier le mot de passe.
+    """
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        uidb64 = request.data.get('uid')
+        token = request.data.get('token')
+
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            return Response({"error": "Ce lien d'activation est invalide."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # check_token ne consomme pas le token, il fait juste le vérifier mathématiquement
+        if user is not None and default_token_generator.check_token(user, token):
+            return Response({"detail": "Lien valide."}, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Ce lien d'activation a expiré."}, status=status.HTTP_400_BAD_REQUEST)

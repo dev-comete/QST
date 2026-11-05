@@ -1,4 +1,4 @@
-import React, { useState } from 'react'; 
+import React, { useEffect, useState } from 'react'; 
 import { useNavigate, useParams } from 'react-router';
 import { UserService } from '../../../other/services/userService';
 import Logo from '../../../system/molecules/Logo/Logo';
@@ -10,7 +10,6 @@ import ActionButton from '../../../system/molecules/Buttons/ActionButton';
 import Info from '../../../system/atoms/Form/Info';
 import CustomText from '../../../system/atoms/Text/CustomText';
 
-
 export default function SetPasswordPage() {
     const { uid, token } = useParams();
     const navigate = useNavigate();
@@ -19,20 +18,46 @@ export default function SetPasswordPage() {
     const [passwords, setPasswords] = useState({ new_password: '', confirm_password: '' });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-
+    
+    // État de chargement initial pour la vérification du lien
+    const [isCheckingLink, setIsCheckingLink] = useState(true);
     const [isLinkExpired, setIsLinkExpired] = useState(false);
+    
     const [email, setEmail] = useState('');
     const [newLinkRequested, setNewLinkRequested] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
 
+    // VÉRIFICATION DÈS LE CHARGEMENT DE LA PAGE
+    useEffect(() => {
+        if (!uid || !token) return;
+
+        let isMounted = true;
+
+        const validateLink = async () => {
+            try {
+                await UserService.validatePasswordResetLink({ uid, token });
+                if (isMounted) setIsLinkExpired(false);
+            } catch (err: any) {
+                if (isMounted) {
+                    setIsLinkExpired(true);
+                    setError(err.response?.data?.error || "Ce lien est invalide ou a expiré.");
+                }
+            } finally {
+                if (isMounted) setIsCheckingLink(false);
+            }
+        };
+
+        validateLink();
+
+        return () => { isMounted = false; };
+    }, [uid, token]);
+
     if (authUser) return <Unauthorized />;
 
-    // Typage de l'événement HTMLInputElement
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPasswords({ ...passwords, [e.target.name]: e.target.value });
     };
 
-    // Typage de l'événement HTMLFormElement
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setError('');
@@ -51,10 +76,10 @@ export default function SetPasswordPage() {
                 });
             }
             navigate('/login');
-        } catch (err: any) { // Typage en any pour lire err.response
+        } catch (err: any) {
             if (err.response && err.response.status === 400) {
                 setIsLinkExpired(true);
-                setError(err.response.data.error || "Ce lien est invalide ou a expiré.");
+                setError(err.response.data?.error || "Ce lien est invalide ou a expiré.");
             } else {
                 setError("Une erreur est survenue lors de l'activation.");
             }
@@ -63,7 +88,6 @@ export default function SetPasswordPage() {
         }
     };
 
-    // Typage de l'événement HTMLFormElement
     const handleRequestNewLink = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true);
@@ -73,7 +97,7 @@ export default function SetPasswordPage() {
             const response = await UserService.requestNewPasswordLink({ email });
             setNewLinkRequested(true);
             setSuccessMessage(response.detail || "Votre demande a été envoyée.");
-        } catch (err: any) { // Typage en any pour lire err.response
+        } catch (err: any) {
             setError(err.response?.data?.detail || "Erreur lors de la demande. Veuillez réessayer.");
         } finally {
             setLoading(false);
@@ -87,6 +111,21 @@ export default function SetPasswordPage() {
         return true;
     };
 
+    // 1. ÉCRAN DE CHARGEMENT INITIAL (pendant qu'on vérifie le lien)
+    if (isCheckingLink) {
+        return (
+            <div className="flex w-full items-center justify-center h-[100vh] bg-background">
+                <div className="flex flex-col w-1/2 m-auto space-y-5 bg-white rounded-xl p-5 text-center">
+                    <Logo />
+                    <CustomText className='uppercase mt-4' weight='bold' textTag='h3' color='primary'>
+                        Vérification de votre lien...
+                    </CustomText>
+                </div>
+            </div>
+        );
+    }
+
+    // 2. ÉCRAN DE SUCCÈS APRÈS DEMANDE DE NOUVEAU LIEN
     if (newLinkRequested) {
         return (
             <div className="flex w-full items-center justify-center h-[100vh] bg-background">
@@ -95,7 +134,6 @@ export default function SetPasswordPage() {
                     <CustomText className='uppercase' weight='bold' textTag='h3' color='primary'>
                         Demande envoyée
                     </CustomText>
-                    {/* Remplacement de variant="success" par "info" car "success" n'est pas supporté par InfoProps */}
                     <Info info={successMessage} variant="info" />
                     <ActionButton onClick={() => navigate('/login')} className="mt-4">
                         Retour à la connexion
@@ -105,6 +143,7 @@ export default function SetPasswordPage() {
         );
     }
 
+    // 3. ÉCRAN PRINCIPAL (Lien expiré OU Formulaire normal)
     return (
         <div className="flex w-full items-center justify-center h-[100vh] bg-background">
             <div className="flex flex-col w-1/2 m-auto space-y-5 bg-white rounded-xl p-5">          
