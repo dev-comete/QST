@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { UserService } from "../../services/userService"
 import { useEffect, useState } from "react"
 import type { userPayload, UserTypePayload } from "../../types/userType"
+import { TokenStorage } from "../../services/auth/storage";
 
 export interface UseUserProps {
 	role?: string;
@@ -82,10 +83,12 @@ export interface UseUserProps {
 }
 
 export const useUser = ({ role, id } : UseUserProps) => {
+	const token = TokenStorage.getAccessToken();
 
 	const getUserQuery = useQuery({
 		queryKey: ['users_list', role ?? 'all'],
 		queryFn: () => UserService.list(role ? { role } : undefined),
+		enabled: !!token,
 	});
 
 	const userInfoQuery = useQuery({
