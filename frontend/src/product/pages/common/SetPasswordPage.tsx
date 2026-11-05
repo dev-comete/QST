@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react'; 
 import { useNavigate, useParams } from 'react-router';
 import { UserService } from '../../../other/services/userService';
 import Logo from '../../../system/molecules/Logo/Logo';
@@ -10,104 +10,176 @@ import ActionButton from '../../../system/molecules/Buttons/ActionButton';
 import Info from '../../../system/atoms/Form/Info';
 import CustomText from '../../../system/atoms/Text/CustomText';
 
+
 export default function SetPasswordPage() {
-	const { uid, token } = useParams();
-	const navigate = useNavigate();
-	const { authUser } = useAuth()
+    const { uid, token } = useParams();
+    const navigate = useNavigate();
+    const { authUser } = useAuth();
 
-	const [passwords, setPasswords] = useState({ new_password: '', confirm_password: '' });
-	const [error, setError] = useState('');
-	const [loading, setLoading] = useState(false);
+    const [passwords, setPasswords] = useState({ new_password: '', confirm_password: '' });
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
-	if (authUser) return <Unauthorized />
+    const [isLinkExpired, setIsLinkExpired] = useState(false);
+    const [email, setEmail] = useState('');
+    const [newLinkRequested, setNewLinkRequested] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
 
-	const handleChange = (e : any) => {
-		setPasswords({ ...passwords, [e.target.name]: e.target.value });
-	};
+    if (authUser) return <Unauthorized />;
 
-	const handleSubmit = async (e : any) => {
-		e.preventDefault();
-		setError('');
+    // Typage de l'événement HTMLInputElement
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setPasswords({ ...passwords, [e.target.name]: e.target.value });
+    };
 
-		if (passwords.new_password !== passwords.confirm_password) {
-			return setError("Les mots de passe ne correspondent pas.");
-		}
+    // Typage de l'événement HTMLFormElement
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setError('');
 
-		setLoading(true);
-		try {
-			// Appel à votre endpoint Django qui valide l'UID, le Token et sauvegarde le MDP
-			if (uid && token) {
-				await UserService.confirmPasswordReset({
-					uid,
-					token,
-					new_password: passwords.new_password
-				});
-			}
-			
-		//   notify({ type: 'success', message: 'Votre compte est activé ! Vous pouvez vous connecter.' });
-			navigate('/login');
-		} catch (err) {
-			setError("Le lien est invalide ou a expiré.");
-		} finally {
-			setLoading(false);
-		}
-	};
+        if (passwords.new_password !== passwords.confirm_password) {
+            return setError("Les mots de passe ne correspondent pas.");
+        }
 
-	const checkPasswordValidation = () => {
-		if (!passwords.new_password || !passwords.confirm_password)
-			return false
-		if (passwords.new_password.length < 8 || passwords.confirm_password.length < 8)
-			return false
-		if (passwords.new_password != passwords.confirm_password)
-			return false
-		return true
-	}
+        setLoading(true);
+        try {
+            if (uid && token) {
+                await UserService.confirmPasswordReset({
+                    uid,
+                    token,
+                    new_password: passwords.new_password
+                });
+            }
+            navigate('/login');
+        } catch (err: any) { // Typage en any pour lire err.response
+            if (err.response && err.response.status === 400) {
+                setIsLinkExpired(true);
+                setError(err.response.data.error || "Ce lien est invalide ou a expiré.");
+            } else {
+                setError("Une erreur est survenue lors de l'activation.");
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
 
-	return (
-	<div className="flex w-full items-center justify-center h-[100vh] bg-background">
-		<div className="flex flex-col w-1/2 m-auto space-y-5 bg-white rounded-xl p-5">			
-			<div className="flex flex-col items-center gap-5 w-full">
-				<Logo />
-				<CustomText className='uppercase' weight='bold' textTag='h3' color='primary'>Activez votre compte</CustomText>
-				<CustomText isItalic>Veuillez créez votre mot de passe. Il doit contenir au moins 8 caractères. </CustomText>
-				<div>
-					{ error && <Info info={error} variant="error"/>}
-				</div>
-				<form onSubmit={handleSubmit}>
-					<Box direction='column' className='gap-5 items-center'>
-						<PasswordInput
-							id="new_password"
-							name="new_password"
-							type="password"
-							label="Nouveau mot de passe"
-							className="w-full"
-							required
-							onChange={handleChange}
-							value={passwords.new_password}
-							min={8}
-						/>
-						<PasswordInput
-							id="confirm_password"
-							name="confirm_password"
-							type="password"
-							label="Confirmation du mot de passe"
-							className="w-full"
-							required
-							onChange={handleChange}
-							value={passwords.confirm_password}
-							min={8}
-						/>
-						<ActionButton
-							type='submit'
-							isLoading={loading}
-							disabled={checkPasswordValidation() == false}
-						>
-							Valider et me connecter
-						</ActionButton>
-					</Box>
-				</form>
-			</div>
-		</div>
-	</div>
-	);
+    // Typage de l'événement HTMLFormElement
+    const handleRequestNewLink = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setLoading(true);
+        setError('');
+
+        try {
+            const response = await UserService.requestNewPasswordLink({ email });
+            setNewLinkRequested(true);
+            setSuccessMessage(response.detail || "Votre demande a été envoyée.");
+        } catch (err: any) { // Typage en any pour lire err.response
+            setError(err.response?.data?.detail || "Erreur lors de la demande. Veuillez réessayer.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const checkPasswordValidation = () => {
+        if (!passwords.new_password || !passwords.confirm_password) return false;
+        if (passwords.new_password.length < 8 || passwords.confirm_password.length < 8) return false;
+        if (passwords.new_password !== passwords.confirm_password) return false;
+        return true;
+    };
+
+    if (newLinkRequested) {
+        return (
+            <div className="flex w-full items-center justify-center h-[100vh] bg-background">
+                <div className="flex flex-col w-1/2 m-auto space-y-5 bg-white rounded-xl p-5 text-center">          
+                    <Logo />
+                    <CustomText className='uppercase' weight='bold' textTag='h3' color='primary'>
+                        Demande envoyée
+                    </CustomText>
+                    {/* Remplacement de variant="success" par "info" car "success" n'est pas supporté par InfoProps */}
+                    <Info info={successMessage} variant="info" />
+                    <ActionButton onClick={() => navigate('/login')} className="mt-4">
+                        Retour à la connexion
+                    </ActionButton>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="flex w-full items-center justify-center h-[100vh] bg-background">
+            <div className="flex flex-col w-1/2 m-auto space-y-5 bg-white rounded-xl p-5">          
+                <div className="flex flex-col items-center gap-5 w-full">
+                    <Logo />
+                    
+                    <CustomText className='uppercase text-center' weight='bold' textTag='h3' color='primary'>
+                        {isLinkExpired ? "Lien expiré" : "Activez votre compte"}
+                    </CustomText>
+                    
+                    <CustomText isItalic className="text-center">
+                        {isLinkExpired 
+                            ? "Ce lien d'activation n'est plus valide. Entrez votre adresse e-mail pour en demander un nouveau." 
+                            : "Veuillez créer votre mot de passe. Il doit contenir au moins 8 caractères."
+                        }
+                    </CustomText>
+                    
+                    <div className="w-full">
+                        {error && <Info info={error} variant="error"/>}
+                    </div>
+
+                    {isLinkExpired ? (
+                        <form onSubmit={handleRequestNewLink} className="w-full">
+                            <Box direction='column' className='gap-5 items-center'>
+                                <input
+                                    type="email"
+                                    name="email"
+                                    placeholder="Votre adresse e-mail"
+                                    className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                                    required
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                />
+                                <ActionButton type='submit' isLoading={loading} disabled={!email}>
+                                    Demander un nouveau lien
+                                </ActionButton>
+                            </Box>
+                        </form>
+                    ) : (
+                        <form onSubmit={handleSubmit} className="w-full">
+                            <Box direction='column' className='gap-5 items-center w-full'>
+                                <PasswordInput
+                                    id="new_password"
+                                    name="new_password"
+                                    type="password"
+                                    label="Nouveau mot de passe"
+                                    className="w-full"
+                                    required
+                                    onChange={handleChange}
+                                    value={passwords.new_password}
+                                    min={8}
+                                />
+                                <PasswordInput
+                                    id="confirm_password"
+                                    name="confirm_password"
+                                    type="password"
+                                    label="Confirmation du mot de passe"
+                                    className="w-full"
+                                    required
+                                    onChange={handleChange}
+                                    value={passwords.confirm_password}
+                                    min={8}
+                                />
+                                <ActionButton
+                                    type='submit'
+                                    isLoading={loading}
+                                    disabled={checkPasswordValidation() === false}
+                                >
+                                    Valider et me connecter
+                                </ActionButton>
+                            </Box>
+                        </form>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
 }

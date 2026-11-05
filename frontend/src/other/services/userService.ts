@@ -80,5 +80,11 @@ export const UserService = {
 		});
 		
 		return response.data;
-	}
+	},
+	requestNewPasswordLink : async ({ email } : { email: string }) => {
+    const response = await apiClient.post('/accounts/auth/public-request-password-reset/', {
+        email
+    });
+    return response.data;
+}
 }
