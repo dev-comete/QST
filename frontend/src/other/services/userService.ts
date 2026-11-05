@@ -86,5 +86,12 @@ export const UserService = {
         email
     });
     return response.data;
-}
+	},
+	validatePasswordResetLink: async ({ uid, token } : { uid : string, token: string }) => {
+	const response = await apiClient.post('/accounts/auth/verify-reset-token/', {
+		uid,
+		token
+	});
+	return response.data;
+	}
 }
