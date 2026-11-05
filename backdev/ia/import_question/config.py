@@ -4,10 +4,21 @@ Single place for every tunable value.
 Override any of them in Django settings with the QUESTION_IMPORT_ prefix, e.g.
     QUESTION_IMPORT_MAX_FILE_BYTES = 10 * 1024 * 1024
 
-Required in settings:
+Required in settings (if Gemini is used):
     GEMINI_API_KEY
 Optional:
     GEMINI_MODEL   (default below)
+
+AI providers (tried in order, next one used if the previous fails):
+    QUESTION_IMPORT_LLM_PROVIDERS = ("gemini", "ollama", "manual")  # default: Gemini, then Ollama,
+                                                                    # then the rule-based parser
+    QUESTION_IMPORT_LLM_PROVIDERS = ("gemini", "ollama")   # without the rule-based parser
+    QUESTION_IMPORT_LLM_PROVIDERS = ("ollama",)            # local only
+    QUESTION_IMPORT_LLM_PROVIDERS = ("gemini",)            # old behaviour
+
+Ollama (all optional):
+    OLLAMA_BASE_URL, OLLAMA_MODEL,
+    QUESTION_IMPORT_OLLAMA_NUM_CTX / _NUM_PREDICT / _TIMEOUT / _MAX_INPUT_CHARS
 """
 from dataclasses import dataclass
 
@@ -25,6 +36,22 @@ class Config:
     gemini_model: str
     max_output_tokens: int
     llm_attempts: int
+    llm_providers: tuple[str, ...]
+    ollama_base_url: str
+    ollama_model: str
+    ollama_num_ctx: int
+    ollama_num_predict: int
+    ollama_timeout: int
+    ollama_max_input_chars: int
+
+
+def _clean_ollama_base(url: str) -> str:
+    """Accept 'http://host:11434' as well as 'http://host:11434/api/generate'."""
+    url = url.rstrip("/")
+    for suffix in ("/api/generate", "/api/chat"):
+        if url.endswith(suffix):
+            url = url[: -len(suffix)]
+    return url
 
 
 def conf() -> Config:
@@ -41,4 +68,12 @@ def conf() -> Config:
         gemini_model=getattr(settings, "GEMINI_MODEL", "gemini-3.6-flash"),
         max_output_tokens=get("MAX_OUTPUT_TOKENS", 32_768),
         llm_attempts=get("LLM_ATTEMPTS", 3),
+        llm_providers=tuple(get("LLM_PROVIDERS", ("gemini", "ollama", "manual"))),
+        ollama_base_url=_clean_ollama_base(getattr(settings, "OLLAMA_BASE_URL", "http://localhost:11434")),
+        ollama_model=getattr(settings, "OLLAMA_MODEL", "llama3.2"),
+        # input + output must fit in num_ctx (~3 chars per token in French)
+        ollama_num_ctx=get("OLLAMA_NUM_CTX", 8192),
+        ollama_num_predict=get("OLLAMA_NUM_PREDICT", 4096),
+        ollama_timeout=get("OLLAMA_TIMEOUT", 180),
+        ollama_max_input_chars=get("OLLAMA_MAX_INPUT_CHARS", 12_000),
     )

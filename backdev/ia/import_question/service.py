@@ -13,7 +13,7 @@ import time
 from django.core.cache import cache
 
 from .config import conf
-from .llm import extract_questions
+from .llm import extract_questions_with_source
 from .normalizer import normalize
 from .readers import read_raw_text, read_upload
 from .schemas import AIExtraction, NormalizationResult, SourceDocument
@@ -23,14 +23,19 @@ logger = logging.getLogger(__name__)
 
 def _extract_with_cache(document: SourceDocument) -> AIExtraction:
     """Same file/text twice -> no second (paid) AI call."""
-    key = f"question_import:v2{document.fingerprint()}"
+    key = f"question_import:v2:{document.fingerprint()}"
     cached = cache.get(key)
     if cached is not None:
         logger.info("cache hit %s", key)
         return AIExtraction.model_validate(cached)
 
-    extraction = extract_questions(document)
-    cache.set(key, extraction.model_dump(), conf().cache_ttl_seconds)
+    extraction, is_fallback = extract_questions_with_source(document)
+    if is_fallback:
+        # Answer of a backup provider (local model / manual parser): usually lower quality,
+        # so do not keep it for an hour while the main provider may be back in a minute.
+        logger.info("fallback result not cached")
+    else:
+        cache.set(key, extraction.model_dump(), conf().cache_ttl_seconds)
     return extraction
 
 
