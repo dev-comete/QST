@@ -16,6 +16,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from quizzes.permissions import IsAdminUser
+from .invitation_email import send_invitation_email
 from .models import PasswordResetRequest
 from .serializers_auth import (
     CustomLoginSerializer,
@@ -156,30 +157,15 @@ class AdminPasswordResetViewSet(viewsets.ModelViewSet):
         if not user:
             return Response({'detail': 'Utilisateur introuvable pour cette demande.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # 1. Création du Token sécurisé
-        uid = urlsafe_base64_encode(force_bytes(user.pk))
-        token = default_token_generator.make_token(user)
+        # Envoi asynchrone du mail standardisé de réinitialisation de mot de passe
+        threading.Thread(
+            target=send_invitation_email,
+            args=(user,),
+            kwargs={'is_reset': True},
+            daemon=True,
+        ).start()
 
-        frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:5173')
-        reset_link = f"{frontend_url}/set-password/{uid}/{token}"
-
-        # 2. Préparation de l'e-mail
-        subject = "Réinitialisation de votre mot de passe QST"
-        message = (
-            f"Bonjour {user.username},\n\n"
-            f"Votre demande de réinitialisation de mot de passe a été approuvée par un administrateur.\n"
-            f"Veuillez cliquer sur le lien ci-dessous pour choisir un nouveau mot de passe :\n\n"
-            f"{reset_link}\n\n"
-            f"Si vous n'avez pas fait cette demande, veuillez contacter un administrateur immédiatement.\n\n"
-            f"À bientôt !"
-        )
-        
-        from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', getattr(settings, 'EMAIL_HOST_USER', 'noreply@comete.ai'))
-
-        # Envoi asynchrone pour une réponse HTTP immédiate côté Admin
-        EmailThread(subject, message, from_email, [user.email]).start()
-
-        # 3. Clôture de la requête en base de données
+        # Clôture de la requête en base de données
         reset_req.status = 'approved'
         reset_req.resolved_at = timezone.now()
         reset_req.resolved_by = request.user
@@ -202,3 +188,48 @@ class AdminPasswordResetViewSet(viewsets.ModelViewSet):
         reset_req.save()
 
         return Response({'detail': 'Demande rejetée avec succès.'}, status=status.HTTP_200_OK)
+
+class PublicPasswordResetRequestView(APIView):
+    """
+    Point d'entrée public pour demander un nouveau lien de réinitialisation.
+    Utilisé lorsqu'un lien a expiré et que l'utilisateur n'est pas connecté.
+    """
+    permission_classes = [AllowAny] # Doit être accessible sans token !
+
+    def post(self, request):
+        email = request.data.get('email')
+        
+        if not email:
+            return Response({'detail': "L'adresse email est requise."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # On cherche l'utilisateur par son email
+        user = User.objects.filter(email=email).first()
+        
+        # Sécurité : On ne révèle pas si l'email existe ou non pour éviter le "user enumeration"
+        if not user:
+            return Response(
+                {'detail': "Si cette adresse existe dans notre système, une nouvelle demande a été envoyée aux administrateurs."}, 
+                status=status.HTTP_200_OK
+            )
+
+        # Les administrateurs ne doivent pas utiliser ce flux
+        if user.is_staff or user.is_superuser or (user.type_utilisateur and user.type_utilisateur.type_utilisateur == 'admin'):
+             return Response(
+                 {'detail': "Si cette adresse existe dans notre système, une nouvelle demande a été envoyée aux administrateurs."}, 
+                 status=status.HTTP_200_OK
+             )
+
+        # On vérifie s'il y a déjà une demande en attente pour éviter le spam
+        if PasswordResetRequest.objects.filter(user=user, status='pending').exists():
+            return Response(
+                {'detail': 'Une demande de réinitialisation est déjà en attente de validation pour ce compte.'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # On crée la demande qui apparaîtra dans le dashboard admin
+        PasswordResetRequest.objects.create(user=user)
+        
+        return Response(
+            {'detail': "Votre demande a été envoyée aux administrateurs. Vous recevrez un nouveau lien par e-mail une fois validée."}, 
+            status=status.HTTP_201_CREATED
+        )
