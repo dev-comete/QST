@@ -1,3 +1,4 @@
+# accounts/invitation_email.py
 from html import escape
 
 from django.conf import settings
@@ -25,15 +26,22 @@ def _validity_days():
 def build_invitation_link(user):
     uid = urlsafe_base64_encode(force_bytes(user.pk))
     token = default_token_generator.make_token(user)
-    frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:3000').rstrip('/')
+    frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:5173').rstrip('/')
     return f'{frontend_url}/set-password/{uid}/{token}'
 
 
-def _text_body(user, link, days):
+def _text_body(user, link, days, is_reset):
+    if is_reset:
+        intro = "Votre demande de réinitialisation de mot de passe a été approuvée."
+        action = "définir votre nouveau mot de passe"
+    else:
+        intro = "Votre compte sur la plateforme QST vient d'être créé."
+        action = "l'activer et définir votre mot de passe"
+
     return (
         f"Bonjour {user.username},\n\n"
-        f"Votre compte sur la plateforme QST vient d'être créé.\n"
-        f"Pour l'activer et définir votre mot de passe, cliquez sur le lien ci-dessous :\n\n"
+        f"{intro}\n"
+        f"Pour {action}, cliquez sur le lien ci-dessous :\n\n"
         f"{link}\n\n"
         f"Ce lien est valable {days} jours. Si vous n'êtes pas à l'origine de cette demande, "
         f"vous pouvez ignorer cet e-mail.\n\n"
@@ -46,7 +54,7 @@ def _text_body(user, link, days):
     )
 
 
-def _html_body(user, link, days):
+def _html_body(user, link, days, is_reset):
     name = escape(user.username)
     logo_url = getattr(settings, 'EMAIL_LOGO_URL', None)  # public https URL of the Comete.ai logo
     if logo_url:
@@ -54,6 +62,14 @@ def _html_body(user, link, days):
     else:
         logo = (f'<span style="font-size:28px;font-weight:800;color:{NAVY};letter-spacing:-0.5px;">Comete</span>'
                 f'<span style="font-size:20px;font-weight:700;color:{BLUE};">.ai</span>')
+
+    titre = f"Bonjour, {name}" if is_reset else f"Bienvenue, {name} 👋"
+    sous_titre = (
+        "Votre demande de <strong>réinitialisation de mot de passe</strong> a été approuvée." 
+        if is_reset else 
+        "Votre compte sur la plateforme <strong>QST</strong> vient d'être créé."
+    )
+    texte_bouton = "Réinitialiser mon mot de passe" if is_reset else "Activer mon compte"
 
     return f"""\
 <!DOCTYPE html>
@@ -67,18 +83,18 @@ def _html_body(user, link, days):
           <span style="color:#ffffff;font-size:18px;font-weight:600;">Plateforme QST</span>
         </td></tr>
         <tr><td style="padding:36px 32px 8px;">
-          <h1 style="margin:0 0 16px;font-size:22px;color:{NAVY};">Bienvenue, {name} 👋</h1>
+          <h1 style="margin:0 0 16px;font-size:22px;color:{NAVY};">{titre}</h1>
           <p style="margin:0 0 12px;font-size:15px;line-height:1.6;color:#2b3345;">
-            Votre compte sur la plateforme <strong>QST</strong> vient d'être créé.
+            {sous_titre}
           </p>
           <p style="margin:0 0 28px;font-size:15px;line-height:1.6;color:#2b3345;">
-            Pour l'activer, il vous suffit de définir votre mot de passe :
+            Pour continuer, il vous suffit de cliquer ci-dessous :
           </p>
           <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 28px;"><tr>
             <td style="background:{BLUE};border-radius:8px;">
               <a href="{escape(link)}"
                  style="display:inline-block;padding:14px 28px;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;">
-                Activer mon compte
+                {texte_bouton}
               </a>
             </td>
           </tr></table>
@@ -89,7 +105,7 @@ def _html_body(user, link, days):
             <a href="{escape(link)}" style="color:{BLUE};">{escape(link)}</a>
           </p>
           <p style="margin:0 0 8px;font-size:13px;color:{GREY};">
-            Vous n'êtes pas à l'origine de cette demande ? Vous pouvez simplement ignorer cet e-mail.
+            Si vous n'êtes pas à l'origine de cette demande, vous pouvez simplement ignorer cet e-mail.
           </p>
         </td></tr>
         <tr><td style="padding:0 32px;"><hr style="border:none;border-top:1px solid #e5e9f0;margin:16px 0;"></td></tr>
@@ -116,26 +132,18 @@ def _html_body(user, link, days):
 </html>"""
 
 
-def send_invitation_email(user):
+def send_invitation_email(user, is_reset=False):
     link = build_invitation_link(user)
     days = _validity_days()
     from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@comete.ai')
+    
+    sujet = 'Réinitialisation de votre mot de passe QST' if is_reset else 'Bienvenue sur la plateforme QST — activez votre compte'
 
     msg = EmailMultiAlternatives(
-        subject='Bienvenue sur la plateforme QST — activez votre compte',
-        body=_text_body(user, link, days),
+        subject=sujet,
+        body=_text_body(user, link, days, is_reset),
         from_email=from_email,
         to=[user.email],
     )
-    msg.attach_alternative(_html_body(user, link, days), 'text/html')
+    msg.attach_alternative(_html_body(user, link, days, is_reset), 'text/html')
     msg.send(fail_silently=False)
-
-
-# ---------------------------------------------------------------- in your viewset
-# from .invitation_email import send_invitation_email
-#
-# class UtilisateurViewSet(viewsets.ModelViewSet):
-#     ...
-#     def perform_create(self, serializer):
-#         user = serializer.save()
-#         send_invitation_email(user)
