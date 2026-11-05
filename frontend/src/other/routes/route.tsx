@@ -1,33 +1,42 @@
 import { createBrowserRouter, Navigate } from "react-router";
-import FormateurTemplate from "../../product/layout/role/FormateurTemplate";
-import AdminTemplate from "../../product/layout/role/AdminTemplate";
-import ApprenantTemplate from "../../product/layout/role/ApprenantTemplate";
-import Parameters from "../../product/pages/admin/Parameters";
-import BulletinReview from "../../product/pages/apprenant/Bulletin/BulletinReview";
+import { lazy, Suspense } from "react";
 import Login from "../../product/pages/common/Login";
 import ProtectedRoute from "../../product/layout/common/ProtectedRoute";
 import { RootRedirect } from "../../product/layout/common/RootRedirect";
-import CorrectionReview from "../../product/pages/apprenant/Evaluation/CorrectionReview";
-import Bulletin from "../../product/pages/apprenant/Bulletin/Bulletin";
-import MyEvaluations from "../../product/pages/apprenant/Evaluation/MyEvaluations";
-import TakingEvaluation from "../../product/pages/apprenant/Evaluation/TakingEvaluation";
 import COMMON_CHILDREN from "./sharedChildren";
-import Formation from "../../product/pages/formateur/Formation";
-import ChatPage from "../../product/pages/formateur/chat/ChatPage";
-import SetPasswordPage from "../../product/pages/common/SetPasswordPage";
 import ErrorPage from "../../product/pages/common/ErrorPage";
-import AdminDashboard from "../../product/pages/admin/AdminDashboard";
-import Dashboard from "../../product/pages/formateur/Dashboard";
-import ProfileRouteLayout from "../../product/layout/common/ProfileRouteLayout";
-import ProfileMePage from "../../product/pages/common/ProfileMePage";
+
+// 1. Composants chargés paresseusement (Lazy Loading)
+const FormateurTemplate = lazy(() => import("../../product/layout/role/FormateurTemplate"));
+const AdminTemplate = lazy(() => import("../../product/layout/role/AdminTemplate"));
+const ApprenantTemplate = lazy(() => import("../../product/layout/role/ApprenantTemplate"));
+const Parameters = lazy(() => import("../../product/pages/admin/Parameters"));
+const BulletinReview = lazy(() => import("../../product/pages/apprenant/Bulletin/BulletinReview"));
+const CorrectionReview = lazy(() => import("../../product/pages/apprenant/Evaluation/CorrectionReview"));
+const Bulletin = lazy(() => import("../../product/pages/apprenant/Bulletin/Bulletin"));
+const MyEvaluations = lazy(() => import("../../product/pages/apprenant/Evaluation/MyEvaluations"));
+const TakingEvaluation = lazy(() => import("../../product/pages/apprenant/Evaluation/TakingEvaluation"));
+const Formation = lazy(() => import("../../product/pages/formateur/Formation"));
+const ChatPage = lazy(() => import("../../product/pages/formateur/chat/ChatPage"));
+const SetPasswordPage = lazy(() => import("../../product/pages/common/SetPasswordPage"));
+const AdminDashboard = lazy(() => import("../../product/pages/admin/AdminDashboard"));
+const Dashboard = lazy(() => import("../../product/pages/formateur/Dashboard"));
+const ProfileRouteLayout = lazy(() => import("../../product/layout/common/ProfileRouteLayout"));
+const ProfileMePage = lazy(() => import("../../product/pages/common/ProfileMePage"));
+
+// 2. Composant de chargement générique pour Suspense
+const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
+	<Suspense fallback={<div className="flex h-screen w-full items-center justify-center">Chargement...</div>}>
+		{children}
+	</Suspense>
+);
 
 export const router = createBrowserRouter([
-
 	// Public routes
 	{ path: '/', element: <RootRedirect />},
-	{ path: '/login', element: <Login /> },
+	{ path: '/login', element: <Login /> }, // Chargé instantanément
 	{ path: '/unauthorized', element: <ErrorPage msg="Vous ne pouvez pas accéder à la page" statusCode={403} /> },
-	{ path: '/set-password/:uid/:token', element: <SetPasswordPage /> },
+	{ path: '/set-password/:uid/:token', element: <SuspenseWrapper><SetPasswordPage /></SuspenseWrapper> },
 
 	// Common protected routes
 	{
@@ -36,9 +45,9 @@ export const router = createBrowserRouter([
 		children: [
 			{
 				path: 'me',
-				element: <ProfileRouteLayout />,
+				element: <SuspenseWrapper><ProfileRouteLayout /></SuspenseWrapper>,
 				children: [
-					{ index: true, element: <ProfileMePage /> },
+					{ index: true, element: <SuspenseWrapper><ProfileMePage /></SuspenseWrapper> },
 				],
 			}
 		]
@@ -50,11 +59,11 @@ export const router = createBrowserRouter([
         element: <ProtectedRoute allowedRole={['admin']}/>,
         children: [
             {   
-                element: <AdminTemplate />,
+                element: <SuspenseWrapper><AdminTemplate /></SuspenseWrapper>,
                 children: [
                     { index: true, element: <Navigate to="tableau_de_bord" replace /> },
-                    { path: 'parametre_general', element: <Parameters /> },
-                    { path: 'tableau_de_bord', element: <AdminDashboard /> },
+                    { path: 'parametre_general', element: <SuspenseWrapper><Parameters /></SuspenseWrapper> },
+                    { path: 'tableau_de_bord', element: <SuspenseWrapper><AdminDashboard /></SuspenseWrapper> },
                     ...COMMON_CHILDREN,
                 ]
             },
@@ -67,12 +76,12 @@ export const router = createBrowserRouter([
 		element: <ProtectedRoute allowedRole={['formateur']}/>,
 		children: [
 			{ 
-				element: <FormateurTemplate />,
+				element: <SuspenseWrapper><FormateurTemplate /></SuspenseWrapper>,
 				children: [
 					{ index: true, element: <Navigate to="tableau_de_bord" replace /> },
-					{ path: "tableau_de_bord", element: <Dashboard /> },
-					{ path: "formation", element: <Formation /> },
-					{ path: "chat", element: <ChatPage /> },
+					{ path: "tableau_de_bord", element: <SuspenseWrapper><Dashboard /></SuspenseWrapper> },
+					{ path: "formation", element: <SuspenseWrapper><Formation /></SuspenseWrapper> },
+					{ path: "chat", element: <SuspenseWrapper><ChatPage /></SuspenseWrapper> },
 					...COMMON_CHILDREN,
 				],
 			}
@@ -85,8 +94,8 @@ export const router = createBrowserRouter([
 		element: <ProtectedRoute allowedRole={['apprenant']}/>,
 		children: [
 			{
-				element: <ApprenantTemplate />,
-				children: [ { index: true, element: <MyEvaluations /> } ],
+				element: <SuspenseWrapper><ApprenantTemplate /></SuspenseWrapper>,
+				children: [ { index: true, element: <SuspenseWrapper><MyEvaluations /></SuspenseWrapper> } ],
 			}
 		]
 	},
@@ -95,8 +104,8 @@ export const router = createBrowserRouter([
 		element: <ProtectedRoute allowedRole={['apprenant']}/>,
 		children: [
 			{
-				element: <ApprenantTemplate />,
-				children: [ { index: true, element: <BulletinReview /> } ],
+				element: <SuspenseWrapper><ApprenantTemplate /></SuspenseWrapper>,
+				children: [ { index: true, element: <SuspenseWrapper><BulletinReview /></SuspenseWrapper> } ],
 			}
 		]
 	},
@@ -105,8 +114,8 @@ export const router = createBrowserRouter([
 		element: <ProtectedRoute allowedRole={['apprenant']}/>,
 		children: [
 			{
-				element: <ApprenantTemplate />,
-				children: [ { index: true, element: <TakingEvaluation /> } ],
+				element: <SuspenseWrapper><ApprenantTemplate /></SuspenseWrapper>,
+				children: [ { index: true, element: <SuspenseWrapper><TakingEvaluation /></SuspenseWrapper> } ],
 			}
 		]
 	},
@@ -115,8 +124,8 @@ export const router = createBrowserRouter([
 		element: <ProtectedRoute allowedRole={['apprenant']}/>,
 		children: [
 			{
-				element: <ApprenantTemplate />,
-				children: [ { index: true, element: <CorrectionReview /> } ],
+				element: <SuspenseWrapper><ApprenantTemplate /></SuspenseWrapper>,
+				children: [ { index: true, element: <SuspenseWrapper><CorrectionReview /></SuspenseWrapper> } ],
 			}
 		]
 	},
@@ -125,12 +134,11 @@ export const router = createBrowserRouter([
 		element: <ProtectedRoute allowedRole={['apprenant']}/>,
 		children: [
 			{
-				element: <ApprenantTemplate />,
-				children: [ { index: true, element: <Bulletin /> } ],
+				element: <SuspenseWrapper><ApprenantTemplate /></SuspenseWrapper>,
+				children: [ { index: true, element: <SuspenseWrapper><Bulletin /></SuspenseWrapper> } ],
 			}
 		]
 	},
 
     { path: '*', element: <ErrorPage msg="La page est introuvable" statusCode={404} /> },
-
 ]);

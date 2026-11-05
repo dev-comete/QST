@@ -3,6 +3,7 @@ import type { vaguePayload } from "../../types/vagueType"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { VagueService } from "../../services/vagueService";
 import { useFormation } from "../formation/useFormation";
+import { TokenStorage } from "../../services/auth/storage";
 
 export const useVagueDel = (id: number) => {
 	const queryClient = useQueryClient()
@@ -35,9 +36,11 @@ type UseVagueParam = {
 }
 
 export const useVague = ({ id, formation, month, year } : UseVagueParam) => {
+	const token = TokenStorage.getAccessToken();
 	const getAllVague = useQuery({
 		queryKey: ['vague_list', formation, month, year],
 		queryFn: () => VagueService.list({formation, month, year}),
+		enabled: !!token,
 	})
 
 	const infoVagueQuery = useQuery({
