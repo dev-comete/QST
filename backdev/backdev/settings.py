@@ -260,3 +260,7 @@ LOGGING = {
     "handlers": {"console": {"class": "logging.StreamHandler"}},
     "loggers": {"ia.import_questions": {"handlers": ["console"], "level": "DEBUG"}},
 }
+
+OLLAMA_BASE_URL = env('OLLAMA_BASE_URL', default='http://localhost:11434')
+OLLAMA_API_URL = env('OLLAMA_API_URL', default='http://localhost:11434/api/generate')
+OLLAMA_MODEL = env('OLLAMA_MODEL', default='llama3.2')

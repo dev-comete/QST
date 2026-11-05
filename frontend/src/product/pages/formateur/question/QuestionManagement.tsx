@@ -32,7 +32,7 @@ const QuestionManagement = () => {
 						textColor="text"
 						interiorIcon="file-import"
 						onClick={() => setIsImportOpen(true)}
-					>{"Importer (IA)"}</ActionButton>
+					>{"Importer"}</ActionButton>
 					<ActionButton
 						onClick={() => navigateTo("creation_question")}
 					>{"+ Créer une question"}</ActionButton>

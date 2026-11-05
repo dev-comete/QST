@@ -29,6 +29,8 @@ services:
       - redis
     env_file:
       - ./backdev/.env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
   
   daphne:
     build: ./backdev

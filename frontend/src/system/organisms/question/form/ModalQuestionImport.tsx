@@ -1,9 +1,9 @@
 import { useImportQuestions } from "../../../../other/hooks/question/useImportQuestions";
-import { IMPORT_ACCEPT, IMPORT_MAX_TEXT_CHARS } from "../../../../other/helper/importHelper";
+import { IMPORT_ACCEPT } from "../../../../other/helper/importHelper";
 import Box from "../../../atoms/Container/Box";
 import FileInput from "../../../atoms/Form/FileInput";
-import Info from "../../../atoms/Form/Info";
-import TextArea from "../../../atoms/Form/TextArea";
+// import Info from "../../../atoms/Form/Info";
+// import TextArea from "../../../atoms/Form/TextArea";
 import FAIcon from "../../../atoms/Icon/FAIcon";
 import CustomText from "../../../atoms/Text/CustomText";
 import ActionButton from "../../../molecules/Buttons/ActionButton";
@@ -48,7 +48,7 @@ const ImportSourceStep = ({ imp }: { imp: ImportState }) => {
 			helper="PDF, Word, Excel, TXT ou image (5 Mo max)"
 		/>
 
-		<CustomText color="disabled" className="self-center">— ou —</CustomText>
+		{/* <CustomText color="disabled" className="self-center">— ou —</CustomText>
 
 		<TextArea
 			id="import_text"
@@ -69,7 +69,7 @@ const ImportSourceStep = ({ imp }: { imp: ImportState }) => {
 			<CustomText textTag="p" color="disabled" className="text-sm">
 				Analyse en cours, cela peut prendre jusqu'à 30 secondes…
 			</CustomText>
-		)}
+		)} */}
 	</Box>
 )
 }
@@ -177,7 +177,7 @@ const ModalQuestionImport = ({ open, closeModal }: ModalQuestionImportProps) => 
 
 	return (
 		<Modal
-			title="Importer des questions (IA)"
+			title="Importer des questions"
 			isOpen={open}
 			closeModal={handleClose}
 			footer={footer}
