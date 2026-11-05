@@ -3,6 +3,7 @@ import { GENERAL_CACHE_TIME, GENERAL_STALE_TIME } from "../../types/constant"
 import { FormationService } from "../../services/formationService"
 import { useEffect, useState } from "react"
 import type { FormationPayload } from "../../types/formationType"
+import { TokenStorage } from "../../services/auth/storage";
 
 
 export const useDelFormation = (id: string) => {
@@ -63,6 +64,7 @@ export const useCreateFormation = () => {
 }
 
 export const useFormation = (id ?: string) => {
+	const token = TokenStorage.getAccessToken();
 
 	const infoFormationQuery = useQuery({
 		queryKey: ['formation_info', id],
@@ -74,7 +76,8 @@ export const useFormation = (id ?: string) => {
 		queryKey: ['formation_list'],
 		queryFn: FormationService.list,
 		staleTime: GENERAL_STALE_TIME,
-		gcTime: GENERAL_CACHE_TIME
+		gcTime: GENERAL_CACHE_TIME,
+		enabled: !!token,
 	})
 
 

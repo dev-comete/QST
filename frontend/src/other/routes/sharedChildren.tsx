@@ -1,26 +1,36 @@
-import VagueManagement from "../../product/pages/formateur/vague/VagueManagement";
-import QuestionManagement from "../../product/pages/formateur/question/QuestionManagement";
-import QuestionCreate from "../../product/pages/formateur/question/QuestionCreate";
-import QuizManagement from "../../product/pages/formateur/quizz/QuizManagement";
-import QuestionDetail from "../../product/pages/formateur/question/QuestionDetail";
-import QuizQuestion from "../../product/pages/formateur/quizz/QuizQuestion";
-import VagueAssign from "../../product/pages/formateur/vague/VagueAssign";
-import QuestionEdit from "../../product/pages/formateur/question/QuestionEdit";
-import QuestionBin from "../../product/pages/formateur/question/QuestionBin";
-import QuizBin from "../../product/pages/formateur/quizz/QuizBin";
+import { lazy, Suspense } from "react";
+
+// 1. Composants chargés paresseusement (Lazy Loading)
+const VagueManagement = lazy(() => import("../../product/pages/formateur/vague/VagueManagement"));
+const QuestionManagement = lazy(() => import("../../product/pages/formateur/question/QuestionManagement"));
+const QuestionCreate = lazy(() => import("../../product/pages/formateur/question/QuestionCreate"));
+const QuizManagement = lazy(() => import("../../product/pages/formateur/quizz/QuizManagement"));
+const QuestionDetail = lazy(() => import("../../product/pages/formateur/question/QuestionDetail"));
+const QuizQuestion = lazy(() => import("../../product/pages/formateur/quizz/QuizQuestion"));
+const VagueAssign = lazy(() => import("../../product/pages/formateur/vague/VagueAssign"));
+const QuestionEdit = lazy(() => import("../../product/pages/formateur/question/QuestionEdit"));
+const QuestionBin = lazy(() => import("../../product/pages/formateur/question/QuestionBin"));
+const QuizBin = lazy(() => import("../../product/pages/formateur/quizz/QuizBin"));
+
+// 2. Wrapper Suspense local
+const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
+	<Suspense fallback={<div className="flex h-screen w-full items-center justify-center">Chargement...</div>}>
+		{children}
+	</Suspense>
+);
 
 const COMMON_CHILDREN = [
-	{ path: "gestion_equipe", element: <VagueManagement /> },
-	{ path: "gestion_question", element: <QuestionManagement /> },
-	{ path: "gestion_question/corbeille", element: <QuestionBin /> },
-	{ path: "gestion_question/:id/edit", element: <QuestionEdit /> },
-	{ path: "gestion_question/:id", element: <QuestionDetail /> },
-	{ path: "creation_question", element: <QuestionCreate /> },
-	{ path: ":id/quiz_questions", element: <QuizQuestion /> },
-	{ path: "gestion_quiz", element: <QuizManagement /> },
-	{ path: "gestion_quiz/corbeille", element: <QuizBin /> },
-	{ path: "equipes/:id", element: <VagueAssign /> },
-	// { path: "vagues/:id/statistique", element: <VagueStat /> },
+	{ path: "gestion_equipe", element: <SuspenseWrapper><VagueManagement /></SuspenseWrapper> },
+	{ path: "gestion_question", element: <SuspenseWrapper><QuestionManagement /></SuspenseWrapper> },
+	{ path: "gestion_question/corbeille", element: <SuspenseWrapper><QuestionBin /></SuspenseWrapper> },
+	{ path: "gestion_question/:id/edit", element: <SuspenseWrapper><QuestionEdit /></SuspenseWrapper> },
+	{ path: "gestion_question/:id", element: <SuspenseWrapper><QuestionDetail /></SuspenseWrapper> },
+	{ path: "creation_question", element: <SuspenseWrapper><QuestionCreate /></SuspenseWrapper> },
+	{ path: ":id/quiz_questions", element: <SuspenseWrapper><QuizQuestion /></SuspenseWrapper> },
+	{ path: "gestion_quiz", element: <SuspenseWrapper><QuizManagement /></SuspenseWrapper> },
+	{ path: "gestion_quiz/corbeille", element: <SuspenseWrapper><QuizBin /></SuspenseWrapper> },
+	{ path: "equipes/:id", element: <SuspenseWrapper><VagueAssign /></SuspenseWrapper> },
+	// { path: "vagues/:id/statistique", element: <SuspenseWrapper><VagueStat /></SuspenseWrapper> },
 ];
 
 export default COMMON_CHILDREN;
