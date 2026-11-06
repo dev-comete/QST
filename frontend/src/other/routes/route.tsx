@@ -1,10 +1,12 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createBrowserRouter, Navigate } from "react-router";
-import { lazy, Suspense } from "react";
+import { lazy } from "react";
 import Login from "../../product/pages/common/Login";
 import ProtectedRoute from "../../product/layout/common/ProtectedRoute";
 import { RootRedirect } from "../../product/layout/common/RootRedirect";
 import COMMON_CHILDREN from "./sharedChildren";
 import ErrorPage from "../../product/pages/common/ErrorPage";
+import { SuspenseWrapper } from "./SuspensWrapper";
 
 // 1. Composants chargés paresseusement (Lazy Loading)
 const FormateurTemplate = lazy(() => import("../../product/layout/role/FormateurTemplate"));
@@ -23,13 +25,6 @@ const AdminDashboard = lazy(() => import("../../product/pages/admin/AdminDashboa
 const Dashboard = lazy(() => import("../../product/pages/formateur/Dashboard"));
 const ProfileRouteLayout = lazy(() => import("../../product/layout/common/ProfileRouteLayout"));
 const ProfileMePage = lazy(() => import("../../product/pages/common/ProfileMePage"));
-
-// 2. Composant de chargement générique pour Suspense
-const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
-	<Suspense fallback={<div className="flex h-screen w-full items-center justify-center">Chargement...</div>}>
-		{children}
-	</Suspense>
-);
 
 export const router = createBrowserRouter([
 	// Public routes
