@@ -7,7 +7,8 @@ interface DashboardBlocProps <T>{
 	title: string
 	data: T[]
 	emptyText: string
-	Item: ComponentType<{ item: T }>}
+	Item: ComponentType<{ item: T }>
+}
 
 const DashboardBloc = <T,>({ title, data, Item, emptyText } : DashboardBlocProps<T>) => {
 	return (

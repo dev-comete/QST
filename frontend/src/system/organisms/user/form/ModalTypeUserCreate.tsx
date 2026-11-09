@@ -61,7 +61,7 @@ const ModalTypeUserCreate = ({ open, closeModal } : ModalTypeUserCreateProps) =>
 
 	return (
 		<Modal
-			title="Création de la formation"
+			title="Création du type d'utilisateur"
 			isOpen={open}
 			closeModal={handleOnCloseModal}
 			footer={

@@ -15,21 +15,18 @@ import { useFormation } from "../../../other/hooks/formation/useFormation";
 import ModalFormationCreate from "../../../system/organisms/formation/form/ModalFormationCreate";
 import { useTypeUser } from "../../../other/hooks/user/useUser";
 import ModalTypeUserCreate from "../../../system/organisms/user/form/ModalTypeUserCreate";
-import UserTypeList from "../../../system/organisms/user/list/UserTypeList";
 import { useTabNavigation } from "../../../other/hooks/navigation/useTabNavigation";
 import ModalQuestionTypeCreate from "../../../system/organisms/question/form/ModalQuestionTypeCreate";
-import QuestionTypeList from "../../../system/organisms/question/list/QuestionTypeList";
 import { useQuestionType } from "../../../other/hooks/question/useQuestionType";
+import TypeParameter from "./TypeParameter";
 
 type ValidModalKey = 'user' | 'project' | 'formation' | 'typeUser' | 'typeQuestion';
 type ModalKey = ValidModalKey | null;
 
 const tabActions: Record<number, { label: string; modalKey: ModalKey }> = { 
     0: { label: "+ Créer un utilisateur", modalKey: "user" },
-    1: { label: "+ Créer un type d'utilisateur", modalKey: "typeUser" },
-    2: { label: "+ Créer un projet", modalKey: "project" },
-    3: { label: "+ Créer une formation", modalKey: "formation" },
-    4: { label: "+ Créer un type de question", modalKey: "typeQuestion" },
+    1: { label: "+ Créer un projet", modalKey: "project" },
+    2: { label: "+ Créer une formation", modalKey: "formation" },
 };
 
 const Parameters = () => {
@@ -80,20 +77,23 @@ const Parameters = () => {
                 <NavigationBar
                     titles={[
                         'Utilisateurs', 
-                        'Types d\'utilisateur', 
-                        'Projets', 
+                        'Projets',
                         'Formations', 
-                        'Types de question', 
+                        'Types', 
                         'Sécurité'
                     ]}
                     activeTab={activeTab}
                     onTabChange={handleTabChange}               
                 >
                     <UserList projects={projects}/>
-                    <UserTypeList userType={userTypes} />
                     <ProjectList projects={projects}/>
+					{/* V0 : <UserTypeList userType={userTypes} /> */}
                     <FormationList formations={formations} />
-                    <QuestionTypeList questionTypes={questionTypes} />
+					{/* VO : <QuestionTypeList questionTypes={questionTypes} /> */}
+					<TypeParameter
+						userTypes={userTypes} onUserTypeCreate={() => openModal('typeUser')}
+						questionTypes={questionTypes} onQuestionTypeCreate={() => openModal('typeQuestion')}
+					/>
                     <PasswordResetList />
                 </NavigationBar>
             </BodyLayout>
