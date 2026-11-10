@@ -17,7 +17,7 @@ const TypeParameter = ({ userTypes, onUserTypeCreate, questionTypes, onQuestionT
 	return (
 		<Box flexDirection="flex-col md:flex-row">
 			<ListContainer
-				title="Type d'utilisateur"
+				title="Utilisateur"
 				emptyText="Il n'y a pas encore de quiz publié"
 				data={userTypes}
 				Item={UserListItem}
@@ -28,7 +28,7 @@ const TypeParameter = ({ userTypes, onUserTypeCreate, questionTypes, onQuestionT
 				}
 			/>
 			<ListContainer
-				title="Type de question"
+				title="Question"
 				emptyText="Il n'y a pas encore de quiz publié"
 				data={questionTypes}
 				Item={QuestionTypeListItem}

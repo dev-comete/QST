@@ -22,10 +22,10 @@ export const UserListItem = ({ item } : { item : utilisateurType}) => {
 	return (
 		<ListItemBox>
 			<Box className="gap-5">
-				<Paper className="border border-background p-2 flex items-center">{"# " + item.id}</Paper>
+				<Paper color="secondary" className="shadow-sm px-3 py-2 flex items-center">{"# " + item.id}</Paper>
 				<Box direction="column">
 					<CustomText className="capitalize" weight="bold">{item.type_utilisateur}</CustomText>
-					<CustomText isItalic>{INFO_USER_TYPE[item.type_utilisateur]}</CustomText>
+					<CustomText textTag="h5" isItalic>{INFO_USER_TYPE[item.type_utilisateur]}</CustomText>
 				</Box>
 			</Box>
 		</ListItemBox>
@@ -39,7 +39,7 @@ export const QuestionTypeListItem = ({ item } : { item : questionIdType}) => {
 	return (
 		<ListItemBox>
 			<Box className="gap-5">
-				<Paper className="border border-background p-2 flex items-center">{"# " + item.id}</Paper>
+				<Paper color="secondary" className="shadow-sm px-3 py-2 flex items-center">{"# " + item.id}</Paper>
 				<Box direction="column">
 					<Box className="items-center">
 						<CustomText className="capitalize" weight="bold">{item.type_question}</CustomText>
@@ -49,7 +49,7 @@ export const QuestionTypeListItem = ({ item } : { item : questionIdType}) => {
 							</CustomText>
 						</Paper>
 					</Box>
-					<CustomText isItalic>{INFO_QUESTION_TYPE[item.code]}</CustomText>
+					<CustomText textTag="h5" isItalic>{INFO_QUESTION_TYPE[item.code]}</CustomText>
 				</Box>
 			</Box>
 		</ListItemBox>
