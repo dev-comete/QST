@@ -33,5 +33,98 @@ jobs:
             # 4. Exécuter les migrations Django dans le conteneur backend
             docker compose exec -T web python manage.py migrate --noinput
 
-            # 5. Nettoyer les images Docker inutilisées pour libérer l'espace disque
+            # 5. Collecter les fichiers statiques dans le conteneur backend
+            docker compose exec -T web python manage.py collectstatic --noinput
+
+            # 6. Nettoyer les images Docker inutilisées pour libérer l'espace disque
             docker image prune -f
+
+      - name: Backup Source Code (C-eval) to Google Drive
+        if: github.ref_name == 'main'
+        env:
+          GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_DRIVE_CREDENTIALS }}
+          GDRIVE_FOLDER_ID: ${{ vars.GDRIVE_ID }}
+        run: |
+          echo "Vérification et clonage temporaire du dépôt pour l'archivage. Récupération du code source (C-eval), connexion à distance de l'action SSH-action puis exécution sur le runner Github..."
+          
+      - name: Checkout repository for backup
+        uses: actions/checkout@v4
+        if: github.ref_name == 'main'
+
+      - name: Upload Backup to Google Drive
+        if: github.ref_name == 'main'
+        env:
+          GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_DRIVE_CREDENTIALS }}
+          GDRIVE_FOLDER_ID: ${{ vars.GDRIVE_ID }}
+        run: |
+          echo "Préparation de l'archive du code source..."
+          ARCHIVE_NAME="ceval-prod-$(date +%Y%m%d_%H%M%S).zip"
+          zip -r $ARCHIVE_NAME . -x "*.git*" "*/node_modules/*" "*/bin/*" "*/obj/*"
+
+          echo "Installation des dépendances Python..."
+          pip install --quiet google-api-python-client google-auth-httplib2 google-auth
+
+          echo "Envoi de la sauvegarde vers Google Drive..."
+          python3 - <<EOF
+          import os
+          import json
+          from google.oauth2 import service_account
+          from googleapiclient.discovery import build
+          from googleapiclient.http import MediaFileUpload
+
+          creds_info = os.environ.get('GOOGLE_CREDENTIALS_JSON')
+          root_drive_id = os.environ.get('GDRIVE_FOLDER_ID')
+          archive_name = "$ARCHIVE_NAME"
+
+          creds_dict = json.loads(creds_info)
+          credentials = service_account.Credentials.from_service_account_info(
+              creds_dict, scopes=['https://www.googleapis.com/auth/drive.file']
+          )
+
+          service = build('drive', 'v3', credentials=credentials)
+
+          # Recherche ou création automatique du sous-dossier "Backups-Ceval"
+          target_folder_id = root_drive_id
+          query_str = f"'{root_drive_id}' in parents and name='Backups-Ceval' and mimeType='application/vnd.google-apps.folder' and trashed=false"
+          
+          response = service.files().list(
+              q=query_str,
+              supportsAllDrives=True,
+              includeItemsFromAllDrives=True,
+              corpora='allDrives'
+          ).execute()
+
+          folders = response.get('files', [])
+          if folders:
+              target_folder_id = folders[0]['id']
+              print(f"Dossier de sauvegarde existant trouvé (ID: {target_folder_id})")
+          else:
+              folder_metadata = {
+                  'name': 'Backups-Ceval',
+                  'mimeType': 'application/vnd.google-apps.folder',
+                  'parents': [root_drive_id]
+              }
+              folder = service.files().create(
+                  body=folder_metadata,
+                  supportsAllDrives=True,
+                  fields='id'
+              ).execute()
+              target_folder_id = folder.get('id')
+              print(f"Nouveau dossier de sauvegarde créé (ID: {target_folder_id})")
+
+          # Upload de l'archive zip dans le dossier cible
+          file_metadata = {
+              'name': archive_name,
+              'parents': [target_folder_id]
+          }
+          media = MediaFileUpload(archive_name, mimetype='application/zip')
+          
+          file = service.files().create(
+              body=file_metadata,
+              media_body=media,
+              fields='id',
+              supportsAllDrives=True
+          ).execute()
+          
+          print(f"Sauvegarde réussie C-eval! ID du fichier sur Google Drive : {file.get('id')}")
+          EOF
