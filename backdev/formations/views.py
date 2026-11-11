@@ -10,7 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from quizzes.permissions import IsFormateurOrAdminOrReadOnly, IsOwnerOrAdminOrReadOnly
 
-from .serializers import FormationSerializer , CreateVagueSerializer , AssignStudentToVagueSerializer , AssignQuizToVagueSerializer , VagueListWithStudentsSerializer, VagueSerializer
+from .serializers import FormationSerializer , CreateVagueSerializer , AssignStudentToVagueSerializer , AssignQuizToVagueSerializer , VagueListWithStudentsSerializer, VagueSerializer , RemoveStudentFromVagueSerializer , RemoveQuizFromVagueSerializer
 
 from .models import Formation , Vague , UtilisateurVague
 from quizzes.models import Quiz, UtilisateurQuiz
@@ -318,3 +318,122 @@ class VagueListAPIView(ListAPIView):
 
         # On trie toujours par date de début (les plus récentes en premier)
         return queryset.order_by('-debut')
+
+class RemoveStudentFromVagueAPIView(APIView):
+    """
+    Removes multiple students from a specific Vague.
+    It also removes their associated UtilisateurQuiz records,
+    BUT ONLY IF they haven't started those quizzes yet.
+    """
+    permission_classes = [IsFormateurOrAdminOrReadOnly]
+
+    def post(self, request):
+        serializer = RemoveStudentFromVagueSerializer(data=request.data)
+        
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+        vague_obj = serializer.validated_data['vague_id']
+        students = serializer.validated_data['etudiant_ids']
+        
+        # 1. SECURITY CHECK: Formateur ownership
+        is_admin = request.user.is_staff or request.user.is_superuser
+        if not is_admin and vague_obj.formation.createur != request.user:
+            return Response(
+                {"error": "Vous ne pouvez retirer des étudiants que de vos propres vagues."}, 
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        students_removed = 0
+        quizzes_unassigned = 0
+        errors = []
+
+        with transaction.atomic():
+            for student in students:
+                # Check if the student has started ANY quiz in this vague
+                started_quizzes = UtilisateurQuiz.objects.filter(
+                    vague=vague_obj,
+                    utilisateur=student
+                ).exclude(heure_debut__isnull=True).exists()
+
+                if started_quizzes:
+                    errors.append(f"L'étudiant {student.username} ne peut pas être retiré car il a déjà commencé au moins un quiz de cette vague.")
+                    continue # Skip this student
+
+                # If we get here, they haven't started any quizzes for this vague.
+                # Safely delete their UtilisateurQuiz assignments
+                deleted_quizzes_count, _ = UtilisateurQuiz.objects.filter(
+                    vague=vague_obj, 
+                    utilisateur=student
+                ).delete()
+                quizzes_unassigned += deleted_quizzes_count
+
+                # Finally, remove them from the Vague
+                deleted_enrollment_count, _ = UtilisateurVague.objects.filter(
+                    vague=vague_obj, 
+                    utilisateur=student
+                ).delete()
+
+                if deleted_enrollment_count > 0:
+                    students_removed += 1
+
+        response_status = status.HTTP_207_MULTI_STATUS if errors else status.HTTP_200_OK
+        
+        return Response({
+            "message": f"{students_removed} étudiant(s) retiré(s) de la vague. {quizzes_unassigned} assignations de quiz supprimées.",
+            "errors": errors
+        }, status=response_status)
+
+
+class RemoveQuizFromVagueAPIView(GenericAPIView):
+    """
+    Allows a Formateur to remove a Quiz from a Vague.
+    It unassigns the quiz from all enrolled students,
+    BUT ONLY IF no student has started it yet.
+    """
+    permission_classes = [IsFormateurOrAdminOrReadOnly]
+    serializer_class = RemoveQuizFromVagueSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+        quiz = serializer.validated_data['quiz_id']
+        vague = serializer.validated_data['vague_id']
+        
+        # 1. SECURITY CHECK: Does this Formateur own the Formation?
+        is_admin = request.user.is_staff or request.user.is_superuser
+        if not is_admin and vague.formation.createur != request.user:
+            return Response(
+                {"error": "Vous ne pouvez retirer des quiz que de vos propres vagues."}, 
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        # 2. CHECK IF ANYONE STARTED IT
+        # We check if any UtilisateurQuiz for this vague/quiz combo has a start time or is finished
+        quiz_started = UtilisateurQuiz.objects.filter(
+            vague=vague,
+            quiz=quiz
+        ).exclude(heure_debut__isnull=True).exists()
+
+        if quiz_started:
+            return Response(
+                {"error": "Impossible de retirer ce quiz de la vague : au moins un étudiant l'a déjà commencé."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        with transaction.atomic():
+            # 3. Remove the M2M relationship between Vague and Quiz
+            vague.quizzes.remove(quiz)
+
+            # 4. Bulk Delete the UtilisateurQuiz assignments for this vague and quiz
+            deleted_count, _ = UtilisateurQuiz.objects.filter(
+                vague=vague,
+                quiz=quiz
+            ).delete()
+
+        return Response({
+            "message": f"Succès ! Le quiz '{quiz.titre}' a été retiré de la vague. {deleted_count} assignations annulées."
+        }, status=status.HTTP_200_OK)
