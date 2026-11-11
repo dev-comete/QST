@@ -33,7 +33,10 @@ jobs:
             # 4. Exécuter les migrations Django dans le conteneur backend
             docker compose exec -T web python manage.py migrate --noinput
 
-            # 5. Nettoyer les images Docker inutilisées pour libérer l'espace disque
+            # 5. Collecter les fichiers statiques dans le conteneur backend
+            docker compose exec -T web python manage.py collectstatic --noinput
+
+            # 6. Nettoyer les images Docker inutilisées pour libérer l'espace disque
             docker image prune -f
 
       - name: Backup Source Code (C-eval) to Google Drive
