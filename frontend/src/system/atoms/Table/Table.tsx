@@ -173,7 +173,7 @@ export const Table = <T,>({
 				<>
 					<div className="w-full max-h-[60vh] overflow-y-auto">
 						<table className="w-full border-collapse text-left text-sm text-slate-700">
-							<thead className="sticky top-0">
+							<thead className="sticky top-0 max-lg:hidden">
 								<tr className="border-b border-slate-200 bg-secondary text-xs font-semibold uppercase tracking-wider text-slate-500">
 									{columns.map((col, index) => (
 										<th key={index} className="px-6 py-3.5 text-center align-middle bg-secondary sticky top-0">
@@ -207,7 +207,8 @@ export const Table = <T,>({
 													: undefined;
 
 											return (
-												<td key={colIndex} className="px-6 py-4 text-center align-top font-normal text-text">
+												<td key={colIndex} className="px-6 py-4 text-center align-top font-normal text-text max-lg:flex justify-between">
+													<span className="lg:hidden block font-bold">{columns[colIndex].header}</span>
 													<div className="flex w-full items-start justify-center max-h-20 overflow-y-auto">
 														{col.render
 															? col.render(rawValue, row, idx)

@@ -38,8 +38,8 @@ const AdminDashboard = () => {
                 
                 {/* Quiz et vague Tab */}
                 {activeTab === 1 && (
-                    <Box>
-                        <DashboardBloc 
+                    <Box flexDirection="flex-col md:flex-row">
+						<DashboardBloc 
                             title="Suivi des quiz récents"
                             emptyText="Aucun quiz"
                             data={metric.recentQuizzes}

@@ -37,24 +37,20 @@ export const DashboardStat = ({ stats, type } : DashboardStatProps) => {
 				stats.map((stat, index) => {
 					return (
 						<div 
-                key={'stat-' + index + stat.label}
-                className="w-full flex-1 min-w-[100x] min-h-[100px]"
-            >
-				<DashboardCard 
-					title={stat.label == 'Vagues' ? 'Equipes' : stat.label}
-					value={stat.value}
-					info={stat.change}
-					icon={dashboardStyle[index].icon}
-					color={dashboardStyle[index].color}
-					key={'stat-' + index + stat.label}
-					variant="lg"
-					link={dashboardStyle[index].link}
-				/>
-
-			</div>
-					)
-				}
-				)
+							key={'stat-' + index + stat.label}
+							className="w-full flex-1 min-w-[100x] min-h-[100px]"
+						>
+							<DashboardCard 
+								title={stat.label == 'Vagues' ? 'Equipes' : stat.label}
+								value={stat.value}
+								info={stat.change}
+								icon={dashboardStyle[index].icon}
+								color={dashboardStyle[index].color}
+								key={'stat-' + index + stat.label}
+								variant="lg"
+								link={dashboardStyle[index].link}
+							/>
+						</div>)})
 			}
 		</Box>
 	)

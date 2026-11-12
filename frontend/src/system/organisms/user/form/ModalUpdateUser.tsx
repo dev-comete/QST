@@ -11,6 +11,7 @@ import ActionButton from "../../../molecules/Buttons/ActionButton";
 import { Modal } from "../../../molecules/Modal/Modal";
 import ProjetForm from "./ProjetForm";
 import Info from "../../../atoms/Form/Info";
+import { CancelButton } from "../../../molecules/Buttons/CustomizedButton";
 
 interface UserEditFormProps {
 	listTypeUser: utilisateurType[]
@@ -36,8 +37,8 @@ const UserEditForm = ({ handleSubmit, user, setUser, listTypeUser, listProject, 
 				name="username"
 				label="Nom d'utilisateur"
 				onChange={formChangeHandler(setUser, 'username')}
-				required={true}
 				value={user.username}
+				readOnly
 			/>
 			{errors.userError && <Info info={errors.userError} variant='error'/>}
 			<Input 
@@ -120,12 +121,7 @@ const ModalUserUpdate = ({ id, open, closeModal, listProject } : ModalUserUpdate
 			closeModal={handleOnCloseModal}
 			footer={
 				<Box>
-					<ActionButton
-						btnColor="text"
-						onClick={handleOnCloseModal}
-					>
-						Annuler
-					</ActionButton>
+					<CancelButton text="Annuler" onClick={handleOnCloseModal}/>
 					<ActionButton
 						type="submit"
 						form="userEditForm"
