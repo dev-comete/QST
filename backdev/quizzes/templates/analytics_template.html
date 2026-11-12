@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Analytics Vague — {{ data.vague.vague_nom }}</title>
+<style>
+  /* ==========================================================================
+     Analytics Formateur — document imprimable (xhtml2pdf optimisé)
+     ========================================================================== */
+ 
+  @page {
+    size: A4;
+    margin: 20mm 16mm 22mm;
+  }
+ 
+  * {
+    box-sizing: border-box;
+  }
+ 
+  body {
+    margin: 0;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #1c2530;
+    background: #ffffff;
+  }
+ 
+  .sheet {
+    max-width: 760px;
+    margin: 0 auto;
+  }
+ 
+  /* ---------------------------------------------------------- En-tête */
+ 
+  .masthead {
+    display: table;
+    width: 100%;
+    margin-bottom: 18px;
+  }
+ 
+  .masthead__brand,
+  .masthead__meta {
+    display: table-cell;
+    vertical-align: bottom;
+  }
+ 
+  .masthead__meta {
+    text-align: right;
+  }
+ 
+  .brand-mark {
+    display: inline-block;
+    width: 26px;
+    height: 26px;
+    line-height: 26px;
+    text-align: center;
+    border-radius: 5px;
+    background: #1f4e5f;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 13px;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+ 
+  .brand-name {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: #1c2530;
+    vertical-align: middle;
+  }
+ 
+  .doc-label {
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #5b6b7c;
+  }
+ 
+  .masthead-rule {
+    border: none;
+    border-top: 2px solid #1f4e5f;
+    margin: 0 0 22px;
+  }
+ 
+  .doc-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1c2530;
+    margin: 0 0 4px;
+  }
+ 
+  .doc-subtitle {
+    font-size: 14px;
+    font-weight: 500;
+    color: #5b6b7c;
+    margin: 0 0 26px;
+  }
+
+  .alert-box {
+    padding: 14px 18px;
+    background-color: #fce8e6;
+    border-left: 4px solid #c92a2a;
+    color: #8c1e1e;
+    font-weight: 600;
+    margin-bottom: 24px;
+    border-radius: 0 4px 4px 0;
+  }
+ 
+  /* --------------------------------------------------------- Résumé (Version Table) */
+  table.summary-table {
+    width: 100%;
+    margin-bottom: 26px;
+    border-spacing: 10px; 
+    border-collapse: separate;
+  }
+ 
+  td.summary-cell {
+    background-color: #eef1f5;
+    border: 1px solid #dce2e8;
+    padding: 12px;
+    vertical-align: top;
+    width: 25%;
+  }
+ 
+  .summary-cell__label {
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #5b6b7c;
+  }
+ 
+  .summary-cell__value {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1c2530;
+    display: block;
+    margin-top: 4px;
+  }
+ 
+  .summary-cell__value--accent {
+    color: #1f4e5f;
+  }
+
+  /* --------------------------------------------------------- Titres de Section */
+  .section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1f4e5f;
+    margin: 24px 0 12px 0;
+    border-bottom: 1px solid #dce2e8;
+    padding-bottom: 6px;
+  }
+ 
+  /* --------------------------------------------------------- Tableaux Génériques */
+  table.results {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 24px;
+  }
+ 
+  .results thead th {
+    background: #1f4e5f;
+    color: #ffffff;
+    text-align: left;
+    padding: 9px 10px;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+  }
+ 
+  .results thead th.num,
+  .results tbody td.num {
+    text-align: right;
+  }
+ 
+  .results tbody td {
+    padding: 9px 10px;
+    border-bottom: 1px solid #dce2e8;
+    font-size: 12.5px;
+    color: #34404d;
+    vertical-align: middle;
+  }
+ 
+  .row-even {
+    background: #f8fafb;
+  }
+ 
+  .eval-name {
+    font-weight: 600;
+    color: #1c2530;
+  }
+
+  /* Listes pour Top/Bottom dans les tableaux */
+  ul.student-list {
+    margin: 0;
+    padding-left: 14px;
+    font-size: 11.5px;
+  }
+
+  ul.student-list li {
+    margin-bottom: 2px;
+  }
+
+  /* Alerte question difficile */
+  .diff-question {
+    font-size: 11.5px;
+    color: #c92a2a;
+    font-style: italic;
+    background: #fdf2f2;
+    padding: 4px;
+    border-radius: 4px;
+    display: inline-block;
+  }
+ 
+  /* --------------------------------------------------------- Pied de page */
+  .doc-footer {
+    margin-top: 34px;
+    padding-top: 12px;
+    border-top: 1px solid #dce2e8;
+    font-size: 10px;
+    color: #8996a4;
+    display: table;
+    width: 100%;
+  }
+ 
+  .doc-footer__left,
+  .doc-footer__right {
+    display: table-cell;
+  }
+ 
+  .doc-footer__right {
+    text-align: right;
+  }
+</style>
+</head>
+<body>
+ 
+  <div class="sheet">
+ 
+    <!-- En-tête -->
+    <div class="masthead">
+      <div class="masthead__brand">
+        <span class="brand-mark">Q</span>
+        <span class="brand-name">QST Platform</span>
+      </div>
+      <div class="masthead__meta">
+        <span class="doc-label">Rapport Analytique Formateur</span>
+      </div>
+    </div>
+    <hr class="masthead-rule">
+ 
+    <h1 class="doc-title">Rapport de Performance Vague</h1>
+    <p class="doc-subtitle">{{ data.vague.formation }} — {{ data.vague.vague_nom|default:"Nom de vague non défini" }}</p>
+ 
+    <!-- Gestion du cas 0 étudiant -->
+    {% if data.vague.total_inscrits == 0 %}
+        <div class="alert-box">
+            {{ data.message|default:"Aucun étudiant n'est inscrit dans cette vague." }}
+        </div>
+    {% else %}
+    
+        <!-- Résumé Global -->
+        <table class="summary-table">
+          <tr>
+            <td class="summary-cell">
+              <span class="summary-cell__label">Inscrits</span><br>
+              <span class="summary-cell__value">{{ data.vague.total_inscrits }} étudiants</span>
+            </td>
+            <td class="summary-cell">
+              <span class="summary-cell__label">Pts Max Cumulés</span><br>
+              <span class="summary-cell__value">{{ data.statistiques_globales.points_totaux_possibles }} pts</span>
+            </td>
+            <td class="summary-cell">
+              <span class="summary-cell__label">Moyenne Globale</span><br>
+              <span class="summary-cell__value summary-cell__value--accent">{{ data.statistiques_globales.moyenne_globale_classe }} / {{ data.statistiques_globales.points_totaux_possibles }}</span>
+            </td>
+            <td class="summary-cell">
+              <span class="summary-cell__label">Taux de Réussite</span><br>
+              <span class="summary-cell__value summary-cell__value--accent">{{ data.statistiques_globales.taux_reussite_global_pct }}%</span>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Classement Global -->
+        <h2 class="section-title">Palmarès Global de la Vague</h2>
+        <table class="results">
+            <thead>
+                <tr>
+                    <th width="50%">🏆 Majors de promotion (Top 3)</th>
+                    <th width="50%">⚠️ Étudiants en difficulté (Flop 3)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="vertical-align: top;">
+                        {% if data.statistiques_globales.majors_de_promo_top3 %}
+                            <ol class="student-list" style="padding-left: 20px;">
+                                {% for etudiant in data.statistiques_globales.majors_de_promo_top3 %}
+                                    <li><strong>{{ etudiant.utilisateur__username }}</strong> : {{ etudiant.score_cumule }} pts</li>
+                                {% endfor %}
+                            </ol>
+                        {% else %}
+                            <span style="color:#5b6b7c; font-size:11px;">Aucune donnée disponible.</span>
+                        {% endif %}
+                    </td>
+                    <td style="vertical-align: top;">
+                        {% if data.statistiques_globales.etudiants_en_difficulte_bottom3 %}
+                            <ul class="student-list" style="list-style-type: none; padding-left: 0;">
+                                {% for etudiant in data.statistiques_globales.etudiants_en_difficulte_bottom3 %}
+                                    <li>📉 <strong>{{ etudiant.utilisateur__username }}</strong> : {{ etudiant.score_cumule }} pts</li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <span style="color:#5b6b7c; font-size:11px;">Aucune donnée disponible.</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+ 
+        <!-- Détail par Quiz -->
+        <h2 class="section-title">Performances par Évaluation (Quiz)</h2>
+        <table class="results">
+          <thead>
+            <tr>
+              <th width="25%">Quiz</th>
+              <th class="num" width="10%">Partic.</th>
+              <th class="num" width="15%">Moy. / Max</th>
+              <th class="num" width="15%">Réussite</th>
+              <th width="35%">Top / Difficulté</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for quiz in data.statistiques_par_quiz %}
+            <tr class="{% cycle '' 'row-even' %}">
+              <td class="eval-name">
+                  {{ quiz.quiz_titre }}<br>
+                  <span style="font-size: 10px; font-weight: normal; color: #5b6b7c; text-transform: uppercase;">[{{ quiz.status }}]</span>
+              </td>
+              <td class="num">{{ quiz.taux_participation_pct }}%</td>
+              <td class="num"><strong>{{ quiz.moyenne_classe }}</strong> / {{ quiz.points_maximum }}</td>
+              <td class="num">
+                  <strong style="color: {% if quiz.taux_reussite_pct >= 50 %}#235a41{% else %}#c92a2a{% endif %};">
+                      {{ quiz.taux_reussite_pct }}%
+                  </strong>
+              </td>
+              <td>
+                {% if quiz.top_3 %}
+                    <span style="font-size:10px; font-weight:bold; color:#5b6b7c;">Meilleur score :</span> {{ quiz.top_3.0.username }} ({{ quiz.top_3.0.score }})<br>
+                {% endif %}
+                
+                {% if quiz.alerte_question_difficile %}
+                    <div style="margin-top:4px;">
+                        <span style="font-size:10px; font-weight:bold; color:#c92a2a;">Q. la + ratée ({{ quiz.nombre_echecs_question }} échecs):</span><br>
+                        <span class="diff-question">"{{ quiz.alerte_question_difficile|truncatechars:45 }}"</span>
+                    </div>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+            {% if not data.statistiques_par_quiz %}
+            <tr>
+                <td colspan="5" style="text-align:center; padding: 20px; color:#5b6b7c;">Aucun quiz assigné à cette vague.</td>
+            </tr>
+            {% endif %}
+          </tbody>
+        </table>
+        
+    {% endif %} <!-- Fin de la condition total_inscrits == 0 -->
+ 
+    <div class="doc-footer">
+      <span class="doc-footer__left">QST Platform — Rapport généré automatiquement pour le Formateur</span>
+    </div>
+ 
+  </div>
+ 
+</body>
+</html>

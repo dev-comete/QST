@@ -6,7 +6,7 @@ from django.core.exceptions import PermissionDenied
 
 # Importez la fonction que nous venons de créer
 from .service_pdf import render_to_pdf
-from .service_analytics import get_apprenant_bulletin_service
+from .service_analytics import get_apprenant_bulletin_service , get_vague_analytics_service
 
 class ApprenantBulletinPDFAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -25,6 +25,31 @@ class ApprenantBulletinPDFAPIView(APIView):
             if pdf_response:
                 # 3. Forcer le téléchargement du fichier pour le navigateur
                 filename = f"Bulletin_{request.user.username}_{bulletin_data['vague']['vague_nom']}.pdf"
+                pdf_response['Content-Disposition'] = f'attachment; filename="{filename}"'
+                return pdf_response
+                
+            return Response({"error": "Erreur lors de la génération du PDF"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            
+        except PermissionDenied as e:
+            return Response({"error": str(e)}, status=status.HTTP_403_FORBIDDEN)
+
+class FormateurVagueAnalyticsPDFAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, vague_id):
+        try:
+            # 1. On récupère les données d'analytics pour le formateur
+            analytics_data = get_vague_analytics_service(
+                vague_id=vague_id, 
+                requesting_user=request.user
+            )
+            
+            # 2. On génère le PDF avec un template HTML
+            pdf_response = render_to_pdf('analytics_template.html', {'data': analytics_data})
+            
+            if pdf_response:
+                # 3. Forcer le téléchargement du fichier pour le navigateur
+                filename = f"Analytics_{request.user.username}_{analytics_data['vague']['vague_nom']}.pdf"
                 pdf_response['Content-Disposition'] = f'attachment; filename="{filename}"'
                 return pdf_response
                 

@@ -120,3 +120,13 @@ class VagueListWithStudentsSerializer(serializers.ModelSerializer):
                 "status": q.status
             } for q in quizzes
         ]
+
+class RemoveStudentFromVagueSerializer(serializers.Serializer):
+    vague_id = serializers.PrimaryKeyRelatedField(queryset=Vague.objects.all())
+    etudiant_ids = serializers.ListField(
+        child=serializers.PrimaryKeyRelatedField(queryset=Utilisateur.objects.all())
+    )
+
+class RemoveQuizFromVagueSerializer(serializers.Serializer):
+    vague_id = serializers.PrimaryKeyRelatedField(queryset=Vague.objects.all())
+    quiz_id = serializers.PrimaryKeyRelatedField(queryset=Quiz.objects.all())
