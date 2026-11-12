@@ -12,7 +12,7 @@ from .views import (
 )
 
 from .views_analytics import FormateurVagueAnalyticsAPIView , ApprenantBulletinAPIView
-from .views_pdf import ApprenantBulletinPDFAPIView
+from .views_pdf import ApprenantBulletinPDFAPIView , FormateurVagueAnalyticsPDFAPIView
 from .views_corbeille import CorbeilleQuizAPIView, CorbeilleQuestionAPIView
 from .views_dashboard import FormateurDashboardMetricsAPIView
 
@@ -63,6 +63,8 @@ urlpatterns = [
     path('<int:quiz_id>/review/', QuizReviewAPIView.as_view(), name='quiz-review'),
 
     path('analytics/vague/<int:vague_id>/', FormateurVagueAnalyticsAPIView.as_view(), name='vague-analytics'),
+    
+    path('analytics/vague/<int:vague_id>/pdf/', FormateurVagueAnalyticsPDFAPIView.as_view(), name='vague-analytics-pdf'),
 
     path('banque-questions/', QuestionBankSearchAPIView.as_view(), name='banque-questions-search'),
 
