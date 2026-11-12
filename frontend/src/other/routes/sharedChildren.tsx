@@ -1,4 +1,5 @@
-import { lazy, Suspense } from "react";
+import { lazy } from "react";
+import { SuspenseWrapper } from "./SuspensWrapper";
 
 // 1. Composants chargés paresseusement (Lazy Loading)
 const VagueManagement = lazy(() => import("../../product/pages/formateur/vague/VagueManagement"));
@@ -11,13 +12,6 @@ const VagueAssign = lazy(() => import("../../product/pages/formateur/vague/Vague
 const QuestionEdit = lazy(() => import("../../product/pages/formateur/question/QuestionEdit"));
 const QuestionBin = lazy(() => import("../../product/pages/formateur/question/QuestionBin"));
 const QuizBin = lazy(() => import("../../product/pages/formateur/quizz/QuizBin"));
-
-// 2. Wrapper Suspense local
-const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
-	<Suspense fallback={<div className="flex h-screen w-full items-center justify-center">Chargement...</div>}>
-		{children}
-	</Suspense>
-);
 
 const COMMON_CHILDREN = [
 	{ path: "gestion_equipe", element: <SuspenseWrapper><VagueManagement /></SuspenseWrapper> },

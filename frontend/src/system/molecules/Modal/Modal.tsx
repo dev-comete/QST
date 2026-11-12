@@ -97,8 +97,8 @@ const Modal = ({
                 position="fixed"
                 className="
                         rounded-2xl
-                        max-w-[80%] min-w-[25%] md:min-w-[400px]
-                        max-h-[85vh]
+                        md:max-w-[80%] md:min-w-[25%] md:min-w-[400px] w-full
+                        md:max-h-[85vh] h-full
                         top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
                         z-101
                         p-6
@@ -107,7 +107,18 @@ const Modal = ({
                     "
             >
                 {/* [ALTERED CODE]: Header section - aligned title and close button in a row */}
-                <Box className="flex-row justify-between items-start w-full mb-5 flex-none">
+                <Box className="relative justify-between items-start w-full mb-5 flex-none">
+					{
+						closeModal &&
+						<div className="absolute mr-1">
+							<IconButton
+								action={() => { closeModal() ; setSubIdx(0)}}
+								btnColor="transparent"
+								iconName="circle-xmark"
+								iconStyling="text-slate-400 hover:text-error transition-colors text-xl"
+							/>
+						</div>
+					}
                     <Box direction="column" className="flex-1">
                         { title && 
 							<Title

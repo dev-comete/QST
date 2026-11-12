@@ -12,22 +12,22 @@ interface NavigationButtonProps {
 
 const NavigationBarButton = ({ title, isClicked, onClick } : NavigationButtonProps) => {
 
-    // [ALTERED CODE]: Added ! to ensure these override the Button atom's default styles
-    const activeStyle = '!bg-white !shadow-sm ring-1 ring-slate-900/5';
+    const activeStyle = '!shadow-sm ring-1 ring-slate-900/5';
     const inactiveStyle = 'hover:!bg-slate-200/50 text-slate-500 hover:text-slate-700';
 
     return (
         <Button
             onClick={onClick}
-            color="transparent" // Prevents Button's default primary background
-            isRounded={false}   // Allows us to apply rounded-lg instead
-            // [ALTERED CODE]: flex-1 ensures tabs are equal width. !px-6 !py-2.5 overrides Button's default w-fit and padding
+            // V0: color="transparent"
+            color={isClicked ? 'primary' : 'transparent'}
+            isRounded={false}
             className={`flex justify-center items-center transition-all duration-300 ease-in-out !rounded-lg !px-6 !py-2.5 ${isClicked ? activeStyle : inactiveStyle}`}
         >
             <CustomText
                 weight={isClicked ? 'bold' : 'normal'} 
                 textTag="p" 
-                color={isClicked ? 'primary' : 'disabled'}
+                // V0  : color={isClicked ? 'white' : 'disabled'}
+                color={isClicked ? 'white' : 'disabled'}
                 className={`tracking-wide ${isClicked ? '' : 'opacity-80'}`}
             >
                 {title}
@@ -49,26 +49,24 @@ const NavigationBar = ({ titles, children, activeTab, onTabChange } : Navigation
     const currentPage = pages[activeTab] ?? pages[0] ?? null;
 
     return (
-        <Box direction="column" className="w-full">
-			<div className="sticky top-0 z-100 w-fit py-2">
-				<Paper className='flex w-full max-w-full overflow-x-auto no-scrollbar !bg-slate-100/80 !p-1.5 !rounded-xl !border !border-slate-200/50 !shadow-none'>					{
-						titles.map((value, i) => {
-							return (
-								<NavigationBarButton
-									key={'nav' + i + value}
-									title={value}
-									isClicked={i === activeTab}
-									onClick={() => onTabChange(i)}
-								/>
-							)
-						})
-					}
-				</Paper>
-			</div>
-            <Box direction="column" className="w-full animation-fade-in">
-                {currentPage}
-            </Box>
-        </Box>
+        <Box direction="column" className="w-full min-w-0">
+    <div className="sticky top-0 z-50 w-fit max-w-full py-2">
+        <Paper className="flex w-full max-w-full overflow-x-auto no-scrollbar [&>*]:shrink-0 [&>*]:whitespace-nowrap !bg-slate-100/80 !p-1.5 !rounded-xl !border !border-slate-200/50 !shadow-none">
+            {titles.map((value, i) => (
+                <NavigationBarButton
+                    key={'nav' + i + value}
+                    title={value}
+                    isClicked={i === activeTab}
+                    onClick={() => onTabChange(i)}
+                />
+            ))}
+        </Paper>
+    </div>
+
+    <Box direction="column" className="w-full min-w-0 animation-fade-in">
+        {currentPage}
+    </Box>
+</Box>
     )
 }
 

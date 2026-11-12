@@ -47,7 +47,7 @@ const getQuestionTypeTabColumn = (
 	}
 ]
 
-const QuestionTypeList = ({ questionTypes } : { questionTypes : questionIdType[]}) => {
+const QuestionTypeList = ({ questionType } : { questionType : questionIdType[]}) => {
 	const [selectedQuestionType, setSelectedQuestionType] = useState<string>('')
 	const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -60,7 +60,7 @@ const QuestionTypeList = ({ questionTypes } : { questionTypes : questionIdType[]
 		<Box direction="column" className="w-full items-center justify-center">
 			<Table
 				columns={getQuestionTypeTabColumn(handleOpenEditModal)}
-				data={questionTypes}
+				data={questionType}
 				rowKey={'id'}
 			/>
 			<ModalQuestionTypeEdit

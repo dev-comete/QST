@@ -60,7 +60,7 @@ const getQuestionTabColumn = (
 ): Column<bankQuestionType>[] => [
 
 	{
-		header: 'Enoncé',
+		header: 'Question',
 		key: "enonce_question"
 	},
 	{

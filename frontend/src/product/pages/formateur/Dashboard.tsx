@@ -37,7 +37,7 @@ const Dashboard = () => {
                 
                 {/* Quiz et vague Tab Content (Index 1) */}
                 {activeTab === 1 && (
-                    <Box>
+                    <Box className="flex-wrap min-w-0">
                         <DashboardBloc 
                             title="Suivi des quiz récents"
                             emptyText="Il n'y a pas encore de quiz publié"

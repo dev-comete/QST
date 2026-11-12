@@ -21,22 +21,22 @@ const ImportSourceStep = ({ imp }: { imp: ImportState }) => {
 
 	return (
 	<Box direction="column" className="w-full gap-5">
-			{
-				isLoading ? <Spinner />
-				:
-				<Box direction="column" className="items-center text-center bg-secondary rounded-xl p-3">
-					<Box>
-						<FAIcon name="circle-info"/>
-						<CustomText>Vous pouvez télécharger un modèle de fichier
-							<span
-								onClick={download}
-								className="hover:text-primary hover:font-bold cursor-pointer underline"
-							> ici.</span>  
-						</CustomText>
-					</Box>
-					<CustomText isItalic>Veillez à bien remplir les champs, une bonne réponse doit avoir une explication.</CustomText>
+		{
+			isLoading ? <Spinner />
+			:
+			<Box direction="column" className="items-center text-center bg-secondary rounded-xl p-3">
+				<Box>
+					<FAIcon name="circle-info" className="text-primary"/>
+					<CustomText>Vous pouvez télécharger
+						<span
+							onClick={download}
+							className="text-primary hover:font-bold cursor-pointer underline"
+						> un modèle de fichier ici <FAIcon name="download"/></span>  
+					</CustomText>
 				</Box>
-			}
+				<CustomText isItalic>Veillez à bien remplir les champs, une bonne réponse doit avoir une explication.</CustomText>
+			</Box>
+		}
 		<FileInput
 			id="import_file"
 			name="import_file"
@@ -115,7 +115,7 @@ const ImportDoneStep = ({ imp }: { imp: ImportState }) => (
 
 // The Modal only renders ONE child (it uses Children.toArray + an index), so everything lives in one component.
 const ImportBody = ({ imp }: { imp: ImportState }) => (
-	<div className="w-[min(70vw,60rem)]">
+	<div className="w-fit">
 		{imp.step === 'input' && <ImportSourceStep imp={imp} />}
 		{imp.step === 'preview' && <ImportPreviewStep imp={imp} />}
 		{imp.step === 'done' && <ImportDoneStep imp={imp} />}

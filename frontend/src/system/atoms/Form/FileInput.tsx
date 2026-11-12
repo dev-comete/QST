@@ -1,5 +1,7 @@
-import LabelInput from "./LabelInput";
 import CustomText from "../Text/CustomText";
+import Box from "../Container/Box";
+import IconButton from "../../molecules/Buttons/IconButton";
+import FAIcon from "../Icon/FAIcon";
 
 interface FileInputProps {
 	id: string
@@ -22,14 +24,16 @@ const FileInput = ({
 	disabled = false,
 	helper,
 }: FileInputProps) => {
+
 	return (
-		<div className="flex flex-col w-full">
-			{label && <LabelInput label={label} htmlFor={id} />}
+		<div className="flex flex-col w-full gap-3">
+			{label && <CustomText className="uppercase text-center" weight="bold">{label}</CustomText>}
 			<label
 				htmlFor={id}
 				className={`
-					border-2 border-dashed border-primary rounded-xl p-5 w-full text-center
-					${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-background'}
+					rounded-xl p-5 w-full text-center
+					${file ? 'border border-success' : 'hover:bg-secondary border-primary border-2 border-dashed'}
+					${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
 				`}
 			>
 				<input
@@ -44,22 +48,26 @@ const FileInput = ({
 						e.target.value = '' // lets the user pick the same file again after removing it
 					}}
 				/>
-				<CustomText weight="bold" color="primary">
-					{file ? file.name : 'Cliquez pour choisir un fichier'}
-				</CustomText>
+				<Box className={`${file ? 'justify-between' : 'justify-center'} items-center w-full`}>
+					<Box className="items-center">
+						{file && <FAIcon name="file-lines" className="text-success p-2 rounded-full bg-success-light" size="lg"/>}
+						<CustomText weight="bold" color={file? 'text' : 'primary'}>
+							{file ? file.name : 'Cliquez pour choisir un fichier'}
+						</CustomText>
+					</Box>
+					{file && !disabled && (
+						<IconButton
+							iconName="trash"
+							action={() => onChange(null)}
+							title="Retirer le fichier"
+							className="hover:text-error"
+						/>
+					)}
+				</Box>
 				{helper && !file && (
 					<CustomText textTag="p" color="disabled" className="mt-1 text-sm">{helper}</CustomText>
 				)}
 			</label>
-			{file && !disabled && (
-				<button
-					type="button"
-					className="text-sm text-error underline self-end mt-1 cursor-pointer"
-					onClick={() => onChange(null)}
-				>
-					Retirer le fichier
-				</button>
-			)}
 		</div>
 	)
 }
