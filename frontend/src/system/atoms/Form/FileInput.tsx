@@ -1,4 +1,3 @@
-import LabelInput from "./LabelInput";
 import CustomText from "../Text/CustomText";
 import Box from "../Container/Box";
 import IconButton from "../../molecules/Buttons/IconButton";
