@@ -80,8 +80,8 @@ const Parameters = () => {
                                     onClick={() => navigateTo("corbeille")}
                                 >
                                     <span className="items-center">
-                                        <FAIcon name="user-xmark" />
-                                        {"Désactivés"}
+                                        <FAIcon name="box-archive" />
+                                        {"Archive des comptes"}
                                     </span>
                                 </ActionButton>
                             )}
