@@ -16,8 +16,8 @@ export default function UserBin() {
     return (
         <Box direction="column" className="w-full p-5 gap-5">
             <Title 
-                title="Corbeille des utilisateurs" 
-                subtitle="Consultez et restaurez les comptes désactivés."
+                title="Archive des comptes" 
+                //subtitle="Consultez et restaurez les comptes désactivés."
                 linkBack="parametre_general"
             />
             <UserList 
