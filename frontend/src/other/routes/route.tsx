@@ -25,6 +25,7 @@ const AdminDashboard = lazy(() => import("../../product/pages/admin/AdminDashboa
 const Dashboard = lazy(() => import("../../product/pages/formateur/Dashboard"));
 const ProfileRouteLayout = lazy(() => import("../../product/layout/common/ProfileRouteLayout"));
 const ProfileMePage = lazy(() => import("../../product/pages/common/ProfileMePage"));
+const UserBin = lazy(() => import("../../product/pages/admin/UserBin"));
 
 export const router = createBrowserRouter([
 	// Public routes
@@ -59,6 +60,7 @@ export const router = createBrowserRouter([
                     { index: true, element: <Navigate to="tableau_de_bord" replace /> },
                     { path: 'parametre_general', element: <SuspenseWrapper><Parameters /></SuspenseWrapper> },
                     { path: 'tableau_de_bord', element: <SuspenseWrapper><AdminDashboard /></SuspenseWrapper> },
+                    { path: 'corbeille', element: <SuspenseWrapper><UserBin /></SuspenseWrapper> },
                     ...COMMON_CHILDREN,
                 ]
             },
