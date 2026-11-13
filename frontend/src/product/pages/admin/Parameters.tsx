@@ -19,6 +19,9 @@ import { useTabNavigation } from "../../../other/hooks/navigation/useTabNavigati
 import ModalQuestionTypeCreate from "../../../system/organisms/question/form/ModalQuestionTypeCreate";
 import { useQuestionType } from "../../../other/hooks/question/useQuestionType";
 import TypeParameter from "./TypeParameter";
+import { useAppNavigation } from "../../../other/hooks/navigation/useAppNavigation";
+import Box from "../../../system/atoms/Container/Box";
+import FAIcon from "../../../system/atoms/Icon/FAIcon";
 
 type ValidModalKey = 'user' | 'project' | 'formation' | 'typeUser' | 'typeQuestion';
 type ModalKey = ValidModalKey | null;
@@ -31,6 +34,7 @@ const tabActions: Record<number, { label: string; modalKey: ModalKey }> = {
 
 const Parameters = () => {
     const { activeTab, handleTabChange } = useTabNavigation();
+    const { navigateTo } = useAppNavigation();
 
     const { projectQuery } = useProject();
     const { data: projects, status: projectStatus } = projectQuery;
@@ -68,9 +72,23 @@ const Parameters = () => {
                 title={"Paramètres généraux"}
                 titleButton={
                     tabActions[activeTab] && (
-                        <ActionButton onClick={() => openModal(currentAction.modalKey)}>
-                            {tabActions[activeTab].label}
-                        </ActionButton>
+                        <Box className="space-x-3">
+                            {activeTab === 0 && (
+                                <ActionButton
+                                    btnColor="white"
+                                    textColor="text"
+                                    onClick={() => navigateTo("corbeille")}
+                                >
+                                    <span className="items-center">
+                                        <FAIcon name="user-xmark" />
+                                        {"Désactivés"}
+                                    </span>
+                                </ActionButton>
+                            )}
+                            <ActionButton onClick={() => openModal(currentAction.modalKey)}>
+                                {tabActions[activeTab].label}
+                            </ActionButton>
+                        </Box>
                     )
                 }
             >

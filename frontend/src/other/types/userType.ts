@@ -3,10 +3,11 @@ type userType = {
 	username: string,
 	email: string,
 	type_utilisateur: number | null,
-	projets: number[]
+	projets: number[],
+	is_active: boolean
 }
 
-type userPayload = Omit<userType, 'id'>
+type userPayload = Omit<userType, 'id' | 'is_active'>
 
 type userWithOrganisation = {
 	id: number,

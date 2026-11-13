@@ -5,9 +5,12 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.urls import reverse
 
-from rest_framework import viewsets, generics
+from rest_framework import viewsets, generics, status
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from django.contrib.auth import get_user_model
+
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 from .serializers import UserBasicProfileSerializer, UtilisateurSerializer, TypeUtilisateurSerializer , OrganisationSerializer
 from .models import TypeUtilisateur, Organisation
@@ -106,6 +109,31 @@ class UtilisateurViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(type_utilisateur__type_utilisateur=role)
             
         return queryset
+
+    def destroy(self, request, *args, **kwargs):
+        user = self.get_object()
+        user.is_active = False
+        user.save(update_fields=['is_active'])
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    @action(detail=True, methods=['post'])
+    def reactivate(self, request, pk=None):
+        user = self.get_object()
+        
+        if user.is_active:
+            return Response(
+                {'detail': "Cet utilisateur est déjà actif."}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+            
+        # On réactive l'utilisateur
+        user.is_active = True
+        user.save()
+        
+        return Response(
+            {'detail': f"L'utilisateur {user.username} a été réactivé avec succès."}, 
+            status=status.HTTP_200_OK
+        )
 
 class MyBasicProfileAPIView(generics.RetrieveUpdateAPIView):
     """
