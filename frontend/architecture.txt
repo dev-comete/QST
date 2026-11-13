@@ -10,7 +10,7 @@
 │   ├── App.tsx
 │   ├── assets
 │   │   ├── comete.jpg
-│   │   └── illustration.png
+│   │   └── illustration.webp
 │   ├── css
 │   │   ├── base.css
 │   │   ├── components.css
@@ -22,7 +22,8 @@
 │   │   ├── helper
 │   │   │   ├── chatHelper.ts
 │   │   │   ├── helper.ts
-│   │   │   └── importHelper.ts
+│   │   │   ├── importHelper.ts
+│   │   │   └── themeHelper.ts
 │   │   ├── hooks
 │   │   │   ├── auth
 │   │   │   │   └── useAuth.ts
@@ -46,6 +47,7 @@
 │   │   │   ├── question
 │   │   │   │   ├── useDebounce.ts
 │   │   │   │   ├── useDistractor.ts
+│   │   │   │   ├── useDownloadQuizTemplate.ts
 │   │   │   │   ├── useImportQuestions.ts
 │   │   │   │   ├── useQuestionCreate.ts
 │   │   │   │   ├── useQuestion.ts
@@ -55,17 +57,21 @@
 │   │   │   │   ├── useCreateQuiz.ts
 │   │   │   │   ├── useQuiz.ts
 │   │   │   │   └── useReviewQuiz.ts
+│   │   │   ├── theme
+│   │   │   │   └── useTheme.ts
 │   │   │   ├── user
 │   │   │   │   ├── useProject.ts
 │   │   │   │   └── useUser.ts
 │   │   │   └── vague
 │   │   │       ├── useAssignVague.ts
+│   │   │       ├── useExportVague.ts
 │   │   │       └── useVague.ts
 │   │   ├── lib
 │   │   │   └── queryClient.ts
 │   │   ├── routes
 │   │   │   ├── route.tsx
-│   │   │   └── sharedChildren.tsx
+│   │   │   ├── sharedChildren.tsx
+│   │   │   └── SuspensWrapper.tsx
 │   │   ├── services
 │   │   │   ├── apiClient.ts
 │   │   │   ├── auth
@@ -80,6 +86,7 @@
 │   │   │   ├── projectService.ts
 │   │   │   ├── questionService.ts
 │   │   │   ├── quizService.ts
+│   │   │   ├── themeStorage.ts
 │   │   │   ├── userService.ts
 │   │   │   └── vagueService.ts
 │   │   └── types
@@ -92,11 +99,13 @@
 │   │       ├── navigation.ts
 │   │       ├── questionType.ts
 │   │       ├── quizType.ts
+│   │       ├── theme.ts
 │   │       ├── userType.ts
 │   │       └── vagueType.ts
 │   ├── product
 │   │   ├── context
-│   │   │   └── AuthProvider.tsx
+│   │   │   ├── AuthProvider.tsx
+│   │   │   └── ThemeProvider.tsx
 │   │   ├── layout
 │   │   │   ├── common
 │   │   │   │   ├── BodyLayout.tsx
@@ -112,7 +121,9 @@
 │   │   └── pages
 │   │       ├── admin
 │   │       │   ├── AdminDashboard.tsx
-│   │       │   └── Parameters.tsx
+│   │       │   ├── Parameters.tsx
+│   │       │   ├── TypeParameter.tsx
+│   │       │   └── UserBin.tsx
 │   │       ├── apprenant
 │   │       │   ├── Bulletin
 │   │       │   │   ├── BulletinReview.tsx
@@ -164,6 +175,7 @@
 │       │   │   ├── Box.tsx
 │       │   │   └── Paper.tsx
 │       │   ├── Form
+│       │   │   ├── ColorInput.tsx
 │       │   │   ├── FileInput.tsx
 │       │   │   ├── Info.tsx
 │       │   │   ├── Input.tsx
@@ -204,15 +216,19 @@
 │       │   │   └── ChatMessageItem.tsx
 │       │   ├── Container
 │       │   │   ├── Card.tsx
-│       │   │   └── ErrorBloc.tsx
+│       │   │   ├── Collapse.tsx
+│       │   │   ├── ErrorBloc.tsx
+│       │   │   └── ListContainer.tsx
 │       │   ├── Display
 │       │   │   ├── EvolutionLineChart.tsx
 │       │   │   ├── PercentageBar.tsx
 │       │   │   ├── PercentRing.tsx
 │       │   │   └── ScoreDisplay.tsx
 │       │   ├── Input
+│       │   │   ├── ColorField.tsx
 │       │   │   ├── PasswordInput.tsx
-│       │   │   └── SearchBar.tsx
+│       │   │   ├── SearchBar.tsx
+│       │   │   └── SegmentedControl.tsx
 │       │   ├── LayoutElement
 │       │   │   ├── Header.tsx
 │       │   │   └── Title.tsx
@@ -220,8 +236,10 @@
 │       │   │   └── Logo.tsx
 │       │   ├── Modal
 │       │   │   └── Modal.tsx
-│       │   └── Navigation
-│       │       └── NavigationBar.tsx
+│       │   ├── Navigation
+│       │   │   └── NavigationBar.tsx
+│       │   └── theme
+│       │       └── PresetSwatch.tsx
 │       └── organisms
 │           ├── bulletin
 │           │   └── list
@@ -248,6 +266,8 @@
 │           │       ├── ModalEditFormation.tsx
 │           │       └── ModalFormationCreate.tsx
 │           ├── globalParam
+│           │   ├── container
+│           │   │   └── ParamItem.tsx
 │           │   ├── input
 │           │   │   └── BaremeInput.tsx
 │           │   └── list
@@ -255,7 +275,8 @@
 │           │       └── FormationList.tsx
 │           ├── profile
 │           │   ├── PasswordResetRequestCard.tsx
-│           │   └── ProfileDetailsCard.tsx
+│           │   ├── ProfileDetailsCard.tsx
+│           │   └── ThemeSettingsCard.tsx
 │           ├── question
 │           │   ├── form
 │           │   │   ├── ModalQuestionImport.tsx
@@ -317,4 +338,4 @@
 ├── tsconfig.node.json
 └── vite.config.ts
 
-91 directories, 227 files
+94 directories, 245 files

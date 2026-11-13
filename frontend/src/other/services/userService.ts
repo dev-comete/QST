@@ -41,6 +41,11 @@ export const UserService = {
 		return response.data;
 	},
 
+	reactivate: async (id: string | number) => {
+        const response = await apiClient.post(`${USER_URL}${id}/reactivate/`);
+        return response.data;
+    },
+
 	list: async (params?: { role?: string }) => {
 		const role = params?.role;
 

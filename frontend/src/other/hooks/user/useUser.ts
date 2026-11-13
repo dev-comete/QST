@@ -126,6 +126,26 @@ export const useUserDel = (id: string) => {
 	}
 }
 
+export const useUserReactivate = (id: string | number) => {
+    const queryClient = useQueryClient()
+    
+    const reactivateMutation = useMutation({
+        mutationFn: () => UserService.reactivate(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['users_list'] })
+        },
+        onError: (err) => {
+            console.error('User reactivation failed:', err);
+        }
+    })
+
+    const handleReactivateUser = async () => {
+        return await reactivateMutation.mutateAsync()
+    }
+
+    return { handleReactivateUser, isPending: reactivateMutation.isPending }
+}
+
 export const useUserUpdate = (id: string) => {
 
 	const { userInfoQuery } = useUser({ id })

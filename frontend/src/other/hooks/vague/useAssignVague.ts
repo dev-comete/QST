@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from 'react-toastify';
 import { VagueService } from "../../services/vagueService";
 
 export const useAssignVague = (vagueId: number) => {
@@ -67,3 +68,40 @@ export const useAssignVague = (vagueId: number) => {
 		handleAssignQuiz
 	}
 }
+
+export const useRemoveFromVague = (vagueId: number) => {
+    const queryClient = useQueryClient();
+
+    const removeStudent = useMutation({
+        mutationFn: (etudiantId: number) => VagueService.removeStudent({ vague_id: vagueId, etudiant_ids: [etudiantId] }),
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({ queryKey: ['vague_list'] });
+            queryClient.invalidateQueries({ queryKey: ['vague_info', String(vagueId)] });
+            toast.success(data?.message || "Étudiant retiré avec succès.");
+        },
+        onError: (err: any) => {
+            const errorMsg = err.response?.data?.error || err.response?.data?.errors?.[0] || "Impossible de retirer cet étudiant.";
+            toast.error(errorMsg);
+        }
+    });
+
+    const removeQuiz = useMutation({
+        mutationFn: (quizId: number) => VagueService.removeQuiz({ vague_id: vagueId, quiz_id: quizId }),
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({ queryKey: ['vague_list'] });
+            queryClient.invalidateQueries({ queryKey: ['vague_info', String(vagueId)] });
+            toast.success(data?.message || "Quiz retiré de la vague avec succès.");
+        },
+        onError: (err: any) => {
+            const errorMsg = err.response?.data?.error || "Impossible de retirer ce quiz car il a déjà été commencé.";
+            toast.error(errorMsg);
+        }
+    });
+
+    return {
+        handleRemoveStudent: async (id: number) => await removeStudent.mutateAsync(id),
+        isRemovingStudent: removeStudent.isPending,
+        handleRemoveQuiz: async (id: number) => await removeQuiz.mutateAsync(id),
+        isRemovingQuiz: removeQuiz.isPending,
+    };
+};

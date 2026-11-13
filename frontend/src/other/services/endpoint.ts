@@ -26,6 +26,8 @@ export const ENDPOINTS = {
 		LIST: 'formation/vagues/',
 		ASSIGN_STUDENT: '/formation/vagues/assign-student/',
 		ASSIGN_QUIZ: '/formation/vagues/assign-quiz/',
+		REMOVE_STUDENT: '/formation/vagues/remove-student/',
+        REMOVE_QUIZ: '/formation/vagues/remove-quiz/',
 		ANALYTICS: '/quizzes/analytics/vague/',
 		CRUD: '/quizzes/crud/vagues/',
 		CHART_EVOLUTION: '/quizzes/vagues/',
