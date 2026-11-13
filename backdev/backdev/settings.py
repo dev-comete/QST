@@ -86,7 +86,8 @@ INSTALLED_APPS = [
     'formations',
     'quizzes',
     'ia',
-    'chat'
+    'chat', 
+    'notifications'
 ]
 
 MIDDLEWARE = [

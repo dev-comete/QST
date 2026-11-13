@@ -18,6 +18,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from quizzes.permissions import IsAdminUser
 from .invitation_email import send_invitation_email
 from .models import PasswordResetRequest
+from notifications.models import Notification
 from .serializers_auth import (
     CustomLoginSerializer,
     PasswordResetRequestSerializer,
@@ -102,6 +103,42 @@ class ConfirmPasswordResetAPIView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+def notify_admins_of_reset_request(user):
+    """
+    Récupère tous les administrateurs et leur envoie un e-mail 
+    en arrière-plan via EmailThread.
+    """
+    # Récupérer les emails de tous les admins (is_staff=True)
+    admin_emails = list(User.objects.filter(is_staff=True).exclude(email='').values_list('email', flat=True))
+    
+    if not admin_emails:
+        return
+
+    subject = "C-eval, Nouvelle demande de réinitialisation de mot de passe"
+    message = (
+        f"Bonjour,\n\n"
+        f"L'utilisateur {user.username} ({user.email}) a soumis une demande de réinitialisation "
+        f"de son mot de passe.\n\n"
+        f"Veuillez vous connecter au tableau de bord administrateur de la plateforme "
+        f"pour approuver ou rejeter cette demande.\n\n"
+        f"Cordialement,\n"
+        f"Le système QST."
+    )
+    from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@comete.ai')
+    
+    # Utilisation de votre thread existant pour ne pas bloquer l'API
+    EmailThread(subject, message, from_email, admin_emails).start()
+
+    admins = User.objects.filter(is_staff=True)
+    Notification.objects.bulk_create([
+        Notification(
+            destinataire=admin,
+            titre="Demande de réinitialisation",
+            message=f"{user.username} a demandé une réinitialisation.",
+            type_notif="password_reset"
+        ) for admin in admins
+    ])
+
 
 class SubmitPasswordResetRequestView(APIView):
     """
@@ -127,6 +164,7 @@ class SubmitPasswordResetRequestView(APIView):
             return Response({'detail': 'Une demande est déjà en attente pour ce compte.'}, status=status.HTTP_400_BAD_REQUEST)
 
         PasswordResetRequest.objects.create(user=user)
+        notify_admins_of_reset_request(user)
         return Response({'detail': "Demande de réinitialisation envoyée à l'administrateur."}, status=status.HTTP_201_CREATED)
 
 
@@ -228,6 +266,7 @@ class PublicPasswordResetRequestView(APIView):
 
         # On crée la demande qui apparaîtra dans le dashboard admin
         PasswordResetRequest.objects.create(user=user)
+        notify_admins_of_reset_request(user)
         
         return Response(
             {'detail': "Votre demande a été envoyée aux administrateurs. Vous recevrez un nouveau lien par e-mail une fois validée."}, 
