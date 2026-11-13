@@ -8,6 +8,8 @@ const VAGUE_CRUD_URL = ENDPOINTS.VAGUE.CRUD
 const VAGUE_LIST_URL = ENDPOINTS.VAGUE.LIST
 const VAGUE_ASSIGN_STUD_URL = ENDPOINTS.VAGUE.ASSIGN_STUDENT
 const VAGUE_ASSIGN_QUIZ_URL = ENDPOINTS.VAGUE.ASSIGN_QUIZ
+const VAGUE_REMOVE_STUDENT_URL = ENDPOINTS.VAGUE.REMOVE_STUDENT;
+const VAGUE_REMOVE_QUIZ_URL = ENDPOINTS.VAGUE.REMOVE_QUIZ;
 const VAGUE_STAT_URL = ENDPOINTS.VAGUE.ANALYTICS
 const VAGUE_CHART_URL = ENDPOINTS.VAGUE.CHART_EVOLUTION
 
@@ -54,6 +56,15 @@ export const VagueService = {
 		const response = await apiClient.post(VAGUE_ASSIGN_QUIZ_URL, data);
 		return response.data;
 	},
+
+	removeStudent: async (data: { vague_id: number; etudiant_ids: number[] }) => {
+        const response = await apiClient.post(VAGUE_REMOVE_STUDENT_URL, data);
+        return response.data;
+    },
+    removeQuiz: async (data: { vague_id: number; quiz_id: number }) => {
+        const response = await apiClient.post(VAGUE_REMOVE_QUIZ_URL, data);
+        return response.data;
+    },
 
 	statistic: async (id: string) => {
 		const response = await apiClient.get(VAGUE_STAT_URL + id + '/');
