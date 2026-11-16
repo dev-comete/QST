@@ -13,5 +13,11 @@ export default defineConfig({
   server: {
     host: '0.0.0.0', // This is critical for Docker
     port: 5173,
+    allowedHosts: ['c-eval.comete.ai'], // Ajout du domaine autorisé
+  },
+  // (Optionnel) Utile si vous utilisez "vite preview"
+  preview: {
+    host: '0.0.0.0',
+    allowedHosts: ['c-eval.comete.ai'],
   }
 })
