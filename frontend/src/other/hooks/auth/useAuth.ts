@@ -101,7 +101,7 @@ const useResetPassword = (email: string) => {
 
     const passwordMutation = useMutation({
         mutationFn: async () => {
-            const { data } = await apiClient.post("/accounts/auth/request-password-reset/", {
+            const { data } = await apiClient.post("accounts/auth/public-request-password-reset/", {
                 email,
             });
             return data;
