@@ -12,8 +12,10 @@ const VagueAssign = lazy(() => import("../../product/pages/formateur/vague/Vague
 const QuestionEdit = lazy(() => import("../../product/pages/formateur/question/QuestionEdit"));
 const QuestionBin = lazy(() => import("../../product/pages/formateur/question/QuestionBin"));
 const QuizBin = lazy(() => import("../../product/pages/formateur/quizz/QuizBin"));
+const NotificationPage = lazy(() => import("../../product/pages/common/NotificationPage"));
 
 const COMMON_CHILDREN = [
+	{ path: "notifications", element: <SuspenseWrapper><NotificationPage /></SuspenseWrapper> },
 	{ path: "gestion_equipe", element: <SuspenseWrapper><VagueManagement /></SuspenseWrapper> },
 	{ path: "gestion_question", element: <SuspenseWrapper><QuestionManagement /></SuspenseWrapper> },
 	{ path: "gestion_question/corbeille", element: <SuspenseWrapper><QuestionBin /></SuspenseWrapper> },

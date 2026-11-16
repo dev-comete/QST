@@ -2,6 +2,7 @@ import type { NavItem } from "../../../other/types/navigation";
 import Header from "../../../system/molecules/LayoutElement/Header";
 import SideBar from "./SideBar";
 import { Outlet } from "react-router";
+import NotificationBell from "../../../system/organisms/notification/NotificationBell";
 
 interface LayoutProps {
 	navList: NavItem[]
@@ -13,6 +14,9 @@ const Layout = ({ navList } : LayoutProps ) => {
 			<Header navList={navList}/>
 			<SideBar navList={navList}/>
 			<main className="flex-1 overflow-y-auto">
+				<div className="hidden md:flex justify-end items-center h-12 px-6">
+					<NotificationBell />
+				</div>
 				<Outlet />
 			</main>
 		</div>

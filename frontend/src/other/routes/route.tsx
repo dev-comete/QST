@@ -26,6 +26,7 @@ const Dashboard = lazy(() => import("../../product/pages/formateur/Dashboard"));
 const ProfileRouteLayout = lazy(() => import("../../product/layout/common/ProfileRouteLayout"));
 const ProfileMePage = lazy(() => import("../../product/pages/common/ProfileMePage"));
 const UserBin = lazy(() => import("../../product/pages/admin/UserBin"));
+const NotificationPage = lazy(() => import("../../product/pages/common/NotificationPage"));
 
 export const router = createBrowserRouter([
 	// Public routes
@@ -92,7 +93,10 @@ export const router = createBrowserRouter([
 		children: [
 			{
 				element: <SuspenseWrapper><ApprenantTemplate /></SuspenseWrapper>,
-				children: [ { index: true, element: <SuspenseWrapper><MyEvaluations /></SuspenseWrapper> } ],
+				children: [
+					{ index: true, element: <SuspenseWrapper><MyEvaluations /></SuspenseWrapper> },
+					{ path: "notifications", element: <SuspenseWrapper><NotificationPage /></SuspenseWrapper> },
+				],
 			}
 		]
 	},

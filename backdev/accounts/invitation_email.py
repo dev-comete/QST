@@ -26,7 +26,7 @@ def _validity_days():
 def build_invitation_link(user):
     uid = urlsafe_base64_encode(force_bytes(user.pk))
     token = default_token_generator.make_token(user)
-    frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:5173').rstrip('/')
+    frontend_url = getattr(settings, 'DNS_NAME', 'https://c-eval.comete.ai').rstrip('/')
     return f'{frontend_url}/set-password/{uid}/{token}'
 
 
