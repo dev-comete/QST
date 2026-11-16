@@ -5,14 +5,23 @@ type TextType = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span' | 'captio
 
 type TextWeight = 'light' | 'normal' | 'bold';
 
+type TextVariant = 'question' | 'body' | 'supporting';
+
 interface TextProps {
 	children: React.ReactNode
 	textTag?: TextType
+	variant?: TextVariant
 	weight?: TextWeight
 	color?: ColorTheme
 	isItalic?: boolean
 	className?: string
 }
+
+const textVariant: Record<TextVariant, string> = {
+	question: 'text-xl md:text-2xl leading-snug tracking-tight',
+	body: 'text-base leading-relaxed',
+	supporting: 'text-sm leading-relaxed'
+};
 
 const textBase : Record<TextType, string> = {
 	'h1': 'text-2xl',
@@ -73,6 +82,7 @@ const textColor : Record<ColorTheme, string> = {
 const CustomText = ({
 	children,
 	textTag : Tag = "p",
+	variant,
 	color = 'text',
 	weight = "normal",
 	isItalic,
@@ -82,7 +92,7 @@ const CustomText = ({
 	if (textBase[Tag] === undefined)
 		return <p className="text-base">{children}</p>;
 	
-	const textStyling = `${textBase[Tag]} ${textWeight[weight]} ${textColor[color]} ${isItalic ? "italic" : null} ${className}`;
+	const textStyling = `${variant ? textVariant[variant] : textBase[Tag]} ${textWeight[weight]} ${textColor[color]} ${isItalic ? "italic" : null} ${className}`;
 
 	return (
 		<Tag className={textStyling}>
