@@ -100,12 +100,12 @@ const Login = () => {
 										className="w-full"
 										required
 									/>
-									{/* <span
+									<span
 										className="flex self-end text-[11px] cursor-pointer hover:text-primary"
 										onClick={() => setOpen(true)}
 									>
 										Mot de passe oublié?
-									</span> */}
+									</span>
 								</Box>
 								{ error && <Info info={error} variant="error"/>}
 								<ActionButton
