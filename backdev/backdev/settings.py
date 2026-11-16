@@ -38,13 +38,18 @@ GEMINI_API_KEY = env('GEMINI_API_KEY', default=None)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:5173')
+DNS_NAME = os.environ.get('DNS_NAME', 'https://c-eval.comete.ai')
+DNS_WITHOUT_PROTOCOL = os.environ.get('DNS_WITHOUT_PROTOCOL', 'c-eval.comete.ai')
 
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
     '127.0.0.1:8000',
+    '127.0.0.1:5173',
     FRONTEND_URL,
+    DNS_NAME,
+    DNS_WITHOUT_PROTOCOL,
     '*'
 ]
 
@@ -53,16 +58,22 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3001',
     'http://127.0.0.1:8000',
     'http://127.0.0.1:3001',
-    FRONTEND_URL
+    'http://localhost:5173',
+    FRONTEND_URL,
+    DNS_NAME
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_TRUSTED_ORIGINS = [
     'http://localhost:8000',
+    'http://localhost:5173',
+    'http://localhost:3001',
     'http://127.0.0.1:8000',
     'http://127.0.0.1:3001',
-    FRONTEND_URL
+    FRONTEND_URL,
+    DNS_NAME,
+    DNS_WITHOUT_PROTOCOL
 ]
 
 
