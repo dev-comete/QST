@@ -16,7 +16,7 @@ interface DashboardMetricItem {
 
 const getDashboardMetricIcons = (type: 'admin' | 'formateur') => {
 	const DashboardMetricIcon : DashboardMetricItem[] = [
-		{ icon: 'book', color: 'warning', link: type == 'admin' ? 'parametre_general?tab=3' : 'formation'},
+		{ icon: 'book', color: 'warning', link: type == 'admin' ? 'parametre_general?tab=2' : 'formation'},
 		{ icon: 'users', color: 'success', link: 'gestion_equipe'},
 		{ icon: 'file-circle-question', color: 'text', link: 'gestion_quiz'},
 		{ icon: 'circle-question', color: 'error', link: 'gestion_question'},
