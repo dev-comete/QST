@@ -44,4 +44,9 @@ export const ENDPOINTS = {
 	DASHBOARD: {
 		METRICS: '/quizzes/dashboard/metrics/',
 	},
+	NOTIFICATION: {
+		LIST: '/notifications/',
+		MARK_AS_READ: '/notifications/{id}/mark_read/',
+		MARK_ALL_AS_READ: '/notifications/mark_all_read/',
+	},
 };

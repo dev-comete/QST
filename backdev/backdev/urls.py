@@ -30,6 +30,7 @@ urlpatterns = [
     path('formation/', include('formations.urls')),
     path('ia/', include('ia.urls')),
     path('chat/', include('chat.urls')),
+    path('notifications/', include('notifications.urls')),
 ]
 
 if not settings.DEBUG:

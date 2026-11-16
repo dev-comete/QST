@@ -5,6 +5,7 @@ import LogoutBtn from "../Buttons/LogoutBtn";
 import NavButton from "../Buttons/NavButton";
 import Logo from "../Logo/Logo";
 import type { NavItem } from "../../../other/types/navigation";
+import NotificationBell from "../../organisms/notification/NotificationBell";
 
 interface HeaderProps {
 	navList: NavItem[];
@@ -19,13 +20,16 @@ const Header = ({ navList } : HeaderProps) => {
 				<Logo />
 				
 				{/* Hamburger / Close Icon Button */}
-				<IconButton 
-					iconName={isMobileMenuOpen ? "xmark" : "bars"} 
-					action={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-					btnColor="white"
-					iconStyling="text-slate-600 text-lg"
-					className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
-				/>
+				<div className="flex items-center gap-2">
+					<NotificationBell />
+					<IconButton
+						iconName={isMobileMenuOpen ? "xmark" : "bars"}
+						action={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+						btnColor="white"
+						iconStyling="text-slate-600 text-lg"
+						className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
+					/>
+				</div>
 			</header>
 
 			{/* Mobile Dropdown / Drawer Overlay */}
