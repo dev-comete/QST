@@ -71,6 +71,18 @@ export const VagueService = {
 		return response.data as vagueStat;
 	},
 
+	exportAnalyticsPdf: async (vagueId: string | number) => {
+		const response = await apiClient.get<Blob>(
+			`${VAGUE_STAT_URL}${vagueId}/pdf/`,
+			{ responseType: 'blob' }
+		);
+		const disposition = response.headers['content-disposition'] as string | undefined;
+		const filename = disposition?.match(/filename="?([^";]+)"?/i)?.[1]
+			?? `Analytics_Vague_${vagueId}.pdf`;
+
+		return { data: response.data, filename };
+	},
+
 	info: async (id: string) => {
 		const response = await apiClient.get(VAGUE_CRUD_URL + id + '/');
 		return response.data as vagueInfo;
