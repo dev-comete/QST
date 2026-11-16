@@ -33,7 +33,7 @@ export const OptionItem = ({ item } : OptionItemProps) => {
 									${opt.est_correct ? 'bg-success-light border border-success' : ''}	
 								`}
 							>
-								<CustomText color={opt.est_correct ? 'success' : 'text'}>{opt.texte}</CustomText>
+								<CustomText variant="body" color={opt.est_correct ? 'success' : 'text'}>{opt.texte}</CustomText>
 								<FAIcon
 									name={opt.est_correct ? 'circle-check' : ''}
 									className={opt.est_correct ? 'text-success' : 'text-error'}
@@ -47,7 +47,9 @@ export const OptionItem = ({ item } : OptionItemProps) => {
 									`}
 								>
 									<FAIcon name="lightbulb" className="text-warning"/>
-									<CustomText color="primary" isItalic>Explication : {opt.explication}</CustomText>
+									<CustomText variant="supporting" color="text-light">
+										<span className="font-semibold">Explication :</span> {opt.explication}
+									</CustomText>
 								</Box>
 							}
 						</Box>
@@ -77,8 +79,9 @@ const QuestionDetail = () => {
 				<Box direction="column" className="space-y-3">
 					<CustomText
 						textTag="h2"
+						variant="question"
 						weight="bold"
-						className={`${question.reponses && question.reponses.length == 0 ? '' : 'border-b'} border-background pb-3`}
+						className={`${question.reponses && question.reponses.length == 0 ? '' : 'border-b'} border-background pb-4`}
 					>{question.enonce_question}</CustomText>
 					<OptionItem id={question.id} item={question.reponses}/>
 				</Box>
