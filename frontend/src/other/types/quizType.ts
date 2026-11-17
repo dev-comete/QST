@@ -57,7 +57,7 @@ type AnswersMap = Record<string, Array<number | string>>;
 type QuizSubmitPayload = {
 	quiz_id: string,
 	vague_id: string | number,
-	answers: AnswersMap[]
+	answers: AnswersMap
 }
 
 type CorrectionOption = {
