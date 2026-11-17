@@ -73,7 +73,7 @@ const Login = () => {
 			</Modal>
 			<Box className="w-full px-10">
 				<Box direction="column" className="bg-black/50 justify-center p-10 rounded-xl flex-1">
-					<h1 className="text-[50px] text-white font-bold">Bienvenue sur QST</h1>
+					<h1 className="text-[50px] text-white font-bold">Bienvenue sur C-eval</h1>
 					<CustomText textTag="h2" color="white" weight="bold">L'évaluation intelligente, simplifiée.</CustomText>
 				</Box>
 				<Paper color="white" className="w-full max-w-md p-10 shadow-none h-fit">
