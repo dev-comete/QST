@@ -22,6 +22,8 @@ from .models import Quiz, Question, Reponse , UtilisateurQuiz, QuizQuestion , Ty
 
 from formations.models import UtilisateurVague
 
+from notifications.services import notify_formateur_of_quiz_submission
+
 class QuizViewSet(viewsets.ModelViewSet):
     serializer_class = QuizSerializer
     permission_classes = [IsFormateurOrAdminOrReadOnly]
@@ -232,6 +234,12 @@ class SubmitQuizAPIView(APIView):
             return Response({"error": "Une erreur interne est survenue."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         formation_liee = quiz_attempt.quiz.formation
+
+        try:
+            print(f"\n[NOTIF DEBUG] Déclenchement de la notification pour QuizAttempt ID {quiz_attempt.id}")
+            notify_formateur_of_quiz_submission(request.user, quiz_attempt)
+        except Exception as e:
+            print(f"[NOTIF DEBUG] Erreur inattendue dans la vue lors de l'appel : {e}")
         
         return Response({
             "message": "Quiz soumis avec succès.",
