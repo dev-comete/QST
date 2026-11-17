@@ -41,6 +41,7 @@ DEBUG = False
 FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:5173')
 DNS_NAME = os.environ.get('DNS_NAME', 'https://c-eval.comete.ai')
 DNS_WITHOUT_PROTOCOL = os.environ.get('DNS_WITHOUT_PROTOCOL', 'c-eval.comete.ai')
+DNS_BACKEND_NAME = os.environ.get('DNS_BACKEND_NAME', 'https://back-c-eval.comete.ai')
 
 ALLOWED_HOSTS = [
     '127.0.0.1',
