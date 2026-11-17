@@ -19,7 +19,7 @@ const NotificationBell = () => {
     const getBasePath = () => {
         if (authUser?.role === 'admin') return '/admin';
         if (authUser?.role === 'formateur') return '/formateur';
-        return '/apprenant';
+        return '/my_eval';
     };
 
     // Map notification types to application routes
