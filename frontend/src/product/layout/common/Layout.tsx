@@ -14,8 +14,10 @@ const Layout = ({ navList } : LayoutProps ) => {
 			<Header navList={navList}/>
 			<SideBar navList={navList}/>
 			<main className="flex-1 overflow-y-auto">
-				<div className="hidden md:flex justify-end items-center h-12 px-6">
-					<NotificationBell />
+				<div className="hidden md:flex justify-end items-center h-12 px-6 relative z-50">
+					<div className="-translate-y-[1px] relative z-[60] top-5 right-5">
+						<NotificationBell />
+					</div>
 				</div>
 				<Outlet />
 			</main>

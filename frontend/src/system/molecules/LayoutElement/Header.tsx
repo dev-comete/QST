@@ -20,7 +20,7 @@ const Header = ({ navList } : HeaderProps) => {
 				<Logo />
 				
 				{/* Hamburger / Close Icon Button */}
-				<div className="flex items-center gap-2">
+				<div className="flex items-center gap-2 relative">
 					<NotificationBell />
 					<IconButton
 						iconName={isMobileMenuOpen ? "xmark" : "bars"}
