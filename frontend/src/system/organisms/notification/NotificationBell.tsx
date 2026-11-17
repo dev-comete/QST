@@ -7,12 +7,20 @@ import FAIcon from "../../atoms/Icon/FAIcon";
 import IconButton from "../../molecules/Buttons/IconButton";
 import { useNotification } from "../../../other/hooks/notification/useNotification";
 import { formatDate } from "../../../other/helper/helper";
+import { useAuth } from "../../../other/hooks/auth/useAuth";
 
 const NotificationBell = () => {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotification();
     const navigate = useNavigate();
+    const { authUser } = useAuth();
+
+    const getBasePath = () => {
+        if (authUser?.role === 'admin') return '/admin';
+        if (authUser?.role === 'formateur') return '/formateur';
+        return '/apprenant';
+    };
 
     // Map notification types to application routes
     const handleNotificationClick = (notifId: number, typeNotif: string | null) => {
@@ -21,10 +29,12 @@ const NotificationBell = () => {
         
         switch (typeNotif) {
             case 'password_reset':
-                navigate('/admin/parametre_general?tab=4'); // Or wherever your User Management/Password Reset view is
+                if (authUser?.role === 'admin') {
+                    navigate('/admin/parametre_general?tab=4');
+                }
                 break;
             case 'quiz_submit':
-                // navigate(`/formateur/vague/${vagueId}/bulletin`); -> Needs more context from backend, but placeholder ready
+                // navigate(`${getBasePath()}/vague/${vagueId}/bulletin`);
                 break;
             default:
                 // Default fallback route, or do nothing
@@ -116,7 +126,8 @@ const NotificationBell = () => {
                         className="p-3 bg-slate-50 border-t border-slate-100 text-center cursor-pointer hover:bg-slate-100 transition-colors"
                         onClick={() => {
                             setIsOpen(false);
-                            navigate('/admin/notifications'); // Dynamic based on role in reality, but this routes them to the full page.
+                            const basePath = getBasePath();
+                            navigate(`${basePath}/notifications`); 
                         }}
                     >
                         <CustomText className="text-sm font-medium text-primary">Voir toutes les notifications</CustomText>
