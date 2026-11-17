@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router';
+import { useAuth } from '../../../../other/hooks/auth/useAuth';
 import { QuizService } from '../../../../other/services/quizService';
 import type { AnswersMap, Question, QuizInfo } from '../../../../other/types/quizType';
 import Box from '../../../../system/atoms/Container/Box';
@@ -14,207 +15,242 @@ import ConfirmActionButton from '../../../../system/molecules/Buttons/ConfirmAct
 import ModalQuizFinished from '../../../../system/organisms/evaluation/ModalQuizFinished';
 
 export default function TakingEvaluation() {
-	const { id } = useParams();
-	const [searchParams] = useSearchParams();
-	const vagueId = searchParams.get('vague_id') ?? '';
+    const { id } = useParams();
+    const [searchParams] = useSearchParams();
+    const vagueId = searchParams.get('vague_id') ?? '';
 
-	const [quizInfo, setQuizInfo] = useState<QuizInfo | null>(null);
-	const [questions, setQuestions] = useState<Question[]>([]);
+	const { authUser } = useAuth();
+	const userId = authUser?.id ?? 'guest';
 
-	const [answers, setAnswers] = useState<AnswersMap>({});
-	// 🌟 CORRECTION 2 : Un "Ref" pour toujours avoir accès aux dernières réponses dans le chronomètre
-	const answersRef = useRef({});
+    // Create a unique key for local storage based on the quiz and vague ID
+    const STORAGE_KEY = `qst_quiz_answers_${id}_${vagueId}_${userId}`;
+	
+    const [quizInfo, setQuizInfo] = useState<QuizInfo | null>(null);
+    const [questions, setQuestions] = useState<Question[]>([]);
 
-	// Met à jour la référence dès que answers change
-	useEffect(() => {
-		answersRef.current = answers;
-	}, [answers]);
+    // 1. Initialize answers from localStorage if available
+    const [answers, setAnswers] = useState<AnswersMap>(() => {
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            return saved ? JSON.parse(saved) : {};
+        } catch (error) {
+            console.error("Failed to load answers from local storage", error);
+            return {};
+        }
+    });
 
-	const [loading, setLoading] = useState<boolean>(true);
-	const [submitting, setSubmitting] = useState<boolean>(false);
-	const [error, setError] = useState<string>('');
-	const [timeLeft, setTimeLeft] = useState<number | null>(null);
-	const [ scoreQuiz, setScoreQuiz ] = useState<number | null>(null);
+    // Un "Ref" pour toujours avoir accès aux dernières réponses dans le chronomètre
+    const answersRef = useRef(answers);
 
-	const [ open, setOpen ] = useState(false)
+    // Met à jour la référence et le localStorage dès que answers change
+    useEffect(() => {
+        answersRef.current = answers;
+        
+        // 2. Save to localStorage on every answer change
+        try {
+            if (id && vagueId) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(answers));
+            }
+        } catch (error) {
+            console.error("Failed to save answers to local storage", error);
+        }
+    }, [answers, id, vagueId, STORAGE_KEY]);
 
-	const navigate  = useNavigate()
+    const [loading, setLoading] = useState<boolean>(true);
+    const [submitting, setSubmitting] = useState<boolean>(false);
+    const [error, setError] = useState<string>('');
+    const [timeLeft, setTimeLeft] = useState<number | null>(null);
+    const [scoreQuiz, setScoreQuiz] = useState<number | null>(null);
 
-	// Fonction spéciale de soumission (hors cycle classique) quand le temps est écoulé
-	const forceSubmitTimeout = async (): Promise<void> => {
-		// console.warn('[QUIZ DEBUG] forceSubmitTimeout() appelé - réponses envoyées:', answersRef.current);
-		setSubmitting(true);
-		try {
-			const response = await QuizService.submitQuiz({
-				quiz_id: id as string,
-				vague_id: vagueId,
-				answers: answersRef.current as AnswersMap[]
-			});
-			setScoreQuiz(response.score_obtenu)
-			setOpen(true)
-			// alert(`Temps écoulé ! Quiz soumis automatiquement.\n\nScore : ${response.score_obtenu} points.`);
-			// navigateTo('/');
-		} catch (err: unknown) {
-			const apiError = err as { response?: { data?: { error?: string } } };
-			setError(apiError.response?.data?.error || "Erreur lors de la soumission automatique.");
-			setSubmitting(false);
-		}
-	};
+    const [open, setOpen] = useState(false)
+    const navigate = useNavigate()
 
-  // 1. Chargement des données du Quiz et Chronomètre
-	useEffect(() => {
-		let timerId : number; // 🌟 Pour pouvoir arrêter la boucle infinie
+    const clearPersistedAnswers = () => {
+        try {
+            localStorage.removeItem(STORAGE_KEY);
+        } catch (error) {
+            console.error("Failed to clear local storage", error);
+        }
+    };
 
-		const fetchQuizData = async () => {
-			try {
-				if (!vagueId) {
-					throw new Error("L'ID de la vague est manquant dans l'URL.");
-				}
-				const data = (await QuizService.startQuiz(id as string, vagueId)) as QuizInfo;
+    // Fonction spéciale de soumission (hors cycle classique) quand le temps est écoulé
+    const forceSubmitTimeout = async (): Promise<void> => {
+        setSubmitting(true);
+        try {
+            const response = await QuizService.submitQuiz({
+                quiz_id: id as string,
+                vague_id: vagueId,
+                answers: answersRef.current
+            });
+            setScoreQuiz(response.score_obtenu);
+            
+            // 3. Clear localStorage on automatic timeout submission
+            clearPersistedAnswers();
+            
+            setOpen(true);
+        } catch (err: unknown) {
+            const apiError = err as { response?: { data?: { error?: string } } };
+            setError(apiError.response?.data?.error || "Erreur lors de la soumission automatique.");
+            setSubmitting(false);
+        }
+    };
 
-		setQuizInfo(data);
-		setQuestions(data.questions || []);
+    // 1. Chargement des données du Quiz et Chronomètre
+    useEffect(() => {
+        let timerId: number; 
 
-		const initialAnswers: AnswersMap = {};
-		data.questions.forEach((q: Question) => {
-			initialAnswers[String(q.question_id)] = [];
-		});
-		setAnswers(initialAnswers);
-		answersRef.current = initialAnswers;
+        const fetchQuizData = async () => {
+            try {
+                if (!vagueId) {
+                    throw new Error("L'ID de la vague est manquant dans l'URL.");
+                }
+                const data = (await QuizService.startQuiz(id as string, vagueId)) as QuizInfo;
 
-		// Calcul du temps sécurisé
-		const durationMs = parseDurationToMs(data.quiz_duree);
+                setQuizInfo(data);
+                setQuestions(data.questions || []);
 
-		// Sécurité timezone (ajoute le Z si Django envoie une date naïve pour la forcer en UTC)
-		let debutStr = data.heure_debut;
-		const hadOffsetOrZ = debutStr.endsWith('Z') || debutStr.includes('+');
-		if (!hadOffsetOrZ) debutStr += 'Z';
+                // Only initialize empty arrays if localStorage was empty
+                setAnswers(prev => {
+                    const mergedAnswers = { ...prev };
+                    let needsUpdate = false;
+                    
+                    data.questions.forEach((q: Question) => {
+                        const qIdStr = String(q.question_id);
+                        if (!mergedAnswers[qIdStr]) {
+                            mergedAnswers[qIdStr] = [];
+                            needsUpdate = true;
+                        }
+                    });
+                    
+                    if (needsUpdate) {
+                        answersRef.current = mergedAnswers;
+                        return mergedAnswers;
+                    }
+                    return prev;
+                });
 
-		// console.log('[QUIZ DEBUG] debutStr après ajout Z (si besoin):', debutStr, '| avait déjà un offset/Z ?', hadOffsetOrZ);
+                const durationMs = parseDurationToMs(data.quiz_duree);
+                let debutStr = data.heure_debut;
+                const hadOffsetOrZ = debutStr.endsWith('Z') || debutStr.includes('+');
+                if (!hadOffsetOrZ) debutStr += 'Z';
 
-		const startTimeMs = new Date(debutStr).getTime();
-		const endTimeMs = startTimeMs + durationMs;
-		// const nowMs = Date.now();
+                const startTimeMs = new Date(debutStr).getTime();
+                const endTimeMs = startTimeMs + durationMs;
 
-				const updateTimer = () => {
-		  const now = Date.now();
-		  const remaining = endTimeMs - now;
+                const updateTimer = () => {
+                    const now = Date.now();
+                    const remaining = endTimeMs - now;
 
+                    if (remaining <= 0) {
+                        setTimeLeft(0);
+                        if (timerId) clearInterval(timerId); 
+                        forceSubmitTimeout(); 
+                    } else {
+                        setTimeLeft(remaining);
+                    }
+                };
 
-					if (remaining <= 0) {
+                updateTimer();
+                timerId = window.setInterval(updateTimer, 1000);
 
-			setTimeLeft(0);
-			if (timerId) clearInterval(timerId); // 🌟 CORRECTION 3 : STOPPE LA BOUCLE IMMÉDIATEMENT
-			forceSubmitTimeout(); // Soumission avec la copie à jour
-		  } else {
-			setTimeLeft(remaining);
-		  }
-		};
+            } catch (err: unknown) {
+                const apiError = err as { response?: { data?: { error?: string } } };
+                setError(apiError.response?.data?.error || "Erreur lors du chargement du quiz.");
+            } finally {
+                setLoading(false);
+            }
+        };
 
-		updateTimer();
-		timerId = setInterval(updateTimer, 1000);
+        fetchQuizData();
 
-	  } catch (err: unknown) {
-		const apiError = err as { response?: { data?: { error?: string } } };
-		setError(apiError.response?.data?.error || "Erreur lors du chargement du quiz.");
-	  } finally {
-		setLoading(false);
-	  }
-	};
+        return () => {
+            if (timerId) clearInterval(timerId);
+        };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [id, vagueId]);
 
-	fetchQuizData();
+    // 3. Soumission manuelle (Le bouton classique)
+    const handleSubmitManually = async (): Promise<void> => {
+        if (submitting) return;
+        setSubmitting(true);
+        try {
+            const response = await QuizService.submitQuiz(({
+                quiz_id: id as string,
+                vague_id: vagueId,
+                answers: answersRef.current 
+            }));
+            setScoreQuiz(response.score_obtenu);
+            
+            // 3. Clear localStorage on successful manual submission
+            clearPersistedAnswers();
+            
+            setOpen(true);
+        } catch (err: unknown) {
+            const apiError = err as { response?: { data?: { error?: string } } };
+            setError(apiError.response?.data?.error || "Erreur lors de la soumission du quiz.");
+            setSubmitting(false);
+        }
+    };
 
-	// Nettoyage au démontage du composant
-	return () => {
-			if (timerId) clearInterval(timerId);
-		};
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [id, vagueId]);
+    // 2. Gestion des clics sur les options (fourni au QuizQuestionBloc)
+    const handleOptionToggle = (questionId: string | number, optionId: string | number, typeCode: string) => {
+        setAnswers(prev => {
+            const qid = String(questionId);
+            const currentSelection = (prev[qid] ?? []) as Array<string | number>;
 
+            if (typeCode === 'QCU') {
+                return { ...prev, [qid]: [optionId] };
+            }
 
+            if (typeCode === 'OUV') {
+                const value = String(optionId ?? '').trim();
+                return { ...prev, [qid]: value ? [value] : [] };
+            }
 
-  // 3. Soumission manuelle (Le bouton classique)
-	const handleSubmitManually = async (): Promise<void> => {
-		if (submitting) return;
-		// console.log('[QUIZ DEBUG] handleSubmitManually() - réponses envoyées:', answers);
-		setSubmitting(true);
-		try {
-			const response = await QuizService.submitQuiz(({
-				quiz_id: id as string,
-				vague_id: vagueId,
-				answers: answersRef.current as AnswersMap[]
-			}));
-			setScoreQuiz(response.score_obtenu)
-			setOpen(true)
-			// alert(`Félicitations, quiz terminé !\n\nScore : ${response.score_obtenu} points.`);
-			// navigateTo('/');
-		} catch (err: unknown) {
-			const apiError = err as { response?: { data?: { error?: string } } };
-			setError(apiError.response?.data?.error || "Erreur lors de la soumission du quiz.");
-			setSubmitting(false);
-		}
-	};
+            if (currentSelection.includes(optionId)) {
+                return { ...prev, [qid]: currentSelection.filter((id) => id !== optionId) };
+            } else {
+                return { ...prev, [qid]: [...currentSelection, optionId] };
+            }
+        });
+    };
 
-	// 2. Gestion des clics sur les options (fourni au QuizQuestionBloc)
-	const handleOptionToggle = (questionId: string | number, optionId: string | number, typeCode: string) => {
-		setAnswers(prev => {
-			const qid = String(questionId);
-			const currentSelection = (prev[qid] ?? []) as Array<string | number>;
+    const onViewResults = () => {
+        navigate(`/quiz/${id}/revue?vague_id=${vagueId}`, {
+            state: { fromQuiz: true },
+        });
+    };
 
-			if (typeCode === 'QCU') {
-				return { ...prev, [qid]: [optionId] };
-			}
+    if (loading) return <Loading />
+    if (error) return <FetchError />
 
-			if (typeCode === 'OUV') {
-				const value = String(optionId ?? '').trim();
-				return { ...prev, [qid]: value ? [value] : [] };
-			}
-
-			if (currentSelection.includes(optionId)) {
-				return { ...prev, [qid]: currentSelection.filter((id) => id !== optionId) };
-			} else {
-				return { ...prev, [qid]: [...currentSelection, optionId] };
-			}
-		});
-	};
-
-	const onViewResults = () => {
-		navigate(`/quiz/${id}/revue?vague_id=${vagueId}`, {
-			state: { fromQuiz: true },
-		});
-	};
-
-	if (loading) return <Loading />
-
-	if (error) return <FetchError />
-
-	return (
-		<BodyLayout
-			title={`Evaluation - ${quizInfo?.quiz_titre}`}
-			titleButton={<QuizTimer timeLeft={timeLeft}/>}
-			footer={
-				<Paper color='white' className='p-3 w-full flex flex-col items-center'>
-					<ConfirmActionButton
-						btnColor='error'
-						action={handleSubmitManually}
-					>
-						Soumettre l'évaluation
-					</ConfirmActionButton>
-				</Paper>
-			}
-		>
-			<Box direction='column' className='space-y-5 items-center'>
-				<QuizQuestionBloc
-					questions={questions}
-					answers={answers}
-					onToggle={handleOptionToggle}
-				/> 
-			</Box>
-			<ModalQuizFinished
-				open={open}
-				onViewResults={onViewResults}
-				scoreQuiz={scoreQuiz ? scoreQuiz : 0}
-			/>
-		</BodyLayout>
-	);
+    return (
+        <BodyLayout
+            title={`Evaluation - ${quizInfo?.quiz_titre}`}
+            titleButton={<QuizTimer timeLeft={timeLeft}/>}
+            footer={
+                <Paper color='white' className='p-3 w-full flex flex-col items-center'>
+                    <ConfirmActionButton
+                        btnColor='error'
+                        action={handleSubmitManually}
+                    >
+                        Soumettre l'évaluation
+                    </ConfirmActionButton>
+                </Paper>
+            }
+        >
+            <Box direction='column' className='space-y-5 items-center'>
+                <QuizQuestionBloc
+                    questions={questions}
+                    answers={answers}
+                    onToggle={handleOptionToggle}
+                /> 
+            </Box>
+            <ModalQuizFinished
+                open={open}
+                onViewResults={onViewResults}
+                scoreQuiz={scoreQuiz ?? 0}
+            />
+        </BodyLayout>
+    );
 }
