@@ -60,7 +60,8 @@ CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:3001',
     'http://localhost:5173',
     FRONTEND_URL,
-    DNS_NAME
+    DNS_NAME, 
+    DNS_BACKEND_NAME
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -73,7 +74,8 @@ CORS_TRUSTED_ORIGINS = [
     'http://127.0.0.1:3001',
     FRONTEND_URL,
     DNS_NAME,
-    DNS_WITHOUT_PROTOCOL
+    DNS_WITHOUT_PROTOCOL, 
+    DNS_BACKEND_NAME
 ]
 
 
