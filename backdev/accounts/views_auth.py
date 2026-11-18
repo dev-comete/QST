@@ -7,6 +7,9 @@ from django.utils import timezone
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 
+from google.oauth2 import id_token
+from google.auth.transport import requests as google_requests
+
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -295,3 +298,67 @@ class VerifyPasswordResetTokenAPIView(APIView):
             return Response({"detail": "Lien valide."}, status=status.HTTP_200_OK)
         else:
             return Response({"error": "Ce lien d'activation a expiré."}, status=status.HTTP_400_BAD_REQUEST)
+
+class GoogleSSOLoginView(APIView):
+    # Tout le monde peut tenter de s'authentifier
+    permission_classes = [AllowAny] 
+
+    def post(self, request):
+        token = request.data.get('token')
+        
+        if not token:
+            return Response({"error": "Jeton Google manquant."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            # 1. Vérification cryptographique du jeton auprès de Google
+            idinfo = id_token.verify_oauth2_token(
+                token, 
+                google_requests.Request(), 
+                settings.GOOGLE_OAUTH2_CLIENT_ID
+            )
+
+            # 2. Le jeton est valide, on extrait l'email
+            email = idinfo.get('email')
+
+            if not email:
+                return Response(
+                    {"error": "L'email n'a pas pu être récupéré depuis Google."}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # 3. On cherche un utilisateur correspondant dans notre base existante
+            try:
+                user = User.objects.get(email=email)
+            except User.DoesNotExist:
+                return Response(
+                    {"error": "Cet email Google n'est associé à aucun compte sur la plateforme. Veuillez contacter votre administrateur."},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+            # 4. Vérifications de sécurité classiques
+            if not user.is_active:
+                return Response(
+                    {"error": "Ce compte est désactivé."}, 
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+            # 5. Génération des JWT exactement comme dans votre CustomLoginAPIView
+            refresh = RefreshToken.for_user(user)
+
+            # Adaptez cet objet 'user' pour qu'il corresponde EXACTEMENT 
+            # à ce que votre frontend attend lors d'un login classique.
+            return Response({
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+                'user': {
+                    'id': user.id,
+                    'email': user.email,
+                    'username': user.username,
+                    # Par exemple pour le rôle (à adapter selon votre modèle exact) :
+                    'role': user.type_utilisateur.type_utilisateur if hasattr(user, 'type_utilisateur') and user.type_utilisateur else None,
+                }
+            }, status=status.HTTP_200_OK)
+
+        except ValueError:
+            # Le jeton est falsifié, expiré, ou ne correspond pas à notre CLIENT_ID
+            return Response({"error": "Jeton Google invalide ou expiré."}, status=status.HTTP_401_UNAUTHORIZED)
