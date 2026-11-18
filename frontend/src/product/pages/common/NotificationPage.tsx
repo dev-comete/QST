@@ -1,100 +1,143 @@
-// frontend/src/product/pages/common/NotificationPage.tsx
+import { useState } from "react";
 import { useNavigate } from "react-router";
 import Box from "../../../system/atoms/Container/Box";
+import FAIcon from "../../../system/atoms/Icon/FAIcon";
 import Paper from "../../../system/atoms/Container/Paper";
 import CustomText from "../../../system/atoms/Text/CustomText";
-import IconButton from "../../../system/molecules/Buttons/IconButton";
 import ActionButton from "../../../system/molecules/Buttons/ActionButton";
+import NotificationCard from "../../../system/molecules/NotificationCard";
 import { useNotification } from "../../../other/hooks/notification/useNotification";
-import { formatDate } from "../../../other/helper/helper";
+import { getNotificationPath } from "../../../other/helper/notification";
+import { useAuth } from "../../../other/hooks/auth/useAuth";
 import BodyLayout from "../../layout/common/BodyLayout";
 import Loading from "../../../system/atoms/Loading/Loading";
+import type { NotificationType } from "../../../other/types/notificationType";
+
+type NotificationFilter = "all" | "unread";
 
 const NotificationPage = () => {
-    const { notifications, unreadCount, markAsRead, markAllAsRead, isLoading } = useNotification();
+    const {
+        notifications,
+        unreadCount,
+        markAsRead,
+        markAllAsRead,
+        isLoading,
+        isMarkingRead,
+    } = useNotification();
     const navigate = useNavigate();
+    const { authUser } = useAuth();
+    const [filter, setFilter] = useState<NotificationFilter>("all");
 
     if (isLoading) return <Loading />;
 
-    const handleNotificationClick = (notifId: number, typeNotif: string | null) => {
-        markAsRead(notifId);
-        
-        switch (typeNotif) {
-            case 'password_reset':
-                navigate('/admin/parametre_general?tab=4'); // Redirige vers la gestion des utilisateurs/mots de passe
-                break;
-            case 'quiz_submit':
-                // Exemple futur : navigate(`/formateur/vague/${vagueId}/bulletin`);
-                break;
-            default:
-                // Aucune redirection spécifique par défaut
-                break;
-        }
+    const filteredNotifications = filter === "unread"
+        ? notifications.filter((notification) => !notification.is_read)
+        : notifications;
+
+    const openNotification = (notification: NotificationType) => {
+        if (!authUser) return;
+        if (!notification.is_read) markAsRead(notification.id);
+
+        const path = getNotificationPath(notification, authUser.role);
+        if (path) navigate(path);
     };
 
     return (
         <BodyLayout
-            title="Notifications"
+            title="Centre de notifications"
+            subtitle="Retrouvez ici les dernières activités et informations importantes."
             titleButton={
                 unreadCount > 0 ? (
-                    <ActionButton 
-                        btnColor="white" 
-                        textColor="primary" 
-                        onClick={() => markAllAsRead()}
+                    <ActionButton
+                        btnColor="white"
+                        textColor="primary"
+                        onClick={markAllAsRead}
+                        disabled={isMarkingRead}
+                        isLoading={isMarkingRead}
+                        interiorIcon="check-double"
                     >
                         Tout marquer comme lu
                     </ActionButton>
                 ) : undefined
             }
         >
-            <Paper className="w-full max-w-4xl mx-auto p-0 overflow-hidden" hasShadow>
-                {notifications.length === 0 ? (
-                    <Box className="p-8 justify-center items-center flex-col gap-3">
-                        <CustomText textTag="h3" color="disabled">Aucune notification.</CustomText>
-                        <CustomText textTag="p" color="disabled-dark">Vous êtes à jour !</CustomText>
-                    </Box>
-                ) : (
-                    <div className="flex flex-col divide-y divide-slate-100">
-                        {notifications.map((notif) => (
-                            <Box 
-                                key={notif.id} 
-                                onClick={() => handleNotificationClick(notif.id, notif.type_notif)}
-                                className={`p-5 transition-colors flex-col gap-2 cursor-pointer hover:bg-slate-50 ${notif.is_read ? 'bg-white opacity-80' : 'bg-primary/5'}`}
-                            >
-                                <Box className="justify-between items-start w-full">
-                                    <Box className="items-center gap-2">
-                                        {!notif.is_read && <span className="w-2 h-2 rounded-full bg-primary shrink-0" />}
-                                        <CustomText textTag="h4" weight={notif.is_read ? "normal" : "bold"}>
-                                            {notif.titre}
-                                        </CustomText>
-                                    </Box>
-                                    
-                                    <Box className="items-center gap-3">
-                                        <CustomText textTag="caption" className="text-slate-400">
-                                            {formatDate(notif.created_at)}
-                                        </CustomText>
-                                        {!notif.is_read && (
-                                            <IconButton 
-                                                iconName="check" 
-                                                action={(e) => {
-                                                    e.stopPropagation(); // Bloque le onClick parent pour éviter la redirection
-                                                    markAsRead(notif.id);
-                                                }} 
-                                                title="Marquer comme lu"
-                                                iconStyling="text-primary hover:text-success text-sm"
-                                                className="bg-white border border-slate-200 shadow-sm p-1.5"
-                                            />
-                                        )}
-                                    </Box>
-                                </Box>
-                                <CustomText textTag="p" className={`text-slate-600 ${notif.is_read ? '' : 'pl-4'}`}>
-                                    {notif.message}
+            <Box direction="column" className="w-full max-w-4xl gap-5 pb-6">
+                <Paper hasShadow className="w-full border border-slate-100 p-4 sm:p-5">
+                    <Box className="flex-wrap items-center justify-between gap-4">
+                        <Box className="items-center gap-4">
+                            <div className="min-w-0 space-y-1">
+                                <CustomText textTag="p" weight="bold" className="leading-tight">
+                                    Votre activité
                                 </CustomText>
-                            </Box>
-                        ))}
-                    </div>
-                )}
-            </Paper>
+                                <CustomText textTag="p" color="text-light" className="text-sm leading-relaxed">
+                                    {unreadCount === 0
+                                        ? "Vous êtes à jour."
+                                        : `${unreadCount} notification${unreadCount > 1 ? "s" : ""} à consulter`}
+                                </CustomText>
+                            </div>
+                        </Box>
+
+                        <div className="inline-flex rounded-xl bg-slate-100 p-1" aria-label="Filtrer les notifications">
+                            {(["all", "unread"] as const).map((filterOption) => {
+                                const isActive = filter === filterOption;
+                                const label = filterOption === "all" ? "Toutes" : "Non lues";
+                                return (
+                                    <button
+                                        key={filterOption}
+                                        type="button"
+                                        onClick={() => setFilter(filterOption)}
+                                        aria-pressed={isActive}
+                                        className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary ${isActive ? "bg-white text-primary shadow-sm" : "text-slate-600 hover:text-slate-900"}`}
+                                    >
+                                        {label}
+                                        <span className={`ml-1.5 rounded-full px-1.5 py-0.5 text-xs ${isActive ? "bg-primary/10 text-primary" : "bg-white/80 text-slate-500"}`}>
+                                            {filterOption === "all" ? notifications.length : unreadCount}
+                                        </span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </Box>
+                </Paper>
+
+                <Paper hasShadow className="w-full overflow-hidden border border-slate-100">
+                    {filteredNotifications.length === 0 ? (
+                        <Box direction="column" className="items-center justify-center gap-3 px-6 py-14 text-center">
+                            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
+                                <FAIcon name="check-double" className="text-xl" />
+                            </div>
+                            <CustomText textTag="h3" weight="bold">
+                                {filter === "unread" ? "Tout est lu" : "Aucune notification"}
+                            </CustomText>
+                            <CustomText color="text-light" className="max-w-sm text-sm">
+                                {filter === "unread"
+                                    ? "Vous n’avez aucune notification en attente. Revenez ici pour suivre les prochaines activités."
+                                    : "Vous êtes à jour. Les nouvelles activités apparaîtront ici."}
+                            </CustomText>
+                        </Box>
+                    ) : (
+                        <div className="divide-y divide-slate-100">
+                            {filteredNotifications.map((notification) => {
+                                const canOpen = authUser
+                                    ? Boolean(getNotificationPath(notification, authUser.role))
+                                    : false;
+                                return (
+                                    <NotificationCard
+                                        key={notification.id}
+                                        notification={notification}
+                                        onOpen={canOpen ? () => openNotification(notification) : undefined}
+                                        onMarkAsRead={
+                                            !notification.is_read && !isMarkingRead
+                                                ? () => markAsRead(notification.id)
+                                                : undefined
+                                        }
+                                    />
+                                );
+                            })}
+                        </div>
+                    )}
+                </Paper>
+            </Box>
         </BodyLayout>
     );
 };

@@ -8,6 +8,7 @@ import IconButton from "../../molecules/Buttons/IconButton";
 import { useNotification } from "../../../other/hooks/notification/useNotification";
 import { formatDate } from "../../../other/helper/helper";
 import { useAuth } from "../../../other/hooks/auth/useAuth";
+import { getNotificationPath } from "../../../other/helper/notification";
 
 const NotificationBell = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -22,24 +23,13 @@ const NotificationBell = () => {
         return '/my_eval';
     };
 
-    // Map notification types to application routes
-    const handleNotificationClick = (notifId: number, typeNotif: string | null) => {
-        markAsRead(notifId);
+    const handleNotificationClick = (notification: (typeof notifications)[number]) => {
+        if (!notification.is_read) markAsRead(notification.id);
         setIsOpen(false);
-        
-        switch (typeNotif) {
-            case 'password_reset':
-                if (authUser?.role === 'admin') {
-                    navigate('/admin/parametre_general?tab=4');
-                }
-                break;
-            case 'quiz_submit':
-                // navigate(`${getBasePath()}/vague/${vagueId}/bulletin`);
-                break;
-            default:
-                // Default fallback route, or do nothing
-                break;
-        }
+
+        if (!authUser) return;
+        const path = getNotificationPath(notification, authUser.role);
+        if (path) navigate(path);
     };
 
     useEffect(() => {
@@ -91,7 +81,7 @@ const NotificationBell = () => {
                                 <div 
                                     key={notif.id} 
                                     className={`p-3 border-b border-slate-50 transition-colors flex flex-col gap-1 cursor-pointer hover:bg-slate-50 ${notif.is_read ? 'opacity-70 bg-white' : 'bg-primary/5'}`}
-                                    onClick={() => handleNotificationClick(notif.id, notif.type_notif)}
+                                    onClick={() => handleNotificationClick(notif)}
                                 >
                                     <Box className="justify-between items-start w-full">
                                         <CustomText textTag="h6" weight={notif.is_read ? "normal" : "bold"} className="text-sm">

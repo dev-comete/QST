@@ -36,6 +36,11 @@ def notify_formateur_of_quiz_submission(user, quiz_attempt):
             titre=titre_notif,
             message=message_notif,
             type_notif="quiz_submitted",
+            data={
+                "quiz_id": quiz_attempt.quiz_id,
+                "vague_id": quiz_attempt.vague_id,
+                "student_id": user.id,
+            },
         )
         print(f"[NOTIF DEBUG] SUCCÈS : Notification (ID {notif.id}) persistée en BDD pour le formateur {formateur.username}.")
         print("--- [NOTIF DEBUG] Fin de l'opération ---\n")
