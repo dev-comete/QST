@@ -21,8 +21,8 @@ export const PercentageRing: React.FC<PercentageRingProps> = ({
 	// Dynamic color based on score
 	const getColorClass = (val: number) => {
 		if (val >= 80) return 'stroke-success text-success';
-		if (val >= 50) return 'stroke-error text-error';
-		return 'stroke-rose-500 text-rose-500';
+		if (val >= 50) return 'stroke-warning text-warning';
+		return 'stroke-error text-error';
 	};
 
 	const strokeColorClass = getColorClass(normalizedScore);

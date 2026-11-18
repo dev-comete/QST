@@ -1,4 +1,4 @@
-import type { QuestionQuiz, quizAssignPayload, quizCreateType, QuizReview, QuizSubmitPayload, quizType, studentQuizType } from "../types/quizType";
+import type { QuestionQuiz, quizAssignPayload, quizCreateType, QuizReview, QuizSubmitPayload, QuizSubmitResult, quizType, studentQuizType } from "../types/quizType";
 import apiClient from "./apiClient";
 import { ENDPOINTS } from "./endpoint";
 
@@ -71,7 +71,7 @@ export const QuizService = {
 
 	submitQuiz: async ( data : QuizSubmitPayload) => {
 		const response = await apiClient.post(QUIZ_SUBMIT_URL, data);
-		return response.data;
+		return response.data as QuizSubmitResult;
 	},
 
 	reviewQuiz: async (quizId: string, vagueId: string | number, studentId?: string | null) => {

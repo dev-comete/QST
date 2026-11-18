@@ -237,6 +237,9 @@ class SubmitQuizAPIView(APIView):
             return Response({"error": "Une erreur interne est survenue."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         formation_liee = quiz_attempt.quiz.formation
+        score_possible = QuizQuestion.objects.filter(
+            quiz_id=quiz_attempt.quiz_id
+        ).aggregate(total=Sum('bareme__pts'))['total'] or 0
 
         try:
             print(f"\n[NOTIF DEBUG] Déclenchement de la notification pour QuizAttempt ID {quiz_attempt.id}")
@@ -250,6 +253,7 @@ class SubmitQuizAPIView(APIView):
             "formation_nom": formation_liee.nom_formation,
             "quiz_id": quiz_attempt.quiz.id,
             "score_obtenu": quiz_attempt.score_obtenu,
+            "score_possible": score_possible,
             "termine": quiz_attempt.termine
         }, status=status.HTTP_201_CREATED)
     
