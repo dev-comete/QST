@@ -60,7 +60,7 @@ export default function TakingEvaluation() {
     const [submitting, setSubmitting] = useState<boolean>(false);
     const [error, setError] = useState<string>('');
     const [timeLeft, setTimeLeft] = useState<number | null>(null);
-    const [scoreQuiz, setScoreQuiz] = useState<number | null>(null);
+    const [scoreQuiz, setScoreQuiz] = useState<{ obtained: number; possible: number } | null>(null);
 
     const [open, setOpen] = useState(false)
     const navigate = useNavigate()
@@ -82,7 +82,10 @@ export default function TakingEvaluation() {
                 vague_id: vagueId,
                 answers: answersRef.current
             });
-            setScoreQuiz(response.score_obtenu);
+            setScoreQuiz({
+                obtained: response.score_obtenu,
+                possible: response.score_possible,
+            });
             
             // 3. Clear localStorage on automatic timeout submission
             clearPersistedAnswers();
@@ -179,7 +182,10 @@ export default function TakingEvaluation() {
                 vague_id: vagueId,
                 answers: answersRef.current 
             }));
-            setScoreQuiz(response.score_obtenu);
+            setScoreQuiz({
+                obtained: response.score_obtenu,
+                possible: response.score_possible,
+            });
             
             // 3. Clear localStorage on successful manual submission
             clearPersistedAnswers();
@@ -249,7 +255,8 @@ export default function TakingEvaluation() {
             <ModalQuizFinished
                 open={open}
                 onViewResults={onViewResults}
-                scoreQuiz={scoreQuiz ?? 0}
+                scoreQuiz={scoreQuiz?.obtained ?? 0}
+                totalScore={scoreQuiz?.possible ?? 0}
             />
         </BodyLayout>
     );
