@@ -4,7 +4,7 @@ from django.urls import path, include
 from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework.routers import DefaultRouter
 
-from .views_auth import CustomLoginAPIView, LogoutAPIView , ConfirmPasswordResetAPIView, SubmitPasswordResetRequestView , AdminPasswordResetViewSet , PublicPasswordResetRequestView , VerifyPasswordResetTokenAPIView
+from .views_auth import CustomLoginAPIView, LogoutAPIView , ConfirmPasswordResetAPIView, SubmitPasswordResetRequestView , AdminPasswordResetViewSet , PublicPasswordResetRequestView , VerifyPasswordResetTokenAPIView , GoogleSSOLoginView
 from .views import MyBasicProfileAPIView
 
 router = DefaultRouter()
@@ -29,6 +29,8 @@ urlpatterns = [
     path('auth/verify-reset-token/', VerifyPasswordResetTokenAPIView.as_view(), name='verify-reset-token'),
 
     path('profile/me/', MyBasicProfileAPIView.as_view(), name='my-basic-profile'),
+
+    path('auth/google/', GoogleSSOLoginView.as_view(), name='google_sso_login'),
 
     path('', include(router.urls)),
 ]

@@ -43,6 +43,8 @@ DNS_NAME = os.environ.get('DNS_NAME', 'https://c-eval.comete.ai')
 DNS_WITHOUT_PROTOCOL = os.environ.get('DNS_WITHOUT_PROTOCOL', 'c-eval.comete.ai')
 DNS_BACKEND_NAME = os.environ.get('DNS_BACKEND_NAME', 'https://back-c-eval.comete.ai')
 
+GOOGLE_OAUTH2_CLIENT_ID = os.environ.get('GOOGLE_OAUTH2_CLIENT_ID')
+
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
