@@ -9,8 +9,7 @@ import NavigationBar from "../../../../system/molecules/Navigation/NavigationBar
 import { useTabNavigation } from "../../../../other/hooks/navigation/useTabNavigation";
 import Paper from "../../../../system/atoms/Container/Paper";
 import CustomText from "../../../../system/atoms/Text/CustomText";
-import Button from "../../../../system/atoms/Button/Button";
-import FAIcon from "../../../../system/atoms/Icon/FAIcon";
+import ActionButton from "../../../../system/molecules/Buttons/ActionButton";
 import { useExportVagueAnalytics } from "../../../../other/hooks/vague/useExportVagueAnalytics";
 
 interface VagueStatProps {
@@ -49,16 +48,16 @@ const VagueStat = ({ vagueId } : VagueStatProps) => {
 						Téléchargez les statistiques de cette vague au format PDF.
 					</CustomText>
 				</Box>
-				<Button
+				<ActionButton
 					onClick={() => exportAnalyticsPdf(vagueId)}
 					disabled={isExporting}
 					isLoading={isExporting}
+					interiorIcon="download"
 					title="Télécharger le rapport PDF"
-					className="flex shrink-0 items-center gap-2"
+					btnStyling="shrink-0"
 				>
-					<FAIcon name="file-pdf" />
-					<CustomText color="white" weight="bold">Télécharger le rapport</CustomText>
-				</Button>
+					Télécharger le rapport
+				</ActionButton>
 			</Paper>
 			<NavigationBar
 				titles={['Résultat', 'Classement', 'Evaluations']}

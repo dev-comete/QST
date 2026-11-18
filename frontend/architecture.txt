@@ -44,6 +44,8 @@
 │   │   │   ├── navigation
 │   │   │   │   ├── useAppNavigation.ts
 │   │   │   │   └── useTabNavigation.ts
+│   │   │   ├── notification
+│   │   │   │   └── useNotification.ts
 │   │   │   ├── question
 │   │   │   │   ├── useDebounce.ts
 │   │   │   │   ├── useDistractor.ts
@@ -64,6 +66,7 @@
 │   │   │   │   └── useUser.ts
 │   │   │   └── vague
 │   │   │       ├── useAssignVague.ts
+│   │   │       ├── useExportVagueAnalytics.ts
 │   │   │       ├── useExportVague.ts
 │   │   │       └── useVague.ts
 │   │   ├── lib
@@ -83,6 +86,7 @@
 │   │   │   ├── dashboardService.ts
 │   │   │   ├── endpoint.ts
 │   │   │   ├── formationService.ts
+│   │   │   ├── notificationService.ts
 │   │   │   ├── projectService.ts
 │   │   │   ├── questionService.ts
 │   │   │   ├── quizService.ts
@@ -97,6 +101,7 @@
 │   │       ├── dashboardType.ts
 │   │       ├── formationType.ts
 │   │       ├── navigation.ts
+│   │       ├── notificationType.ts
 │   │       ├── questionType.ts
 │   │       ├── quizType.ts
 │   │       ├── theme.ts
@@ -131,11 +136,13 @@
 │   │       │   └── Evaluation
 │   │       │       ├── CorrectionReview.tsx
 │   │       │       ├── MyEvaluations.tsx
+│   │       │       ├── TakingEvaluation.test.tsx
 │   │       │       └── TakingEvaluation.tsx
 │   │       ├── common
 │   │       │   ├── ErrorPage.tsx
 │   │       │   ├── Home.tsx
 │   │       │   ├── Login.tsx
+│   │       │   ├── NotificationPage.tsx
 │   │       │   ├── ProfileMePage.tsx
 │   │       │   ├── RequestPasswordResetPage.tsx
 │   │       │   ├── SetPasswordPage.tsx
@@ -273,6 +280,8 @@
 │           │   └── list
 │           │       ├── BaremeList.tsx
 │           │       └── FormationList.tsx
+│           ├── notification
+│           │   └── NotificationBell.tsx
 │           ├── profile
 │           │   ├── PasswordResetRequestCard.tsx
 │           │   ├── ProfileDetailsCard.tsx
@@ -338,4 +347,4 @@
 ├── tsconfig.node.json
 └── vite.config.ts
 
-94 directories, 245 files
+96 directories, 252 files

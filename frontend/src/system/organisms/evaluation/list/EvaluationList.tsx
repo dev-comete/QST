@@ -4,7 +4,7 @@ import type { DetailQuiz } from "../../../../other/types/bulletinType";
 import { useMemo } from "react";
 import PercentBadge from "../../../molecules/Badge/PercentBadge";
 import StatusBadge from "../../../molecules/Badge/StatusBadge";
-import { useAppNavigation } from "../../../../other/hooks/navigation/useAppNavigation";
+import { useNavigate } from "react-router";
 
 const getQuizTabColumns = () : Column<DetailQuiz>[] => [
 	{
@@ -35,14 +35,14 @@ const getQuizTabColumns = () : Column<DetailQuiz>[] => [
 
 interface EvaluationListProps {
 	data: DetailQuiz[],
-	vagueId: string
+	vagueId: string,
+	studentId?: string | null
 }
 
-const EvaluationList = ({ data, vagueId } : EvaluationListProps) => {
+const EvaluationList = ({ data, vagueId, studentId } : EvaluationListProps) => {
 
 	const columns = useMemo(() => getQuizTabColumns(), []);
-
-	const { navigateTo } = useAppNavigation()
+	const navigate = useNavigate()
 
 	const filteredData = data.filter((d) => d.statut == 'Terminé')
 
@@ -53,7 +53,12 @@ const EvaluationList = ({ data, vagueId } : EvaluationListProps) => {
 				columns={columns}
 				data={filteredData}
 				rowKey={'quiz_id'}
-				onRowClick={(row) => navigateTo(`/quiz/${row.quiz_id}/revue?vague_id=${vagueId}`)}			/>
+				onRowClick={(row) => {
+					const searchParams = new URLSearchParams({ vague_id: vagueId })
+					if (studentId) searchParams.set('student_id', studentId)
+					navigate(`/quiz/${row.quiz_id}/revue?${searchParams.toString()}`)
+				}}
+			/>
 		</Box>
 	)
 }

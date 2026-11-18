@@ -1,3 +1,4 @@
+// frontend/src/product/pages/apprenant/Evaluation/CorrectionReview.tsx
 import { useState } from "react";
 import { useLocation, useParams, useSearchParams } from "react-router";
 import { useReviewQuiz } from "../../../../other/hooks/quiz/useReviewQuiz";
@@ -13,21 +14,28 @@ const CorrectionReview = () => {
 	const { id : quizId } = useParams();
 	const [searchParams] = useSearchParams();
 	const vagueId = searchParams.get('vague_id') ?? '';
+    const studentId = searchParams.get('student_id'); // 🆕 Capture du paramètre facultatif
+
 	const [selectedQuestionIndex, setSelectedQuestionIndex] = useState(0);
 	const location = useLocation();
 
 	const showBackLink = !(location.state?.fromQuiz ?? false);
 
-
-	const { review, status } = useReviewQuiz(quizId ?? '', vagueId)
+    // 🆕 On passe studentId au hook
+	const { review, status } = useReviewQuiz(quizId ?? '', vagueId, studentId)
 
 	if (status == 'pending') return <Loading />
 
 	if (!review) return <FetchError />
 
+    // 🆕 Titre dynamique
+    const pageTitle = review.target_student 
+        ? `Résultat : ${review.quiz_titre ?? review.quiz_id} (${review.target_student.nom_complet})` 
+        : `Résultat du quiz : ${review.quiz_titre ?? review.quiz_id}`;
+
 	return (
 		<BodyLayout
-			title={`Résultat du quiz : ${review.quiz_titre ?? review.quiz_id}`}
+			title={pageTitle}
 			defaultLinkBack={showBackLink}
 		>
 			<Box className='space-y-5 space-x-3 justify-between min-h-0'>

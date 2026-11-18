@@ -1,4 +1,4 @@
-import { useParams } from "react-router";
+import { useParams, useSearchParams } from "react-router";
 import { useBulletin } from "../../../../other/hooks/bulletin/useBulletin";
 import Box from "../../../../system/atoms/Container/Box";
 import Paper from "../../../../system/atoms/Container/Paper";
@@ -7,6 +7,8 @@ import EvaluationList from "../../../../system/organisms/evaluation/list/Evaluat
 import BodyLayout from "../../../layout/common/BodyLayout";
 import Loading from "../../../../system/atoms/Loading/Loading";
 import FetchError from "../../../../system/atoms/Loading/FetchError";
+import ActionButton from "../../../../system/molecules/Buttons/ActionButton";
+import { useExportBulletin } from "../../../../other/hooks/bulletin/useBulletin";
 
 const BulletinDisplay = ({ title, value, unit } : { 
 		title: string,
@@ -24,7 +26,10 @@ const BulletinDisplay = ({ title, value, unit } : {
 
 const Bulletin = () => {
 	const { id } = useParams()
-	const { myBulletin, myBulletinStatus } = useBulletin(id)
+	const [searchParams] = useSearchParams()
+	const studentId = searchParams.get('student_id')
+	const { myBulletin, myBulletinStatus } = useBulletin(id, studentId)
+	const { handleExportPdf, isExporting } = useExportBulletin()
 
 	if (myBulletinStatus == 'pending') return <Loading />
 
@@ -35,7 +40,18 @@ const Bulletin = () => {
 	return (
 		<BodyLayout
 			title={"Bulletin de notes"}
-			linkBack="/bulletin"
+			defaultLinkBack
+			titleButton={
+				<ActionButton
+					onClick={() => id && handleExportPdf({ vagueId: id, studentId })}
+					disabled={!id || isExporting}
+					isLoading={isExporting}
+					interiorIcon="download"
+					title="Télécharger le bulletin en PDF"
+				>
+					Télécharger le bulletin
+				</ActionButton>
+			}
 		>
 				<Box className="items-start justify-center space-x-5 space-y-3">
 					<BulletinDisplay
@@ -52,7 +68,7 @@ const Bulletin = () => {
 						value={resume_global.progression}
 					/>
 				</Box>
-			<EvaluationList data={details_quizzes} vagueId={id} />
+			<EvaluationList data={details_quizzes} vagueId={id} studentId={studentId} />
 		</BodyLayout>
 	)
 }

@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 
 from django.core.exceptions import PermissionDenied
+from django.contrib.auth import get_user_model
 
 from .service_analytics import get_vague_analytics_service , get_apprenant_bulletin_service
 
@@ -22,10 +23,18 @@ class ApprenantBulletinAPIView(APIView):
 
     def get(self, request, vague_id):
         try:
-            # On passe request.user, ce qui garantit qu'un élève ne peut voir que SON propre bulletin
+            student_id = request.query_params.get('student_id')
+            target_user = request.user
+            if student_id:
+                try:
+                    target_user = get_user_model().objects.get(id=student_id)
+                except (get_user_model().DoesNotExist, ValueError, TypeError):
+                    return Response({"error": "Apprenant introuvable."}, status=status.HTTP_404_NOT_FOUND)
+
             bulletin_data = get_apprenant_bulletin_service(
                 vague_id=vague_id, 
-                apprenant=request.user
+                apprenant=target_user,
+                requesting_user=request.user
             )
             return Response(bulletin_data, status=status.HTTP_200_OK)
             
