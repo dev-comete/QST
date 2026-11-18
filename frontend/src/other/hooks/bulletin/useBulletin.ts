@@ -1,7 +1,7 @@
 import { useQuery, useMutation } from "@tanstack/react-query"
 import { BulletinService } from "../../services/bulletinService"
 
-export const useBulletin = (vagueId?: string) => {
+export const useBulletin = (vagueId?: string, studentId?: string | null) => {
 
 	const { data : bulletinList, status : bulletinListStatus } = useQuery({
 		queryKey: ['bulletin_list'],
@@ -9,8 +9,8 @@ export const useBulletin = (vagueId?: string) => {
 	})
 
 	const { data : myBulletin, status : myBulletinStatus } = useQuery({
-		queryKey: ['my_bulletin', vagueId],
-		queryFn: () => BulletinService.evalList(vagueId ?? ''),
+		queryKey: ['my_bulletin', vagueId, studentId],
+		queryFn: () => BulletinService.evalList(vagueId ?? '', studentId),
 		enabled: !!vagueId
 	})
 
@@ -25,8 +25,13 @@ export const useBulletin = (vagueId?: string) => {
 export const useExportBulletin = () => {
     
     const exportMutation = useMutation({
-        mutationFn: (vagueId: string | number) => BulletinService.exportPdf(vagueId),
-        onSuccess: (data, vagueId) => {
+        mutationFn: (variables: string | number | { vagueId: string | number; studentId?: string | null }) => {
+			const vagueId = typeof variables === 'object' ? variables.vagueId : variables
+			const studentId = typeof variables === 'object' ? variables.studentId : undefined
+			return BulletinService.exportPdf(vagueId, studentId)
+		},
+        onSuccess: (data, variables) => {
+			const vagueId = typeof variables === 'object' ? variables.vagueId : variables
             // Création d'une URL locale pour le fichier binaire (Blob)
             const url = window.URL.createObjectURL(new Blob([data], { type: 'application/pdf' }));
             

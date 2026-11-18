@@ -1,4 +1,4 @@
-import { useParams } from "react-router";
+import { useParams, useSearchParams } from "react-router";
 import { useBulletin } from "../../../../other/hooks/bulletin/useBulletin";
 import Box from "../../../../system/atoms/Container/Box";
 import Paper from "../../../../system/atoms/Container/Paper";
@@ -24,7 +24,9 @@ const BulletinDisplay = ({ title, value, unit } : {
 
 const Bulletin = () => {
 	const { id } = useParams()
-	const { myBulletin, myBulletinStatus } = useBulletin(id)
+	const [searchParams] = useSearchParams()
+	const studentId = searchParams.get('student_id')
+	const { myBulletin, myBulletinStatus } = useBulletin(id, studentId)
 
 	if (myBulletinStatus == 'pending') return <Loading />
 
@@ -35,7 +37,7 @@ const Bulletin = () => {
 	return (
 		<BodyLayout
 			title={"Bulletin de notes"}
-			linkBack="/bulletin"
+			defaultLinkBack
 		>
 				<Box className="items-start justify-center space-x-5 space-y-3">
 					<BulletinDisplay
@@ -52,7 +54,7 @@ const Bulletin = () => {
 						value={resume_global.progression}
 					/>
 				</Box>
-			<EvaluationList data={details_quizzes} vagueId={id} />
+			<EvaluationList data={details_quizzes} vagueId={id} studentId={studentId} />
 		</BodyLayout>
 	)
 }

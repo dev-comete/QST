@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from django.core.exceptions import PermissionDenied
+from django.contrib.auth import get_user_model
 
 # Importez la fonction que nous venons de créer
 from .service_pdf import render_to_pdf
@@ -13,10 +14,19 @@ class ApprenantBulletinPDFAPIView(APIView):
 
     def get(self, request, vague_id):
         try:
+            student_id = request.query_params.get('student_id')
+            target_user = request.user
+            if student_id:
+                try:
+                    target_user = get_user_model().objects.get(id=student_id)
+                except (get_user_model().DoesNotExist, ValueError, TypeError):
+                    return Response({"error": "Apprenant introuvable."}, status=status.HTTP_404_NOT_FOUND)
+
             # 1. On récupère exactement les mêmes données que pour le JSON
             bulletin_data = get_apprenant_bulletin_service(
                 vague_id=vague_id, 
-                apprenant=request.user
+                apprenant=target_user,
+                requesting_user=request.user
             )
             
             # 2. On génère le PDF avec un template HTML
@@ -24,7 +34,7 @@ class ApprenantBulletinPDFAPIView(APIView):
             
             if pdf_response:
                 # 3. Forcer le téléchargement du fichier pour le navigateur
-                filename = f"Bulletin_{request.user.username}_{bulletin_data['vague']['vague_nom']}.pdf"
+                filename = f"Bulletin_{target_user.username}_{bulletin_data['vague']['vague_nom']}.pdf"
                 pdf_response['Content-Disposition'] = f'attachment; filename="{filename}"'
                 return pdf_response
                 
