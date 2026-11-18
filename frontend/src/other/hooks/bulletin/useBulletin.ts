@@ -32,13 +32,14 @@ export const useExportBulletin = () => {
 		},
         onSuccess: (data, variables) => {
 			const vagueId = typeof variables === 'object' ? variables.vagueId : variables
+			const studentId = typeof variables === 'object' ? variables.studentId : undefined
             // Création d'une URL locale pour le fichier binaire (Blob)
             const url = window.URL.createObjectURL(new Blob([data], { type: 'application/pdf' }));
             
             // Création d'un lien HTML invisible pour forcer le téléchargement
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', `Bulletin_Vague_${vagueId}.pdf`); 
+            link.setAttribute('download', `Bulletin_Vague_${vagueId}${studentId ? `_Apprenant_${studentId}` : ''}.pdf`);
             document.body.appendChild(link);
             
             link.click(); // Déclenche le téléchargement
@@ -53,7 +54,7 @@ export const useExportBulletin = () => {
     });
 
     return {
-        handleExportPdf: exportMutation.mutateAsync,
+        handleExportPdf: exportMutation.mutate,
         isExporting: exportMutation.isPending
     }
 }

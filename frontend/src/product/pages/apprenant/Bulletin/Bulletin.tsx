@@ -7,6 +7,8 @@ import EvaluationList from "../../../../system/organisms/evaluation/list/Evaluat
 import BodyLayout from "../../../layout/common/BodyLayout";
 import Loading from "../../../../system/atoms/Loading/Loading";
 import FetchError from "../../../../system/atoms/Loading/FetchError";
+import ActionButton from "../../../../system/molecules/Buttons/ActionButton";
+import { useExportBulletin } from "../../../../other/hooks/bulletin/useBulletin";
 
 const BulletinDisplay = ({ title, value, unit } : { 
 		title: string,
@@ -27,6 +29,7 @@ const Bulletin = () => {
 	const [searchParams] = useSearchParams()
 	const studentId = searchParams.get('student_id')
 	const { myBulletin, myBulletinStatus } = useBulletin(id, studentId)
+	const { handleExportPdf, isExporting } = useExportBulletin()
 
 	if (myBulletinStatus == 'pending') return <Loading />
 
@@ -38,6 +41,17 @@ const Bulletin = () => {
 		<BodyLayout
 			title={"Bulletin de notes"}
 			defaultLinkBack
+			titleButton={
+				<ActionButton
+					onClick={() => id && handleExportPdf({ vagueId: id, studentId })}
+					disabled={!id || isExporting}
+					isLoading={isExporting}
+					interiorIcon="download"
+					title="Télécharger le bulletin en PDF"
+				>
+					Télécharger le bulletin
+				</ActionButton>
+			}
 		>
 				<Box className="items-start justify-center space-x-5 space-y-3">
 					<BulletinDisplay
