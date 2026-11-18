@@ -10,6 +10,11 @@ export const AuthService = {
 		return response.data as authData;
 	},
 
+	googleLogin: async (token: string) => {
+		const response = await apiClient.post('accounts/auth/google/', { token });
+		return response.data;
+	},
+
 	getMyProfile: async () => {
 		const response = await apiClient.get("accounts/profile/me/");
 		return response.data;

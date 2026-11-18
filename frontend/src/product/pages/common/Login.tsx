@@ -1,5 +1,6 @@
 import { Navigate } from "react-router";
-import { useAuth, useLogin, useResetPassword } from "../../../other/hooks/auth/useAuth";
+import { useAuth, useLogin, useResetPassword , useGoogleLogin} from "../../../other/hooks/auth/useAuth";
+import { GoogleLogin } from "@react-oauth/google";
 import Box from "../../../system/atoms/Container/Box";
 import Paper from "../../../system/atoms/Container/Paper";
 import Info from "../../../system/atoms/Form/Info";
@@ -44,6 +45,8 @@ const Login = () => {
 	const [ open, setOpen ] = useState(false)
 	const [ emailReset, setEmailReset ] = useState('')
 	const { passwordMutation, successMessage, errorMessage } = useResetPassword(emailReset)
+
+	const { handleGoogleSuccess, isPending: isGooglePending, error: googleError } = useGoogleLogin();
 
 	if (authUser) return <Navigate to="/" replace />;
 
@@ -111,10 +114,34 @@ const Login = () => {
 								<ActionButton
 									type="submit"
 									btnStyling="w-full mt-2"
-									isLoading={isPending}
+									isLoading={isPending || isGooglePending}
 								>
 									SE CONNECTER
 								</ActionButton>
+
+								{/* 🆕 Section Google SSO */}
+                                <div className="flex items-center justify-between w-full mt-2 mb-2">
+                                    <hr className="w-full border-gray-300" />
+                                    <span className="px-3 text-sm text-gray-400 bg-white">ou</span>
+                                    <hr className="w-full border-gray-300" />
+                                </div>
+
+                                {/* 🆕 Bouton de connexion Google */}
+                                <div className="flex flex-col items-center w-full">
+                                    <GoogleLogin
+                                        onSuccess={(credentialResponse) => {
+                                            if (credentialResponse.credential) {
+                                                handleGoogleSuccess(credentialResponse.credential);
+                                            }
+                                        }}
+                                        onError={() => console.error("Échec de la popup Google")}
+                                        useOneTap={true}
+                                        theme="outline"
+                                        text="continue_with"
+                                        shape="rectangular"
+                                    />
+                                </div>
+                                { googleError && <Info info={googleError} variant="error"/>}
 							</Box>
 						</form>
 					</Box>
