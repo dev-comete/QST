@@ -60,6 +60,11 @@ type QuizSubmitPayload = {
 	answers: AnswersMap
 }
 
+type QuizSubmitResult = {
+	score_obtenu: number;
+	score_possible: number;
+}
+
 type CorrectionOption = {
 	reponse_id: number,
 	texte: string,
@@ -112,6 +117,7 @@ export type {
 	Question,
 	Option,
 	QuizSubmitPayload,
+	QuizSubmitResult,
 	QuizReview,
 	Correction,
 	CorrectionOption,
