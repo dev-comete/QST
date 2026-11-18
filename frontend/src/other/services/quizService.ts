@@ -74,10 +74,14 @@ export const QuizService = {
 		return response.data;
 	},
 
-	reviewQuiz: async (quizId: string, vagueId: string | number) => {
-		const response = await apiClient.get(`quizzes/${quizId}/review/`, {
-			params: { vague_id: vagueId }
-		});
-		return response.data as QuizReview;
+	reviewQuiz: async (quizId: string, vagueId: string | number, studentId?: string | null) => {
+    const response = await apiClient.get(`quizzes/${quizId}/review/`, {
+        params: { 
+            vague_id: vagueId,
+            // Only add student_id to the request if it exists
+            ...(studentId && { student_id: studentId }) 
+        }
+    });
+    return response.data as QuizReview;
 	},
 }

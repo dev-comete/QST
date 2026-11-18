@@ -83,7 +83,11 @@ type QuizReview = {
 	score_final: number,
 	score_possible: number,
 	vague_id: number,
-	corrections: Correction[]
+	corrections: Correction[],
+	target_student?: {
+        id: number | string;
+        nom_complet: string;
+    }
 }
 
 type QuestionQuiz = {
