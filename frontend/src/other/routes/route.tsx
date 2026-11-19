@@ -7,6 +7,7 @@ import { RootRedirect } from "../../product/layout/common/RootRedirect";
 import COMMON_CHILDREN from "./sharedChildren";
 import ErrorPage from "../../product/pages/common/ErrorPage";
 import { SuspenseWrapper } from "./SuspensWrapper";
+import { useAuth } from "../hooks/auth/useAuth";
 
 // 1. Composants chargés paresseusement (Lazy Loading)
 const FormateurTemplate = lazy(() => import("../../product/layout/role/FormateurTemplate"));
@@ -27,6 +28,18 @@ const ProfileRouteLayout = lazy(() => import("../../product/layout/common/Profil
 const ProfileMePage = lazy(() => import("../../product/pages/common/ProfileMePage"));
 const UserBin = lazy(() => import("../../product/pages/admin/UserBin"));
 const NotificationPage = lazy(() => import("../../product/pages/common/NotificationPage"));
+
+const RoleTemplate = () => {
+	const { authUser } = useAuth();
+
+	return (
+		<SuspenseWrapper>
+			{authUser?.role === 'admin' ? <AdminTemplate />
+				: authUser?.role === 'formateur' ? <FormateurTemplate />
+				: <ApprenantTemplate />}
+		</SuspenseWrapper>
+	);
+};
 
 export const router = createBrowserRouter([
 	// Public routes
@@ -122,20 +135,20 @@ export const router = createBrowserRouter([
 	},
 	{
 		path: '/quiz/:id/revue',
-		element: <ProtectedRoute allowedRole={['apprenant']}/>,
+		element: <ProtectedRoute allowedRole={['admin', 'formateur', 'apprenant']}/>,
 		children: [
 			{
-				element: <SuspenseWrapper><ApprenantTemplate /></SuspenseWrapper>,
+				element: <RoleTemplate />,
 				children: [ { index: true, element: <SuspenseWrapper><CorrectionReview /></SuspenseWrapper> } ],
 			}
 		]
 	},
 	{
 		path: '/vague/:id/bulletin',
-		element: <ProtectedRoute allowedRole={['apprenant']}/>,
+		element: <ProtectedRoute allowedRole={['admin', 'formateur', 'apprenant']}/>,
 		children: [
 			{
-				element: <SuspenseWrapper><ApprenantTemplate /></SuspenseWrapper>,
+				element: <RoleTemplate />,
 				children: [ { index: true, element: <SuspenseWrapper><Bulletin /></SuspenseWrapper> } ],
 			}
 		]

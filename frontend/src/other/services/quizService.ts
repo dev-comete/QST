@@ -1,4 +1,4 @@
-import type { QuestionQuiz, quizAssignPayload, quizCreateType, QuizReview, QuizSubmitPayload, quizType, studentQuizType } from "../types/quizType";
+import type { QuestionQuiz, quizAssignPayload, quizCreateType, QuizReview, QuizSubmitPayload, QuizSubmitResult, quizType, studentQuizType } from "../types/quizType";
 import apiClient from "./apiClient";
 import { ENDPOINTS } from "./endpoint";
 
@@ -71,13 +71,17 @@ export const QuizService = {
 
 	submitQuiz: async ( data : QuizSubmitPayload) => {
 		const response = await apiClient.post(QUIZ_SUBMIT_URL, data);
-		return response.data;
+		return response.data as QuizSubmitResult;
 	},
 
-	reviewQuiz: async (quizId: string, vagueId: string | number) => {
-		const response = await apiClient.get(`quizzes/${quizId}/review/`, {
-			params: { vague_id: vagueId }
-		});
-		return response.data as QuizReview;
+	reviewQuiz: async (quizId: string, vagueId: string | number, studentId?: string | null) => {
+    const response = await apiClient.get(`quizzes/${quizId}/review/`, {
+        params: { 
+            vague_id: vagueId,
+            // Only add student_id to the request if it exists
+            ...(studentId && { student_id: studentId }) 
+        }
+    });
+    return response.data as QuizReview;
 	},
 }

@@ -57,7 +57,12 @@ type AnswersMap = Record<string, Array<number | string>>;
 type QuizSubmitPayload = {
 	quiz_id: string,
 	vague_id: string | number,
-	answers: AnswersMap[]
+	answers: AnswersMap
+}
+
+type QuizSubmitResult = {
+	score_obtenu: number;
+	score_possible: number;
 }
 
 type CorrectionOption = {
@@ -83,7 +88,11 @@ type QuizReview = {
 	score_final: number,
 	score_possible: number,
 	vague_id: number,
-	corrections: Correction[]
+	corrections: Correction[],
+	target_student?: {
+        id: number | string;
+        nom_complet: string;
+    }
 }
 
 type QuestionQuiz = {
@@ -108,6 +117,7 @@ export type {
 	Question,
 	Option,
 	QuizSubmitPayload,
+	QuizSubmitResult,
 	QuizReview,
 	Correction,
 	CorrectionOption,

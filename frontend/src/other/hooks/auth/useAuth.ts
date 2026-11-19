@@ -77,6 +77,33 @@ const useLogin = () => {
 	};
 };
 
+const useGoogleLogin = () => {
+    const navigate = useNavigate();
+    const { setAuthUser } = useAuth();
+    const [ error, setError ] = useState<string | null>(null);
+
+    const { mutate, isPending } = useMutation({
+        mutationFn: (token: string) => AuthService.googleLogin(token),
+        onSuccess: (data) => {
+            setError(null);
+            const { user, access, refresh } = data;
+            TokenStorage.setAuthData(access, refresh, user);
+            setAuthUser(user);
+            const path = getRoleLandingPath(user.role);
+            navigate(path, { replace: true });
+        },
+        onError: (err: any) => {
+            setError(err.response?.data?.error || 'Erreur lors de la connexion Google.');
+        },
+    });
+
+    return {
+        handleGoogleSuccess: mutate,
+        isPending,
+        error,
+    };
+};
+
 const useLogout = () => {
     const navigate = useNavigate();
     const { setAuthUser } = useAuth();
@@ -127,6 +154,7 @@ export {
 	AuthContext,
 	useAuth,
 	useLogin,
+	useGoogleLogin,
 	useLogout,
 	useResetPassword,
 }

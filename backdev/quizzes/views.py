@@ -1,4 +1,5 @@
 from django.db.models.aggregates import Sum
+from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status , viewsets , generics
@@ -21,6 +22,10 @@ from .services import submit_entire_quiz, assign_questions_to_quiz , create_ques
 from .models import Quiz, Question, Reponse , UtilisateurQuiz, QuizQuestion , TypeQuestion, Bareme, QuestionTypeQuestion, QuestionBareme , Valiny , Corrigee
 
 from formations.models import UtilisateurVague
+
+from notifications.services import notify_formateur_of_quiz_submission
+
+User = get_user_model()
 
 class QuizViewSet(viewsets.ModelViewSet):
     serializer_class = QuizSerializer
@@ -232,6 +237,15 @@ class SubmitQuizAPIView(APIView):
             return Response({"error": "Une erreur interne est survenue."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         formation_liee = quiz_attempt.quiz.formation
+        score_possible = QuizQuestion.objects.filter(
+            quiz_id=quiz_attempt.quiz_id
+        ).aggregate(total=Sum('bareme__pts'))['total'] or 0
+
+        try:
+            print(f"\n[NOTIF DEBUG] Déclenchement de la notification pour QuizAttempt ID {quiz_attempt.id}")
+            notify_formateur_of_quiz_submission(request.user, quiz_attempt)
+        except Exception as e:
+            print(f"[NOTIF DEBUG] Erreur inattendue dans la vue lors de l'appel : {e}")
         
         return Response({
             "message": "Quiz soumis avec succès.",
@@ -239,6 +253,7 @@ class SubmitQuizAPIView(APIView):
             "formation_nom": formation_liee.nom_formation,
             "quiz_id": quiz_attempt.quiz.id,
             "score_obtenu": quiz_attempt.score_obtenu,
+            "score_possible": score_possible,
             "termine": quiz_attempt.termine
         }, status=status.HTTP_201_CREATED)
     
@@ -251,7 +266,29 @@ class QuizReviewAPIView(APIView):
         if not vague_id:
             return Response({"error": "L'ID de la vague est manquant dans l'URL."}, status=status.HTTP_400_BAD_REQUEST)
         
-        assignment = get_object_or_404(UtilisateurQuiz, quiz_id=quiz_id, vague_id=vague_id, utilisateur=request.user)
+        student_id = request.query_params.get('student_id')
+        target_user = request.user  # Par défaut, soi-même
+        
+        if student_id and str(student_id) != str(request.user.id):
+            try:
+                target_user = User.objects.get(id=student_id)
+            except User.DoesNotExist:
+                return Response({"error": "Apprenant introuvable."}, status=status.HTTP_404_NOT_FOUND)
+        
+        assignment = get_object_or_404(UtilisateurQuiz, quiz_id=quiz_id, vague_id=vague_id, utilisateur=target_user)
+
+        if target_user != request.user:
+            is_admin = request.user.is_staff or request.user.is_superuser or (
+                hasattr(request.user, 'type_utilisateur') and 
+                request.user.type_utilisateur and 
+                request.user.type_utilisateur.type_utilisateur == 'admin'
+            )
+            formateur = assignment.quiz.formation.createur
+            
+            if not is_admin and request.user != formateur:
+                return Response({
+                    "error": "Accès refusé. Seul le formateur ou un administrateur peut consulter ces résultats."
+                }, status=status.HTTP_403_FORBIDDEN)
         
         if not assignment.termine:
             return Response(
@@ -265,7 +302,7 @@ class QuizReviewAPIView(APIView):
         )['total'] or 0.0
 
         valinys = Valiny.objects.filter(
-            utilisateur=request.user, 
+            utilisateur=target_user, 
             quiz_id=quiz_id,
             vague_id=vague_id
         ).select_related('question').prefetch_related('reponses_choisies')

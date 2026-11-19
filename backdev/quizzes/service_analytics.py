@@ -124,13 +124,24 @@ def get_vague_analytics_service(vague_id: int, requesting_user) -> dict:
         "statistiques_par_quiz": quizzes_data
     }
 
-def get_apprenant_bulletin_service(vague_id: int, apprenant) -> dict:
+def get_apprenant_bulletin_service(vague_id: int, apprenant, requesting_user=None) -> dict:
     """
     Génère le bulletin de notes détaillé d'un apprenant pour une vague spécifique.
     Seuls les quiz explicitement assignés à l'apprenant DANS CETTE VAGUE s'affichent.
     """
     # 1. Vérification : L'étudiant est-il bien inscrit à cette vague ?
     vague = get_object_or_404(Vague.objects.select_related('formation'), id=vague_id)
+
+    requester = requesting_user or apprenant
+    if apprenant != requester:
+        is_admin = requester.is_staff or requester.is_superuser or (
+            getattr(getattr(requester, 'type_utilisateur', None), 'type_utilisateur', None) == 'admin'
+        )
+        is_formateur = vague.formation.createur_id == requester.id
+        if not is_admin and not is_formateur:
+            raise PermissionDenied(
+                "Accès refusé. Seul le formateur de la vague ou un administrateur peut consulter ce bulletin."
+            )
     
     est_inscrit = UtilisateurVague.objects.filter(vague=vague, utilisateur=apprenant).exists()
     if not est_inscrit:
