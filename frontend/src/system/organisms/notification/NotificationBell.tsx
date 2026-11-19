@@ -5,14 +5,15 @@ import Box from "../../atoms/Container/Box";
 import CustomText from "../../atoms/Text/CustomText";
 import FAIcon from "../../atoms/Icon/FAIcon";
 import { useNotification } from "../../../other/hooks/notification/useNotification";
-import { NotifItem } from "./NotificationCard";
 import { useAuth } from "../../../other/hooks/auth/useAuth";
 import { getNotificationPath } from "../../../other/helper/notification";
+import IconButton from "../../molecules/Buttons/IconButton";
+import { formatDate } from "../../../other/helper/helper";
 
 const NotificationBell = () => {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
-    const { notifications, unreadCount, markAsRead, markAllAsRead, handleNotificationClick } = useNotification();
+    const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotification();
     const navigate = useNavigate();
     const { authUser } = useAuth();
 

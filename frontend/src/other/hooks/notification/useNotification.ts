@@ -1,11 +1,9 @@
 // frontend/src/other/hooks/notification/useNotification.ts
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router";
 import { NotificationService } from "../../services/notificationService";
 import type { NotificationType } from "../../types/notificationType";
 
 export const useNotification = () => {
-    const navigate = useNavigate();
     const queryClient = useQueryClient();
 
     const notificationsQuery = useQuery({
@@ -55,22 +53,6 @@ export const useNotification = () => {
         }
     });
 
-    const handleNotificationClick = (notifId: number, typeNotif: string | null, closeModal?: () => void) => {
-        markAsRead.mutate(notifId);
-        closeModal?.();
-
-        switch (typeNotif) {
-            case 'password_reset':
-                navigate('/admin/parametre_general?tab=4');
-                break;
-            case 'quiz_submit':
-                // Example future redirect: navigate(`/formateur/vague/${vagueId}/bulletin`);
-                break;
-            default:
-                break;
-        }
-    };
-
     const notifications = notificationsQuery.data ?? [];
     const unreadCount = notifications.filter((n) => !n.is_read).length;
 
@@ -81,6 +63,5 @@ export const useNotification = () => {
         markAsRead: (id: number) => markAsRead.mutate(id),
         markAllAsRead: () => markAllAsRead.mutate(),
         isMarkingRead: markAsRead.isPending || markAllAsRead.isPending,
-        handleNotificationClick,
     };
 };

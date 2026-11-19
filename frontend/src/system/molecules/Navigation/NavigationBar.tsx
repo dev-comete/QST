@@ -12,7 +12,7 @@ interface NavigationButtonProps {
 
 const NavigationBarButton = ({ title, isClicked, onClick } : NavigationButtonProps) => {
 
-    const activeStyle = '!shadow-sm ring-1 ring-slate-900/5';
+    const activeStyle = '!shadow-sm ring-1 ring-slate-900/5 !cursor-default';
     const inactiveStyle = 'hover:!bg-slate-200/50 text-slate-500 hover:text-slate-700';
 
     return (

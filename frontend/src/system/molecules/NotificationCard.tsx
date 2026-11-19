@@ -49,7 +49,7 @@ const NotificationCard = ({ notification, onOpen, onMarkAsRead }: NotificationCa
                         <button
                             type="button"
                             onClick={onOpen}
-                            className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-sm font-semibold text-primary transition-colors hover:bg-primary/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
+                            className="cursor-pointer shadow-sm inline-flex items-center gap-1 rounded-lg px-2 py-1 text-sm font-semibold text-primary transition-colors hover:bg-primary/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
                         >
                             Ouvrir
                             <FAIcon name="arrow-right" className="text-xs" />
