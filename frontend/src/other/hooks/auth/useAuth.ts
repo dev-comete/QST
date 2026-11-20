@@ -122,7 +122,7 @@ const useLogout = () => {
     };
 };
 
-const useResetPassword = (email: string, handleCloseModal: () => void) => {
+const useResetPassword = (email: string) => {
 	const [successMessage, setSuccessMessage] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
 
@@ -139,7 +139,6 @@ const useResetPassword = (email: string, handleCloseModal: () => void) => {
 		},
         onSuccess: () => {
             setErrorMessage("");
-			handleCloseModal();
         },
         onError: (error: any) => {
             setErrorMessage(

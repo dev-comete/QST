@@ -44,7 +44,7 @@ const Login = () => {
 	const { authUser } = useAuth()
 	const [ open, setOpen ] = useState(false)
 	const [ emailReset, setEmailReset ] = useState('')
-	const { passwordMutation, successMessage, errorMessage, resetMessage } = useResetPassword(emailReset, () => { setOpen(false) })
+	const { passwordMutation, successMessage, errorMessage, resetMessage } = useResetPassword(emailReset)
 
 	const { handleGoogleSuccess, isPending: isGooglePending, error: googleError } = useGoogleLogin();
 
@@ -54,7 +54,16 @@ const Login = () => {
 		resetMessage()
 		setOpen(false);
 	};
-	
+
+	const handleConfirm = async () => {
+		try {
+			await passwordMutation.mutateAsync()
+			closeModal()
+		} catch (error) {
+			passwordMutation.reset()
+			console.log(error)
+		}
+	}
 
 	if (authUser) return <Navigate to="/" replace />;
 
@@ -75,7 +84,7 @@ const Login = () => {
 						<CancelButton text="Annuler" onClick={closeModal}/>
 						<ActionButton
 							isLoading={passwordMutation.isPending}
-							onClick={() => passwordMutation.mutate()}
+							onClick={handleConfirm}
 						>Confirmer</ActionButton>
 					</Box>
 				}
