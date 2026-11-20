@@ -44,9 +44,17 @@ const Login = () => {
 	const { authUser } = useAuth()
 	const [ open, setOpen ] = useState(false)
 	const [ emailReset, setEmailReset ] = useState('')
-	const { passwordMutation, successMessage, errorMessage } = useResetPassword(emailReset)
+	const { passwordMutation, successMessage, errorMessage, resetMessage } = useResetPassword(emailReset, () => { setOpen(false) })
 
 	const { handleGoogleSuccess, isPending: isGooglePending, error: googleError } = useGoogleLogin();
+
+	const closeModal = () => {
+		passwordMutation.reset();
+		setEmailReset('');
+		resetMessage()
+		setOpen(false);
+	};
+	
 
 	if (authUser) return <Navigate to="/" replace />;
 
@@ -60,11 +68,11 @@ const Login = () => {
 			/>
 			<Modal
 				isOpen={open}
-				closeModal={() => setOpen(false)}
+				closeModal={closeModal}
 				title="Réinitialisation de mot de passe"
 				footer={
 					<Box>
-						<CancelButton text="Annuler" onClick={() => setOpen(false)}/>
+						<CancelButton text="Annuler" onClick={closeModal}/>
 						<ActionButton
 							isLoading={passwordMutation.isPending}
 							onClick={() => passwordMutation.mutate()}
