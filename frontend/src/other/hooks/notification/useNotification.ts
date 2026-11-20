@@ -35,7 +35,7 @@ export const useNotification = () => {
             return { previousNotifications };
         },
         // If the mutation fails, use the context returned from onMutate to roll back
-        onError: (err, newTodo, context) => {
+        onError: (_err, _newTodo, context) => {
             if (context?.previousNotifications) {
                 queryClient.setQueryData(['notifications_list'], context.previousNotifications);
             }
@@ -62,6 +62,6 @@ export const useNotification = () => {
         isLoading: notificationsQuery.isPending,
         markAsRead: (id: number) => markAsRead.mutate(id),
         markAllAsRead: () => markAllAsRead.mutate(),
-        isMarkingRead: markAsRead.isPending || markAllAsRead.isPending
+        isMarkingRead: markAsRead.isPending || markAllAsRead.isPending,
     };
 };

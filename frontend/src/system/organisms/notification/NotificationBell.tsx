@@ -4,11 +4,11 @@ import { useNavigate } from "react-router";
 import Box from "../../atoms/Container/Box";
 import CustomText from "../../atoms/Text/CustomText";
 import FAIcon from "../../atoms/Icon/FAIcon";
-import IconButton from "../../molecules/Buttons/IconButton";
 import { useNotification } from "../../../other/hooks/notification/useNotification";
-import { formatDate } from "../../../other/helper/helper";
 import { useAuth } from "../../../other/hooks/auth/useAuth";
 import { getNotificationPath } from "../../../other/helper/notification";
+import IconButton from "../../molecules/Buttons/IconButton";
+import { formatDate } from "../../../other/helper/helper";
 
 const NotificationBell = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -43,13 +43,13 @@ const NotificationBell = () => {
     }, []);
 
     return (
-        <div className="relative" ref={dropdownRef}>
+        <div className="relative z-50 bg-white rounded-full shadow-md translate-y-[1px]" ref={dropdownRef}>
             <button 
                 type="button" 
-                className="relative p-2 rounded-full hover:bg-slate-100 transition-colors"
+                className="relative z-50 p-2 rounded-full hover:bg-slate-100 transition-colors cursor-pointer translate-y-[1px]"
                 onClick={() => setIsOpen(!isOpen)}
             >
-                <FAIcon name="bell" className="text-slate-600 text-xl" />
+                <FAIcon name="bell" className={` text-xl ${isOpen ? 'text-primary' : 'text-slate-600'}`} />
                 {unreadCount > 0 && (
                     <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-error text-[9px] font-bold text-white shadow-sm">
                         {unreadCount > 9 ? '9+' : unreadCount}
@@ -59,8 +59,8 @@ const NotificationBell = () => {
 
             {isOpen && (
                 <div className="absolute right-0 mt-2 w-80 max-w-[90vw] bg-white rounded-xl shadow-lg border border-slate-100 z-50 overflow-hidden flex flex-col animate-in fade-in slide-in-from-top-2 duration-200">
-                    <Box className="justify-between items-center p-3 border-b border-background bg-slate-50">
-                        <CustomText weight="bold">Notifications</CustomText>
+                    <Box className="justify-between items-center p-3 border-b border-background bg-primary">
+                        <CustomText weight="bold" color="white">Notifications</CustomText>
                         {unreadCount > 0 && (
                             <button 
                                 onClick={(e) => { e.preventDefault(); markAllAsRead(); }}
@@ -120,7 +120,7 @@ const NotificationBell = () => {
                             navigate(`${basePath}/notifications`); 
                         }}
                     >
-                        <CustomText className="text-sm font-medium text-primary">Voir toutes les notifications</CustomText>
+                        <CustomText color="primary" className="text-sm font-medium">Voir toutes les notifications</CustomText>
                     </div>
                 </div>
             )}

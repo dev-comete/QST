@@ -5,6 +5,7 @@ import { toast, type ToastContent } from 'react-toastify';
 interface CustomMeta {
 	successMessage?: ToastContent<unknown>;
 	suppressToast?: boolean;
+	toastDuration?: number | false;
 }
 
 export const queryClient = new QueryClient({
@@ -18,16 +19,17 @@ export const queryClient = new QueryClient({
 	queryCache: new QueryCache({
 		onError: (error, query) => {
 			if (query.meta?.suppressToast) return;
-
+			
 			toast.error(`Erreur : ${error.message}`);
 		},
 	}),
-
+	
 	mutationCache: new MutationCache({
 		onError: (error, _variables, _context, mutation) => {
-			if (mutation.meta?.suppressToast) return;
+			const meta = mutation.meta as CustomMeta | undefined;
+			if (meta?.suppressToast) return;
 
-			toast.error(`Echec : ${error.message}`);
+			toast.error(`Echec : ${error.message}`, { autoClose: meta?.toastDuration });
 		},
 		onSuccess: (_data, _variables, _context, mutation) => {
 			const meta = mutation.meta as CustomMeta | undefined;
@@ -35,7 +37,7 @@ export const queryClient = new QueryClient({
 			if (meta?.suppressToast) return;
 
 			const message = meta?.successMessage ?? null;
-			toast.success(`Succès ${message ? ': ' + message : ''}`);
+			toast.success(`Succès ${message ? ': ' + message : ''}`, { autoClose: meta?.toastDuration });
 		},
 	}),
 });

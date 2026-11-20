@@ -6,53 +6,53 @@ import type { userType } from "../../../../other/types/userType";
 import Box from "../../../atoms/Container/Box";
 
 interface StudentItemProps {
-	addStudentToAssign: (id: number) => void,
+	checked: boolean;
+	toggleStudent: (id: number) => void;
 	item: userType,
 }
 
-const StudentItem = ({ addStudentToAssign, item } : StudentItemProps) => {
-
-	return (
-		<Paper className="flex justify-between gap-3 items-center p-3 border border-background w-full justify-start">
-			<Box>
-				<Input
-					id={`check + ${item}`}
-					name={`check + ${item}`}
-					type="checkbox"
-					onChange={() => addStudentToAssign(item.id)}
-					className="cursor-pointer h-4 w-4 rounded"
-				/>
-			</Box>
-			<CustomText>{item.username}</CustomText>
-		</Paper>
-	)
-}
+const StudentItem = ({ toggleStudent, item, checked }: StudentItemProps) => (
+	<Paper className="flex justify-between gap-3 items-center p-3 border border-background w-full justify-start">
+		<Box>
+			<Input
+				id={`check-${item.id}`}
+				name={`check-${item.id}`}
+				type="checkbox"
+				checked={checked}
+				onChange={() => toggleStudent(item.id)}
+				className="cursor-pointer h-4 w-4 rounded"
+			/>
+		</Box>
+		<CustomText>{item.username}</CustomText>
+	</Paper>
+)
 
 interface StudentListProps {
 	studentList: userType[]
+	students: number[]
 	setStudents: Dispatch<SetStateAction<number[]>>
 }
 
 
-const StudentList = ({ studentList, setStudents } : StudentListProps) => {
-
-	const handleSelectQuestion = (newId: number) => {
-		setStudents((prev) => [...prev, newId]);
+const StudentList = ({ studentList, students, setStudents } : StudentListProps) => {
+	const toggleStudent = (id: number) => {
+		setStudents((prev) =>
+			prev.includes(id)
+				? prev.filter((studentId) => studentId !== id)
+				: [...prev, id]
+		);
 	};
-
+	
 	return (
 		<Box direction="column" className="w-full">
-			{
-				studentList.map((item) => {
-
-				return (
-					<StudentItem
-						key={item.id}
-						item={item}
-						addStudentToAssign={handleSelectQuestion}
-					/>
-				)})
-			}
+			{studentList.map((item) => (
+				<StudentItem
+					key={item.id}
+					item={item}
+					checked={students.some((s) => s === item.id)}
+					toggleStudent={toggleStudent}
+				/>
+			))}
 		</Box>
 	)
 }

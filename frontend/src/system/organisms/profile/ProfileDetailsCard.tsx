@@ -167,8 +167,9 @@ const ProfileDetailsCard: React.FC<ProfileDetailsCardProps> = ({ profile, role, 
 										id="username"
 										name="username" 
 										value={formData.username} 
-										onChange={handleChange} 
-										required 
+										onChange={handleChange}
+										disabled 
+										readOnly
 									/>
 								</Box>
 								<Box direction="column" className="gap-1">

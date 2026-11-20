@@ -133,21 +133,26 @@ const useResetPassword = (email: string) => {
             });
             return data;
         },
-        onSuccess: (data) => {
-            setSuccessMessage(
-                data.detail || "Votre demande de réinitialisation a été envoyée à l'administrateur avec succès."
-            );
+		meta: { 
+			successMessage: "Votre demande a été envoyée aux administrateurs. Vous recevrez un nouveau lien par e-mail une fois validée.",
+			toastDuration: 5000
+		},
+        onSuccess: () => {
             setErrorMessage("");
         },
         onError: (error: any) => {
             setErrorMessage(
                 error.response?.data?.detail || "Une erreur est survenue lors de la soumission de la demande."
             );
-            setSuccessMessage("");
         },
     });
 
-	return { successMessage, errorMessage, passwordMutation }
+	const resetMessage = () => {
+		setSuccessMessage('')
+		setErrorMessage('')
+	}
+
+	return { successMessage, errorMessage, passwordMutation, resetMessage }
 }
 
 export {
