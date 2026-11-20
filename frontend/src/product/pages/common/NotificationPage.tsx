@@ -45,7 +45,11 @@ const NotificationPage = () => {
     return (
         <BodyLayout
             title="Centre de notifications"
-            subtitle="Retrouvez ici les dernières activités et informations importantes."
+            subtitle={
+				<CustomText textTag="h5" isItalic>
+					Retrouvez ici les dernières activités et informations importantes.
+				</CustomText>
+			}
             titleButton={
                 unreadCount > 0 ? (
                     <ActionButton
@@ -87,10 +91,10 @@ const NotificationPage = () => {
                                         type="button"
                                         onClick={() => setFilter(filterOption)}
                                         aria-pressed={isActive}
-                                        className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary ${isActive ? "bg-white text-primary shadow-sm" : "text-slate-600 hover:text-slate-900"}`}
+                                        className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary ${isActive ? "bg-primary text-white shadow-sm" : "cursor-pointer text-slate-600 hover:text-slate-900"}`}
                                     >
                                         {label}
-                                        <span className={`ml-1.5 rounded-full px-1.5 py-0.5 text-xs ${isActive ? "bg-primary/10 text-primary" : "bg-white/80 text-slate-500"}`}>
+                                        <span className={`ml-1.5 rounded-full px-1.5 py-0.5 text-xs ${isActive ? "bg-white text-primary" : "bg-white/80 text-slate-500"}`}>
                                             {filterOption === "all" ? notifications.length : unreadCount}
                                         </span>
                                     </button>

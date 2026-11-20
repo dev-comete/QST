@@ -21,7 +21,7 @@ const Title = ({ title, sideButton, linkBack, defaultLinkBack = false, info, tit
 				<Box className="items-center gap-3">
 					{linkBack && <BackButton link={linkBack} />}
 					{defaultLinkBack && <BackButton />}
-					<Box>
+					<Box direction="column">
 						<CustomText textTag={titleTag} weight="bold">{title}</CustomText>
 						{subtitle}
 					</Box>

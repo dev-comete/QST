@@ -37,33 +37,34 @@ export const StudentAssignation = ({
 
     // Filtre les étudiants qui ne sont ni déjà inscrits ni dans la sélection en cours
     const studentNotSubsribed = studentList.filter(
-        (apprenant) => !ownedStudents.some((e) => e.etudiant_id === apprenant.id) && !students.includes(apprenant.id)
+        (apprenant) => !ownedStudents.some((e) => e.etudiant_id === apprenant.id)
     );
 
     return (
         <form className="flex flex-col md:flex-row justify-center gap-5 w-full items-start">
             <AssignBloc title="Liste des étudiants">
                 {
-                    studentNotSubsribed.length === 0
+					studentNotSubsribed.length === 0
                     ?   <CustomText>Tous les étudiants sont inscrits dans la session</CustomText>
                     :   
-                        <>
-                            <StudentList
-                                studentList={studentNotSubsribed}
-                                setStudents={setStudents}
-                            />
-                            <ActionButton
-                                type="submit"
-                                onClick={(e) => {e.preventDefault() ; handleAssignStudent()}}
-                                btnColor={students.length ? "success" : "disabled"}
-                                textColor="white"
-                                disabled={students.length == 0}
-                                isLoading={isPending}
-                                btnStyling="w-full mt-3"
-                            >
-                                Assigner les étudiants
-                            </ActionButton>
-                        </>
+					<>
+						<StudentList
+							studentList={studentNotSubsribed}
+							students={students}
+							setStudents={setStudents}
+						/>
+							<ActionButton
+								type="submit"
+								onClick={(e) => {e.preventDefault() ; handleAssignStudent()}}
+								btnColor={students.length ? "success" : "disabled"}
+								textColor="white"
+								disabled={students.length == 0}
+								isLoading={isPending}
+								btnStyling="w-full mt-3"
+							>
+								Assigner les étudiants
+							</ActionButton>
+					</>
                 }
             </AssignBloc>
             <AssignBloc title="Liste des étudiants inscrits">
