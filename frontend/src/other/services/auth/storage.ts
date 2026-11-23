@@ -73,12 +73,18 @@ export const TokenStorage = {
     }
 
     if (error.response && error.response.status === 403) {
-        // Avoid forcing a full reload on 403 which can create a reload loop
-        // (e.g. when an endpoint returns 403 repeatedly while the page reinitializes
-        // and re-requests). Clear auth and redirect to a dedicated unauthorized page
-        // so the app can render a proper message instead of reloading indefinitely.
-        TokenStorage.clear();
-        window.location.href = '/unauthorized';
+        const requestUrl = originalRequest?.url || '';
+        const isAuthenticationRequest =
+            requestUrl.includes('/accounts/auth/') ||
+            requestUrl.includes('accounts/auth/google');
+
+        // Une erreur 403 de Google SSO décrit l’échec de la tentative de
+        // connexion. Elle ne doit pas déclencher une redirection globale.
+        if (!isAuthenticationRequest) {
+            TokenStorage.clear();
+            window.location.href = '/unauthorized';
+        }
+
         return Promise.reject(error);
     }
 
