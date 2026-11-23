@@ -2,6 +2,7 @@ export const ENDPOINTS = {
 	AUTH: {
 		LOGIN: 'accounts/auth/login/',
 		SETPASS: '/accounts/auth/reset-password-confirm/',
+		RESETPASS: 'accounts/auth/public-request-password-reset/',
 	},
 	QUESTION: {
 		CREATE: 'quizzes/questions/create-full/',

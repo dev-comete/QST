@@ -68,7 +68,7 @@ const Login = () => {
 	if (authUser) return <Navigate to="/" replace />;
 
     return (
-        <Box className="flex relative h-screen p-10 items-center justify-between w-full overflow-hidden">
+        <Box className="relative h-screen md:p-10 p-4 items-center justify-between w-full overflow-hidden">
 			<img
 				src={illustration}
 				alt=""
@@ -91,8 +91,16 @@ const Login = () => {
 			>
 				<ResetPasswordForm email={emailReset} setEmail={setEmailReset} success={successMessage} error={errorMessage}/>
 			</Modal>
-			<Box className="w-full px-10">
-				<Box direction="column" className="bg-black/50 justify-center p-10 rounded-xl flex-1">
+			<Box flexDirection="md:flex-row flex-col" className="w-full md:px-10">
+				<Box
+					direction="column"
+					className="
+					hidden md:flex flex-1 justify-center p-10 rounded-2xl
+					bg-black/60
+					backdrop-blur-xs
+					shadow-lg
+					"
+				>
 					<h1 className="text-[50px] text-white font-bold">Bienvenue sur C-eval</h1>
 					<CustomText textTag="h2" color="white" weight="bold">L'évaluation intelligente, simplifiée.</CustomText>
 				</Box>
@@ -100,6 +108,10 @@ const Login = () => {
 					<Box direction="column" className="space-y-6 items-center w-full">
 						<Box direction="column" className="items-center">
 							<Logo />
+							<Box direction="column" className="items-center w-full text-center md:hidden block border-b-2 border-background mb-2">
+								<h1 className="text-[20px] text-text font-bold">Bienvenue sur C-eval</h1>
+								<CustomText color="text">L'évaluation intelligente, simplifiée.</CustomText>
+							</Box>
 							<CustomText textTag="h6" isItalic={true}>{"Connectez-vous pour accéder à votre espace."}</CustomText>
 						</Box>
 						<form onSubmit={handleSubmit} className="w-full">
