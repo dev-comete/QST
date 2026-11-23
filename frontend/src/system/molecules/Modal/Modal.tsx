@@ -270,7 +270,7 @@ const Modal = ({
 
                 {/* Corps (Scrollable) */}
                 <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
-                    <Box direction="column" className="w-full">
+                    <Box direction="column" className="w-full items-center">
                         {currentChild}
                     </Box>
                 </div>
